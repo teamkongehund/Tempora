@@ -1,0 +1,42 @@
+[gd_scene load_steps=4 format=3 uid="uid://crfob01mbcgre"]
+
+[ext_resource type="Script" path="res://Main.cs" id="1_t2kkt"]
+[ext_resource type="Script" path="res://AudioVisualsContainer.cs" id="3_7vuxd"]
+[ext_resource type="PackedScene" uid="uid://djvimmuyfu0pu" path="res://AudioPlayer.tscn" id="3_gyi28"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_t2kkt")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0.2, 0.254902, 1)
+
+[node name="PlayButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 23.0
+offset_top = 17.0
+offset_right = 197.0
+offset_bottom = 100.0
+text = "Play"
+
+[node name="AudioPlayer" parent="." instance=ExtResource("3_gyi28")]
+
+[node name="AudioVisualsContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 221.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_7vuxd")

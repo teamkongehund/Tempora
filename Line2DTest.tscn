@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://c4wm6os6aaje2"]
+
+[ext_resource type="Script" path="res://Line2DTest.cs" id="1_51s64"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Line2D" type="Line2D" parent="."]
+script = ExtResource("1_51s64")

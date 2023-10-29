@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://xf0kngdc5d36"]
+
+[ext_resource type="Script" path="res://WaveformWindow.cs" id="1_546h3"]
+
+[node name="WaveformWindow" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_546h3")
+
+[node name="Playhead" type="Line2D" parent="."]
+width = 2.0
+default_color = Color(0.270588, 1, 0.921569, 1)
