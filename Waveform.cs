@@ -151,11 +151,18 @@ public partial class Waveform : Line2D
             int sampleAtPixelStart = sampleStart + i * samplesPerPixel;
             int sampleAtPixelEnd = sampleStart + (i+1) * samplesPerPixel;
 
-            // FIXME: the mean is not an appropriate value to use, as it doesn't capture peaks
-            float mean = AudioFile.AudioData[sampleAtPixelStart..sampleAtPixelEnd].Average();
-
             //yValues[i] = AudioFile.AudioData[sampleStart + i * samplesPerPixel] * Height / 2;
-            yValues[i] = mean * Height / 2;
+
+            //float mean = AudioFile.AudioData[sampleAtPixelStart..sampleAtPixelEnd].Average();
+            //yValues[i] = mean * Height / 2;
+
+            float max = AudioFile.AudioData[sampleAtPixelStart..sampleAtPixelEnd].Max();
+            float min = AudioFile.AudioData[sampleAtPixelStart..sampleAtPixelEnd].Min();
+
+            float pickedValue = Math.Abs(max) > Math.Abs(min) ? max : min;
+
+            yValues[i] = pickedValue * Height / 2;
+
         }
         
         Points = VectorTools.CombineArraysToVector2(xValues, yValues);
