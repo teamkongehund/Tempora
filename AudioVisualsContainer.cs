@@ -21,10 +21,10 @@ public partial class AudioVisualsContainer : VBoxContainer
 		//CreateBlocks();
 	}
 
+	public float BlockDuration = 2;
 
     public void CreateBlocks()
 	{
-		float blockDuration = 2;
 		float startTime = FirstBlockStartTime;
 		var packedWaveformWindow = ResourceLoader.Load<PackedScene>("res://WaveformWindow.tscn");
 
@@ -46,8 +46,8 @@ public partial class AudioVisualsContainer : VBoxContainer
 			waveformWindow.SizeFlagsVertical = SizeFlags.ExpandFill;
 
 			waveformWindow.startTime = startTime;
-			waveformWindow.endTime = startTime + blockDuration;
-			startTime += blockDuration;
+			waveformWindow.endTime = startTime + BlockDuration;
+			startTime += BlockDuration;
 
 			waveformWindow.SeekPlaybackTime += OnSeekPlaybackTime;
 

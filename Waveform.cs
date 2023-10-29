@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Linq;
 
 /// <summary>
 /// Waveform visual representation of audio segment with constant time-distance relation.
@@ -134,8 +135,9 @@ public partial class Waveform : Line2D
         int sampleEnd = AudioDataRange[1];
 
         int numberOfSamples = sampleEnd - sampleStart;
+        int samplesPerPixel = (numberOfSamples / (int)Length);
 
-        float[] xValues = VectorTools.CreateLinearSpace(0, Length, numberOfSamples);
+        float[] xValues = VectorTools.CreateLinearSpace(0, Length, (int)Length);
         float[] yValues = new float[xValues.Length];
 
         if (AudioFile == null)
@@ -144,28 +146,18 @@ public partial class Waveform : Line2D
             return;
         }
 
-        int i_final = sampleStart;
-        try
+        for (int i = 0; i < yValues.Length; i++)
         {
-            for (int i = 0; i < yValues.Length; i++)
-            {
-                i_final = i;
-                yValues[i] = AudioFile.AudioData[sampleStart+i] * Height / 2;
-            }
+            int sampleAtPixelStart = sampleStart + i * samplesPerPixel;
+            int sampleAtPixelEnd = sampleStart + (i+1) * samplesPerPixel;
+
+            // FIXME: the mean is not an appropriate value to use, as it doesn't capture peaks
+            float mean = AudioFile.AudioData[sampleAtPixelStart..sampleAtPixelEnd].Average();
+
+            //yValues[i] = AudioFile.AudioData[sampleStart + i * samplesPerPixel] * Height / 2;
+            yValues[i] = mean * Height / 2;
         }
-        catch (Exception e) 
-        { 
-            GD.Print(e.ToString());
-            GD.Print($"On error: SampleStart {sampleStart}, SampleEnd {sampleEnd} for AudioData Length {AudioFile.AudioData.Length} at i = {i_final}");
-            return; 
-        }
-
-
-        //for (int i = 0; i < AudioDataSegment.Length; i++)
-        //{
-        //    yValues[i] = AudioDataSegment[i] * Height/2;
-        //}
-
+        
         Points = VectorTools.CombineArraysToVector2(xValues, yValues);
     }
 
