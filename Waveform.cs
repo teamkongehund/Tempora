@@ -14,7 +14,7 @@ public partial class Waveform : Line2D
         set
         {
             _length = value;
-            UpdatePoints();
+            PlotWaveform();
         }
     }
 
@@ -25,7 +25,7 @@ public partial class Waveform : Line2D
         set
         {
             _height = value;
-            UpdatePoints();
+            PlotWaveform();
         }
     }
 
@@ -46,9 +46,15 @@ public partial class Waveform : Line2D
         set
         {
             _audioFile = value;
-            UpdatePoints();
+            PlotWaveform();
         }
     }
+
+    /// <summary>
+    /// Instead of putting one data point in the plot arrays, a larger number may show a better waveform.
+    /// Even numbers should be used, as the plotter alternates between mix and max for each data point
+    /// </summary>
+    public int DataPointsPerPixel = 4;
 
     public bool ShouldDisplayWholeFile = true;
 
@@ -91,7 +97,7 @@ public partial class Waveform : Line2D
         {
             _timeRange = value;
             ShouldDisplayWholeFile = false;
-            UpdatePoints();
+            PlotWaveform();
         }
     }
 
@@ -105,7 +111,7 @@ public partial class Waveform : Line2D
     {
         AudioFile = audioFile;
         AudioDataRange = new int[] { 0, AudioFile.AudioData.Length };
-        UpdatePoints();
+        PlotWaveform();
     }
 
     public Waveform(AudioFile audioFile, float length, float height)
@@ -114,7 +120,7 @@ public partial class Waveform : Line2D
         AudioDataRange = new int[] { 0, AudioFile.AudioData.Length };
         Height = height;
         Length = length;
-        UpdatePoints();
+        PlotWaveform();
     }
 
     // Called when the node enters the scene tree for the first time.
@@ -126,18 +132,18 @@ public partial class Waveform : Line2D
 
     /// <summary>
     /// Generate <see cref="Line2D.Points"/>. This property belongs to a Godot default class, so the setter can't be modified.
-    /// So, unless another programming pattern can auto-update <see cref="Line2D.Points"/>, <see cref="UpdatePoints"/> must be manually called
+    /// So, unless another programming pattern can auto-update <see cref="Line2D.Points"/>, <see cref="PlotWaveform"/> must be manually called
     /// whenever something causes the waveform to change.
     /// </summary>
-    private void UpdatePoints()
+    private void PlotWaveform()
     {
         int sampleStart = AudioDataRange[0];
         int sampleEnd = AudioDataRange[1];
 
         int numberOfSamples = sampleEnd - sampleStart;
-        int samplesPerPixel = (numberOfSamples / (int)Length);
+        int samplesPerDataPoint = (numberOfSamples / (int)Length / DataPointsPerPixel);
 
-        float[] xValues = VectorTools.CreateLinearSpace(0, Length, (int)Length);
+        float[] xValues = VectorTools.CreateLinearSpace(0, Length, (int)Length * DataPointsPerPixel);
         float[] yValues = new float[xValues.Length];
 
         if (AudioFile == null)
@@ -148,18 +154,24 @@ public partial class Waveform : Line2D
 
         for (int i = 0; i < yValues.Length; i++)
         {
-            int sampleAtPixelStart = sampleStart + i * samplesPerPixel;
-            int sampleAtPixelEnd = sampleStart + (i+1) * samplesPerPixel;
+            int sampleAtRangeStart = sampleStart + i * samplesPerDataPoint;
+            int sampleAtRangeEnd = sampleStart + (i+1) * samplesPerDataPoint;
 
             //yValues[i] = AudioFile.AudioData[sampleStart + i * samplesPerPixel] * Height / 2;
 
             //float mean = AudioFile.AudioData[sampleAtPixelStart..sampleAtPixelEnd].Average();
             //yValues[i] = mean * Height / 2;
 
-            float max = AudioFile.AudioData[sampleAtPixelStart..sampleAtPixelEnd].Max();
-            float min = AudioFile.AudioData[sampleAtPixelStart..sampleAtPixelEnd].Min();
+            float max = AudioFile.AudioData[sampleAtRangeStart..sampleAtRangeEnd].Max();
+            float min = AudioFile.AudioData[sampleAtRangeStart..sampleAtRangeEnd].Min();
 
-            float pickedValue = Math.Abs(max) > Math.Abs(min) ? max : min;
+            float pickedValue = 0;
+            //pickedValue = Math.Abs(max) > Math.Abs(min) ? max : min;
+
+            if (DataPointsPerPixel > 1)
+            {
+                pickedValue = (i % 2 == 0) ? min : max;
+            }
 
             yValues[i] = pickedValue * Height / 2;
 
