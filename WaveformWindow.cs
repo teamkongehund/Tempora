@@ -8,6 +8,7 @@ using System.Collections.Generic;
 public partial class WaveformWindow : Control
 {
     [Signal] public delegate void SeekPlaybackTimeEventHandler(float playbackTime);
+	[Signal] public delegate void AddTimingPointEventHandler(float playbackTime);
 
     public Line2D Playhead;
 
@@ -93,11 +94,22 @@ public partial class WaveformWindow : Control
         {
             if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed)
             {
-				float x = mouseEvent.Position.X;
-				float clickedPlaybackTime = Waveform1.PixelPositionToPlaybackTime(x);
-				//GD.Print($"WaveformWindow was clicked at playback time {clickedPlaybackTime} seconds");
-				EmitSignal(nameof(SeekPlaybackTime), clickedPlaybackTime);
+                float x = mouseEvent.Position.X;
+                float clickedPlaybackTime = Waveform1.PixelPositionToPlaybackTime(x);
+                GD.Print($"WaveformWindow was clicked at playback time {clickedPlaybackTime} seconds");
+
+                if (Input.IsKeyPressed(Key.Alt))
+				{
+                    EmitSignal(nameof(SeekPlaybackTime), clickedPlaybackTime);
+                }
             }
+			if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick && !Input.IsKeyPressed(Key.Alt))
+			{
+                GD.Print($"WaveformWindow - User double clicked on {mouseEvent.Position}!");
+                float x = mouseEvent.Position.X;
+                float clickedPlaybackTime = Waveform1.PixelPositionToPlaybackTime(x);
+				EmitSignal(nameof(AddTimingPoint), clickedPlaybackTime);
+			}
         }
     }
 
@@ -114,6 +126,7 @@ public partial class WaveformWindow : Control
 			if (child is Waveform waveform)
 			{
 				waveform.Height = Size.Y;
+				waveform.Length = Size.X;
 				waveform.Position = new Vector2(0, Size.Y / 2);
                 waveform.TimeRange = new float[2] { startTime, endTime };
             }

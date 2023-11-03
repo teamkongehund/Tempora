@@ -34,8 +34,8 @@ public partial class Waveform : Line2D
         get
         {
             int totalSamples = AudioDataRange[1] - AudioDataRange[0];
-            float totalSeconds = totalSamples / AudioFile.SampleRate;
-            return Length / totalSeconds * 2;
+            float totalSeconds = (float)totalSamples / (float)AudioFile.SampleRate;
+            return Length / totalSeconds * 2f;
         }
     }
 

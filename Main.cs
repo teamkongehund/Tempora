@@ -7,11 +7,11 @@ public partial class Main : Control
 	AudioPlayer AudioPlayer;
 	WaveformWindow WaveformWindow;
 	AudioVisualsContainer AudioVisualsContainer;
+	Timing Timing;
 
-	//string AudioPath = "res://aaugh.mp3";
-    string AudioPath = "res://UMO.mp3";
+    string AudioPath = "res://Loop.mp3";
 
-	AudioFile AudioFile;
+    AudioFile AudioFile;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -19,6 +19,7 @@ public partial class Main : Control
 		PlayButton = GetNode<Button>("PlayButton");
 		AudioPlayer = GetNode<AudioPlayer>("AudioPlayer");
         AudioVisualsContainer = GetNode<AudioVisualsContainer>("AudioVisualsContainer");
+		Timing = GetNode<Timing>("Timing");
         //WaveformWindow = GetNode<WaveformWindow>("AudioVisualsContainer/WaveformWindow");
 
 		AudioFile = new AudioFile(AudioPath);
@@ -29,6 +30,7 @@ public partial class Main : Control
         AudioPlayer.LoadMp3();
 
 		AudioVisualsContainer.SeekPlaybackTime += OnPlaybackTimeClicked;
+		AudioVisualsContainer.AddTimingPoint += OnAddTimingPoint;
 		AudioVisualsContainer.AudioFile = AudioFile;
 		AudioVisualsContainer.CreateBlocks();
 
@@ -71,6 +73,7 @@ public partial class Main : Control
 				{
 					float x = waveform.PlaybackTimeToPixelPosition((float)playbackTime);
 					waveformWindow.Playhead.Position = new Vector2(x, 0.0f);
+					waveformWindow.Playhead.Visible = (x >= 0 && x <= waveformWindow.Size.X);
 				}
             }
         }
@@ -80,4 +83,11 @@ public partial class Main : Control
 	{
 		AudioPlayer.Seek(playbackTime);
 	}
+
+	public void OnAddTimingPoint(float playbackTime)
+	{
+		GD.Print($"Main: AddTimingPoint initiated");
+		Timing.AddTimingPoint(playbackTime);
+	}
+
 }

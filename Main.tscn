@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://crfob01mbcgre"]
+[gd_scene load_steps=5 format=3 uid="uid://crfob01mbcgre"]
 
 [ext_resource type="Script" path="res://Main.cs" id="1_t2kkt"]
 [ext_resource type="Script" path="res://AudioVisualsContainer.cs" id="3_7vuxd"]
 [ext_resource type="PackedScene" uid="uid://djvimmuyfu0pu" path="res://AudioPlayer.tscn" id="3_gyi28"]
+[ext_resource type="PackedScene" uid="uid://ctk24cncokqol" path="res://Timing.tscn" id="4_nh1xk"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -49,3 +50,5 @@ offset_left = 221.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("3_7vuxd")
+
+[node name="Timing" parent="." instance=ExtResource("4_nh1xk")]

@@ -66,11 +66,11 @@ public partial class AudioDataHandler : Node
         return AudioBytesToSamples(audioBytes);
     }
 
-    public static short[] Mp3ToAudioSamples(Byte[] wavFile)
+    public static short[] Mp3ToAudioSamples(Byte[] mp3File)
     {
         int sampleRate;
         int channels;
-        return Mp3ToAudioSamples(wavFile, out sampleRate, out channels);
+        return Mp3ToAudioSamples(mp3File, out sampleRate, out channels);
     }
 
     /// <summary>

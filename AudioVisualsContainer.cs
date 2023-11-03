@@ -10,8 +10,9 @@ public partial class AudioVisualsContainer : VBoxContainer
 	/// </summary>
 	/// <param name="playbackTime"></param>
     [Signal] public delegate void SeekPlaybackTimeEventHandler(float playbackTime);
+    [Signal] public delegate void AddTimingPointEventHandler(float playbackTime);
 
-	public float FirstBlockStartTime = 0;
+    public float FirstBlockStartTime = 0;
 
 	public AudioFile AudioFile;
 
@@ -21,7 +22,7 @@ public partial class AudioVisualsContainer : VBoxContainer
 		//CreateBlocks();
 	}
 
-	public float BlockDuration = 2;
+	public float BlockDuration = 2f;
 
     public void CreateBlocks()
 	{
@@ -50,20 +51,19 @@ public partial class AudioVisualsContainer : VBoxContainer
 			startTime += BlockDuration;
 
 			waveformWindow.SeekPlaybackTime += OnSeekPlaybackTime;
+			waveformWindow.AddTimingPoint += OnAddTimingPoint;
 
 			//GD.Print(waveformWindow.Size.Y);
 		}
-
-        // Last, re-generate the waveforms once the windows have gotten their sizes.
-        //foreach (WaveformWindow waveformWindow in children)
-		//{
-		//	waveformWindow.UpdateWaveform();
-		//}
-
     }
 
 	public void OnSeekPlaybackTime(float playbackTime)
 	{
         EmitSignal(nameof(SeekPlaybackTime), playbackTime);
+    }
+
+    public void OnAddTimingPoint(float playbackTime)
+    {
+        EmitSignal(nameof(AddTimingPoint), playbackTime);
     }
 }

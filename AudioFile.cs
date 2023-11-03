@@ -12,7 +12,12 @@ public partial class AudioFile : Node
     /// <summary>
     /// 1 = mono , 2 = stereo
     /// </summary>
-    public int Channels; 
+    public int Channels;
+
+    /// <summary>
+    /// Amount of seconds to offset any sample indices. Band-aid fix to compensate the discrepancy between audio playback and audio visualization.
+    /// </summary>
+    public float SampleIndexOffsetInSeconds = 0.025f;
 
     public AudioFile(string path)
     {
@@ -37,11 +42,12 @@ public partial class AudioFile : Node
 
     public int SecondsToSampleIndex(float seconds)
     {
-        int sampleIndex = (int)Math.Floor(seconds * SampleRate * Channels);
-        return Math.Clamp(sampleIndex, 0, AudioData.Length);
+        int sampleIndex = (int)Math.Floor((seconds + SampleIndexOffsetInSeconds) * SampleRate * Channels);
+        int sampleIndexClamped = Math.Clamp(sampleIndex, 0, AudioData.Length);
+        return sampleIndexClamped;
     }
 
-    public float SampleIndexToSeconds(int sampleIndex) => sampleIndex / (float)SampleRate / Channels;
+    public float SampleIndexToSeconds(int sampleIndex) => sampleIndex / (float)SampleRate / Channels - SampleIndexOffsetInSeconds;
 
     public float[] GetAudioDataSegment(int sampleStart,  int sampleStop)
     {

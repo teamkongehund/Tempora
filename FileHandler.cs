@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 // Autoload class to load and save files.
 public partial class FileHandler : Node
@@ -33,6 +34,8 @@ public partial class FileHandler : Node
     {
         var sound = new AudioStreamMP3();
         sound.Data = LoadFileAsBuffer(path);
+        //Byte[] buffer = LoadFileAsBuffer(path);
+        //GD.Print("Is (AudioStreamMp3.Data = LoadFileAsBuffer(path)) the same as (LoadFileAsBuffer(path))? " + (sound.Data.SequenceEqual<Byte>(buffer)));
         return sound;
     }
 
