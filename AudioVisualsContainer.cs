@@ -40,14 +40,12 @@ public partial class AudioVisualsContainer : VBoxContainer
 
 		foreach (WaveformWindow waveformWindow in children)
 		{
-			GD.Print(waveformWindow);
-
 			waveformWindow.AudioFile = AudioFile;
 
 			waveformWindow.SizeFlagsVertical = SizeFlags.ExpandFill;
 
-			waveformWindow.startTime = startTime;
-			waveformWindow.endTime = startTime + BlockDuration;
+			waveformWindow.StartTime = startTime;
+			waveformWindow.EndTime = startTime + BlockDuration;
 			startTime += BlockDuration;
 
 			waveformWindow.SeekPlaybackTime += OnSeekPlaybackTime;

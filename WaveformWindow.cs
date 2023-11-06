@@ -11,6 +11,7 @@ public partial class WaveformWindow : Control
 	[Signal] public delegate void AddTimingPointEventHandler(float playbackTime);
 
     public Line2D Playhead;
+	public Node GridFolder;
 
 	private AudioFile _audioFile;
 	public AudioFile AudioFile
@@ -19,18 +20,21 @@ public partial class WaveformWindow : Control
 		set
 		{
 			_audioFile = value;
-			UpdateWaveformAudioFiles();
+			//UpdateWaveformAudioFiles();
+			CreateWaveforms();
 		}
 	}
 	Waveform Waveform1;
+
+	public int MusicPositionStart;
 
 	/// <summary>
 	/// List of horizontally stacked waveforms to display
 	/// </summary>
     //public List<Waveform> Waveforms = new List<Waveform>();
 
-	public float startTime = 0;
-	public float endTime = 10;
+	public float StartTime = 0;
+	public float EndTime = 10;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -42,6 +46,8 @@ public partial class WaveformWindow : Control
 		//}
 		//GD.Print("Suh dude");
 
+		GridFolder = GetNode<Node>("GridFolder");
+
 		Playhead = GetNode<Line2D>("Playhead");
 		Playhead.Points = new Vector2[2]
 		{
@@ -50,13 +56,10 @@ public partial class WaveformWindow : Control
 		};
 		Playhead.Width = 2;
 		Playhead.ZIndex = 100;
-		//Playhead.Visible = false;
 
-		//AudioFile = new AudioFile(AudioPath);
+		//CreateWaveforms();
 
-		CreateWaveforms();
-
-		UpdateWaveformAudioFiles();
+		//UpdateWaveformAudioFiles();
 
 		Resized += OnResized;
     }
@@ -66,23 +69,19 @@ public partial class WaveformWindow : Control
 	{
 	}
 
-	public void UpdateWaveformAudioFiles()
-	{
-		foreach (var child in GetChildren()) 
-		{
-			if (child is Waveform waveform)
-			{
-				waveform.AudioFile = AudioFile;
-			}
-		}
-	}
-
 	public void CreateWaveforms()
 	{
-        Waveform1 = new Waveform(Size.X, Size.Y);
-		Waveform1.AudioFile = AudioFile;
+        foreach (var child in GetChildren())
+        {
+            if (child is Waveform waveform)
+            {
+                waveform.QueueFree();
+            }
+        }
+
+        Waveform1 = new Waveform(AudioFile, Size.X, Size.Y);
         Waveform1.Position = new Vector2(0, Size.Y / 2);
-        Waveform1.TimeRange = new float[2] { startTime, endTime };
+        Waveform1.TimeRange = new float[2] { StartTime, EndTime };
 
         AddChild(Waveform1);
         //Waveforms.Add(Waveform1);
@@ -128,9 +127,28 @@ public partial class WaveformWindow : Control
 				waveform.Height = Size.Y;
 				waveform.Length = Size.X;
 				waveform.Position = new Vector2(0, Size.Y / 2);
-                waveform.TimeRange = new float[2] { startTime, endTime };
+                waveform.TimeRange = new float[2] { StartTime, EndTime };
             }
 		}
+	}
+
+	public void UpdateGrid()
+	{
+		foreach (var child in GridFolder.GetChildren())
+		{
+			child.QueueFree();
+		}
+
+		int divisor = Settings.Instance.Divisor;
+
+		// Find TimingPoiont that defines this measure
+
+		// Based on TimingPoint.TimeSignature and divisor, calculate how many divisons we need, and what their spacing should be
+
+
+
+		// Create a Line2D object with appropriate color for each division.
+
 	}
 
 	public void OnResized()

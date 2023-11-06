@@ -9,7 +9,7 @@ public partial class Main : Control
 	AudioVisualsContainer AudioVisualsContainer;
 	Timing Timing;
 
-    string AudioPath = "res://Loop.mp3";
+    string AudioPath = "res://UMO.mp3";
 
     AudioFile AudioFile;
 
@@ -33,11 +33,6 @@ public partial class Main : Control
 		AudioVisualsContainer.AddTimingPoint += OnAddTimingPoint;
 		AudioVisualsContainer.AudioFile = AudioFile;
 		AudioVisualsContainer.CreateBlocks();
-
-		//foreach (WaveformWindow waveformWindow in AudioVisualsContainer.GetChildren())
-		//{
-		//	GD.Print(waveformWindow.Size.Y);
-		//}
 
         //WaveformWindow.AudioFile = AudioFile;
 		//WaveformWindow.SeekPlaybackTime += OnPlaybackTimeClicked;

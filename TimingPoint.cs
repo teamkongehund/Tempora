@@ -9,6 +9,9 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
 
 	public float Time;
 
+	/// <summary>
+	/// The tempo from this timing point until the next. The value is proportional to BPM if the time signature doesn't change.
+	/// </summary>
 	public float MeasuresPerSecond = 0.5f;
 
 	public float BPM
@@ -20,16 +23,23 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
 		private set { }
 	}
 
-	private float _musicPosition;
-	public float MusicPosition
+	private float? _musicPosition;
+	public float? MusicPosition
 	{
-		get { return _musicPosition; }
+		get 
+		{ 
+			if (_musicPosition == null) 
+			{
+				throw new Exception("MusicPosition.get -> MusicPosition was null");	
+			}
+			return _musicPosition; 
+		}
 		set
 		{
 			if (_musicPosition != value)
 			{
 				_musicPosition = value;
-				EmitSignal(nameof(TimingPointChanged), this);
+				EmitSignal(nameof(TimingPointChanged), this); // Should happen when user drags timing point to new position
 			}
 		}
 	}
