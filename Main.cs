@@ -8,8 +8,9 @@ public partial class Main : Control
 	WaveformWindow WaveformWindow;
 	AudioVisualsContainer AudioVisualsContainer;
 	Timing Timing;
+	Button NudgeButton;
 
-    string AudioPath = "res://Loop.mp3";
+    string AudioPath = "res://UMO.mp3";
 
     AudioFile AudioFile;
 
@@ -20,6 +21,7 @@ public partial class Main : Control
 		AudioPlayer = GetNode<AudioPlayer>("AudioPlayer");
         AudioVisualsContainer = GetNode<AudioVisualsContainer>("AudioVisualsContainer");
 		Timing = GetNode<Timing>("Timing");
+		NudgeButton = GetNode<Button>("NudgeButton");
         //WaveformWindow = GetNode<WaveformWindow>("AudioVisualsContainer/WaveformWindow");
 
 		AudioFile = new AudioFile(AudioPath);
@@ -34,14 +36,13 @@ public partial class Main : Control
 		AudioVisualsContainer.AudioFile = AudioFile;
 		AudioVisualsContainer.CreateBlocks();
 
-		//foreach (WaveformWindow waveformWindow in AudioVisualsContainer.GetChildren())
-		//{
-		//	GD.Print(waveformWindow.Size.Y);
-		//}
-
-        //WaveformWindow.AudioFile = AudioFile;
-		//WaveformWindow.SeekPlaybackTime += OnPlaybackTimeClicked;
+		NudgeButton.Pressed += Nudge;
 	}
+
+	public void Nudge()
+	{
+        Timing.TimingPoints[1].MusicPosition += 0.25f;
+    }
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)

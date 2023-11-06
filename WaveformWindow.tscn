@@ -14,3 +14,5 @@ script = ExtResource("1_546h3")
 [node name="Playhead" type="Line2D" parent="."]
 width = 2.0
 default_color = Color(0.270588, 1, 0.921569, 1)
+
+[node name="GridFolder" type="Node" parent="."]
