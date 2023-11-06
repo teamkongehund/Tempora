@@ -37,6 +37,7 @@ public partial class Main : Control
 		AudioVisualsContainer.CreateBlocks();
 
 		NudgeButton.Pressed += Nudge;
+
 	}
 
 	public void Nudge()

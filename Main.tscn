@@ -54,6 +54,7 @@ script = ExtResource("3_7vuxd")
 [node name="Timing" parent="." instance=ExtResource("4_nh1xk")]
 
 [node name="NudgeButton" type="Button" parent="."]
+layout_mode = 0
 offset_left = 26.0
 offset_top = 139.0
 offset_right = 197.0
