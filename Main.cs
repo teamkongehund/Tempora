@@ -10,7 +10,7 @@ public partial class Main : Control
 	Timing Timing;
 	Button NudgeButton;
 
-    string AudioPath = "res://UMO.mp3";
+    string AudioPath = "res://Loop.mp3";
 
     AudioFile AudioFile;
 
@@ -36,12 +36,15 @@ public partial class Main : Control
 		AudioVisualsContainer.AudioFile = AudioFile;
 		AudioVisualsContainer.CreateBlocks();
 
+		Timing.TimingChanged += OnTimingChanged;
+
 		NudgeButton.Pressed += Nudge;
 
 	}
 
 	public void Nudge()
 	{
+        GD.Print($"{Time.GetTicksMsec() / 1e3} - Nudge Button Pressed!");
         Timing.TimingPoints[1].MusicPosition += 0.25f;
     }
 
@@ -84,6 +87,15 @@ public partial class Main : Control
 	public void OnPlaybackTimeClicked(float playbackTime)
 	{
 		AudioPlayer.Seek(playbackTime);
+	}
+
+	public void OnTimingChanged()
+	{
+		AudioVisualsContainer.UpdateWaveforms();
+
+		// TODO: Add update for timing points once those have a visual representation
+
+		return;
 	}
 
 	public void OnAddTimingPoint(float playbackTime)

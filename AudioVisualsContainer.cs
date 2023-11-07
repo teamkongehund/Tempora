@@ -19,13 +19,19 @@ public partial class AudioVisualsContainer : VBoxContainer
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{
-		//CreateBlocks();
-	}
+		NumberOfBlocks = Settings.Instance.NumberOfBlocks;
+        //	CreateBlocks();
+    }
 
 	public float BlockDuration = 2f;
 
     public void CreateBlocks()
 	{
+		foreach (var child in GetChildren())
+		{
+			child.QueueFree();
+		}
+
 		float startTime = FirstBlockStartTime;
 		var packedWaveformWindow = ResourceLoader.Load<PackedScene>("res://WaveformWindow.tscn");
 
@@ -38,15 +44,20 @@ public partial class AudioVisualsContainer : VBoxContainer
 
 		var children = GetChildren();
 
+		int musicPositionStart = 0;
+
 		foreach (WaveformWindow waveformWindow in children)
 		{
 			waveformWindow.AudioFile = AudioFile;
 
 			waveformWindow.SizeFlagsVertical = SizeFlags.ExpandFill;
 
-			waveformWindow.StartTime = startTime;
-			waveformWindow.EndTime = startTime + BlockDuration;
-			startTime += BlockDuration;
+			//waveformWindow.StartTime = startTime;
+			//waveformWindow.EndTime = startTime + BlockDuration;
+			//startTime += BlockDuration;
+
+			waveformWindow.MusicPositionStart = musicPositionStart;
+			musicPositionStart++;
 
 			waveformWindow.SeekPlaybackTime += OnSeekPlaybackTime;
 			waveformWindow.AddTimingPoint += OnAddTimingPoint;
@@ -54,6 +65,14 @@ public partial class AudioVisualsContainer : VBoxContainer
 			//GD.Print(waveformWindow.Size.Y);
 		}
     }
+
+	public void UpdateWaveforms()
+	{
+		foreach(WaveformWindow window in GetChildren())
+		{
+			window.RenderWaveforms();
+		}
+	}
 
 	public void OnSeekPlaybackTime(float playbackTime)
 	{

@@ -37,19 +37,19 @@ public partial class Timing : Node
 	/// <summary>
 	/// Add a timing point at a given time, which is 
 	/// </summary>
-	/// <param name="Time"></param>
-	public void AddTimingPoint(float Time)
+	/// <param name="time"></param>
+	public void AddTimingPoint(float time)
 	{
 		TimingPoint timingPoint = new TimingPoint() 
 		{ 
-			Time = Time 
+			Time = time 
 		};
 		TimingPoints.Add(timingPoint);
 		AddChild(timingPoint);
 
         TimingPoints.Sort();
 
-		int index = TimingPoints.FindIndex(i => i == timingPoint);
+		int index = TimingPoints.FindIndex(point => point == timingPoint);
 		
 		// Update MusicPosition based on previous Timing Point
 		if (index >= 1) 
@@ -66,7 +66,8 @@ public partial class Timing : Node
             TimingPoint nextTimingPoint = TimingPoints.Count > 1 ? TimingPoints[index + 1] : null;
 			if (nextTimingPoint == null) 
 			{
-				// Set MusicPosition based on default timing
+				// Set MusicPosition based on default timing (120 BPM = 0.5 MPS from Time = 0)
+				timingPoint.MusicPosition = 0.5f * time;
 			}
 			else
 			{
@@ -82,7 +83,8 @@ public partial class Timing : Node
 		GD.Print("Current Timing points:");
 		foreach (TimingPoint child in TimingPoints)
 		{
-			GD.Print("Time " + child.Time + " , MusicPosition " + child.MusicPosition);
+			//GD.Print("Time " + child.Time + " , MusicPosition " + child.MusicPosition);
+			GD.Print($"Time {child.Time}, Music Position {child.MusicPosition}, BPM {child.BPM}");
 		}
     }
 
@@ -90,10 +92,14 @@ public partial class Timing : Node
 	{
         int index = TimingPoints.FindIndex(i => i == timingPoint);
 
+		GD.Print($"{Time.GetTicksMsec() / 1e3} - Now updating MPS!");
+
         UpdateMPSBasedOnNextTimingPoint(index-1);
         UpdateMPSBasedOnNextTimingPoint(index);
 
-		EmitSignal(nameof(TimingChanged));
+        GD.Print($"{Time.GetTicksMsec() / 1e3} - Done updating MPS!");
+
+        EmitSignal(nameof(TimingChanged));
     }
 
 	/// <summary>
@@ -110,7 +116,7 @@ public partial class Timing : Node
         // If the next index doesn't exist, but there's a previous timing point, continue the MPS from previous timing point.
         else if (index+1 >= TimingPoints.Count && index - 1 >= 0 && index < TimingPoints.Count)
         {
-            TimingPoints[index - 1].MeasuresPerSecond = TimingPoints[index - 2].MeasuresPerSecond;
+            TimingPoints[index].MeasuresPerSecond = TimingPoints[index - 1].MeasuresPerSecond;
             return;
         }
 
