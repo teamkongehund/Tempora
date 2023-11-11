@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://Main.cs" id="1_t2kkt"]
 [ext_resource type="Script" path="res://AudioVisualsContainer.cs" id="3_7vuxd"]
 [ext_resource type="PackedScene" uid="uid://djvimmuyfu0pu" path="res://AudioPlayer.tscn" id="3_gyi28"]
-[ext_resource type="PackedScene" uid="uid://ctk24cncokqol" path="res://Timing.tscn" id="4_nh1xk"]
+[ext_resource type="PackedScene" uid="uid://bnbif04ymgk1h" path="res://Metronome.tscn" id="5_fbm2c"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -31,6 +31,14 @@ offset_right = 197.0
 offset_bottom = 100.0
 text = "Play"
 
+[node name="StopButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 119.0
+offset_right = 198.0
+offset_bottom = 202.0
+text = "Stop"
+
 [node name="ShowHide" type="Button" parent="."]
 visible = false
 layout_mode = 0
@@ -51,14 +59,28 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("3_7vuxd")
 
-[node name="Timing" parent="." instance=ExtResource("4_nh1xk")]
-
-[node name="NudgeButton" type="Button" parent="."]
+[node name="IndexField" type="TextEdit" parent="."]
 layout_mode = 0
-offset_left = 26.0
-offset_top = 139.0
-offset_right = 197.0
-offset_bottom = 229.0
-text = "Nudge 
-2nd Timing Point
- +0.25 Measure"
+offset_left = 28.0
+offset_top = 321.0
+offset_right = 91.0
+offset_bottom = 355.0
+placeholder_text = "Index"
+
+[node name="PositionField" type="TextEdit" parent="."]
+layout_mode = 0
+offset_left = 108.0
+offset_top = 320.0
+offset_right = 190.0
+offset_bottom = 354.0
+placeholder_text = "Position"
+
+[node name="MoveButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 368.0
+offset_right = 189.0
+offset_bottom = 411.0
+text = "Move"
+
+[node name="Metronome" parent="." instance=ExtResource("5_fbm2c")]

@@ -12,26 +12,40 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
 	/// <summary>
 	/// The tempo from this timing point until the next. The value is proportional to BPM if the time signature doesn't change.
 	/// </summary>
-	public float MeasuresPerSecond = 0.5f;
+	private float _measuresPerSecond = 0.5f;
+	public float MeasuresPerSecond
+    {
+        get => _measuresPerSecond;
+        set
+        {
+			if (_measuresPerSecond != value)
+			{
+				_measuresPerSecond = value;
+				BPM_Update();
+			}
+        }
+    }
 
-	public float BPM
-	{
+	private float _bpm;
+    public float BPM
+    {
 		get
 		{
-			return MeasuresPerSecond * 60 * (TimeSignature[0] * 4f/TimeSignature[1]);
+            if (_bpm == 0) BPM_Update(); 
+			return _bpm;
 		}
-		private set { }
-	}
+        private set { }
+    }
+    public void BPM_Update()
+	{
+		_bpm = MeasuresPerSecond * 60 * (TimeSignature[0] * 4f / TimeSignature[1]);
+    }
 
 	private float? _musicPosition;
 	public float? MusicPosition
 	{
 		get 
 		{ 
-			if (_musicPosition == null) 
-			{
-				throw new Exception("MusicPosition.get -> MusicPosition was null");	
-			}
 			return _musicPosition; 
 		}
 		set

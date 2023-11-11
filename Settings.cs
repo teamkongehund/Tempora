@@ -16,7 +16,7 @@ public partial class Settings : Node
 	/// </summary>
 	public float OverlapMargin = 0.1f;
 
-	public int NumberOfBlocks = 10;
+	public int NumberOfBlocks = 12;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()

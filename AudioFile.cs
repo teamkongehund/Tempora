@@ -43,8 +43,8 @@ public partial class AudioFile : Node
     public int SecondsToSampleIndex(float seconds)
     {
         int sampleIndex = (int)Math.Floor((seconds + SampleIndexOffsetInSeconds) * SampleRate * Channels);
-        int sampleIndexClamped = Math.Clamp(sampleIndex, 0, AudioData.Length);
-        return sampleIndexClamped;
+        //int sampleIndexClamped = Math.Clamp(sampleIndex, 0, AudioData.Length);
+        return sampleIndex;
     }
 
     public float SampleIndexToSeconds(int sampleIndex) => sampleIndex / (float)SampleRate / Channels - SampleIndexOffsetInSeconds;

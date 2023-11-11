@@ -17,6 +17,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+Signals="*res://Signals.tscn"
 Timing="*res://Timing.tscn"
 Settings="*res://Settings.tscn"
 

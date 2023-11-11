@@ -4,103 +4,132 @@ using System;
 public partial class Main : Control
 {
 	Button PlayButton;
-	AudioPlayer AudioPlayer;
+    Button StopButton;
+    Button MoveButton;
+	
+	TextEdit IndexField;
+	TextEdit PositionField;
+	
 	WaveformWindow WaveformWindow;
+	
 	AudioVisualsContainer AudioVisualsContainer;
+	
+	AudioPlayer AudioPlayer;
+	
 	Timing Timing;
-	Button NudgeButton;
-
-    string AudioPath = "res://Loop.mp3";
 
     AudioFile AudioFile;
+
+	Metronome Metronome;
+    
+	string AudioPath = "res://UMO.mp3";
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{
 		PlayButton = GetNode<Button>("PlayButton");
-		AudioPlayer = GetNode<AudioPlayer>("AudioPlayer");
+        StopButton = GetNode<Button>("StopButton");
+        AudioPlayer = GetNode<AudioPlayer>("AudioPlayer");
         AudioVisualsContainer = GetNode<AudioVisualsContainer>("AudioVisualsContainer");
-		Timing = GetNode<Timing>("Timing");
-		NudgeButton = GetNode<Button>("NudgeButton");
-        //WaveformWindow = GetNode<WaveformWindow>("AudioVisualsContainer/WaveformWindow");
+		//Timing = GetNode<Timing>("Timing");
+		Timing = Timing.Instance;
+		MoveButton = GetNode<Button>("MoveButton");
+		IndexField = GetNode<TextEdit>("IndexField");
+        PositionField = GetNode<TextEdit>("PositionField");
+		Metronome = GetNode<Metronome>("Metronome");
 
-		AudioFile = new AudioFile(AudioPath);
-
+        AudioFile = new AudioFile(AudioPath);
+		
 		PlayButton.Pressed += Play;
+		StopButton.Pressed += Stop;
 
 		AudioPlayer.AudioFile = AudioFile;
         AudioPlayer.LoadMp3();
 
 		AudioVisualsContainer.SeekPlaybackTime += OnPlaybackTimeClicked;
-		AudioVisualsContainer.AddTimingPoint += OnAddTimingPoint;
+		AudioVisualsContainer.DoubleClicked += OnDoubleClick;
 		AudioVisualsContainer.AudioFile = AudioFile;
 		AudioVisualsContainer.CreateBlocks();
 
-		Timing.TimingChanged += OnTimingChanged;
+		//Timing.TimingChanged += OnTimingChanged;
 
-		NudgeButton.Pressed += Nudge;
+		MoveButton.Pressed += OnMoveButtonPressed;
 
-	}
+		UpdatePlayHeads();
 
-	public void Nudge()
-	{
-        GD.Print($"{Time.GetTicksMsec() / 1e3} - Nudge Button Pressed!");
-        Timing.TimingPoints[1].MusicPosition += 0.25f;
     }
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
+    public override void _GuiInput(InputEvent @event)
+    {
+		if (@event is InputEventMouseButton mouseEvent)
+		{
+			if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased())
+			{
+				// Ensure a mouse release is always captured.
+				GD.Print("Main: MouseLeftReleased");
+				Signals.Instance.EmitSignal("MouseLeftReleased");
+			}
+		}
+    }
+
+    public void OnMoveButtonPressed()
 	{
-		UpdatePlayHeads();
-	}
+		int index = Int32.Parse(IndexField.Text);
+        float position = float.Parse(PositionField.Text);
+
+		TimingPoint timingPoint = Timing.TimingPoints[index];
+
+		timingPoint.MusicPosition = position;
+    }
+
+    // Called every frame. 'delta' is the elapsed time since the previous frame.
+    public override void _Process(double delta)
+	{
+		if (AudioPlayer.Playing)
+		{
+			UpdatePlayHeads();
+			UpdateMetronome();
+		}
+    }
 
 	public void Play()
 	{
-        foreach (WaveformWindow waveformWindow in AudioVisualsContainer.GetChildren())
-        {
-            GD.Print(waveformWindow.Size.Y);
-        }
         AudioPlayer.Play();
 	}
+
+	public void Stop()
+	{
+		AudioPlayer.Stop();
+		UpdatePlayHeads();
+    }
 
 	public void UpdatePlayHeads()
 	{
 		double playbackTime = AudioPlayer.GetPlaybackTime();
-		//float x = WaveformWindow.Waveforms[0].PlaybackTimeToPixelPosition((float)playbackTime);
-		//WaveformWindow.Playhead.Position = new Vector2 (x, 0.0f);
-
-		// Iterate through AudioVisualsContainer children and update Playheads
+		float musicPosition = Timing.TimeToMusicPosition((float)playbackTime);
 		foreach (WaveformWindow waveformWindow in AudioVisualsContainer.GetChildren())
 		{
-			foreach (var child in waveformWindow.GetChildren())
-			{
-				if (child is Waveform waveform)
-				{
-					float x = waveform.PlaybackTimeToPixelPosition((float)playbackTime);
-					waveformWindow.Playhead.Position = new Vector2(x, 0.0f);
-					waveformWindow.Playhead.Visible = (x >= 0 && x <= waveformWindow.Size.X);
-				}
-            }
+			float x = waveformWindow.MusicPositionToXPosition(musicPosition);
+            waveformWindow.Playhead.Position = new Vector2(x, 0.0f);
+            waveformWindow.Playhead.Visible = (x >= 0 && x <= waveformWindow.Size.X);
         }
 	}
 
+	public void UpdateMetronome()
+	{
+		double playbackTime = AudioPlayer.GetPlaybackTime();
+        float musicPosition = Timing.TimeToMusicPosition((float)playbackTime);
+		Metronome.Click(musicPosition);
+    }
+
 	public void OnPlaybackTimeClicked(float playbackTime)
 	{
+		if (!AudioPlayer.Playing) { Play(); }
 		AudioPlayer.Seek(playbackTime);
 	}
 
-	public void OnTimingChanged()
+	public void OnDoubleClick(float playbackTime)
 	{
-		AudioVisualsContainer.UpdateWaveforms();
-
-		// TODO: Add update for timing points once those have a visual representation
-
-		return;
-	}
-
-	public void OnAddTimingPoint(float playbackTime)
-	{
-		GD.Print($"Main: AddTimingPoint initiated");
 		Timing.AddTimingPoint(playbackTime);
 	}
 

@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://b8325rmwu4cpb"]
+
+[ext_resource type="Script" path="res://VisualTimingPoint.cs" id="1_es6qk"]
+[ext_resource type="Texture2D" uid="uid://cpvdv75skegy3" path="res://icon.svg" id="2_5aykg"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rj6no"]
+size = Vector2(128, 128)
+
+[node name="VisualTimingPoint" type="Node2D"]
+script = ExtResource("1_es6qk")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_5aykg")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_rj6no")

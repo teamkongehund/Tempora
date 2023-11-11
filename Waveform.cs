@@ -7,6 +7,8 @@ using System.Linq;
 /// </summary>
 public partial class Waveform : Line2D
 {
+    #region Properties
+
     private float _length = 400;
     public float Length
     {
@@ -14,7 +16,7 @@ public partial class Waveform : Line2D
         set
         {
             _length = value;
-            PlotWaveform();
+            if (!IsInitializing) PlotWaveform();
         }
     }
 
@@ -25,7 +27,7 @@ public partial class Waveform : Line2D
         set
         {
             _height = value;
-            PlotWaveform();
+            if (!IsInitializing) PlotWaveform();
         }
     }
 
@@ -46,7 +48,7 @@ public partial class Waveform : Line2D
         set
         {
             _audioFile = value;
-            PlotWaveform();
+            if (!IsInitializing) PlotWaveform();
         }
     }
 
@@ -54,7 +56,7 @@ public partial class Waveform : Line2D
     /// Instead of putting one data point in the plot arrays, a larger number may show a better waveform.
     /// Even numbers should be used, as the plotter alternates between mix and max for each data point
     /// </summary>
-    public int DataPointsPerPixel = 4;
+    public int DataPointsPerPixel = 2;
 
     public bool ShouldDisplayWholeFile = true;
 
@@ -97,20 +99,27 @@ public partial class Waveform : Line2D
         {
             _timeRange = value;
             ShouldDisplayWholeFile = false;
-            PlotWaveform();
+            if (!IsInitializing) PlotWaveform();
         }
     }
+
+    private bool IsInitializing = true;
+
+    #endregion
+    #region Initialization
 
     public Waveform(float length, float height)
     {
         Height = height;
         Length = length;
+        IsInitializing = false;
     }
 
     public Waveform(AudioFile audioFile)
     {
         AudioFile = audioFile;
         AudioDataRange = new int[] { 0, AudioFile.AudioData.Length };
+        IsInitializing = false;
         PlotWaveform();
     }
 
@@ -120,13 +129,26 @@ public partial class Waveform : Line2D
         AudioDataRange = new int[] { 0, AudioFile.AudioData.Length };
         Height = height;
         Length = length;
+        IsInitializing = false;
         PlotWaveform();
     }
 
+    public Waveform(AudioFile audioFile, float length, float height, float[] timeRange)
+    {
+        AudioFile = audioFile;
+        AudioDataRange = new int[] { 0, AudioFile.AudioData.Length };
+        Height = height;
+        Length = length;
+        TimeRange = timeRange;
+        IsInitializing = false;
+        PlotWaveform();
+    }
+
+    #endregion
+    #region Methods
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{
-        //if (AudioDataRange[1] == 0) AudioDataRange[1] = AudioFile.AudioData.Length;
         Width = 1;
 	}
 
@@ -137,11 +159,15 @@ public partial class Waveform : Line2D
     /// </summary>
     private void PlotWaveform()
     {
+        // TODO: Fix inability to plot non-audio (try moving a timing point to the right in beginning of audio file versus to the left)
+
+        //GD.Print($"Waveform - PlotWaveform() called!");
+
         int sampleStart = AudioDataRange[0];
         int sampleEnd = AudioDataRange[1];
 
         int numberOfSamples = sampleEnd - sampleStart;
-        int samplesPerDataPoint = (numberOfSamples / (int)Length / DataPointsPerPixel);
+        float samplesPerDataPoint = ((float)numberOfSamples / Length / DataPointsPerPixel);
 
         float[] xValues = VectorTools.CreateLinearSpace(0, Length, (int)Length * DataPointsPerPixel);
         float[] yValues = new float[xValues.Length];
@@ -152,28 +178,32 @@ public partial class Waveform : Line2D
             return;
         }
 
-        for (int i = 0; i < yValues.Length; i++)
+        for (int dataPointIndex = 0; dataPointIndex < yValues.Length; dataPointIndex++)
         {
-            int sampleAtRangeStart = sampleStart + i * samplesPerDataPoint;
-            int sampleAtRangeEnd = sampleStart + (i+1) * samplesPerDataPoint;
-
-            //yValues[i] = AudioFile.AudioData[sampleStart + i * samplesPerPixel] * Height / 2;
-
-            //float mean = AudioFile.AudioData[sampleAtPixelStart..sampleAtPixelEnd].Average();
-            //yValues[i] = mean * Height / 2;
-
-            float max = AudioFile.AudioData[sampleAtRangeStart..sampleAtRangeEnd].Max();
-            float min = AudioFile.AudioData[sampleAtRangeStart..sampleAtRangeEnd].Min();
+            int sampleAtDataPointStart = (int)(sampleStart + dataPointIndex * samplesPerDataPoint);
+            int sampleAtDataPointEnd = (int)(sampleStart + (dataPointIndex+1) * samplesPerDataPoint);
 
             float pickedValue = 0;
-            //pickedValue = Math.Abs(max) > Math.Abs(min) ? max : min;
 
-            if (DataPointsPerPixel > 1)
+            // Check if any sample value is negative - if so, the pickedvalue = 0
+            // make sure not to clamp values when you get the AudioDataRange
+
+            if (sampleAtDataPointStart < 0 || sampleAtDataPointEnd < 0) 
+                pickedValue = 0;
+            else if (sampleAtDataPointEnd - sampleAtDataPointStart == 0) 
+                pickedValue = AudioFile.AudioData[sampleAtDataPointStart];
+            else
             {
-                pickedValue = (i % 2 == 0) ? min : max;
+                float max = AudioFile.AudioData[sampleAtDataPointStart..sampleAtDataPointEnd].Max();
+                float min = AudioFile.AudioData[sampleAtDataPointStart..sampleAtDataPointEnd].Min();
+
+                if (DataPointsPerPixel > 1)
+                    pickedValue = (dataPointIndex % 2 == 0) ? min : max; // Alternate to capture as much data as possible
+                else
+                    pickedValue = AudioFile.AudioData[sampleAtDataPointStart..sampleAtDataPointEnd].Average();
             }
 
-            yValues[i] = pickedValue * Height / 2;
+            yValues[dataPointIndex] = pickedValue * Height / 2;
 
         }
         
@@ -190,10 +220,11 @@ public partial class Waveform : Line2D
         return pixelPosition;
     }
 
-    public float PixelPositionToPlaybackTime(float pixelPosition)
-    {
-        float playbackTime = pixelPosition / PixelsPerSecond + TimeRange[0];
+    //public float PixelPositionToPlaybackTime(float pixelPosition)
+    //{
+    //    float playbackTime = pixelPosition / PixelsPerSecond + TimeRange[0];
 
-        return playbackTime;
-    }
+    //    return playbackTime;
+    //}
+    #endregion
 }

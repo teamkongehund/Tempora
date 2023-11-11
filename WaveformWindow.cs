@@ -7,8 +7,10 @@ using System.Collections.Generic;
 /// </summary>
 public partial class WaveformWindow : Control
 {
+    #region Properties & Signals
+
     [Signal] public delegate void SeekPlaybackTimeEventHandler(float playbackTime);
-	[Signal] public delegate void AddTimingPointEventHandler(float playbackTime);
+	[Signal] public delegate void DoubleClickedEventHandler(float playbackTime);
 
     public Line2D Playhead;
 	public Node GridFolder;
@@ -21,151 +23,58 @@ public partial class WaveformWindow : Control
 		{
 			_audioFile = value;
 			//UpdateWaveformAudioFiles();
-			RenderWaveforms();
-		}
+			CreateWaveforms();
+            RenderTimingPoints();
+        }
 	}
 	Waveform Waveform1;
 
 	private int _musicPositionStart;
-	public int MusicPositionStart
+	public int MusicPositionStartForWindow
 	{
 		get => _musicPositionStart;
 		set
 		{
 			_musicPositionStart = value;
-			RenderWaveforms();
-		}
+			CreateWaveforms();
+            RenderTimingPoints();
+        }
 	}
 
 	/// <summary>
 	/// List of horizontally stacked waveforms to display
 	/// </summary>
-    //public List<Waveform> Waveforms = new List<Waveform>();
+	//public List<Waveform> Waveforms = new List<Waveform>();
 
 	//public float StartTime = 0;
 	//public float EndTime = 10;
 
-	Timing Timing = Timing.Instance;
+	Timing Timing;
+
+	public int FirstTimingPointIndex;
+	public int LastTimingPointIndex;
+    #endregion
+    #region Godot
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{
-		//var children = GetChildren();
-		//foreach (var child in children)
-		//{
-		//	GD.Print(child);
-		//}
-		//GD.Print("Suh dude");
-
 		GridFolder = GetNode<Node>("GridFolder");
+
+		Timing = Timing.Instance;
 
 		Playhead = GetNode<Line2D>("Playhead");
         Playhead.Width = 2;
 		Playhead.ZIndex = 100;
 		UpdatePlayheadScaling();
 
-		//CreateWaveforms();
-
-		//UpdateWaveformAudioFiles();
-
 		Resized += OnResized;
+
+		Signals.Instance.TimingChanged += UpdateTimingPointsIndices;
+		Signals.Instance.TimingChanged += CreateWaveforms;
+        //Signals.Instance.TimingChanged += RenderOldTimingPoints;
+        Signals.Instance.TimingChanged += RenderTimingPoints;
     }
-
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-	}
-
-	public void RenderWaveforms()
-	{
-		GD.Print($"{Time.GetTicksMsec()/1e3} - Now rendering waveforms!");
-
-        foreach (var child in GetChildren())
-        {
-            if (child is Waveform waveform)
-            {
-                waveform.QueueFree();
-            }
-        }
-
-		// Old algorithm with single waveform:
-        //Waveform1 = new Waveform(AudioFile, Size.X, Size.Y);
-        //Waveform1.Position = new Vector2(0, Size.Y / 2);
-        //Waveform1.TimeRange = new float[2] { StartTime, EndTime };
-
-        //AddChild(Waveform1);
-
-
-
-		// New algorithm with multiple waveforms:
-
-		if (Timing.TimingPoints.Count == 0)
-		{
-			float startTime = (float)MusicPositionStart / 0.5f;
-			float endTime = (float)(MusicPositionStart+1) / 0.5f;
-
-            Waveform1 = new Waveform(AudioFile, Size.X, Size.Y);
-            Waveform1.Position = new Vector2(0, Size.Y / 2);
-            Waveform1.TimeRange = new float[2] { startTime, endTime };
-
-            AddChild(Waveform1);
-
-			GD.Print($"There were no timing points... Using MusicPositionStart {MusicPositionStart} to set start and end times.");
-
-			return;
-        }
-
-		int indexForFirstTimingPointToUse = Timing.TimingPoints.FindLastIndex(point => point.MusicPosition <= MusicPositionStart);
-
-		if (indexForFirstTimingPointToUse == -1) // If there's only TimingPoints AFTER MusicPositionStart
-		{
-            indexForFirstTimingPointToUse = Timing.TimingPoints.FindIndex(point => point.MusicPosition > MusicPositionStart);
-			
-			//float startTime = (float)MusicPositionStart / Timing.TimingPoints[indexForFirstTimingPointToUse].MeasuresPerSecond;
-			//float endTime = (float)(MusicPositionStart+1) / Timing.TimingPoints[indexForFirstTimingPointToUse].MeasuresPerSecond;
-        }
-
-		int indexForLastTimingPointToUse = Timing.TimingPoints.FindLastIndex(point => point.MusicPosition < MusicPositionStart+1);
-		if (indexForLastTimingPointToUse == -1) indexForLastTimingPointToUse = indexForFirstTimingPointToUse;
-
-		//GD.Print($"Rendering waveforms - Using TimingPoints indices {indexForFirstTimingPointToUse} .. {indexForLastTimingPointToUse}");
-
-		TimingPoint firstTimingPoint = Timing.TimingPoints[indexForFirstTimingPointToUse];
-        TimingPoint lastTimingPoint = Timing.TimingPoints[indexForLastTimingPointToUse];
-
-        float timeWhereWindowBegins = firstTimingPoint.Time + (MusicPositionStart - (float)firstTimingPoint.MusicPosition) / firstTimingPoint.MeasuresPerSecond;
-		float timeWhereWindowEnds = lastTimingPoint.Time + (MusicPositionStart + 1 - (float)lastTimingPoint.MusicPosition) / lastTimingPoint.MeasuresPerSecond;
-
-		// Create each waveform segment
-        for (int i = indexForFirstTimingPointToUse; i < indexForLastTimingPointToUse+1; i++) 
-		{
-			//GD.Print($"Now rendering waveform for index {i}");
-			TimingPoint timingPoint = Timing.TimingPoints[i];
-
-			float startTime = (i == indexForFirstTimingPointToUse)
-				? timeWhereWindowBegins
-                : (float)timingPoint.Time;
-
-			float endTime = (i == indexForLastTimingPointToUse)
-				? timeWhereWindowEnds
-                : (float)Timing.TimingPoints[i+1].Time;
-
-			float length = Size.X * (endTime - startTime) / (timeWhereWindowEnds - timeWhereWindowBegins);
-			float xPosition = Size.X * (startTime - timeWhereWindowBegins) / (timeWhereWindowEnds - timeWhereWindowBegins);
-
-			Waveform waveform = new Waveform(AudioFile, length, Size.Y);
-            waveform.Position = new Vector2(xPosition, Size.Y / 2);
-            waveform.TimeRange = new float[2] { startTime, endTime };
-			
-			// TODO: Make random colors so it's easy to see what's going on.
-			//waveform.DefaultColor = new Color()
-            AddChild(waveform);
-        }
-
-		GD.Print($"{Time.GetTicksMsec()/1e3} - Done rendering waveforms!");
-
-	}
-
     public override void _GuiInput(InputEvent @event)
     {
         if (@event is InputEventMouseButton mouseEvent)
@@ -173,37 +82,197 @@ public partial class WaveformWindow : Control
             if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed)
             {
                 float x = mouseEvent.Position.X;
-                float clickedPlaybackTime = Waveform1.PixelPositionToPlaybackTime(x);
-                GD.Print($"WaveformWindow was clicked at playback time {clickedPlaybackTime} seconds");
+				float musicPosition = XPositionToMusicPosition(x);
+				float time = Timing.MusicPositionToTime(musicPosition);
+                GD.Print($"WaveformWindow was clicked at playback time {time} seconds");
+				//GD.Print($"BeatPosition = {Timing.GetBeatPosition(musicPosition)}");
 
                 if (Input.IsKeyPressed(Key.Alt))
-				{
-                    EmitSignal(nameof(SeekPlaybackTime), clickedPlaybackTime);
+                {
+                    EmitSignal(nameof(SeekPlaybackTime), time);
                 }
             }
-			if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick && !Input.IsKeyPressed(Key.Alt))
-			{
-                GD.Print($"WaveformWindow - User double clicked on {mouseEvent.Position}!");
+            if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick && !Input.IsKeyPressed(Key.Alt))
+            {
                 float x = mouseEvent.Position.X;
-                float clickedPlaybackTime = Waveform1.PixelPositionToPlaybackTime(x);
-				EmitSignal(nameof(AddTimingPoint), clickedPlaybackTime);
-			}
+                float musicPosition = XPositionToMusicPosition(x);
+                float time = Timing.MusicPositionToTime(musicPosition);
+                EmitSignal(nameof(DoubleClicked), time);
+            }
+        }
+		else if (@event is InputEventMouseMotion mouseMotion)
+		{
+			//GD.Print(mouseMotion.Position);
+
+			// If a Timing Point is currently held, get the music position for where the cursor is
+			// Change the music position of the timing point to this music position
+
+			TimingPoint timingPoint = Signals.Instance.HeldTimingPoint;
+			if (timingPoint == null) return;
+
+			Vector2 mousePos = mouseMotion.Position;
+
+			float musicPosition = XPositionToMusicPosition(mousePos.X);
+
+			timingPoint.MusicPosition = musicPosition;
         }
     }
 
-	public void UpdateScaling()
-	{
-		UpdatePlayheadScaling();
-		UpdateWaveformScaling();
+    #endregion
+    #region Render
 
-		//foreach (var child in GetChildren())
-		//{
-		//	if (child is Waveform waveform)
-		//	{
-		//		waveform.TimeRange = new float[2] { StartTime, EndTime };
-		//	}
-		//}
+    public void CreateWaveforms()
+	{
+		//GD.Print($"{Time.GetTicksMsec()/1e3} - Now rendering waveform window {MusicPositionStart}!");
+
+        foreach (var child in GetChildren())
+        {
+            if (child is Waveform waveform)
+            {
+                waveform.QueueFree();
+            }
+			if (child is Sprite2D sprite)
+			{
+				sprite.QueueFree();
+			}
+        }
+
+        float timeWhereWindowBegins = Timing.MusicPositionToTime(MusicPositionStartForWindow);
+        float timeWhereWindowEnds = Timing.MusicPositionToTime(MusicPositionStartForWindow + 1);
+
+        if (Timing.TimingPoints.Count == 0)
+		{
+			float startTime = timeWhereWindowBegins;
+			float endTime = timeWhereWindowEnds;
+
+            Waveform waveform = new Waveform(AudioFile, Size.X, Size.Y, new float[2] { startTime, endTime })
+            {
+                Position = new Vector2(0, Size.Y / 2),
+            };
+
+            AddChild(waveform);
+
+			//GD.Print($"There were no timing points... Using MusicPositionStart {MusicPositionStartForWindow} to set start and end times.");
+
+			return;
+        }
+
+		//GD.Print($"Window {MusicPositionStart}: timeWhereWindowBeginds = {timeWhereWindowBegins} , timeWhereWindowEnds = {timeWhereWindowEnds}");
+
+		// Create each waveform segment
+		for (int i = FirstTimingPointIndex; i <= LastTimingPointIndex; i++) 
+		{
+			//GD.Print($"Now rendering waveform for index {i}");
+			TimingPoint timingPoint = Timing.TimingPoints[i];
+
+			float startTime = (i == FirstTimingPointIndex)
+				? timeWhereWindowBegins
+                : (float)timingPoint.Time;
+
+			float endTime = (i == LastTimingPointIndex)
+				? timeWhereWindowEnds
+                : (float)Timing.TimingPoints[i+1].Time;
+
+            float musicPositionStart = Timing.TimeToMusicPosition(startTime);
+			float musicPositionEnd = Timing.TimeToMusicPosition(endTime);
+
+            float length = Size.X * (musicPositionEnd - musicPositionStart) / 1f;
+            float xPosition = Size.X * (musicPositionStart - MusicPositionStartForWindow) / 1f;
+
+            Waveform waveform = new Waveform(AudioFile, length, Size.Y, new float[2] { startTime, endTime })
+			{
+				Position = new Vector2(xPosition, Size.Y / 2),
+			};
+			
+			Random random = new Random();
+
+			// Randomize color, so it's easy to see what's happening
+			//waveform.DefaultColor = new Color((float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble(), 1);
+            AddChild(waveform);
+
+        }
 	}
+
+	public void RenderTimingPoints()
+	{
+        foreach (var child in GetChildren())
+        {
+            if (child is VisualTimingPoint visualTimingPoint)
+                visualTimingPoint.QueueFree();
+        }
+        foreach (TimingPoint timingPoint in Timing.TimingPoints)
+		{
+            var packedVisualTimingPoint = ResourceLoader.Load<PackedScene>("res://VisualTimingPoint.tscn");
+            if (timingPoint.MusicPosition >= MusicPositionStartForWindow && timingPoint.MusicPosition < MusicPositionStartForWindow + 1)
+			{
+				VisualTimingPoint visualTimingPoint = packedVisualTimingPoint.Instantiate() as VisualTimingPoint;
+				float x = MusicPositionToXPosition((float)timingPoint.MusicPosition);
+				visualTimingPoint.TimingPoint = timingPoint;
+                visualTimingPoint.Position = new Vector2(x, Size.Y / 2);
+				visualTimingPoint.Scale = new Vector2(0.2f, 0.2f);
+				AddChild(visualTimingPoint);
+			}
+		}
+	}
+
+	public void RenderOldTimingPoint(float x)
+	{
+		Sprite2D sprite = new Sprite2D()
+		{
+			Texture = ResourceLoader.Load("res://icon.svg") as Texture2D,
+			Scale = new Vector2(0.2f, 0.2f),
+			Position = new Vector2(x, Size.Y/2)
+		};
+		AddChild(sprite);
+	}
+
+	public void RenderOldTimingPoints()
+	{
+        foreach (var child in GetChildren())
+        {
+            if (child is Sprite2D sprite)
+				sprite.QueueFree();
+        }
+
+        //UpdateTimingPointsIndices();
+
+		if (Timing.TimingPoints.Count == 0)
+		{
+			return;
+		}
+
+		for (int i = FirstTimingPointIndex; i <= LastTimingPointIndex; i++)
+		{
+			TimingPoint timingPoint = Timing.TimingPoints[i];
+			float x = MusicPositionToXPosition((float)timingPoint.MusicPosition);
+
+			if (timingPoint.MusicPosition >= MusicPositionStartForWindow)
+				RenderOldTimingPoint(x);
+		}
+    }
+
+    #endregion
+    #region Calculators
+
+    public float XPositionToMusicPosition(float x)
+	{
+		return MusicPositionStartForWindow + x / Size.X;
+	}
+
+	public float MusicPositionToXPosition(float musicPosition)
+	{
+		return Size.X * (musicPosition - MusicPositionStartForWindow) / 1f;
+	}
+    #endregion
+    #region Updaters
+
+    public void OnResized()
+    {
+		UpdatePlayheadScaling();
+        CreateWaveforms();
+        //RenderOldTimingPoints();
+        RenderTimingPoints();
+    }
 
 	public void UpdatePlayheadScaling()
 	{
@@ -213,20 +282,7 @@ public partial class WaveformWindow : Control
             new Vector2(0, Size.Y)
         };
     }
-
-	public void UpdateWaveformScaling()
-	{
-        foreach (var child in GetChildren())
-        {
-            if (child is Waveform waveform)
-            {
-                waveform.Height = Size.Y;
-                waveform.Length = Size.X;
-                waveform.Position = new Vector2(waveform.Position.X, Size.Y / 2);
-            }
-        }
-    }
-
+    
 	public void UpdateGrid()
 	{
 		foreach (var child in GridFolder.GetChildren())
@@ -246,8 +302,30 @@ public partial class WaveformWindow : Control
 
 	}
 
-	public void OnResized()
+	public void UpdateTimingPointsIndices()
 	{
-		UpdateScaling();
+		if (Timing.TimingPoints.Count == 0) return;
+
+		//float startTime = Timing.MusicPositionToTime(MusicPositionStart);
+
+		int firstIndex = Timing.TimingPoints.FindLastIndex(point => point.MusicPosition <= MusicPositionStartForWindow);
+
+        // If there's only TimingPoints AFTER MusicPositionStart
+        if (firstIndex == -1) 
+            firstIndex = Timing.TimingPoints.FindIndex(point => point.MusicPosition > MusicPositionStartForWindow);
+
+        int lastIndex = Timing.TimingPoints.FindLastIndex(point => point.MusicPosition < MusicPositionStartForWindow + 1);
+        if (lastIndex == -1) lastIndex = firstIndex;
+
+		FirstTimingPointIndex = firstIndex;
+		LastTimingPointIndex = lastIndex;
+    }
+
+	public void TrackMouse()
+	{
+		Vector2 pos = GetGlobalMousePosition();
+		GD.Print(pos);
 	}
+
+    #endregion
 }
