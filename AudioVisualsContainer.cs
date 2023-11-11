@@ -33,10 +33,12 @@ public partial class AudioVisualsContainer : VBoxContainer
 			{
                 MusicPositionStart += 1;
 				UpdateBlocks();
+                Signals.Instance.EmitSignal("Scrolled");
             }
             else if (mouseEvent.ButtonIndex == MouseButton.WheelUp && mouseEvent.Pressed)
             {
                 MusicPositionStart -= 1;
+				Signals.Instance.EmitSignal("Scrolled");
                 UpdateBlocks();
             }
         }
@@ -97,22 +99,6 @@ public partial class AudioVisualsContainer : VBoxContainer
             musicPositionStart++;
 		}
     }
-
-	//public void UpdateWaveforms()
-	//{
-	//	foreach(WaveformWindow window in GetChildren())
-	//	{
-	//		window.RenderWaveforms();
-	//	}
-	//}
-
-	//public void UpdateTimingPoints()
-	//{
-	//	foreach(WaveformWindow window in GetChildren())
-	//	{
-	//		window.RenderTimingPoints();
-	//	}
-	//}
 
 	public void OnSeekPlaybackTime(float playbackTime)
 	{

@@ -18,7 +18,15 @@ public partial class VectorTools : Node
 
     public static float[] CreateLinearSpace(float minValue, float maxValue, int numberOfValues)
     {
-        float[] result = new float[numberOfValues];
+        float[] result = new float[0];
+        try
+        {
+            result = new float[numberOfValues];
+        }
+        catch (Exception)
+        {
+            //
+        }
         float step = (maxValue - minValue) / (numberOfValues - 1);
 
         for (int i = 0; i < numberOfValues; i++)

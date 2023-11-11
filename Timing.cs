@@ -33,7 +33,7 @@ public partial class Timing : Node
 		};
 		TimingPoints.Add(timingPoint);
 		AddChild(timingPoint);
-		timingPoint.TimingPointChanged += OnTimingPointChanged;
+		timingPoint.Changed += OnTimingPointChanged;
 		TimingPoints.Sort();
 
 		//EmitSignal(nameof(TimingChanged));
@@ -85,31 +85,43 @@ public partial class Timing : Node
 
         }
 
-		timingPoint.TimingPointChanged += OnTimingPointChanged;
-
-		GD.Print("Current Timing points:");
-		foreach (TimingPoint child in TimingPoints)
-		{
-			//GD.Print("Time " + child.Time + " , MusicPosition " + child.MusicPosition);
-			GD.Print($"Time {child.Time}, Music Position {child.MusicPosition}, BPM {child.BPM}");
-		}
+		timingPoint.Changed += OnTimingPointChanged;
+        timingPoint.Deleted += OnTimingPointDeleted;
 
         //EmitSignal(nameof(TimingChanged));
         Signals.EmitSignal("TimingChanged");
+    }
+
+	public void PrintTimingPoints()
+	{
+        GD.Print("Current Timing points:");
+        foreach (TimingPoint child in TimingPoints)
+        {
+            //GD.Print("Time " + child.Time + " , MusicPosition " + child.MusicPosition);
+            GD.Print($"Time {child.Time}, Music Position {child.MusicPosition}, BPM {child.BPM}");
+        }
     }
 
 	public void OnTimingPointChanged(TimingPoint timingPoint)
 	{
         int index = TimingPoints.FindIndex(i => i == timingPoint);
 
-		//GD.Print($"{Time.GetTicksMsec() / 1e3} - Now updating MPS!");
-
         UpdateMPSBasedOnNextTimingPoint(index-1);
         UpdateMPSBasedOnNextTimingPoint(index);
 
-        //GD.Print($"{Time.GetTicksMsec() / 1e3} - Done updating MPS!");
+        Signals.EmitSignal("TimingChanged");
+    }
 
-        //EmitSignal(nameof(TimingChanged));
+	public void OnTimingPointDeleted(TimingPoint timingPoint)
+	{
+        int index = TimingPoints.FindIndex(i => i == timingPoint);
+
+        timingPoint.QueueFree();
+        TimingPoints.Remove(timingPoint);
+
+        UpdateMPSBasedOnNextTimingPoint(index - 1);
+        UpdateMPSBasedOnNextTimingPoint(index);
+
         Signals.EmitSignal("TimingChanged");
     }
 

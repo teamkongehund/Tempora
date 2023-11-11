@@ -46,7 +46,7 @@ public partial class Main : Control
 		AudioPlayer.AudioFile = AudioFile;
         AudioPlayer.LoadMp3();
 
-		AudioVisualsContainer.SeekPlaybackTime += OnPlaybackTimeClicked;
+		AudioVisualsContainer.SeekPlaybackTime += OnSeekPlaybackTime;
 		AudioVisualsContainer.DoubleClicked += OnDoubleClick;
 		AudioVisualsContainer.AudioFile = AudioFile;
 		AudioVisualsContainer.CreateBlocks();
@@ -54,6 +54,8 @@ public partial class Main : Control
 		//Timing.TimingChanged += OnTimingChanged;
 
 		MoveButton.Pressed += OnMoveButtonPressed;
+
+		Signals.Instance.Scrolled += UpdatePlayHeads;
 
 		UpdatePlayHeads();
 
@@ -122,9 +124,10 @@ public partial class Main : Control
 		Metronome.Click(musicPosition);
     }
 
-	public void OnPlaybackTimeClicked(float playbackTime)
+	public void OnSeekPlaybackTime(float playbackTime)
 	{
 		if (!AudioPlayer.Playing) { Play(); }
+		if (playbackTime < 0) playbackTime = 0;
 		AudioPlayer.Seek(playbackTime);
 	}
 

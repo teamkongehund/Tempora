@@ -3,9 +3,10 @@ using System;
 
 public partial class TimingPoint : Node , IComparable<TimingPoint>
 {
-	[Signal] public delegate void TimingPointChangedEventHandler(TimingPoint timingPoint);
+	[Signal] public delegate void ChangedEventHandler(TimingPoint timingPoint);
+    [Signal] public delegate void DeletedEventHandler(TimingPoint timingPoint);
 
-	public int[] TimeSignature = new int[] { 4, 4 };
+    public int[] TimeSignature = new int[] { 4, 4 };
 
 	public float Time;
 
@@ -53,9 +54,17 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
 			if (_musicPosition != value)
 			{
 				_musicPosition = value;
-				EmitSignal(nameof(TimingPointChanged), this); // Should happen when user drags timing point to new position
+				EmitSignal(nameof(Changed), this); // Should happen when user drags timing point to new position
 			}
 		}
+	}
+
+	/// <summary>
+	/// Relies on parent <see cref="Timing"/> to delete from project.
+	/// </summary>
+	public void Delete()
+	{
+		EmitSignal(nameof(Deleted), this);
 	}
 
     public int CompareTo(TimingPoint other) => Time.CompareTo(other.Time);

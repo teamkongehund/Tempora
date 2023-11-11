@@ -36,6 +36,7 @@ public partial class WaveformWindow : Control
 		set
 		{
 			_musicPositionStart = value;
+			UpdateTimingPointsIndices();
 			CreateWaveforms();
             RenderTimingPoints();
         }

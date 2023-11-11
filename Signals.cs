@@ -2,7 +2,7 @@ using Godot;
 using System;
 
 /// <summary>
-/// Singleton class that manages keeping everything updated when properties change.
+/// Singleton class that sends signals to keep everything updated when properties change.
 /// </summary>
 public partial class Signals : Node
 {
@@ -14,6 +14,8 @@ public partial class Signals : Node
     public TimingPoint HeldTimingPoint;
 
     [Signal] public delegate void MouseLeftReleasedEventHandler();
+
+    [Signal] public delegate void ScrolledEventHandler();
 
     public override void _Ready()
     {

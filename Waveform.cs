@@ -97,6 +97,10 @@ public partial class Waveform : Line2D
         get { return _timeRange; }
         set
         {
+            if (value[0] > value[1])
+            {
+
+            }
             _timeRange = value;
             ShouldDisplayWholeFile = false;
             if (!IsInitializing) PlotWaveform();
@@ -188,7 +192,11 @@ public partial class Waveform : Line2D
             // Check if any sample value is negative - if so, the pickedvalue = 0
             // make sure not to clamp values when you get the AudioDataRange
 
-            if (sampleAtDataPointStart < 0 || sampleAtDataPointEnd < 0) 
+            bool dataPointIsBeforeAudio = (sampleAtDataPointStart < 0 || sampleAtDataPointEnd < 0);
+            bool dataPointIsAfterAudio = sampleAtDataPointStart > AudioFile.AudioData.Length 
+                || sampleAtDataPointEnd > AudioFile.AudioData.Length;
+
+            if (dataPointIsBeforeAudio || dataPointIsAfterAudio) 
                 pickedValue = 0;
             else if (sampleAtDataPointEnd - sampleAtDataPointStart == 0) 
                 pickedValue = AudioFile.AudioData[sampleAtDataPointStart];
