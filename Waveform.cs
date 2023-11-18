@@ -163,10 +163,6 @@ public partial class Waveform : Line2D
     /// </summary>
     private void PlotWaveform()
     {
-        // TODO: Fix inability to plot non-audio (try moving a timing point to the right in beginning of audio file versus to the left)
-
-        //GD.Print($"Waveform - PlotWaveform() called!");
-
         int sampleStart = AudioDataRange[0];
         int sampleEnd = AudioDataRange[1];
 

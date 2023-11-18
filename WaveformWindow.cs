@@ -65,7 +65,7 @@ public partial class WaveformWindow : Control
 		Timing = Timing.Instance;
 
 		Playhead = GetNode<Line2D>("Playhead");
-        Playhead.Width = 2;
+        Playhead.Width = 4;
 		Playhead.ZIndex = 100;
 		UpdatePlayheadScaling();
 
@@ -75,6 +75,7 @@ public partial class WaveformWindow : Control
 		Signals.Instance.TimingChanged += CreateWaveforms;
         //Signals.Instance.TimingChanged += RenderOldTimingPoints;
         Signals.Instance.TimingChanged += RenderTimingPoints;
+		Signals.Instance.TimingChanged += CreateGridLines;
     }
     public override void _GuiInput(InputEvent @event)
     {
@@ -284,16 +285,33 @@ public partial class WaveformWindow : Control
         };
     }
     
-	public void UpdateGrid()
+	public void CreateGridLines()
 	{
+		// TODO: Debug
+
 		foreach (var child in GridFolder.GetChildren())
 		{
 			child.QueueFree();
 		}
 
 		int divisor = Settings.Instance.Divisor;
+        int[] timeSignature = Timing.GetTimeSignature(MusicPositionStartForWindow);
 
-		// Find TimingPoiont that defines this measure
+		int index = 0;
+		float latestPosition = 0;
+		while (latestPosition < 1)
+		{
+			if (index >= 50) throw new Exception("Too many measure divisions!");
+
+			Line2D gridLine = GetGridLine(timeSignature, divisor, index, out latestPosition);
+
+			if (gridLine == null) break;
+
+			index++;
+
+			GridFolder.AddChild(gridLine);
+		}
+
 
 		// Based on TimingPoint.TimeSignature and divisor, calculate how many divisons we need, and what their spacing should be
 
@@ -302,6 +320,36 @@ public partial class WaveformWindow : Control
 		// Create a Line2D object with appropriate color for each division.
 
 	}
+
+	public Line2D GetGridLine(int[] timeSignature, int divisor, int index)
+	{
+		float relativePosition;
+        Line2D gridLine = GetGridLine(timeSignature, divisor, index, out relativePosition);
+		return gridLine;
+    }
+
+	public Line2D GetGridLine(int[] timeSignature, int divisor, int index, out float relativePosition)
+	{
+        relativePosition = Timing.GetRelativeNotePosition(timeSignature, divisor, index);
+
+        if (relativePosition < 0 || relativePosition > 1) return null;
+
+        Line2D gridLine = new Line2D();
+        gridLine.Position = new Vector2(relativePosition * Size.X, 0);
+        gridLine.Points = new Vector2[2]
+        {
+            new Vector2(0, 0),
+            new Vector2(0, Size.Y)
+        };
+		gridLine.DefaultColor = new Color(1f, 0, 0);
+		gridLine.Width = 1;
+
+        // TODO: Set color based on divisor and index
+
+        return gridLine;
+    }
+
+	// TODO: Redo gridLine.Points via an update method
 
 	public void UpdateTimingPointsIndices()
 	{
@@ -322,11 +370,11 @@ public partial class WaveformWindow : Control
 		LastTimingPointIndex = lastIndex;
     }
 
-	public void TrackMouse()
-	{
-		Vector2 pos = GetGlobalMousePosition();
-		GD.Print(pos);
-	}
+	//public void TrackMouse()
+	//{
+	//	Vector2 pos = GetGlobalMousePosition();
+	//	GD.Print(pos);
+	//}
 
     #endregion
 }
