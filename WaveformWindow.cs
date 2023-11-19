@@ -13,7 +13,7 @@ public partial class WaveformWindow : Control
 	[Signal] public delegate void DoubleClickedEventHandler(float playbackTime);
 
     public Line2D Playhead;
-	public Node GridFolder;
+	public Node2D GridFolder;
 
 	private AudioFile _audioFile;
 	public AudioFile AudioFile
@@ -60,7 +60,7 @@ public partial class WaveformWindow : Control
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{
-		GridFolder = GetNode<Node>("GridFolder");
+		GridFolder = GetNode<Node2D>("GridFolder");
 
 		Timing = Timing.Instance;
 
@@ -287,8 +287,6 @@ public partial class WaveformWindow : Control
     
 	public void CreateGridLines()
 	{
-		// TODO: Debug
-
 		foreach (var child in GridFolder.GetChildren())
 		{
 			child.QueueFree();
@@ -306,6 +304,8 @@ public partial class WaveformWindow : Control
 			Line2D gridLine = GetGridLine(timeSignature, divisor, index, out latestPosition);
 
 			if (gridLine == null) break;
+
+			gridLine.ZIndex = 99;
 
 			index++;
 
@@ -331,6 +331,7 @@ public partial class WaveformWindow : Control
 	public Line2D GetGridLine(int[] timeSignature, int divisor, int index, out float relativePosition)
 	{
         relativePosition = Timing.GetRelativeNotePosition(timeSignature, divisor, index);
+		GD.Print(relativePosition);
 
         if (relativePosition < 0 || relativePosition > 1) return null;
 

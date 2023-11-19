@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://Main.cs" id="1_t2kkt"]
 [ext_resource type="Script" path="res://AudioVisualsContainer.cs" id="3_7vuxd"]
 [ext_resource type="PackedScene" uid="uid://djvimmuyfu0pu" path="res://AudioPlayer.tscn" id="3_gyi28"]
-[ext_resource type="PackedScene" uid="uid://bnbif04ymgk1h" path="res://Metronome.tscn" id="5_fbm2c"]
+[ext_resource type="PackedScene" path="res://Metronome.tscn" id="5_fbm2c"]
 
 [node name="Main" type="Control"]
 layout_mode = 3

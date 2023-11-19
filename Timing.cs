@@ -40,11 +40,17 @@ public partial class Timing : Node
         Signals.EmitSignal("TimingChanged");
     }
 
+	public void AddTimingPoint(float time)
+	{
+		TimingPoint timingPoint = null;
+		AddTimingPoint(time, out timingPoint);
+	}
+
 	/// <summary>
 	/// Add a timing point at a given time, which is 
 	/// </summary>
 	/// <param name="time"></param>
-	public void AddTimingPoint(float time)
+	public void AddTimingPoint(float time, out TimingPoint outTimingPoint)
 	{
 		TimingPoint timingPoint = new TimingPoint() 
 		{ 
@@ -87,6 +93,8 @@ public partial class Timing : Node
 
 		timingPoint.Changed += OnTimingPointChanged;
         timingPoint.Deleted += OnTimingPointDeleted;
+
+		outTimingPoint = timingPoint;
 
         //EmitSignal(nameof(TimingChanged));
         Signals.EmitSignal("TimingChanged");
@@ -244,7 +252,7 @@ public partial class Timing : Node
 	{
         int[] timeSignature = GetTimeSignature(musicPosition);
 
-        float beatIncrement = (timeSignature[1] / (float) gridDivisor) / timeSignature[0];
+        float beatIncrement = (timeSignature[1] / 4f) / timeSignature[0];
         float relativePosition = musicPosition % 1;
         float position = (int)(relativePosition / beatIncrement) * beatIncrement + (int)musicPosition;
         return position;
@@ -252,8 +260,25 @@ public partial class Timing : Node
 
 	public static float GetRelativeNotePosition(int[] timeSignature, int gridDivisor, int index)
 	{
-        float beatIncrement = (timeSignature[1] / (float)gridDivisor) / timeSignature[0];
-		float position = (int)(index / beatIncrement) * beatIncrement;
+        // For a quarter-note:
+        // 4/4: 0, 1/4, 2/4, 3/4
+        // 3/4: 0, 1/3, 2/3
+        // 7/8: 0, 2/7, 4/7, 6/7
+        // Divide by upper number
+        // Multiply by lower number / 4
+
+        // For a (1/12) note:
+        // 4/4: 0, 1/12, 2/12, etc.
+        // 3/4: 0, 1/9, 2/9, 3/9
+        // 7/4: 0, 1/21, 2/21, 3/21, etc.
+        // 7/8: 0, 2/21, 4/21, 6/21, etc.
+        // Multiply by lower number / 4
+        // Divide by (upper number/4 * divisor)
+        // Multiply by index
+
+        // Formula:
+        //float position = index * (timeSignature[1] / 4f) / (timeSignature[0] / 4f * gridDivisor);
+        float position = index * timeSignature[1] / (float)(timeSignature[0] * gridDivisor);
         return position;
     }
 }
