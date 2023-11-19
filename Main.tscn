@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://crfob01mbcgre"]
+[gd_scene load_steps=6 format=3 uid="uid://crfob01mbcgre"]
 
 [ext_resource type="Script" path="res://Main.cs" id="1_t2kkt"]
 [ext_resource type="Script" path="res://AudioVisualsContainer.cs" id="3_7vuxd"]
 [ext_resource type="PackedScene" uid="uid://djvimmuyfu0pu" path="res://AudioPlayer.tscn" id="3_gyi28"]
-[ext_resource type="PackedScene" path="res://Metronome.tscn" id="5_fbm2c"]
+[ext_resource type="PackedScene" uid="uid://dtlgnwhkfh1i5" path="res://Metronome.tscn" id="5_fbm2c"]
+[ext_resource type="Script" path="res://BlockScrollBar.cs" id="5_mw7l2"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -49,12 +50,14 @@ offset_bottom = 210.0
 text = "Show/Hide"
 
 [node name="AudioPlayer" parent="." instance=ExtResource("3_gyi28")]
+bus = &"Music"
 
 [node name="AudioVisualsContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 221.0
+offset_right = -58.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("3_7vuxd")
@@ -84,3 +87,17 @@ offset_bottom = 411.0
 text = "Move"
 
 [node name="Metronome" parent="." instance=ExtResource("5_fbm2c")]
+
+[node name="BlockScrollBar" type="VScrollBar" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -45.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("5_mw7l2")

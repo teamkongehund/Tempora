@@ -9,6 +9,8 @@ public partial class Main : Control
 	
 	TextEdit IndexField;
 	TextEdit PositionField;
+
+	BlockScrollBar BlockScrollBar;
 	
 	WaveformWindow WaveformWindow;
 	
@@ -22,7 +24,7 @@ public partial class Main : Control
 
 	Metronome Metronome;
     
-	string AudioPath = "res://UMO.mp3";
+	string AudioPath = "res://21csm.mp3";
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -37,6 +39,7 @@ public partial class Main : Control
 		IndexField = GetNode<TextEdit>("IndexField");
         PositionField = GetNode<TextEdit>("PositionField");
 		Metronome = GetNode<Metronome>("Metronome");
+		BlockScrollBar = GetNode<BlockScrollBar>("BlockScrollBar");
 
         AudioFile = new AudioFile(AudioPath);
 		
@@ -46,19 +49,17 @@ public partial class Main : Control
 		AudioPlayer.AudioFile = AudioFile;
         AudioPlayer.LoadMp3();
 
-		AudioVisualsContainer.SeekPlaybackTime += OnSeekPlaybackTime;
+		UpdateChildrensAudioFiles();
+
+        AudioVisualsContainer.SeekPlaybackTime += OnSeekPlaybackTime;
 		AudioVisualsContainer.DoubleClicked += OnDoubleClick;
-		AudioVisualsContainer.AudioFile = AudioFile;
 		AudioVisualsContainer.CreateBlocks();
-
-		//Timing.TimingChanged += OnTimingChanged;
-
 		MoveButton.Pressed += OnMoveButtonPressed;
-
-		Signals.Instance.Scrolled += UpdatePlayHeads;
+		Signals.Instance.Scrolled += OnScrolled;
+		BlockScrollBar.ValueChanged += OnScrollBarValueChanged;
 
 		UpdatePlayHeads();
-
+		BlockScrollBar.UpdateMaxValue();
     }
 
     public override void _GuiInput(InputEvent @event)
@@ -74,6 +75,16 @@ public partial class Main : Control
 		}
     }
 
+    // Called every frame. 'delta' is the elapsed time since the previous frame.
+    public override void _Process(double delta)
+	{
+		if (AudioPlayer.Playing)
+		{
+			UpdatePlayHeads();
+			UpdateMetronome();
+		}
+    }
+
     public void OnMoveButtonPressed()
 	{
 		int index = Int32.Parse(IndexField.Text);
@@ -84,14 +95,15 @@ public partial class Main : Control
 		timingPoint.MusicPosition = position;
     }
 
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _Process(double delta)
+	public void OnScrollBarValueChanged(double value)
 	{
-		if (AudioPlayer.Playing)
-		{
-			UpdatePlayHeads();
-			UpdateMetronome();
-		}
+		AudioVisualsContainer.NominalMusicPositionStartForTopBlock = (int)value;
+	}
+
+	public void UpdateChildrensAudioFiles()
+	{
+        AudioVisualsContainer.AudioFile = AudioFile;
+		Timing.AudioFile = AudioFile;
     }
 
 	public void Play()
@@ -104,6 +116,12 @@ public partial class Main : Control
 		AudioPlayer.Stop();
 		UpdatePlayHeads();
     }
+
+	public void OnScrolled()
+	{
+		UpdatePlayHeads();
+		BlockScrollBar.Value = AudioVisualsContainer.NominalMusicPositionStartForTopBlock;
+	}
 
 	public void UpdatePlayHeads()
 	{

@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://bnbif04ymgk1h"]
+[gd_scene load_steps=4 format=3 uid="uid://dtlgnwhkfh1i5"]
 
 [ext_resource type="Script" path="res://Metronome.cs" id="1_kpryd"]
 [ext_resource type="AudioStream" uid="uid://tb5dvcqxowxq" path="res://Click1.wav" id="2_yko3b"]
@@ -9,6 +9,8 @@ script = ExtResource("1_kpryd")
 
 [node name="Click1" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("2_yko3b")
+bus = &"Metronome"
 
 [node name="Click2" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3_is4cc")
+bus = &"Metronome"

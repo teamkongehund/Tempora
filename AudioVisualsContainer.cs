@@ -12,9 +12,21 @@ public partial class AudioVisualsContainer : VBoxContainer
     [Signal] public delegate void SeekPlaybackTimeEventHandler(float playbackTime);
     [Signal] public delegate void DoubleClickedEventHandler(float playbackTime);
 
-    //public float FirstBlockStartTime = 0;
+	//public float FirstBlockStartTime = 0;
 
-    public int NominalMusicPositionStartForTopBlock = 0;
+	private int _nominalMusicPositionStartForTopBlock = 0;
+    public int NominalMusicPositionStartForTopBlock
+	{
+		get => _nominalMusicPositionStartForTopBlock;
+		set
+		{
+			if (value != _nominalMusicPositionStartForTopBlock)
+			{
+				_nominalMusicPositionStartForTopBlock = value;
+				UpdateBlocks();
+			}
+		}
+	}
 
     public AudioFile AudioFile;
 
@@ -32,14 +44,12 @@ public partial class AudioVisualsContainer : VBoxContainer
             if (mouseEvent.ButtonIndex == MouseButton.WheelDown && mouseEvent.Pressed)
 			{
                 NominalMusicPositionStartForTopBlock += 1;
-				UpdateBlocks();
                 Signals.Instance.EmitSignal("Scrolled");
             }
             else if (mouseEvent.ButtonIndex == MouseButton.WheelUp && mouseEvent.Pressed)
             {
                 NominalMusicPositionStartForTopBlock -= 1;
 				Signals.Instance.EmitSignal("Scrolled");
-                UpdateBlocks();
             }
         }
     }
