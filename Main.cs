@@ -22,7 +22,7 @@ public partial class Main : Control
 
 	Metronome Metronome;
     
-	string AudioPath = "res://21csm.mp3";
+	string AudioPath = "res://UMO.mp3";
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()

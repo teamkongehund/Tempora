@@ -11,12 +11,14 @@ public partial class Settings : Node
 	public int Divisor = 4;
 
 	/// <summary>
-	/// A fraction that determines how of each left and right side of a visual block must be audio data from the preceding or next block.
-	/// Useful to ensure the user always has a full view of a downbeat's transient peak.
+	/// Number of waveform blocks to display
 	/// </summary>
-	public float OverlapMargin = 0.1f;
-
 	public int NumberOfBlocks = 12;
+
+	/// <summary>
+	/// How many measures of overlapping time is added to the beginning and end of each waveform block
+	/// </summary>
+	public float MusicPositionMargin = 0.05f;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()

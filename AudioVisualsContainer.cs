@@ -14,7 +14,7 @@ public partial class AudioVisualsContainer : VBoxContainer
 
     //public float FirstBlockStartTime = 0;
 
-    public int MusicPositionStart = 0;
+    public int NominalMusicPositionStartForTopBlock = 0;
 
     public AudioFile AudioFile;
 
@@ -31,13 +31,13 @@ public partial class AudioVisualsContainer : VBoxContainer
         {
             if (mouseEvent.ButtonIndex == MouseButton.WheelDown && mouseEvent.Pressed)
 			{
-                MusicPositionStart += 1;
+                NominalMusicPositionStartForTopBlock += 1;
 				UpdateBlocks();
                 Signals.Instance.EmitSignal("Scrolled");
             }
             else if (mouseEvent.ButtonIndex == MouseButton.WheelUp && mouseEvent.Pressed)
             {
-                MusicPositionStart -= 1;
+                NominalMusicPositionStartForTopBlock -= 1;
 				Signals.Instance.EmitSignal("Scrolled");
                 UpdateBlocks();
             }
@@ -63,7 +63,7 @@ public partial class AudioVisualsContainer : VBoxContainer
 			AddChild(waveformWindow);
 		}
 
-		int musicPositionStart = MusicPositionStart;
+		int musicPositionStart = NominalMusicPositionStartForTopBlock;
 
 		var children = GetChildren();
 
@@ -77,7 +77,7 @@ public partial class AudioVisualsContainer : VBoxContainer
 			//waveformWindow.EndTime = startTime + BlockDuration;
 			//startTime += BlockDuration;
 
-			waveformWindow.MusicPositionStartForWindow = musicPositionStart;
+			waveformWindow.NominalMusicPositionStartForWindow = musicPositionStart;
             musicPositionStart++;
 
 			waveformWindow.SeekPlaybackTime += OnSeekPlaybackTime;
@@ -89,13 +89,13 @@ public partial class AudioVisualsContainer : VBoxContainer
 
 	public void UpdateBlocks()
 	{
-		int musicPositionStart = MusicPositionStart;
+		int musicPositionStart = NominalMusicPositionStartForTopBlock;
 
         var children = GetChildren();
 
         foreach (WaveformWindow waveformWindow in children)
 		{
-			waveformWindow.MusicPositionStartForWindow = musicPositionStart;
+			waveformWindow.NominalMusicPositionStartForWindow = musicPositionStart;
             musicPositionStart++;
 		}
     }

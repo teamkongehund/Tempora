@@ -30,7 +30,7 @@ public partial class WaveformWindow : Control
 	Waveform Waveform1;
 
 	private int _musicPositionStart;
-	public int MusicPositionStartForWindow
+	public int NominalMusicPositionStartForWindow
 	{
 		get => _musicPositionStart;
 		set
@@ -42,15 +42,21 @@ public partial class WaveformWindow : Control
         }
 	}
 
-	/// <summary>
-	/// List of horizontally stacked waveforms to display
-	/// </summary>
-	//public List<Waveform> Waveforms = new List<Waveform>();
+	public float ActualMusicPositionStartForWindow
+    {
+        get => NominalMusicPositionStartForWindow - Settings.Instance.MusicPositionMargin;
+        private set { }
+    }
 
-	//public float StartTime = 0;
-	//public float EndTime = 10;
+    /// <summary>
+    /// List of horizontally stacked waveforms to display
+    /// </summary>
+    //public List<Waveform> Waveforms = new List<Waveform>();
 
-	Timing Timing;
+    //public float StartTime = 0;
+    //public float EndTime = 10;
+
+    Timing Timing;
 
 	public int FirstTimingPointIndex;
 	public int LastTimingPointIndex;
@@ -133,14 +139,16 @@ public partial class WaveformWindow : Control
             {
                 waveform.QueueFree();
             }
-			if (child is Sprite2D sprite)
+			else if (child is Sprite2D sprite)
 			{
 				sprite.QueueFree();
 			}
         }
 
-        float timeWhereWindowBegins = Timing.MusicPositionToTime(MusicPositionStartForWindow);
-        float timeWhereWindowEnds = Timing.MusicPositionToTime(MusicPositionStartForWindow + 1);
+		float margin = Settings.Instance.MusicPositionMargin;
+
+        float timeWhereWindowBegins = Timing.MusicPositionToTime(ActualMusicPositionStartForWindow);
+        float timeWhereWindowEnds = Timing.MusicPositionToTime(ActualMusicPositionStartForWindow + 1 + 2 * margin);
 
         if (Timing.TimingPoints.Count == 0)
 		{
@@ -178,20 +186,19 @@ public partial class WaveformWindow : Control
             float musicPositionStart = Timing.TimeToMusicPosition(startTime);
 			float musicPositionEnd = Timing.TimeToMusicPosition(endTime);
 
-            float length = Size.X * (musicPositionEnd - musicPositionStart) / 1f;
-            float xPosition = Size.X * (musicPositionStart - MusicPositionStartForWindow) / 1f;
+            float length = Size.X * (musicPositionEnd - musicPositionStart) / (1f + 2 * margin);
+            float xPosition = Size.X * (musicPositionStart - ActualMusicPositionStartForWindow) / (1f + 2 * margin);
 
             Waveform waveform = new Waveform(AudioFile, length, Size.Y, new float[2] { startTime, endTime })
 			{
 				Position = new Vector2(xPosition, Size.Y / 2),
 			};
 			
-			Random random = new Random();
-
 			// Randomize color, so it's easy to see what's happening
+			//Random random = new Random();
 			//waveform.DefaultColor = new Color((float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble(), 1);
-            AddChild(waveform);
 
+            AddChild(waveform);
         }
 	}
 
@@ -205,7 +212,8 @@ public partial class WaveformWindow : Control
         foreach (TimingPoint timingPoint in Timing.TimingPoints)
 		{
             var packedVisualTimingPoint = ResourceLoader.Load<PackedScene>("res://VisualTimingPoint.tscn");
-            if (timingPoint.MusicPosition >= MusicPositionStartForWindow && timingPoint.MusicPosition < MusicPositionStartForWindow + 1)
+            if (timingPoint.MusicPosition >= ActualMusicPositionStartForWindow 
+				&& timingPoint.MusicPosition < ActualMusicPositionStartForWindow + 1 + 2 * Settings.Instance.MusicPositionMargin)
 			{
 				VisualTimingPoint visualTimingPoint = packedVisualTimingPoint.Instantiate() as VisualTimingPoint;
 				float x = MusicPositionToXPosition((float)timingPoint.MusicPosition);
@@ -217,53 +225,57 @@ public partial class WaveformWindow : Control
 		}
 	}
 
-	public void RenderOldTimingPoint(float x)
-	{
-		Sprite2D sprite = new Sprite2D()
-		{
-			Texture = ResourceLoader.Load("res://icon.svg") as Texture2D,
-			Scale = new Vector2(0.2f, 0.2f),
-			Position = new Vector2(x, Size.Y/2)
-		};
-		AddChild(sprite);
-	}
+	//public void RenderOldTimingPoint(float x)
+	//{
+	//	Sprite2D sprite = new Sprite2D()
+	//	{
+	//		Texture = ResourceLoader.Load("res://icon.svg") as Texture2D,
+	//		Scale = new Vector2(0.2f, 0.2f),
+	//		Position = new Vector2(x, Size.Y/2)
+	//	};
+	//	AddChild(sprite);
+	//}
 
-	public void RenderOldTimingPoints()
-	{
-        foreach (var child in GetChildren())
-        {
-            if (child is Sprite2D sprite)
-				sprite.QueueFree();
-        }
+	//public void RenderOldTimingPoints()
+	//{
+ //       foreach (var child in GetChildren())
+ //       {
+ //           if (child is Sprite2D sprite)
+	//			sprite.QueueFree();
+ //       }
 
-        //UpdateTimingPointsIndices();
+ //       //UpdateTimingPointsIndices();
 
-		if (Timing.TimingPoints.Count == 0)
-		{
-			return;
-		}
+	//	if (Timing.TimingPoints.Count == 0)
+	//	{
+	//		return;
+	//	}
 
-		for (int i = FirstTimingPointIndex; i <= LastTimingPointIndex; i++)
-		{
-			TimingPoint timingPoint = Timing.TimingPoints[i];
-			float x = MusicPositionToXPosition((float)timingPoint.MusicPosition);
+	//	for (int i = FirstTimingPointIndex; i <= LastTimingPointIndex; i++)
+	//	{
+	//		TimingPoint timingPoint = Timing.TimingPoints[i];
+	//		float x = MusicPositionToXPosition((float)timingPoint.MusicPosition);
 
-			if (timingPoint.MusicPosition >= MusicPositionStartForWindow)
-				RenderOldTimingPoint(x);
-		}
-    }
+	//		if (timingPoint.MusicPosition >= NominalMusicPositionStartForWindow)
+	//			RenderOldTimingPoint(x);
+	//	}
+ //   }
 
     #endregion
     #region Calculators
 
     public float XPositionToMusicPosition(float x)
 	{
-		return MusicPositionStartForWindow + x / Size.X;
+        float margin = Settings.Instance.MusicPositionMargin;
+        float windowLengthInMeasures = 1f + 2 * margin;
+		return x * windowLengthInMeasures / Size.X - margin + NominalMusicPositionStartForWindow;
 	}
 
 	public float MusicPositionToXPosition(float musicPosition)
 	{
-		return Size.X * (musicPosition - MusicPositionStartForWindow) / 1f;
+		float margin = Settings.Instance.MusicPositionMargin;
+		float windowLengthInMeasures = 1f + 2 * margin;
+		return Size.X * (musicPosition - NominalMusicPositionStartForWindow + margin) / windowLengthInMeasures;
 	}
     #endregion
     #region Updaters
@@ -274,6 +286,7 @@ public partial class WaveformWindow : Control
         CreateWaveforms();
         //RenderOldTimingPoints();
         RenderTimingPoints();
+		CreateGridLines();
     }
 
 	public void UpdatePlayheadScaling()
@@ -293,7 +306,7 @@ public partial class WaveformWindow : Control
 		}
 
 		int divisor = Settings.Instance.Divisor;
-        int[] timeSignature = Timing.GetTimeSignature(MusicPositionStartForWindow);
+        int[] timeSignature = Timing.GetTimeSignature(NominalMusicPositionStartForWindow);
 
 		int index = 0;
 		float latestPosition = 0;
@@ -331,12 +344,14 @@ public partial class WaveformWindow : Control
 	public Line2D GetGridLine(int[] timeSignature, int divisor, int index, out float relativePosition)
 	{
         relativePosition = Timing.GetRelativeNotePosition(timeSignature, divisor, index);
-		GD.Print(relativePosition);
 
         if (relativePosition < 0 || relativePosition > 1) return null;
 
+		float margin = Settings.Instance.MusicPositionMargin;
+		float xPosition = Size.X * ( (relativePosition + margin) / (2 * margin + 1f));
+
         Line2D gridLine = new Line2D();
-        gridLine.Position = new Vector2(relativePosition * Size.X, 0);
+        gridLine.Position = new Vector2(xPosition, 0);
         gridLine.Points = new Vector2[2]
         {
             new Vector2(0, 0),
@@ -358,13 +373,13 @@ public partial class WaveformWindow : Control
 
 		//float startTime = Timing.MusicPositionToTime(MusicPositionStart);
 
-		int firstIndex = Timing.TimingPoints.FindLastIndex(point => point.MusicPosition <= MusicPositionStartForWindow);
+		int firstIndex = Timing.TimingPoints.FindLastIndex(point => point.MusicPosition <= NominalMusicPositionStartForWindow);
 
         // If there's only TimingPoints AFTER MusicPositionStart
         if (firstIndex == -1) 
-            firstIndex = Timing.TimingPoints.FindIndex(point => point.MusicPosition > MusicPositionStartForWindow);
+            firstIndex = Timing.TimingPoints.FindIndex(point => point.MusicPosition > NominalMusicPositionStartForWindow);
 
-        int lastIndex = Timing.TimingPoints.FindLastIndex(point => point.MusicPosition < MusicPositionStartForWindow + 1);
+        int lastIndex = Timing.TimingPoints.FindLastIndex(point => point.MusicPosition < NominalMusicPositionStartForWindow + 1);
         if (lastIndex == -1) lastIndex = firstIndex;
 
 		FirstTimingPointIndex = firstIndex;
