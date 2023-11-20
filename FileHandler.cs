@@ -16,7 +16,7 @@ public partial class FileHandler : Node
         return file;
     }
 
-    public static byte[] LoadFileAsBuffer(string path)
+    public static byte[] GetFileAsBuffer(string path)
     {
         using var file = ReadFile(path);
         ulong size = file.GetLength();
@@ -26,14 +26,14 @@ public partial class FileHandler : Node
     public static void CopyFile(string pathFrom, string pathTo)
     {
         using var fileNew = Godot.FileAccess.Open(pathTo, Godot.FileAccess.ModeFlags.Write);
-        fileNew.StoreBuffer(LoadFileAsBuffer(pathFrom));
+        fileNew.StoreBuffer(GetFileAsBuffer(pathFrom));
         GD.Print($"FileHandler.CopyFile: Copied {pathFrom} to {pathTo}");
     }
 
     public static AudioStreamMP3 LoadFileAsAudioStreamMP3(string path)
     {
         var sound = new AudioStreamMP3();
-        sound.Data = LoadFileAsBuffer(path);
+        sound.Data = GetFileAsBuffer(path);
         //Byte[] buffer = LoadFileAsBuffer(path);
         //GD.Print("Is (AudioStreamMp3.Data = LoadFileAsBuffer(path)) the same as (LoadFileAsBuffer(path))? " + (sound.Data.SequenceEqual<Byte>(buffer)));
         return sound;

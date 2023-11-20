@@ -27,7 +27,7 @@ public partial class AudioFile : Node
             throw new Exception($"Failed to create AudioFile with path {path} : Extention was not .mp3!");
         }
 
-        Byte[] audioFileBytes = FileHandler.LoadFileAsBuffer(path);
+        Byte[] audioFileBytes = FileHandler.GetFileAsBuffer(path);
 
         int sampleRate;
         int channels;

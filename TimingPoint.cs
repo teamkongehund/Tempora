@@ -42,6 +42,14 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
 		_bpm = MeasuresPerSecond * 60 * (TimeSignature[0] * 4f / TimeSignature[1]);
     }
 
+	public float BeatLength
+	{
+		get
+		{
+			return 1 / (BPM / 60);
+		}
+	}
+
 	private float? _musicPosition;
 	public float? MusicPosition
 	{

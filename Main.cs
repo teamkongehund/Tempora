@@ -5,6 +5,7 @@ public partial class Main : Control
 {
 	Button PlayButton;
     Button StopButton;
+	Button ExportButton;
     //Button MoveButton;
 	
 	//TextEdit IndexField;
@@ -31,6 +32,7 @@ public partial class Main : Control
 	{
 		PlayButton = GetNode<Button>("PlayButton");
         StopButton = GetNode<Button>("StopButton");
+        ExportButton = GetNode<Button>("ExportButton");
         AudioPlayer = GetNode<AudioPlayer>("AudioPlayer");
         AudioVisualsContainer = GetNode<AudioVisualsContainer>("AudioVisualsContainer");
 		Timing = Timing.Instance;
@@ -44,6 +46,7 @@ public partial class Main : Control
 		
 		PlayButton.Pressed += Play;
 		StopButton.Pressed += Stop;
+		ExportButton.Pressed += OnExportButtonPressed;
 
 		UpdateChildrensAudioFiles();
 
@@ -97,17 +100,45 @@ public partial class Main : Control
 		catch { return; }
 	}
 
- //   public void OnMoveButtonPressed()
-	//{
-	//	int index = Int32.Parse(IndexField.Text);
- //       float position = float.Parse(PositionField.Text);
+	public void OnExportButtonPressed()
+	{
+		ExportOsz();
 
-	//	TimingPoint timingPoint = Timing.TimingPoints[index];
+		//ExportOsu();
+	}
 
-	//	timingPoint.MusicPosition = position;
- //   }
+	public void ExportOsu()
+	{
+		string path = "user://blob.osu";
+        string dotOsu = OsuExporter.GetDotOsu(Timing);
+        OsuExporter.SaveOsu(path, dotOsu);
+    }
 
-	public void OnScrollBarValueChanged(double value)
+	public void ExportOsz()
+	{
+        string path = "user://exported.osz";
+        string dotOsu = OsuExporter.GetDotOsu(Timing);
+        OsuExporter.SaveOsz(path, dotOsu, AudioFile);
+
+		// Open with system:
+		string globalPath = ProjectSettings.GlobalizePath(path);
+		if (FileAccess.FileExists(globalPath))
+        {
+            OS.ShellOpen(globalPath);
+        }
+    }
+
+    //   public void OnMoveButtonPressed()
+    //{
+    //	int index = Int32.Parse(IndexField.Text);
+    //       float position = float.Parse(PositionField.Text);
+
+    //	TimingPoint timingPoint = Timing.TimingPoints[index];
+
+    //	timingPoint.MusicPosition = position;
+    //   }
+
+    public void OnScrollBarValueChanged(double value)
 	{
 		AudioVisualsContainer.NominalMusicPositionStartForTopBlock = (int)value;
 	}

@@ -15,6 +15,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_t2kkt")
+metadata/_edit_lock_ = true
 
 [node name="ColorRect" type="ColorRect" parent="."]
 layout_mode = 1
@@ -24,6 +25,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0.2, 0.254902, 1)
+metadata/_edit_lock_ = true
 
 [node name="PlayButton" type="Button" parent="."]
 layout_mode = 0
@@ -176,3 +178,11 @@ theme_override_font_sizes/font_size = 12
 text = "Metronome"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="ExportButton" type="Button" parent="."]
+offset_left = 13.0
+offset_top = 319.0
+offset_right = 112.0
+offset_bottom = 362.0
+text = "Export .osz 
+& Open"
