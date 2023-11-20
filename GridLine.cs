@@ -18,4 +18,6 @@ public partial class GridLine : Line2D
         DefaultColor = new Color(1f, 0, 0);
         Width = 1;
     }
+
+	// TODO: Add a method that determines color. Execute it in _Ready().
 }

@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://crfob01mbcgre"]
+[gd_scene load_steps=7 format=3 uid="uid://crfob01mbcgre"]
 
 [ext_resource type="Script" path="res://Main.cs" id="1_t2kkt"]
 [ext_resource type="Script" path="res://AudioVisualsContainer.cs" id="3_7vuxd"]
 [ext_resource type="PackedScene" uid="uid://djvimmuyfu0pu" path="res://AudioPlayer.tscn" id="3_gyi28"]
 [ext_resource type="PackedScene" uid="uid://dtlgnwhkfh1i5" path="res://Metronome.tscn" id="5_fbm2c"]
 [ext_resource type="Script" path="res://BlockScrollBar.cs" id="5_mw7l2"]
+[ext_resource type="Script" path="res://VolumeSlider.cs" id="6_c6j3g"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -26,18 +27,18 @@ color = Color(0, 0.2, 0.254902, 1)
 
 [node name="PlayButton" type="Button" parent="."]
 layout_mode = 0
-offset_left = 23.0
-offset_top = 17.0
-offset_right = 197.0
-offset_bottom = 100.0
+offset_left = 11.0
+offset_top = 16.0
+offset_right = 110.0
+offset_bottom = 58.0
 text = "Play"
 
 [node name="StopButton" type="Button" parent="."]
 layout_mode = 0
-offset_left = 24.0
-offset_top = 119.0
-offset_right = 198.0
-offset_bottom = 202.0
+offset_left = 11.0
+offset_top = 67.0
+offset_right = 110.0
+offset_bottom = 110.0
 text = "Stop"
 
 [node name="ShowHide" type="Button" parent="."]
@@ -56,35 +57,13 @@ bus = &"Music"
 layout_mode = 2
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 221.0
+offset_left = 123.0
+offset_top = 16.0
 offset_right = -58.0
+offset_bottom = -12.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("3_7vuxd")
-
-[node name="IndexField" type="TextEdit" parent="."]
-layout_mode = 0
-offset_left = 28.0
-offset_top = 321.0
-offset_right = 91.0
-offset_bottom = 355.0
-placeholder_text = "Index"
-
-[node name="PositionField" type="TextEdit" parent="."]
-layout_mode = 0
-offset_left = 108.0
-offset_top = 320.0
-offset_right = 190.0
-offset_bottom = 354.0
-placeholder_text = "Position"
-
-[node name="MoveButton" type="Button" parent="."]
-layout_mode = 0
-offset_left = 30.0
-offset_top = 368.0
-offset_right = 189.0
-offset_bottom = 411.0
-text = "Move"
 
 [node name="Metronome" parent="." instance=ExtResource("5_fbm2c")]
 
@@ -101,3 +80,99 @@ offset_bottom = -12.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("5_mw7l2")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = -174.0
+offset_right = 109.0
+offset_bottom = -11.0
+grow_vertical = 0
+theme_override_constants/separation = 7
+
+[node name="VolumeSliderMaster" type="VScrollBar" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.001
+value = 1.0
+script = ExtResource("6_c6j3g")
+BusName = "Master"
+
+[node name="Label" type="Label" parent="HBoxContainer/VolumeSliderMaster"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -9.5
+offset_top = 30.5
+offset_right = 53.5
+offset_bottom = 50.5
+grow_horizontal = 2
+grow_vertical = 2
+rotation = -1.5708
+theme_override_font_sizes/font_size = 12
+text = "Master"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VolumeSliderMusic" type="VScrollBar" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.001
+value = 1.0
+script = ExtResource("6_c6j3g")
+BusName = "Music"
+
+[node name="Label" type="Label" parent="HBoxContainer/VolumeSliderMusic"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -9.5
+offset_top = 30.5
+offset_right = 53.5
+offset_bottom = 50.5
+grow_horizontal = 2
+grow_vertical = 2
+rotation = -1.5708
+theme_override_font_sizes/font_size = 12
+text = "Music"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VolumeSliderMetronome" type="VScrollBar" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.001
+value = 1.0
+script = ExtResource("6_c6j3g")
+BusName = "Metronome"
+
+[node name="Label" type="Label" parent="HBoxContainer/VolumeSliderMetronome"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -10.5
+offset_top = 35.5
+offset_right = 58.5
+offset_bottom = 56.5
+grow_horizontal = 2
+grow_vertical = 2
+rotation = -1.5708
+theme_override_font_sizes/font_size = 12
+text = "Metronome"
+horizontal_alignment = 1
+vertical_alignment = 1

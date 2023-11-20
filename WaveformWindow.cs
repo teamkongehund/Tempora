@@ -80,9 +80,19 @@ public partial class WaveformWindow : Control
 
 		Resized += OnResized;
 
-        // If I used recommended += syntax here, disposed WaveformWindows will still react to this signal, causing exceptions.
+        // If I used recommended += syntax here,
+		// disposed WaveformWindows will still react to this signal, causing exceptions.
+        // This seems to be a bug with the += syntax when the signal transmitter is an autoload
+        // See https://github.com/godotengine/godot/issues/70414 (haven't read this through)
         Signals.Instance.Connect("TimingChanged", Callable.From(OnTimingChanged)); 
     }
+
+	// Note to self: This can be used instead of .Connect to fix the signal issue.
+	//public override void _ExitTree()
+	//{
+	//	Signals.Instance.TimingChanged -= OnTimingChanged;
+	//}
+
     public override void _GuiInput(InputEvent @event)
     {
         if (@event is InputEventMouseButton mouseEvent)
@@ -363,36 +373,35 @@ public partial class WaveformWindow : Control
 		}
 	}
 
-	public Line2D GetGridLineOld(int[] timeSignature, int divisor, int index)
-	{
-		float relativePosition;
-        Line2D gridLine = GetGridLineOld(timeSignature, divisor, index, out relativePosition);
-		return gridLine;
-    }
+	//public Line2D GetGridLineOld(int[] timeSignature, int divisor, int index)
+	//{
+	//	float relativePosition;
+ //       Line2D gridLine = GetGridLineOld(timeSignature, divisor, index, out relativePosition);
+	//	return gridLine;
+ //   }
 
-	public Line2D GetGridLineOld(int[] timeSignature, int divisor, int index, out float relativePosition)
-	{
-        relativePosition = Timing.GetRelativeNotePosition(timeSignature, divisor, index);
+	//public Line2D GetGridLineOld(int[] timeSignature, int divisor, int index, out float relativePosition)
+	//{
+ //       relativePosition = Timing.GetRelativeNotePosition(timeSignature, divisor, index);
 
-        if (relativePosition < 0 || relativePosition > 1) return null;
+ //       if (relativePosition < 0 || relativePosition > 1) return null;
 
-		float margin = Settings.Instance.MusicPositionMargin;
-		float xPosition = Size.X * ( (relativePosition + margin) / (2 * margin + 1f));
+	//	float margin = Settings.Instance.MusicPositionMargin;
+	//	float xPosition = Size.X * ( (relativePosition + margin) / (2 * margin + 1f));
 
-        Line2D gridLine = new Line2D();
-        gridLine.Position = new Vector2(xPosition, 0);
-        gridLine.Points = new Vector2[2]
-        {
-            new Vector2(0, 0),
-            new Vector2(0, Size.Y)
-        };
-		gridLine.DefaultColor = new Color(1f, 0, 0);
-		gridLine.Width = 1;
+ //       Line2D gridLine = new Line2D();
+ //       gridLine.Position = new Vector2(xPosition, 0);
+ //       gridLine.Points = new Vector2[2]
+ //       {
+ //           new Vector2(0, 0),
+ //           new Vector2(0, Size.Y)
+ //       };
+	//	gridLine.DefaultColor = new Color(1f, 0, 0);
+	//	gridLine.Width = 1;
 
-        // TODO: Set color based on divisor and index
 
-        return gridLine;
-    }
+ //       return gridLine;
+ //   }
 
 	public GridLine GetGridLine(int[] timeSignature, int divisor, int index)
 	{

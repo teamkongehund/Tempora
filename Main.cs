@@ -5,10 +5,10 @@ public partial class Main : Control
 {
 	Button PlayButton;
     Button StopButton;
-    Button MoveButton;
+    //Button MoveButton;
 	
-	TextEdit IndexField;
-	TextEdit PositionField;
+	//TextEdit IndexField;
+	//TextEdit PositionField;
 
 	BlockScrollBar BlockScrollBar;
 	
@@ -33,11 +33,10 @@ public partial class Main : Control
         StopButton = GetNode<Button>("StopButton");
         AudioPlayer = GetNode<AudioPlayer>("AudioPlayer");
         AudioVisualsContainer = GetNode<AudioVisualsContainer>("AudioVisualsContainer");
-		//Timing = GetNode<Timing>("Timing");
 		Timing = Timing.Instance;
-		MoveButton = GetNode<Button>("MoveButton");
-		IndexField = GetNode<TextEdit>("IndexField");
-        PositionField = GetNode<TextEdit>("PositionField");
+		//MoveButton = GetNode<Button>("MoveButton");
+		//IndexField = GetNode<TextEdit>("IndexField");
+		//PositionField = GetNode<TextEdit>("PositionField");
 		Metronome = GetNode<Metronome>("Metronome");
 		BlockScrollBar = GetNode<BlockScrollBar>("BlockScrollBar");
 
@@ -51,7 +50,7 @@ public partial class Main : Control
         AudioVisualsContainer.SeekPlaybackTime += OnSeekPlaybackTime;
 		AudioVisualsContainer.DoubleClicked += OnDoubleClick;
 		AudioVisualsContainer.CreateBlocks();
-		MoveButton.Pressed += OnMoveButtonPressed;
+		//MoveButton.Pressed += OnMoveButtonPressed;
 		Signals.Instance.Scrolled += OnScrolled;
 		BlockScrollBar.ValueChanged += OnScrollBarValueChanged;
 		GetTree().Root.FilesDropped += OnFilesDropped;
@@ -98,15 +97,15 @@ public partial class Main : Control
 		catch { return; }
 	}
 
-    public void OnMoveButtonPressed()
-	{
-		int index = Int32.Parse(IndexField.Text);
-        float position = float.Parse(PositionField.Text);
+ //   public void OnMoveButtonPressed()
+	//{
+	//	int index = Int32.Parse(IndexField.Text);
+ //       float position = float.Parse(PositionField.Text);
 
-		TimingPoint timingPoint = Timing.TimingPoints[index];
+	//	TimingPoint timingPoint = Timing.TimingPoints[index];
 
-		timingPoint.MusicPosition = position;
-    }
+	//	timingPoint.MusicPosition = position;
+ //   }
 
 	public void OnScrollBarValueChanged(double value)
 	{
