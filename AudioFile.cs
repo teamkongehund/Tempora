@@ -24,8 +24,7 @@ public partial class AudioFile : Node
         string extension = FileHandler.GetExtension(path);
         if (extension != "mp3")
         {
-            GD.Print($"Failed to create AudioFile with path {path} : Extention was not .mp3!");
-            return;
+            throw new Exception($"Failed to create AudioFile with path {path} : Extention was not .mp3!");
         }
 
         Byte[] audioFileBytes = FileHandler.LoadFileAsBuffer(path);

@@ -46,9 +46,6 @@ public partial class Main : Control
 		PlayButton.Pressed += Play;
 		StopButton.Pressed += Stop;
 
-		AudioPlayer.AudioFile = AudioFile;
-        AudioPlayer.LoadMp3();
-
 		UpdateChildrensAudioFiles();
 
         AudioVisualsContainer.SeekPlaybackTime += OnSeekPlaybackTime;
@@ -57,6 +54,7 @@ public partial class Main : Control
 		MoveButton.Pressed += OnMoveButtonPressed;
 		Signals.Instance.Scrolled += OnScrolled;
 		BlockScrollBar.ValueChanged += OnScrollBarValueChanged;
+		GetTree().Root.FilesDropped += OnFilesDropped;
 
 		UpdatePlayHeads();
 		BlockScrollBar.UpdateMaxValue();
@@ -85,6 +83,21 @@ public partial class Main : Control
 		}
     }
 
+	public void OnFilesDropped(string[] filePaths)
+	{
+		if (filePaths.Length != 1) return;
+		string path = filePaths[0];
+
+		AudioFile audioFile;
+		try
+		{
+			audioFile = new AudioFile(path);
+			AudioFile = audioFile;
+            UpdateChildrensAudioFiles();
+        }
+		catch { return; }
+	}
+
     public void OnMoveButtonPressed()
 	{
 		int index = Int32.Parse(IndexField.Text);
@@ -102,6 +115,7 @@ public partial class Main : Control
 
 	public void UpdateChildrensAudioFiles()
 	{
+        AudioPlayer.AudioFile = AudioFile;
         AudioVisualsContainer.AudioFile = AudioFile;
 		Timing.AudioFile = AudioFile;
     }

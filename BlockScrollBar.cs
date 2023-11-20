@@ -11,8 +11,6 @@ public partial class BlockScrollBar : VScrollBar
 		Timing = Timing.Instance;
 
 		Signals.Instance.TimingChanged += OnTimingChanged;
-
-		//ValueChanged += OnValueChanged;
 	}
 
     public void OnTimingChanged()
@@ -23,17 +21,7 @@ public partial class BlockScrollBar : VScrollBar
 
     public void UpdateMaxValue()
 	{
-		// Update min and max value
-
 		int length = Timing.GetLengthInMeasures();
-
-		GD.Print($"Length of song is {length} measures");
-
 		MaxValue = length;
 	}
-
-	//public void OnValueChanged(double value)
-	//{
-	//	GD.Print(value);
-	//}
 }

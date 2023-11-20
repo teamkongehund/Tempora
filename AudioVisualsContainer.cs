@@ -28,7 +28,24 @@ public partial class AudioVisualsContainer : VBoxContainer
 		}
 	}
 
-    public AudioFile AudioFile;
+	private AudioFile _audioFile;
+    public AudioFile AudioFile
+	{
+		get => _audioFile;
+		set
+		{
+			if (_audioFile != value && _audioFile != null)
+			{
+				_audioFile = value;
+				CreateBlocks();
+			}
+			else if (_audioFile != value)
+			{
+				_audioFile = value;
+			}
+
+        }
+	}
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -56,8 +73,16 @@ public partial class AudioVisualsContainer : VBoxContainer
 
     public float BlockDuration = 2f;
 
+	private int createBlocksCalledThisManyTimes = 0;
+
     public void CreateBlocks()
 	{
+		createBlocksCalledThisManyTimes++;
+		GD.Print($"Now calling CreateBlocks() for the {createBlocksCalledThisManyTimes}th time");
+
+		// TODO: Find out why disposed WaveformWindows' methods get called once CreateBlocks() has been called for the 2nd time.
+		// To try this, drag in an mp3 and try to create a timing point - you'll get an exception.
+
 		foreach (var child in GetChildren())
 		{
 			child.QueueFree();
@@ -83,17 +108,11 @@ public partial class AudioVisualsContainer : VBoxContainer
 
 			waveformWindow.SizeFlagsVertical = SizeFlags.ExpandFill;
 
-			//waveformWindow.StartTime = startTime;
-			//waveformWindow.EndTime = startTime + BlockDuration;
-			//startTime += BlockDuration;
-
 			waveformWindow.NominalMusicPositionStartForWindow = musicPositionStart;
             musicPositionStart++;
 
 			waveformWindow.SeekPlaybackTime += OnSeekPlaybackTime;
 			waveformWindow.DoubleClicked += OnDoubleClick;
-
-			//GD.Print(waveformWindow.Size.Y);
 		}
     }
 

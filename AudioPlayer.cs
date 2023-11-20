@@ -3,7 +3,19 @@ using System;
 
 public partial class AudioPlayer : AudioStreamPlayer
 {
-	public AudioFile AudioFile;
+	private AudioFile _audioFile;
+	public AudioFile AudioFile
+	{
+		get => _audioFile;
+		set
+		{
+			if (value != _audioFile)
+			{
+				_audioFile = value;
+				LoadMp3();
+			}
+		}
+	}
 
 	public double CurrentPlaybackTime
 	{

@@ -21,10 +21,13 @@ public partial class WaveformWindow : Control
 		get => _audioFile;
 		set
 		{
-			_audioFile = value;
-			//UpdateWaveformAudioFiles();
-			CreateWaveforms();
-            RenderTimingPoints();
+			if (_audioFile != value)
+			{
+				_audioFile = value;
+				//UpdateWaveformAudioFiles();
+				CreateWaveforms();
+				RenderTimingPoints();
+			}
         }
 	}
 	Waveform Waveform1;
@@ -77,11 +80,8 @@ public partial class WaveformWindow : Control
 
 		Resized += OnResized;
 
-		Signals.Instance.TimingChanged += UpdateTimingPointsIndices;
-		Signals.Instance.TimingChanged += CreateWaveforms;
-        //Signals.Instance.TimingChanged += RenderOldTimingPoints;
-        Signals.Instance.TimingChanged += RenderTimingPoints;
-		Signals.Instance.TimingChanged += CreateGridLines;
+        // If I used recommended += syntax here, disposed WaveformWindows will still react to this signal, causing exceptions.
+        Signals.Instance.Connect("TimingChanged", Callable.From(OnTimingChanged)); 
     }
     public override void _GuiInput(InputEvent @event)
     {
@@ -125,6 +125,14 @@ public partial class WaveformWindow : Control
 			timingPoint.MusicPosition = musicPosition;
         }
     }
+
+	public void OnTimingChanged()
+	{
+		UpdateTimingPointsIndices();
+		CreateWaveforms();
+		RenderTimingPoints();
+		CreateGridLines();
+	}
 
     #endregion
     #region Render
