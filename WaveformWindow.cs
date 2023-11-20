@@ -110,19 +110,38 @@ public partial class WaveformWindow : Control
         }
 		else if (@event is InputEventMouseMotion mouseMotion)
 		{
-			//GD.Print(mouseMotion.Position);
-
-			// If a Timing Point is currently held, get the music position for where the cursor is
-			// Change the music position of the timing point to this music position
-
 			TimingPoint timingPoint = Signals.Instance.HeldTimingPoint;
 			if (timingPoint == null) return;
 
 			Vector2 mousePos = mouseMotion.Position;
 
-			float musicPosition = XPositionToMusicPosition(mousePos.X);
+			float mouseMusicPosition = XPositionToMusicPosition(mousePos.X);
+			float mouseRelativeMusicPosition = XPositionToRelativeMusicPosition(mousePos.X);
 
-			timingPoint.MusicPosition = musicPosition;
+			if (Settings.Instance.SnapToGrid)
+			{
+				float closestGridRelativeMusicPosition = 0;
+				float lastMusicPositionDifference = 1000f; // large number
+				float currentMusicPositionDifference;
+
+				foreach(GridLine gridLine in GridFolder.GetChildren())
+				{
+					currentMusicPositionDifference = Math.Abs(gridLine.RelativeMusicPosition - mouseRelativeMusicPosition);
+					if (currentMusicPositionDifference > lastMusicPositionDifference)
+						break;
+
+					lastMusicPositionDifference = currentMusicPositionDifference;
+
+					closestGridRelativeMusicPosition = gridLine.RelativeMusicPosition;
+				} 
+
+                timingPoint.MusicPosition = closestGridRelativeMusicPosition + NominalMusicPositionStartForWindow;
+            }
+			else
+			{
+				timingPoint.MusicPosition = mouseMusicPosition;
+			}
+
         }
     }
 
@@ -274,10 +293,20 @@ public partial class WaveformWindow : Control
 
     public float XPositionToMusicPosition(float x)
 	{
+        return XPositionToRelativeMusicPosition(x) + NominalMusicPositionStartForWindow;
+	}
+
+	/// <summary>
+	/// Return music position relative to <see cref="NominalMusicPositionStartForWindow"/>
+	/// </summary>
+	/// <param name="x"></param>
+	/// <returns></returns>
+	public float XPositionToRelativeMusicPosition(float x)
+	{
         float margin = Settings.Instance.MusicPositionMargin;
         float windowLengthInMeasures = 1f + 2 * margin;
-		return x * windowLengthInMeasures / Size.X - margin + NominalMusicPositionStartForWindow;
-	}
+		return x * windowLengthInMeasures / Size.X - margin;
+    }
 
 	public float MusicPositionToXPosition(float musicPosition)
 	{
@@ -316,40 +345,32 @@ public partial class WaveformWindow : Control
 		int divisor = Settings.Instance.Divisor;
         int[] timeSignature = Timing.GetTimeSignature(NominalMusicPositionStartForWindow);
 
-		int index = 0;
+		int divisionIndex = 0;
 		float latestPosition = 0;
 		while (latestPosition < 1)
 		{
-			if (index >= 50) throw new Exception("Too many measure divisions!");
+			if (divisionIndex >= 50) throw new Exception("Too many measure divisions!");
 
-			Line2D gridLine = GetGridLine(timeSignature, divisor, index, out latestPosition);
+			GridLine gridLine = GetGridLine(timeSignature, divisor, divisionIndex);
 
-			if (gridLine == null) break;
+			if (gridLine == null || gridLine.RelativeMusicPosition > 1) break;
 
 			gridLine.ZIndex = 99;
 
-			index++;
+			divisionIndex++;
 
 			GridFolder.AddChild(gridLine);
 		}
-
-
-		// Based on TimingPoint.TimeSignature and divisor, calculate how many divisons we need, and what their spacing should be
-
-
-
-		// Create a Line2D object with appropriate color for each division.
-
 	}
 
-	public Line2D GetGridLine(int[] timeSignature, int divisor, int index)
+	public Line2D GetGridLineOld(int[] timeSignature, int divisor, int index)
 	{
 		float relativePosition;
-        Line2D gridLine = GetGridLine(timeSignature, divisor, index, out relativePosition);
+        Line2D gridLine = GetGridLineOld(timeSignature, divisor, index, out relativePosition);
 		return gridLine;
     }
 
-	public Line2D GetGridLine(int[] timeSignature, int divisor, int index, out float relativePosition)
+	public Line2D GetGridLineOld(int[] timeSignature, int divisor, int index, out float relativePosition)
 	{
         relativePosition = Timing.GetRelativeNotePosition(timeSignature, divisor, index);
 
@@ -372,6 +393,22 @@ public partial class WaveformWindow : Control
 
         return gridLine;
     }
+
+	public GridLine GetGridLine(int[] timeSignature, int divisor, int index)
+	{
+		GridLine gridLine = new GridLine(timeSignature, divisor, index);
+
+        float margin = Settings.Instance.MusicPositionMargin;
+        float xPosition = Size.X * ((gridLine.RelativeMusicPosition + margin) / (2 * margin + 1f));
+        gridLine.Position = new Vector2(xPosition, 0);
+        gridLine.Points = new Vector2[2]
+        {
+            new Vector2(0, 0),
+            new Vector2(0, Size.Y)
+        };
+
+        return gridLine;
+	}
 
 	// TODO: Redo gridLine.Points via an update method
 

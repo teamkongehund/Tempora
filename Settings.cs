@@ -20,6 +20,13 @@ public partial class Settings : Node
 	/// </summary>
 	public float MusicPositionMargin = 0.05f;
 
+	/// <summary>
+	/// Snap timing points to beat grid when moving them. 
+	/// Should always be true because osu's timing points are always on-grid. 
+	/// Probably best to exclude from any settings menu beacuse of this.
+	/// </summary>
+	public bool SnapToGrid = true;
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{

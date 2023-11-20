@@ -73,16 +73,8 @@ public partial class AudioVisualsContainer : VBoxContainer
 
     public float BlockDuration = 2f;
 
-	private int createBlocksCalledThisManyTimes = 0;
-
     public void CreateBlocks()
 	{
-		createBlocksCalledThisManyTimes++;
-		GD.Print($"Now calling CreateBlocks() for the {createBlocksCalledThisManyTimes}th time");
-
-		// TODO: Find out why disposed WaveformWindows' methods get called once CreateBlocks() has been called for the 2nd time.
-		// To try this, drag in an mp3 and try to create a timing point - you'll get an exception.
-
 		foreach (var child in GetChildren())
 		{
 			child.QueueFree();
