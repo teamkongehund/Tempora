@@ -12,8 +12,9 @@ public partial class Main : Control
 	BlockScrollBar BlockScrollBar;
 
 	HScrollBar GridScrollBar;
+    HScrollBar PlaybackRateScrollBar;
 
-	WaveformWindow WaveformWindow;
+    WaveformWindow WaveformWindow;
 	
 	AudioVisualsContainer AudioVisualsContainer;
 	
@@ -25,7 +26,7 @@ public partial class Main : Control
 
 	Metronome Metronome;
     
-	string AudioPath = "res://21csm.mp3";
+	string AudioPath = "res://UMO.mp3";
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -40,6 +41,7 @@ public partial class Main : Control
 		Metronome = GetNode<Metronome>("Metronome");
 		BlockScrollBar = GetNode<BlockScrollBar>("BlockScrollBar");
         GridScrollBar = GetNode<HScrollBar>("GridScrollBar");
+        PlaybackRateScrollBar = GetNode<HScrollBar>("PlaybackRateScrollBar");
 
         AudioFile = new AudioFile(AudioPath);
 		
@@ -54,11 +56,17 @@ public partial class Main : Control
 		Signals.Instance.Scrolled += OnScrolled;
 		BlockScrollBar.ValueChanged += OnBlockScrollBarValueChanged;
 		GetTree().Root.FilesDropped += OnFilesDropped;
-		GridScrollBar.ValueChanged += OnGridScrollBarBalueChanged;
+		GridScrollBar.ValueChanged += OnGridScrollBarValueChanged;
+		PlaybackRateScrollBar.ValueChanged += OnPlaybackRateScrollBarValueChanged;
 
-		UpdatePlayHeads();
+
+        UpdatePlayHeads();
 		BlockScrollBar.UpdateMaxValue();
     }
+
+	// TODO 1: Save projects
+
+	// TODO 2: Scroll to set BPM
 
     public override void _GuiInput(InputEvent @event)
     {
@@ -121,13 +129,19 @@ public partial class Main : Control
 		AudioVisualsContainer.NominalMusicPositionStartForTopBlock = (int)value;
 	}
 
-	public void OnGridScrollBarBalueChanged(double value)
+	public void OnGridScrollBarValueChanged(double value)
 	{
 		int intValue = (int)value;
 		Settings.Instance.Divisor = Settings.SliderToDivisorDict[intValue];
 	}
 
-	public void ExportOsu()
+	public void OnPlaybackRateScrollBarValueChanged(double value)
+	{
+		AudioPlayer.PitchScale = (float)value;
+	}
+
+
+    public void ExportOsu()
 	{
 		string path = "user://blob.osu";
         string dotOsu = OsuExporter.GetDotOsu(Timing);

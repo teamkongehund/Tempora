@@ -10,7 +10,17 @@ public partial class Context : Node
 
     public bool IsSelectedPositionMoving = false;
 
-    public float SelectedPosition;
+    private float _selectedPosition;
+    public float SelectedPosition
+    {
+        get => _selectedPosition;
+        set
+        {
+            if (value == _selectedPosition) return;
+            _selectedPosition = value;
+            Signals.Instance.EmitSignal("SelectedPositionChanged");
+        }
+    }
 
     public TimingPoint HeldTimingPoint;
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://dtlgnwhkfh1i5"]
+[gd_scene load_steps=4 format=3 uid="uid://bnbif04ymgk1h"]
 
 [ext_resource type="Script" path="res://Metronome.cs" id="1_kpryd"]
 [ext_resource type="AudioStream" uid="uid://tb5dvcqxowxq" path="res://Click1.wav" id="2_yko3b"]
