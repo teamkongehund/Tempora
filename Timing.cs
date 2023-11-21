@@ -91,7 +91,10 @@ public partial class Timing : Node
         }
 
         if (previousTimingPoint?.MusicPosition == timingPoint.MusicPosition
-                || nextTimingPoint?.MusicPosition == timingPoint.MusicPosition)
+                || nextTimingPoint?.MusicPosition == timingPoint.MusicPosition 
+				|| (previousTimingPoint?.Time is { } previousTime && Mathf.Abs(previousTime - timingPoint.Time) < 0.04f)
+				|| (nextTimingPoint?.Time is { } nextTime && Mathf.Abs(nextTime - timingPoint.Time) < 0.04f)
+                )
         {
             TimingPoints.Remove(timingPoint);
             outTimingPoint = null;
