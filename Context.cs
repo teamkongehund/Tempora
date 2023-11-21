@@ -8,6 +8,10 @@ public partial class Context : Node
 {
     public static Context Instance;
 
+    public bool IsSelectedPositionMoving = false;
+
+    public float SelectedPosition;
+
     public TimingPoint HeldTimingPoint;
 
     public override void _Ready()

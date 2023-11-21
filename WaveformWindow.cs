@@ -133,38 +133,43 @@ public partial class WaveformWindow : Control
 		else if (@event is InputEventMouseMotion mouseMotion)
 		{
 			Vector2 mousePos = mouseMotion.Position;
-			float mouseMusicPosition = XPositionToMusicPosition(mousePos.X);
-			float mouseRelativeMusicPosition = XPositionToRelativeMusicPosition(mousePos.X);
-
-			PreviewLine.Position = new Vector2(MusicPositionToXPosition(mouseMusicPosition), 0);
-
-			TimingPoint timingPoint = Context.Instance.HeldTimingPoint;
-			if (timingPoint == null) 
-				return;
-
-            if (!Settings.Instance.SnapToGrid)
-			{
-                timingPoint.MusicPosition = mouseMusicPosition;
-				return;
-            }
-
-            float closestGridRelativeMusicPosition = 0;
-			float lastMusicPositionDifference = 1000f; // large number
-			float currentMusicPositionDifference;
-
-			foreach(GridLine gridLine in GridFolder.GetChildren())
-			{
-				currentMusicPositionDifference = Math.Abs(gridLine.RelativeMusicPosition - mouseRelativeMusicPosition);
-				if (currentMusicPositionDifference > lastMusicPositionDifference)
-					break;
-
-				lastMusicPositionDifference = currentMusicPositionDifference;
-
-				closestGridRelativeMusicPosition = gridLine.RelativeMusicPosition;
-			} 
-
-            timingPoint.MusicPosition = closestGridRelativeMusicPosition + NominalMusicPositionStartForWindow;
+            SnapHeldTimingPointMusicPosition(mousePos);
         }
+    }
+
+	public void SnapHeldTimingPointMusicPosition(Vector2 mousePos)
+	{
+        float mouseMusicPosition = XPositionToMusicPosition(mousePos.X);
+        float mouseRelativeMusicPosition = XPositionToRelativeMusicPosition(mousePos.X);
+
+        PreviewLine.Position = new Vector2(MusicPositionToXPosition(mouseMusicPosition), 0);
+
+        TimingPoint timingPoint = Context.Instance.HeldTimingPoint;
+        if (timingPoint == null)
+            return;
+
+        if (!Settings.Instance.SnapToGrid)
+        {
+            timingPoint.MusicPosition = mouseMusicPosition;
+            return;
+        }
+
+        float closestGridRelativeMusicPosition = 0;
+        float lastMusicPositionDifference = 1000f; // large number
+        float currentMusicPositionDifference;
+
+        foreach (GridLine gridLine in GridFolder.GetChildren())
+        {
+            currentMusicPositionDifference = Math.Abs(gridLine.RelativeMusicPosition - mouseRelativeMusicPosition);
+            if (currentMusicPositionDifference > lastMusicPositionDifference)
+                break;
+
+            lastMusicPositionDifference = currentMusicPositionDifference;
+
+            closestGridRelativeMusicPosition = gridLine.RelativeMusicPosition;
+        }
+
+        timingPoint.MusicPosition = closestGridRelativeMusicPosition + NominalMusicPositionStartForWindow;
     }
 
 	public void OnTimingChanged()
@@ -325,9 +330,9 @@ public partial class WaveformWindow : Control
 
 	/// <summary>
 	/// TODO 1: Create a faster way to add timing points as follows:
-	/// Add a Line2D "SelectedPositionLine" to WaveformWindow scene. It should be similar to playhead, preview line and grid line
+	/// SelectedPositionLine should be similar to playhead, preview line and grid line
 	/// When user clicks down left mouse, the selected position moves around with the mouse, and stops when the user lets go.
-	/// To achieve this, add bool IsSelectionMoving to Context - then if true, in mouseMove, set selection to musicposition
+	/// in mouseMove, set selection to musicposition if IsSelectedPositionMoving
 	/// The actual selection position should also be a variable in context, not main
 	/// A signal should be emitted from Signals when the position has moved - this should update the visual line
 	/// 

@@ -25,3 +25,8 @@ default_color = Color(0.270588, 1, 0.921569, 1)
 visible = false
 width = 2.0
 default_color = Color(0.419608, 0.419608, 0.419608, 1)
+
+[node name="SelectedPositionLine" type="Line2D" parent="."]
+visible = false
+width = 2.0
+default_color = Color(0.117647, 0.368627, 1, 1)
