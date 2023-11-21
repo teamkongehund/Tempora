@@ -68,19 +68,6 @@ public partial class Main : Control
 
 	// TODO 2: Scroll to set BPM
 
-    public override void _GuiInput(InputEvent @event)
-    {
-		if (@event is InputEventMouseButton mouseEvent)
-		{
-			if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased())
-			{
-				// Ensure a mouse release is always captured.
-				GD.Print("Main: MouseLeftReleased");
-				Signals.Instance.EmitSignal("MouseLeftReleased");
-			}
-		}
-    }
-
 	public override void _Input(InputEvent @event)
 	{
         if (@event is InputEventKey keyEvent)
@@ -90,7 +77,17 @@ public partial class Main : Control
 				PlayPause();
 			}
 		}
-	}
+        if (@event is InputEventMouseButton mouseEvent)
+        {
+            if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased())
+            {
+                // Ensure a mouse release is always captured.
+                GD.Print("Main: MouseLeftReleased");
+                Signals.Instance.EmitSignal("MouseLeftReleased");
+                Context.Instance.IsSelectedPositionMoving = false;
+            }
+        }
+    }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)

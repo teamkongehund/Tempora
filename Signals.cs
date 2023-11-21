@@ -13,6 +13,7 @@ public partial class Signals : Node
     [Signal] public delegate void MouseLeftReleasedEventHandler();
     [Signal] public delegate void ScrolledEventHandler();
     [Signal] public delegate void SettingsChangedEventHandler();
+    [Signal] public delegate void SelectedPositionChangedEventHandler();
 
     public override void _Ready()
     {

@@ -88,9 +88,12 @@ public partial class WaveformWindow : Control
 		UpdatePlayheadScaling();
 		UpdatePreviewLineScaling();
         UpdateSelectedPositionScaling();
+        UpdateSelectedPositionLine();
 
         Resized += OnResized;
 		Signals.Instance.SettingsChanged += OnSettingsChanged;
+        Signals.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
+        Signals.Instance.Scrolled += UpdateSelectedPositionLine;
 
 		MouseEntered += OnMouseEntered;
 		MouseExited += OnMouseExited;
@@ -119,11 +122,15 @@ public partial class WaveformWindow : Control
 				float musicPosition = XPositionToMusicPosition(x);
 				float time = Timing.MusicPositionToTime(musicPosition);
                 GD.Print($"WaveformWindow was clicked at playback time {time} seconds");
-				//GD.Print($"BeatPosition = {Timing.GetBeatPosition(musicPosition)}");
 
                 if (Input.IsKeyPressed(Key.Alt))
                 {
                     EmitSignal(nameof(SeekPlaybackTime), time);
+                }
+                else
+                {
+                    Context.Instance.IsSelectedPositionMoving = true;
+                    Context.Instance.SelectedPosition = XPositionToMusicPosition(x);
                 }
             }
             if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick && !Input.IsKeyPressed(Key.Alt))
@@ -136,7 +143,7 @@ public partial class WaveformWindow : Control
         }
 		else if (@event is InputEventMouseMotion mouseMotion)
 		{
-			Vector2 mousePos = mouseMotion.Position;
+            Vector2 mousePos = mouseMotion.Position;
             float mouseMusicPosition = XPositionToMusicPosition(mousePos.X);
             float mouseRelativeMusicPosition = XPositionToRelativeMusicPosition(mousePos.X);
 
@@ -149,7 +156,6 @@ public partial class WaveformWindow : Control
             // SelectedPosition
             if (!Context.Instance.IsSelectedPositionMoving) return;
             Context.Instance.SelectedPosition = XPositionToMusicPosition(mousePos.X);
-            SelectedPositionLine.Position = new Vector2(MusicPositionToXPosition(mouseMusicPosition), 0);
         }
     }
 
@@ -195,6 +201,8 @@ public partial class WaveformWindow : Control
 	public void OnResized() => UpdateVisuals();
 
     public void OnSettingsChanged() => UpdateVisuals();
+
+    public void OnSelectedPositionChanged() => UpdateSelectedPositionLine();
 
     public void OnMouseEntered() => PreviewLine.Visible = true;
 
@@ -341,7 +349,7 @@ public partial class WaveformWindow : Control
         return gridLine;
 	}
 
-    // TODO: Finish faster way to Add Timing Points
+    // TODO 1: Add timing points faster using SelectedPosition
 
     #endregion
     #region Updaters
@@ -371,6 +379,13 @@ public partial class WaveformWindow : Control
             new Vector2(0, 0),
             new Vector2(0, Size.Y)
         };
+    }
+
+    public void UpdateSelectedPositionLine()
+    {
+        float x = MusicPositionToXPosition(Context.Instance.SelectedPosition);
+        SelectedPositionLine.Position = new Vector2(x, 0);
+        SelectedPositionLine.Visible = (x >= 0 && x <= Size.X);
     }
 
     public void UpdateSelectedPositionScaling()
