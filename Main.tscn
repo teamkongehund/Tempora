@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://crfob01mbcgre"]
+[gd_scene load_steps=8 format=3 uid="uid://crfob01mbcgre"]
 
 [ext_resource type="Script" path="res://Main.cs" id="1_t2kkt"]
 [ext_resource type="Script" path="res://AudioVisualsContainer.cs" id="3_7vuxd"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://dtlgnwhkfh1i5" path="res://Metronome.tscn" id="5_fbm2c"]
 [ext_resource type="Script" path="res://BlockScrollBar.cs" id="5_mw7l2"]
 [ext_resource type="Script" path="res://VolumeSlider.cs" id="6_c6j3g"]
+[ext_resource type="Script" path="res://GridScrollBar.cs" id="7_drw13"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -165,9 +166,52 @@ vertical_alignment = 1
 
 [node name="ExportButton" type="Button" parent="."]
 layout_mode = 0
-offset_left = 13.0
-offset_top = 319.0
-offset_right = 112.0
-offset_bottom = 362.0
+offset_left = 14.0
+offset_top = 478.0
+offset_right = 113.0
+offset_bottom = 532.0
 text = "Export .osz 
 & Open"
+
+[node name="GridScrollBar" type="HScrollBar" parent="."]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 38.0
+offset_right = 109.0
+offset_bottom = 62.0
+min_value = 1.0
+max_value = 12.0
+step = 1.0
+value = 4.0
+script = ExtResource("7_drw13")
+metadata/_edit_group_ = true
+
+[node name="Label" type="Label" parent="GridScrollBar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -48.0
+offset_top = -12.0
+offset_right = 48.0
+offset_bottom = 12.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Grid" type="Label" parent="GridScrollBar"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.51
+offset_left = -48.0
+offset_top = -26.0
+offset_right = 46.04
+grow_horizontal = 2
+text = "Grid
+"
+horizontal_alignment = 1
+vertical_alignment = 1

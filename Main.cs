@@ -10,7 +10,9 @@ public partial class Main : Control
 	//TextEdit PositionField;
 
 	BlockScrollBar BlockScrollBar;
-	
+
+	HScrollBar GridScrollBar;
+
 	WaveformWindow WaveformWindow;
 	
 	AudioVisualsContainer AudioVisualsContainer;
@@ -37,6 +39,7 @@ public partial class Main : Control
 		//PositionField = GetNode<TextEdit>("PositionField");
 		Metronome = GetNode<Metronome>("Metronome");
 		BlockScrollBar = GetNode<BlockScrollBar>("BlockScrollBar");
+        GridScrollBar = GetNode<HScrollBar>("GridScrollBar");
 
         AudioFile = new AudioFile(AudioPath);
 		
@@ -49,8 +52,9 @@ public partial class Main : Control
 		AudioVisualsContainer.CreateBlocks();
 		//MoveButton.Pressed += OnMoveButtonPressed;
 		Signals.Instance.Scrolled += OnScrolled;
-		BlockScrollBar.ValueChanged += OnScrollBarValueChanged;
+		BlockScrollBar.ValueChanged += OnBlockScrollBarValueChanged;
 		GetTree().Root.FilesDropped += OnFilesDropped;
+		GridScrollBar.ValueChanged += OnGridScrollBarBalueChanged;
 
 		UpdatePlayHeads();
 		BlockScrollBar.UpdateMaxValue();
@@ -111,6 +115,17 @@ public partial class Main : Control
 
 		//ExportOsu();
 	}
+    
+	public void OnBlockScrollBarValueChanged(double value)
+	{
+		AudioVisualsContainer.NominalMusicPositionStartForTopBlock = (int)value;
+	}
+
+	public void OnGridScrollBarBalueChanged(double value)
+	{
+		int intValue = (int)value;
+		Settings.Instance.Divisor = Settings.SliderToDivisorDict[intValue];
+	}
 
 	public void ExportOsu()
 	{
@@ -143,10 +158,6 @@ public partial class Main : Control
     //	timingPoint.MusicPosition = position;
     //   }
 
-    public void OnScrollBarValueChanged(double value)
-	{
-		AudioVisualsContainer.NominalMusicPositionStartForTopBlock = (int)value;
-	}
 
 	public void UpdateChildrensAudioFiles()
 	{

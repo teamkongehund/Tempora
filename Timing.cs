@@ -69,7 +69,7 @@ public partial class Timing : Node
         {
             previousTimingPoint = TimingPoints[index - 1];
 
-            timingPoint.MusicPosition = TimeToMusicPosition(time); // TODO: verify this doesn't accidentally use itself to get value
+            timingPoint.MusicPosition = TimeToMusicPosition(time); // TODO 3: verify this doesn't accidentally use itself to get value
             timingPoint.MeasuresPerSecond = previousTimingPoint.MeasuresPerSecond;
 
 			timingPoint.NextTimingPoint = (TimingPoints.Count > index + 1) ? TimingPoints[index + 1] : null;

@@ -1,5 +1,7 @@
 using Godot;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 public partial class Settings : Node
 {
@@ -20,7 +22,25 @@ public partial class Settings : Node
         }
 	}
 
-	private int _numberOfBlocks = 10;
+	public static readonly Dictionary<int, int> SliderToDivisorDict = new Dictionary<int, int>()
+	{
+		{ 1, 1 },
+		{ 2, 2 },
+		{ 3, 3 },
+		{ 4, 4 },
+		{ 5, 5 },
+		{ 6, 6 },
+		{ 7, 7 },
+        { 8, 8 },
+		{ 9, 9 },
+		{ 10, 10 },
+        { 11, 12 },
+		{ 12, 16 }
+    };
+
+	public static int DivisorToSlider(int divisor) => SliderToDivisorDict.FirstOrDefault(x => x.Value == divisor).Key;
+
+    private int _numberOfBlocks = 10;
 	/// <summary>
 	/// Number of waveform blocks to display
 	/// </summary>

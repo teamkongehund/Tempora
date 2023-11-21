@@ -19,5 +19,5 @@ public partial class GridLine : Line2D
         Width = 4;
     }
 
-	// TODO: Add a method that determines color. Execute it in _Ready().
+	// TODO 2: Add a method that determines color. Execute it in _Ready().
 }
