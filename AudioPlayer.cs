@@ -17,17 +17,37 @@ public partial class AudioPlayer : AudioStreamPlayer
 		}
 	}
 
+	public double PausePosition;
+
 	public double CurrentPlaybackTime
 	{
 		get => GetPlaybackTime();
 		private set { }
 	}
 
+	public void Pause()
+	{
+		PausePosition = GetPlaybackTime();
+		Stop();
+	}
+
+	public void Resume()
+	{
+		Play();
+		Seek((float)PausePosition);
+	}
+
+	public void PlayPause()
+	{
+		if (Playing) Pause();
+		else Resume();
+	}
+
 	public double GetPlaybackTime()
 	{
 		return Playing 
 			? GetPlaybackPosition() + AudioServer.GetTimeSinceLastMix()
-			: GetPlaybackPosition();
+			: PausePosition;
 	}
 
     public void LoadMp3() => Stream = Godot.FileAccess.FileExists(AudioFile.Path)

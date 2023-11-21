@@ -75,6 +75,17 @@ public partial class Main : Control
 		}
     }
 
+	public override void _Input(InputEvent @event)
+	{
+		if (@event is InputEventKey keyEvent)
+		{
+			if (keyEvent.Keycode == Godot.Key.Space && keyEvent.Pressed)
+			{
+				PlayPause();
+			}
+		}
+	}
+
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
 	{
@@ -160,6 +171,8 @@ public partial class Main : Control
 		AudioPlayer.Stop();
 		UpdatePlayHeads();
     }
+
+	public void PlayPause() => AudioPlayer.PlayPause();
 
 	public void OnScrolled()
 	{
