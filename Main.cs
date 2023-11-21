@@ -216,7 +216,7 @@ public partial class Main : Control
 		TimingPoint timingPoint;
 		Timing.AddTimingPoint(playbackTime, out timingPoint);
 		if (timingPoint != null) 
-			Signals.Instance.HeldTimingPoint = timingPoint;
+			Context.Instance.HeldTimingPoint = timingPoint;
 	}
 
 }

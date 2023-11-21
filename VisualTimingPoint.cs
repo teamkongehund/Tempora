@@ -36,7 +36,7 @@ public partial class VisualTimingPoint : Node2D
 			}
             if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick && hasMouseInside && !Input.IsKeyPressed(Key.Alt))
             {
-				Signals.Instance.HeldTimingPoint = null;
+				Context.Instance.HeldTimingPoint = null;
 
 				// Prevent accidental deletion un inadvertent double-double-clicking
 				if (Time.GetTicksMsec() - SystemTimeWhenCreated > 500)

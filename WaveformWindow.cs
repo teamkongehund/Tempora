@@ -138,7 +138,7 @@ public partial class WaveformWindow : Control
 
 			PreviewLine.Position = new Vector2(MusicPositionToXPosition(mouseMusicPosition), 0);
 
-			TimingPoint timingPoint = Signals.Instance.HeldTimingPoint;
+			TimingPoint timingPoint = Context.Instance.HeldTimingPoint;
 			if (timingPoint == null) 
 				return;
 
@@ -322,6 +322,17 @@ public partial class WaveformWindow : Control
 
         return gridLine;
 	}
+
+	/// <summary>
+	/// TODO 1: Create a faster way to add timing points as follows:
+	/// Add a Line2D "SelectedPositionLine" to WaveformWindow scene. It should be similar to playhead, preview line and grid line
+	/// When user clicks down left mouse, the selected position moves around with the mouse, and stops when the user lets go.
+	/// To achieve this, add bool IsSelectionMoving to Context - then if true, in mouseMove, set selection to musicposition
+	/// The actual selection position should also be a variable in context, not main
+	/// A signal should be emitted from Signals when the position has moved - this should update the visual line
+	/// 
+	/// </summary>
+	int dummySummaryHolder = 1;
 
     #endregion
     #region Updaters
