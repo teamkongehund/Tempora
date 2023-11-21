@@ -96,7 +96,9 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
 	/// </summary>
 	public void Delete()
 	{
-		EmitSignal(nameof(Deleted), this);
+        if (PreviousTimingPoint != null) PreviousTimingPoint.NextTimingPoint = NextTimingPoint;
+        if (NextTimingPoint != null) NextTimingPoint.PreviousTimingPoint = PreviousTimingPoint;
+        EmitSignal(nameof(Deleted), this);
 	}
 
     public int CompareTo(TimingPoint other) => Time.CompareTo(other.Time);

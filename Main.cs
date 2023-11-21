@@ -3,8 +3,6 @@ using System;
 
 public partial class Main : Control
 {
-	Button PlayButton;
-    Button StopButton;
 	Button ExportButton;
     //Button MoveButton;
 	
@@ -30,8 +28,6 @@ public partial class Main : Control
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{
-		PlayButton = GetNode<Button>("PlayButton");
-        StopButton = GetNode<Button>("StopButton");
         ExportButton = GetNode<Button>("ExportButton");
         AudioPlayer = GetNode<AudioPlayer>("AudioPlayer");
         AudioVisualsContainer = GetNode<AudioVisualsContainer>("AudioVisualsContainer");
@@ -44,8 +40,6 @@ public partial class Main : Control
 
         AudioFile = new AudioFile(AudioPath);
 		
-		PlayButton.Pressed += Play;
-		StopButton.Pressed += Stop;
 		ExportButton.Pressed += OnExportButtonPressed;
 
 		UpdateChildrensAudioFiles();

@@ -5,10 +5,20 @@ public partial class Settings : Node
 {
 	public static Settings Instance;
 
+	private int _divisor = 4;
 	/// <summary>
 	/// Musical grid divisor - can be thought of as 1/Divisor - i.e. a value of 4 means "display quarter notes"
 	/// </summary>
-	public int Divisor = 4;
+	public int Divisor
+	{
+		get => _divisor;
+		set
+		{
+			if (_divisor == value) return;
+			_divisor = value;
+            Signals.Instance.EmitSignal("SettingsChanged");
+        }
+	}
 
 	private int _numberOfBlocks = 10;
 	/// <summary>
@@ -30,7 +40,7 @@ public partial class Settings : Node
 	/// <summary>
 	/// How many measures of overlapping time is added to the beginning and end of each waveform block
 	/// </summary>
-	public float MusicPositionMargin = 0.05f;
+	public float MusicPositionMargin = 0.04f;
 
 	/// <summary>
 	/// Snap timing points to beat grid when moving them. 
