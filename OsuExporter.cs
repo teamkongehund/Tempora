@@ -5,7 +5,7 @@ using System.Globalization;
 
 public partial class OsuExporter : Node
 {
-	public static int ExportOffsetMS = 0;
+	public static int ExportOffsetMS = -29;
 
 	public static string GetDotOsu(Timing timing)
 	{

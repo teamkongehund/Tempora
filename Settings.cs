@@ -10,10 +10,22 @@ public partial class Settings : Node
 	/// </summary>
 	public int Divisor = 4;
 
+	private int _numberOfBlocks = 10;
 	/// <summary>
 	/// Number of waveform blocks to display
 	/// </summary>
-	public int NumberOfBlocks = 12;
+	public int NumberOfBlocks
+	{
+		get => _numberOfBlocks;
+		set
+		{
+			if (_numberOfBlocks != value)
+			{
+				_numberOfBlocks = value;
+				Signals.Instance.EmitSignal("SettingsChanged");
+			}
+		}
+	}
 
 	/// <summary>
 	/// How many measures of overlapping time is added to the beginning and end of each waveform block

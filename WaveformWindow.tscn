@@ -11,8 +11,17 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_546h3")
 
+[node name="WaveformFolder" type="Node2D" parent="."]
+
+[node name="VisualTimingPointFolder" type="Node2D" parent="."]
+
 [node name="Playhead" type="Line2D" parent="."]
 width = 2.0
 default_color = Color(0.270588, 1, 0.921569, 1)
 
 [node name="GridFolder" type="Node2D" parent="."]
+
+[node name="PreviewLine" type="Line2D" parent="."]
+visible = false
+width = 2.0
+default_color = Color(0.419608, 0.419608, 0.419608, 1)

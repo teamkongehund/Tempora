@@ -17,6 +17,8 @@ public partial class Signals : Node
 
     [Signal] public delegate void ScrolledEventHandler();
 
+    [Signal] public delegate void SettingsChangedEventHandler();
+
     public override void _Ready()
     {
         Instance = this;

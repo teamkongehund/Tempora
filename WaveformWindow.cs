@@ -12,8 +12,11 @@ public partial class WaveformWindow : Control
     [Signal] public delegate void SeekPlaybackTimeEventHandler(float playbackTime);
 	[Signal] public delegate void DoubleClickedEventHandler(float playbackTime);
 
+    public Node2D WaveformFolder;
+	public Node2D VisualTimingPointFolder;
     public Line2D Playhead;
 	public Node2D GridFolder;
+	public Line2D PreviewLine;
 
 	private AudioFile _audioFile;
 	public AudioFile AudioFile
@@ -64,21 +67,29 @@ public partial class WaveformWindow : Control
 	public int FirstTimingPointIndex;
 	public int LastTimingPointIndex;
     #endregion
-    #region Godot
+    #region Godot & Signals
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{
 		GridFolder = GetNode<Node2D>("GridFolder");
+        WaveformFolder = GetNode<Node2D>("WaveformFolder");
+        VisualTimingPointFolder = GetNode<Node2D>("VisualTimingPointFolder");
+        PreviewLine = GetNode<Line2D>("PreviewLine");
 
-		Timing = Timing.Instance;
-
+        Timing = Timing.Instance;
+		
 		Playhead = GetNode<Line2D>("Playhead");
         Playhead.Width = 4;
 		Playhead.ZIndex = 100;
 		UpdatePlayheadScaling();
+		UpdatePreviewLineScaling();
 
-		Resized += OnResized;
+        Resized += OnResized;
+		Signals.Instance.SettingsChanged += OnSettingsChanged;
+
+		MouseEntered += OnMouseEntered;
+		MouseExited += OnMouseExited;
 
         // If I used recommended += syntax here,
 		// disposed WaveformWindows will still react to this signal, causing exceptions.
@@ -120,37 +131,38 @@ public partial class WaveformWindow : Control
         }
 		else if (@event is InputEventMouseMotion mouseMotion)
 		{
-			TimingPoint timingPoint = Signals.Instance.HeldTimingPoint;
-			if (timingPoint == null) return;
-
 			Vector2 mousePos = mouseMotion.Position;
-
 			float mouseMusicPosition = XPositionToMusicPosition(mousePos.X);
 			float mouseRelativeMusicPosition = XPositionToRelativeMusicPosition(mousePos.X);
 
-			if (Settings.Instance.SnapToGrid)
+			PreviewLine.Position = new Vector2(MusicPositionToXPosition(mouseMusicPosition), 0);
+
+			TimingPoint timingPoint = Signals.Instance.HeldTimingPoint;
+			if (timingPoint == null) 
+				return;
+
+			if (!Settings.Instance.SnapToGrid)
 			{
-				float closestGridRelativeMusicPosition = 0;
-				float lastMusicPositionDifference = 1000f; // large number
-				float currentMusicPositionDifference;
-
-				foreach(GridLine gridLine in GridFolder.GetChildren())
-				{
-					currentMusicPositionDifference = Math.Abs(gridLine.RelativeMusicPosition - mouseRelativeMusicPosition);
-					if (currentMusicPositionDifference > lastMusicPositionDifference)
-						break;
-
-					lastMusicPositionDifference = currentMusicPositionDifference;
-
-					closestGridRelativeMusicPosition = gridLine.RelativeMusicPosition;
-				} 
-
-                timingPoint.MusicPosition = closestGridRelativeMusicPosition + NominalMusicPositionStartForWindow;
+                timingPoint.MusicPosition = mouseMusicPosition;
+				return;
             }
-			else
+
+			float closestGridRelativeMusicPosition = 0;
+			float lastMusicPositionDifference = 1000f; // large number
+			float currentMusicPositionDifference;
+
+			foreach(GridLine gridLine in GridFolder.GetChildren())
 			{
-				timingPoint.MusicPosition = mouseMusicPosition;
-			}
+				currentMusicPositionDifference = Math.Abs(gridLine.RelativeMusicPosition - mouseRelativeMusicPosition);
+				if (currentMusicPositionDifference > lastMusicPositionDifference)
+					break;
+
+				lastMusicPositionDifference = currentMusicPositionDifference;
+
+				closestGridRelativeMusicPosition = gridLine.RelativeMusicPosition;
+			} 
+
+            timingPoint.MusicPosition = closestGridRelativeMusicPosition + NominalMusicPositionStartForWindow;
 
         }
     }
@@ -162,6 +174,13 @@ public partial class WaveformWindow : Control
 		RenderTimingPoints();
 		CreateGridLines();
 	}
+	public void OnResized() => UpdateVisuals();
+
+    public void OnSettingsChanged() => UpdateVisuals();
+
+    public void OnMouseEntered() => PreviewLine.Visible = true;
+
+    public void OnMouseExited() => PreviewLine.Visible = false;
 
     #endregion
     #region Render
@@ -170,7 +189,7 @@ public partial class WaveformWindow : Control
 	{
 		//GD.Print($"{Time.GetTicksMsec()/1e3} - Now rendering waveform window {MusicPositionStart}!");
 
-        foreach (var child in GetChildren())
+        foreach (var child in WaveformFolder.GetChildren())
         {
             if (child is Waveform waveform)
             {
@@ -197,7 +216,7 @@ public partial class WaveformWindow : Control
                 Position = new Vector2(0, Size.Y / 2),
             };
 
-            AddChild(waveform);
+            WaveformFolder.AddChild(waveform);
 
 			//GD.Print($"There were no timing points... Using MusicPositionStart {MusicPositionStartForWindow} to set start and end times.");
 
@@ -230,18 +249,18 @@ public partial class WaveformWindow : Control
 			{
 				Position = new Vector2(xPosition, Size.Y / 2),
 			};
-			
-			// Randomize color, so it's easy to see what's happening
-			//Random random = new Random();
-			//waveform.DefaultColor = new Color((float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble(), 1);
 
-            AddChild(waveform);
+            // Randomize color, so it's easy to see what's happening
+            //Random random = new Random();
+            //waveform.DefaultColor = new Color((float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble(), 1);
+
+            WaveformFolder.AddChild(waveform);
         }
 	}
 
 	public void RenderTimingPoints()
 	{
-        foreach (var child in GetChildren())
+        foreach (var child in VisualTimingPointFolder.GetChildren())
         {
             if (child is VisualTimingPoint visualTimingPoint)
                 visualTimingPoint.QueueFree();
@@ -257,94 +276,10 @@ public partial class WaveformWindow : Control
 				visualTimingPoint.TimingPoint = timingPoint;
                 visualTimingPoint.Position = new Vector2(x, Size.Y / 2);
 				visualTimingPoint.Scale = new Vector2(0.2f, 0.2f);
-				AddChild(visualTimingPoint);
+                VisualTimingPointFolder.AddChild(visualTimingPoint);
 			}
 		}
 	}
-
-	//public void RenderOldTimingPoint(float x)
-	//{
-	//	Sprite2D sprite = new Sprite2D()
-	//	{
-	//		Texture = ResourceLoader.Load("res://icon.svg") as Texture2D,
-	//		Scale = new Vector2(0.2f, 0.2f),
-	//		Position = new Vector2(x, Size.Y/2)
-	//	};
-	//	AddChild(sprite);
-	//}
-
-	//public void RenderOldTimingPoints()
-	//{
- //       foreach (var child in GetChildren())
- //       {
- //           if (child is Sprite2D sprite)
-	//			sprite.QueueFree();
- //       }
-
- //       //UpdateTimingPointsIndices();
-
-	//	if (Timing.TimingPoints.Count == 0)
-	//	{
-	//		return;
-	//	}
-
-	//	for (int i = FirstTimingPointIndex; i <= LastTimingPointIndex; i++)
-	//	{
-	//		TimingPoint timingPoint = Timing.TimingPoints[i];
-	//		float x = MusicPositionToXPosition((float)timingPoint.MusicPosition);
-
-	//		if (timingPoint.MusicPosition >= NominalMusicPositionStartForWindow)
-	//			RenderOldTimingPoint(x);
-	//	}
- //   }
-
-    #endregion
-    #region Calculators
-
-    public float XPositionToMusicPosition(float x)
-	{
-        return XPositionToRelativeMusicPosition(x) + NominalMusicPositionStartForWindow;
-	}
-
-	/// <summary>
-	/// Return music position relative to <see cref="NominalMusicPositionStartForWindow"/>
-	/// </summary>
-	/// <param name="x"></param>
-	/// <returns></returns>
-	public float XPositionToRelativeMusicPosition(float x)
-	{
-        float margin = Settings.Instance.MusicPositionMargin;
-        float windowLengthInMeasures = 1f + 2 * margin;
-		return x * windowLengthInMeasures / Size.X - margin;
-    }
-
-	public float MusicPositionToXPosition(float musicPosition)
-	{
-		float margin = Settings.Instance.MusicPositionMargin;
-		float windowLengthInMeasures = 1f + 2 * margin;
-		return Size.X * (musicPosition - NominalMusicPositionStartForWindow + margin) / windowLengthInMeasures;
-	}
-    #endregion
-    #region Updaters
-
-    public void OnResized()
-    {
-		UpdatePlayheadScaling();
-        CreateWaveforms();
-        //RenderOldTimingPoints();
-        RenderTimingPoints();
-		CreateGridLines();
-    }
-
-	public void UpdatePlayheadScaling()
-	{
-        Playhead.Points = new Vector2[2]
-        {
-            new Vector2(0, 0),
-            new Vector2(0, Size.Y)
-        };
-    }
-    
 	public void CreateGridLines()
 	{
 		foreach (var child in GridFolder.GetChildren())
@@ -372,37 +307,6 @@ public partial class WaveformWindow : Control
 			GridFolder.AddChild(gridLine);
 		}
 	}
-
-	//public Line2D GetGridLineOld(int[] timeSignature, int divisor, int index)
-	//{
-	//	float relativePosition;
- //       Line2D gridLine = GetGridLineOld(timeSignature, divisor, index, out relativePosition);
-	//	return gridLine;
- //   }
-
-	//public Line2D GetGridLineOld(int[] timeSignature, int divisor, int index, out float relativePosition)
-	//{
- //       relativePosition = Timing.GetRelativeNotePosition(timeSignature, divisor, index);
-
- //       if (relativePosition < 0 || relativePosition > 1) return null;
-
-	//	float margin = Settings.Instance.MusicPositionMargin;
-	//	float xPosition = Size.X * ( (relativePosition + margin) / (2 * margin + 1f));
-
- //       Line2D gridLine = new Line2D();
- //       gridLine.Position = new Vector2(xPosition, 0);
- //       gridLine.Points = new Vector2[2]
- //       {
- //           new Vector2(0, 0),
- //           new Vector2(0, Size.Y)
- //       };
-	//	gridLine.DefaultColor = new Color(1f, 0, 0);
-	//	gridLine.Width = 1;
-
-
- //       return gridLine;
- //   }
-
 	public GridLine GetGridLine(int[] timeSignature, int divisor, int index)
 	{
 		GridLine gridLine = new GridLine(timeSignature, divisor, index);
@@ -419,7 +323,34 @@ public partial class WaveformWindow : Control
         return gridLine;
 	}
 
-	// TODO: Redo gridLine.Points via an update method
+    #endregion
+    #region Updaters
+    public void UpdateVisuals()
+    {
+        UpdatePlayheadScaling();
+        UpdatePreviewLineScaling();
+        CreateWaveforms();
+        RenderTimingPoints();
+        CreateGridLines();
+    }
+
+    public void UpdatePlayheadScaling()
+	{
+        Playhead.Points = new Vector2[2]
+        {
+            new Vector2(0, 0),
+            new Vector2(0, Size.Y)
+        };
+    }
+
+	public void UpdatePreviewLineScaling()
+	{
+        PreviewLine.Points = new Vector2[2]
+        {
+            new Vector2(0, 0),
+            new Vector2(0, Size.Y)
+        };
+    }
 
 	public void UpdateTimingPointsIndices()
 	{
@@ -440,11 +371,32 @@ public partial class WaveformWindow : Control
 		LastTimingPointIndex = lastIndex;
     }
 
-	//public void TrackMouse()
-	//{
-	//	Vector2 pos = GetGlobalMousePosition();
-	//	GD.Print(pos);
-	//}
+    #endregion
+    #region Calculators
+
+    public float XPositionToMusicPosition(float x)
+	{
+        return XPositionToRelativeMusicPosition(x) + NominalMusicPositionStartForWindow;
+	}
+
+	/// <summary>
+	/// Return music position relative to <see cref="NominalMusicPositionStartForWindow"/>
+	/// </summary>
+	/// <param name="x"></param>
+	/// <returns></returns>
+	public float XPositionToRelativeMusicPosition(float x)
+	{
+        float margin = Settings.Instance.MusicPositionMargin;
+        float windowLengthInMeasures = 1f + 2 * margin;
+		return x * windowLengthInMeasures / Size.X - margin;
+    }
+
+	public float MusicPositionToXPosition(float musicPosition)
+	{
+		float margin = Settings.Instance.MusicPositionMargin;
+		float windowLengthInMeasures = 1f + 2 * margin;
+		return Size.X * (musicPosition - NominalMusicPositionStartForWindow + margin) / windowLengthInMeasures;
+	}
 
     #endregion
 }

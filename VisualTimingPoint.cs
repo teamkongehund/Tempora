@@ -8,11 +8,15 @@ public partial class VisualTimingPoint : Node2D
     Area2D Area2D;
 	CollisionShape2D CollisionShape2D;
 
+	public ulong SystemTimeWhenCreated;
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
 		Area2D = GetNode<Area2D>("Area2D");
 		CollisionShape2D = Area2D.GetNode<CollisionShape2D>("CollisionShape2D");
+
+		SystemTimeWhenCreated = Time.GetTicksMsec();
 	}
 
     public override void _Input(InputEvent @event)
@@ -30,11 +34,19 @@ public partial class VisualTimingPoint : Node2D
 			{
 				Signals.Instance.EmitSignal("MouseLeftReleased");
 			}
-            if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick && hasMouseInside)
+            if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick && hasMouseInside && !Input.IsKeyPressed(Key.Alt))
             {
 				Signals.Instance.HeldTimingPoint = null;
 
-				TimingPoint.Delete();
+				// Prevent accidental deletion un inadvertent double-double-clicking
+				if (Time.GetTicksMsec() - SystemTimeWhenCreated > 500)
+				{
+					TimingPoint.Delete();
+				}
+				else
+				{
+                    Signals.Instance.EmitSignal("TimingPointHolding", TimingPoint);
+                }
 
 				Viewport viewport = GetViewport();
 				viewport.SetInputAsHandled();
