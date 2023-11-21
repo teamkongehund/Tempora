@@ -210,7 +210,8 @@ public partial class Main : Control
 	{
 		TimingPoint timingPoint;
 		Timing.AddTimingPoint(playbackTime, out timingPoint);
-		Signals.Instance.HeldTimingPoint = timingPoint;
+		if (timingPoint != null) 
+			Signals.Instance.HeldTimingPoint = timingPoint;
 	}
 
 }

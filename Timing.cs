@@ -61,37 +61,47 @@ public partial class Timing : Node
 
         TimingPoints.Sort();
 
-		int index = TimingPoints.FindIndex(point => point == timingPoint);
+		TimingPoint previousTimingPoint = null;
+        TimingPoint nextTimingPoint = null;
 
-		// Set MusicPosition based on previous Timing Point
-		if (index >= 1) 
-		{
-			timingPoint.PreviousTimingPoint = TimingPoints[index - 1];
+        int index = TimingPoints.FindIndex(point => point == timingPoint);
+		if (index >= 1) // Set MusicPosition based on previous TimingPoint
+        {
+            previousTimingPoint = TimingPoints[index - 1];
 
             timingPoint.MusicPosition = TimeToMusicPosition(time); // TODO: verify this doesn't accidentally use itself to get value
-            timingPoint.MeasuresPerSecond = timingPoint.PreviousTimingPoint.MeasuresPerSecond;
+            timingPoint.MeasuresPerSecond = previousTimingPoint.MeasuresPerSecond;
 
 			timingPoint.NextTimingPoint = (TimingPoints.Count > index + 1) ? TimingPoints[index + 1] : null;
 		}
-		else if (index == 0)
+		else if (index == 0) // Set MusicPosition based on next TimingPoint
 		{
-			timingPoint.PreviousTimingPoint = null;
-			timingPoint.NextTimingPoint = TimingPoints.Count > 1 ? TimingPoints[index + 1] : null;
-			if (timingPoint.NextTimingPoint == null) 
+            nextTimingPoint = TimingPoints.Count > 1 ? TimingPoints[index + 1] : null;
+			if (nextTimingPoint == null) 
 			{
 				// Set MusicPosition based on default timing (120 BPM = 0.5 MPS from Time = 0)
 				timingPoint.MusicPosition = 0.5f * time;
 			}
 			else
 			{
-				float timeDifference = timingPoint.Time - timingPoint.NextTimingPoint.Time;
-				float musicPositionDifference = timingPoint.NextTimingPoint.MeasuresPerSecond * timeDifference;
-                timingPoint.MusicPosition = timingPoint.NextTimingPoint.MusicPosition + musicPositionDifference;
+				float timeDifference = timingPoint.Time - nextTimingPoint.Time;
+				float musicPositionDifference = nextTimingPoint.MeasuresPerSecond * timeDifference;
+                timingPoint.MusicPosition = nextTimingPoint.MusicPosition + musicPositionDifference;
             }
-
         }
 
-		timingPoint.Changed += OnTimingPointChanged;
+        if (previousTimingPoint?.MusicPosition == timingPoint.MusicPosition
+                || nextTimingPoint?.MusicPosition == timingPoint.MusicPosition)
+        {
+            TimingPoints.Remove(timingPoint);
+            outTimingPoint = null;
+            return;
+        }
+
+		timingPoint.PreviousTimingPoint = previousTimingPoint;
+		timingPoint.NextTimingPoint = nextTimingPoint;
+
+        timingPoint.Changed += OnTimingPointChanged;
         timingPoint.Deleted += OnTimingPointDeleted;
 
 		outTimingPoint = timingPoint;
