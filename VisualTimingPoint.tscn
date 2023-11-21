@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://b8325rmwu4cpb"]
+[gd_scene load_steps=4 format=3 uid="uid://cj52vnh6oblh8"]
 
 [ext_resource type="Script" path="res://VisualTimingPoint.cs" id="1_es6qk"]
 [ext_resource type="Texture2D" uid="uid://cpvdv75skegy3" path="res://icon.svg" id="2_5aykg"]
@@ -10,9 +10,21 @@ size = Vector2(128, 128)
 script = ExtResource("1_es6qk")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+visible = false
 texture = ExtResource("2_5aykg")
 
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -64.0
+offset_top = -64.0
+offset_right = 64.0
+offset_bottom = 64.0
+rotation = 0.785398
+pivot_offset = Vector2(64, 64)
+mouse_filter = 2
+color = Color(1, 0.6, 0, 1)
+
 [node name="Area2D" type="Area2D" parent="."]
+rotation = 0.785398
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("RectangleShape2D_rj6no")

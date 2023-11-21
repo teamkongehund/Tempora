@@ -77,7 +77,7 @@ public partial class Main : Control
 
 	public override void _Input(InputEvent @event)
 	{
-		if (@event is InputEventKey keyEvent)
+        if (@event is InputEventKey keyEvent)
 		{
 			if (keyEvent.Keycode == Godot.Key.Space && keyEvent.Pressed)
 			{

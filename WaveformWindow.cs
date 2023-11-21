@@ -108,6 +108,7 @@ public partial class WaveformWindow : Control
     {
         if (@event is InputEventMouseButton mouseEvent)
         {
+            //GD.Print("WaveformWindow is handling mouseEvent");
             if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed)
             {
                 float x = mouseEvent.Position.X;
@@ -141,13 +142,13 @@ public partial class WaveformWindow : Control
 			if (timingPoint == null) 
 				return;
 
-			if (!Settings.Instance.SnapToGrid)
+            if (!Settings.Instance.SnapToGrid)
 			{
                 timingPoint.MusicPosition = mouseMusicPosition;
 				return;
             }
 
-			float closestGridRelativeMusicPosition = 0;
+            float closestGridRelativeMusicPosition = 0;
 			float lastMusicPositionDifference = 1000f; // large number
 			float currentMusicPositionDifference;
 
@@ -163,7 +164,6 @@ public partial class WaveformWindow : Control
 			} 
 
             timingPoint.MusicPosition = closestGridRelativeMusicPosition + NominalMusicPositionStartForWindow;
-
         }
     }
 
