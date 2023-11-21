@@ -6,6 +6,29 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
 	[Signal] public delegate void ChangedEventHandler(TimingPoint timingPoint);
     [Signal] public delegate void DeletedEventHandler(TimingPoint timingPoint);
 
+	private TimingPoint _previousTimingPoint;
+	public TimingPoint PreviousTimingPoint
+	{
+		get => _previousTimingPoint;
+        set
+		{
+			if (_previousTimingPoint == value) return;
+			_previousTimingPoint = value;
+			if (PreviousTimingPoint != null) PreviousTimingPoint.NextTimingPoint = this;
+		}
+	}
+    private TimingPoint _nextTimingPoint;
+    public TimingPoint NextTimingPoint
+    {
+        get => _nextTimingPoint;
+        set
+        {
+            if (_nextTimingPoint == value) return;
+            _nextTimingPoint = value;
+            if (NextTimingPoint != null) NextTimingPoint.PreviousTimingPoint = this;
+        }
+    }
+
     public int[] TimeSignature = new int[] { 4, 4 };
 
 	public float Time;
@@ -59,11 +82,12 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
 		}
 		set
 		{
-			if (_musicPosition != value)
-			{
-				_musicPosition = value;
-				EmitSignal(nameof(Changed), this); // Should happen when user drags timing point to new position
-			}
+			if (_musicPosition == value) return;
+			if (PreviousTimingPoint != null && PreviousTimingPoint.MusicPosition >= value) return;
+            if (NextTimingPoint != null && NextTimingPoint.MusicPosition <= value) return;
+
+            _musicPosition = value;
+			EmitSignal(nameof(Changed), this); // Should happen when user drags timing point to new position
 		}
 	}
 

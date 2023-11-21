@@ -32,7 +32,7 @@ public partial class Timing : Node
 			Time = Time
 		};
 		TimingPoints.Add(timingPoint);
-		AddChild(timingPoint);
+		//AddChild(timingPoint);
 		timingPoint.Changed += OnTimingPointChanged;
 		TimingPoints.Sort();
 
@@ -57,36 +57,36 @@ public partial class Timing : Node
 			Time = time 
 		};
 		TimingPoints.Add(timingPoint);
-		AddChild(timingPoint);
+		//AddChild(timingPoint);
 
         TimingPoints.Sort();
 
 		int index = TimingPoints.FindIndex(point => point == timingPoint);
-		
+
 		// Set MusicPosition based on previous Timing Point
 		if (index >= 1) 
 		{
-			TimingPoint previousTimingPoint = TimingPoints[index - 1];
+			timingPoint.PreviousTimingPoint = TimingPoints[index - 1];
 
-			//float timeDifference = timingPoint.Time - previousTimingPoint.Time;
-			//float musicPositionDifference = previousTimingPoint.MeasuresPerSecond * timeDifference;
-			//timingPoint.MusicPosition = previousTimingPoint.MusicPosition + musicPositionDifference;
-			timingPoint.MusicPosition = TimeToMusicPosition(time);
-            timingPoint.MeasuresPerSecond = previousTimingPoint.MeasuresPerSecond;
+            timingPoint.MusicPosition = TimeToMusicPosition(time); // TODO: verify this doesn't accidentally use itself to get value
+            timingPoint.MeasuresPerSecond = timingPoint.PreviousTimingPoint.MeasuresPerSecond;
+
+			timingPoint.NextTimingPoint = (TimingPoints.Count > index + 1) ? TimingPoints[index + 1] : null;
 		}
 		else if (index == 0)
 		{
-            TimingPoint nextTimingPoint = TimingPoints.Count > 1 ? TimingPoints[index + 1] : null;
-			if (nextTimingPoint == null) 
+			timingPoint.PreviousTimingPoint = null;
+			timingPoint.NextTimingPoint = TimingPoints.Count > 1 ? TimingPoints[index + 1] : null;
+			if (timingPoint.NextTimingPoint == null) 
 			{
 				// Set MusicPosition based on default timing (120 BPM = 0.5 MPS from Time = 0)
 				timingPoint.MusicPosition = 0.5f * time;
 			}
 			else
 			{
-				float timeDifference = timingPoint.Time - nextTimingPoint.Time;
-				float musicPositionDifference = nextTimingPoint.MeasuresPerSecond * timeDifference;
-                timingPoint.MusicPosition = nextTimingPoint.MusicPosition + musicPositionDifference;
+				float timeDifference = timingPoint.Time - timingPoint.NextTimingPoint.Time;
+				float musicPositionDifference = timingPoint.NextTimingPoint.MeasuresPerSecond * timeDifference;
+                timingPoint.MusicPosition = timingPoint.NextTimingPoint.MusicPosition + musicPositionDifference;
             }
 
         }
