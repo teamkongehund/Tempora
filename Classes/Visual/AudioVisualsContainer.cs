@@ -81,7 +81,7 @@ public partial class AudioVisualsContainer : VBoxContainer
 		}
 
 		//float startTime = FirstBlockStartTime;
-		var packedWaveformWindow = ResourceLoader.Load<PackedScene>("res://WaveformWindow.tscn");
+		var packedWaveformWindow = ResourceLoader.Load<PackedScene>("res://Classes/Visual/WaveformWindow.tscn");
 
 		// Instantiate block scenes and add as children
         for (int i = 0; i < NumberOfBlocks; i++) 

@@ -11,16 +11,20 @@ config_version=5
 [application]
 
 config/name="Osu Timer"
-run/main_scene="res://Main.tscn"
+run/main_scene="res://Classes/Visual/Main.tscn"
 config/features=PackedStringArray("4.1", "C#", "Forward Plus")
-config/icon="res://icon.svg"
+config/icon="res://Classes/Visual/icon.svg"
+
+[audio]
+
+buses/default_bus_layout="res://Classes/Audio/default_bus_layout.tres"
 
 [autoload]
 
-Signals="*res://Signals.tscn"
-Timing="*res://Timing.tscn"
-Settings="*res://Settings.tscn"
-Context="*res://Context.tscn"
+Signals="*res://Classes/Utility/Signals.tscn"
+Timing="*res://Classes/Utility/Timing.tscn"
+Settings="*res://Classes/Utility/Settings.tscn"
+Context="*res://Classes/Utility/Context.tscn"
 
 [display]
 

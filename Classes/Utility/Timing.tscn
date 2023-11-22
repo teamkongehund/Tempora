@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ctk24cncokqol"]
 
-[ext_resource type="Script" path="res://Timing.cs" id="1_j2erg"]
+[ext_resource type="Script" path="res://Classes/Utility/Timing.cs" id="1_j2erg"]
 
 [node name="Timing" type="Node"]
 script = ExtResource("1_j2erg")

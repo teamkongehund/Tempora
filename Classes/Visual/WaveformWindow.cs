@@ -141,6 +141,13 @@ public partial class WaveformWindow : Control
                 float time = Timing.MusicPositionToTime(musicPosition);
                 EmitSignal(nameof(DoubleClicked), time);
             }
+            else if (mouseEvent.ButtonIndex == MouseButton.Right && mouseEvent.Pressed)
+            {
+                float x = mouseEvent.Position.X;
+                float musicPosition = XPositionToMusicPosition(x);
+                float time = Timing.MusicPositionToTime(musicPosition);
+                EmitSignal(nameof(SeekPlaybackTime), time);
+            }
         }
 		else if (@event is InputEventMouseMotion mouseMotion)
 		{
@@ -262,7 +269,7 @@ public partial class WaveformWindow : Control
         }
         foreach (TimingPoint timingPoint in Timing.TimingPoints)
 		{
-            var packedVisualTimingPoint = ResourceLoader.Load<PackedScene>("res://VisualTimingPoint.tscn");
+            var packedVisualTimingPoint = ResourceLoader.Load<PackedScene>("res://Classes/Visual/VisualTimingPoint.tscn");
             if (timingPoint.MusicPosition >= ActualMusicPositionStartForWindow 
 				&& timingPoint.MusicPosition < ActualMusicPositionStartForWindow + 1 + 2 * Settings.Instance.MusicPositionMargin)
 			{
@@ -317,8 +324,6 @@ public partial class WaveformWindow : Control
 
         return gridLine;
 	}
-
-    // TODO 1: Add timing points faster using SelectedPosition
 
     #endregion
     #region Updaters

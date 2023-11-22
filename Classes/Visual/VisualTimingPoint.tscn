@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://b8325rmwu4cpb"]
 
-[ext_resource type="Script" path="res://VisualTimingPoint.cs" id="1_es6qk"]
+[ext_resource type="Script" path="res://Classes/Visual/VisualTimingPoint.cs" id="1_es6qk"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rj6no"]
 size = Vector2(128, 128)

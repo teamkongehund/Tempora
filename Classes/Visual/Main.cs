@@ -26,7 +26,7 @@ public partial class Main : Control
 
 	Metronome Metronome;
     
-	string AudioPath = "res://UMO.mp3";
+	string AudioPath = "res://Audio/21csm.mp3";
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -64,9 +64,18 @@ public partial class Main : Control
 		BlockScrollBar.UpdateRange();
     }
 
+	// TODO 1: Fix bug where you can add and snap a point right before an existing one
+
 	// TODO 1: Save projects
 
 	// TODO 2: Scroll to set BPM
+
+	// TODO 1: Change time signature
+	// Time signature is per measure, not per timing point
+
+	// TODO 2: Double / halve BPM for a point
+
+	// TODO 2: Copy osu time stamp into app
 
 	public override void _Input(InputEvent @event)
 	{
@@ -119,6 +128,8 @@ public partial class Main : Control
 		ExportOsz();
 
 		//ExportOsu();
+
+		ExportButton.ReleaseFocus();
 	}
     
 	public void OnBlockScrollBarValueChanged(double value)
