@@ -17,7 +17,7 @@ public partial class AudioPlayer : AudioStreamPlayer
 		}
 	}
 
-	public double PausePosition;
+	public double PauseTime;
 
 	public double CurrentPlaybackTime
 	{
@@ -25,16 +25,30 @@ public partial class AudioPlayer : AudioStreamPlayer
 		private set { }
 	}
 
-	public void Pause()
+    public override void _Ready()
+    {
+		Signals.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
+    }
+
+	public void OnSelectedPositionChanged()
 	{
-		PausePosition = GetPlaybackTime();
+		float time = Timing.Instance.MusicPositionToTime(Context.Instance.SelectedPosition);
+		if (time >= 0)
+            PauseTime = time;
+		else
+			PauseTime = 0;
+    }
+
+    public void Pause()
+	{
+		//PausePosition = GetPlaybackTime();
 		Stop();
 	}
 
 	public void Resume()
 	{
 		Play();
-		Seek((float)PausePosition);
+		Seek((float)PauseTime);
 	}
 
 	public void PlayPause()
@@ -47,7 +61,7 @@ public partial class AudioPlayer : AudioStreamPlayer
 	{
 		return Playing 
 			? GetPlaybackPosition() + AudioServer.GetTimeSinceLastMix()
-			: PausePosition;
+			: PauseTime;
 	}
 
     public void LoadMp3() => Stream = Godot.FileAccess.FileExists(AudioFile.Path)

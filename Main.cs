@@ -188,9 +188,13 @@ public partial class Main : Control
 		UpdatePlayHeads();
     }
 
-	public void PlayPause() => AudioPlayer.PlayPause();
+    public void PlayPause()
+    {
+        AudioPlayer.PlayPause();
+        UpdatePlayHeads();
+    }
 
-	public void OnScrolled()
+    public void OnScrolled()
 	{
 		UpdatePlayHeads();
 		BlockScrollBar.Value = AudioVisualsContainer.NominalMusicPositionStartForTopBlock;
@@ -204,7 +208,7 @@ public partial class Main : Control
 		{
 			float x = waveformWindow.MusicPositionToXPosition(musicPosition);
             waveformWindow.Playhead.Position = new Vector2(x, 0.0f);
-            waveformWindow.Playhead.Visible = (x >= 0 && x <= waveformWindow.Size.X);
+            waveformWindow.Playhead.Visible = (x >= 0 && x <= waveformWindow.Size.X) && AudioPlayer.Playing;
         }
 	}
 
