@@ -60,13 +60,13 @@ public partial class AudioVisualsContainer : VBoxContainer
         {
             if (mouseEvent.ButtonIndex == MouseButton.WheelDown && mouseEvent.Pressed)
 			{
-                NominalMusicPositionStartForTopBlock += 1;
+				NominalMusicPositionStartForTopBlock += Input.IsKeyPressed(Key.Shift) ? 5 : 1;
                 Signals.Instance.EmitSignal("Scrolled");
             }
             else if (mouseEvent.ButtonIndex == MouseButton.WheelUp && mouseEvent.Pressed)
             {
-                NominalMusicPositionStartForTopBlock -= 1;
-				Signals.Instance.EmitSignal("Scrolled");
+                NominalMusicPositionStartForTopBlock -= Input.IsKeyPressed(Key.Shift) ? 5 : 1;
+                Signals.Instance.EmitSignal("Scrolled");
             }
         }
     }

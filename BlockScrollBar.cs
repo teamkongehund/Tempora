@@ -15,13 +15,14 @@ public partial class BlockScrollBar : VScrollBar
 
     public void OnTimingChanged()
 	{
-		UpdateMaxValue();
+		UpdateRange();
 	}
 
-
-    public void UpdateMaxValue()
+    public void UpdateRange()
 	{
-		int length = Timing.GetLengthInMeasures() - (Settings.Instance.NumberOfBlocks - 1);
-		MaxValue = length;
+		int firstMeasure = (int)Timing.TimeToMusicPosition(0) - 1;
+		int lastMeasure = Timing.GetLastMeasure() - (Settings.Instance.NumberOfBlocks - 1);
+		MinValue = firstMeasure;
+		MaxValue = lastMeasure;
 	}
 }

@@ -61,7 +61,7 @@ public partial class Main : Control
 
 
         UpdatePlayHeads();
-		BlockScrollBar.UpdateMaxValue();
+		BlockScrollBar.UpdateRange();
     }
 
 	// TODO 1: Save projects

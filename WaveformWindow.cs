@@ -47,6 +47,7 @@ public partial class WaveformWindow : Control
 			UpdateTimingPointsIndices();
 			CreateWaveforms();
             RenderTimingPoints();
+            UpdateSelectedPositionLine();
         }
 	}
 

@@ -302,11 +302,11 @@ public partial class Timing : Node
         float position = index * timeSignature[1] / (float)(timeSignature[0] * gridDivisor);
         return position;
     }
-	public int GetLengthInMeasures()
+	public int GetLastMeasure()
 	{
 		float lengthInSeconds = AudioFile.SampleIndexToSeconds(AudioFile.AudioData.Length - 1);
-		float lengthInMeasures = TimeToMusicPosition(lengthInSeconds);
-		return (int)lengthInMeasures;
+		float lastMeasure = TimeToMusicPosition(lengthInSeconds);
+		return (int)lastMeasure;
 	}
     #endregion
 }
