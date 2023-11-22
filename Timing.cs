@@ -7,7 +7,8 @@ using System.Collections.Generic;
 /// </summary>
 public partial class Timing : Node
 {
-	Signals Signals;
+    #region Properties & Signals
+    Signals Signals;
 
 	[Signal] public delegate void TimingChangedEventHandler();
 
@@ -16,15 +17,18 @@ public partial class Timing : Node
 	public AudioFile AudioFile;
 
 	public static Timing Instance;
+    #endregion
 
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
+    // Called when the node enters the scene tree for the first time.
+    public override void _Ready()
 	{
         Signals = Signals.Instance;
         Instance = this;
 	}
 
-	public void AddTimingPoint(float MusicPosition, float Time)
+    #region Timing modifiers
+
+    public void AddTimingPoint(float MusicPosition, float Time)
 	{
 		TimingPoint timingPoint = new TimingPoint()
 		{
@@ -113,16 +117,6 @@ public partial class Timing : Node
         Signals.EmitSignal("TimingChanged");
     }
 
-	public void PrintTimingPoints()
-	{
-        GD.Print("Current Timing points:");
-        foreach (TimingPoint child in TimingPoints)
-        {
-            //GD.Print("Time " + child.Time + " , MusicPosition " + child.MusicPosition);
-            GD.Print($"Time {child.Time}, Music Position {child.MusicPosition}, BPM {child.BPM}");
-        }
-    }
-
 	public void OnTimingPointChanged(TimingPoint timingPoint)
 	{
         int index = TimingPoints.FindIndex(i => i == timingPoint);
@@ -177,18 +171,56 @@ public partial class Timing : Node
 		TimingPoints[index].MeasuresPerSecond = (float)musicPositionDifference/(float)timeDifference;
     }
 
-    public float? GetTimeDifference(int index1, int index2)
+	/// <summary>
+	/// Snap a <see cref="TimingPoint"/> to the grid using <see cref="Settings.Divisor"/>
+	/// </summary>
+	/// <param name="timingPoint"></param>
+	/// <param name="musicPosition"></param>
+    public void SnapTimingPoint(TimingPoint timingPoint, float musicPosition)
     {
-		if (index1 < 0 || index2 < 0 || index1 > TimingPoints.Count || index2 > TimingPoints.Count) return null;
-        return TimingPoints[index2].Time - TimingPoints[index1].Time;
+        if (timingPoint == null)
+            return;
+
+        if (!Settings.Instance.SnapToGrid)
+        {
+            timingPoint.MusicPosition = musicPosition;
+            return;
+        }
+
+		int divisor = Settings.Instance.Divisor;
+		float divisionLength = 1f / divisor;
+		float relativePosition = musicPosition - (int)musicPosition;
+
+		//int leftDivisionIndex = (int)(relativePosition / divisionLength);
+		//float fractionalPart = relativePosition / divisionLength - leftDivisionIndex;
+		//int divisionIndex = leftDivisionIndex + (int)Math.Round(fractionalPart);
+
+		int divisionIndex = (int)Math.Round(relativePosition / divisionLength);
+
+		float snappedMusicPosition = (int)musicPosition + divisionIndex * divisionLength;
+
+		timingPoint.MusicPosition = snappedMusicPosition;
     }
 
-	/// <summary>
-	/// Returns the <see cref="TimingPoint"/> at or right before a given music position. If none exist, returns the first one after the music position.
-	/// </summary>
-	/// <param name="musicPosition"></param>
-	/// <returns></returns>
-	public TimingPoint GetOperatingTimingPoint(float musicPosition)
+    #endregion
+
+    public void PrintTimingPoints()
+    {
+        GD.Print("Current Timing points:");
+        foreach (TimingPoint child in TimingPoints)
+        {
+            //GD.Print("Time " + child.Time + " , MusicPosition " + child.MusicPosition);
+            GD.Print($"Time {child.Time}, Music Position {child.MusicPosition}, BPM {child.BPM}");
+        }
+    }
+
+    #region Calculators
+    /// <summary>
+    /// Returns the <see cref="TimingPoint"/> at or right before a given music position. If none exist, returns the first one after the music position.
+    /// </summary>
+    /// <param name="musicPosition"></param>
+    /// <returns></returns>
+    public TimingPoint GetOperatingTimingPoint(float musicPosition)
 	{
         if (TimingPoints.Count == 0) return null;
 
@@ -200,8 +232,12 @@ public partial class Timing : Node
 
 		return timingPoint;
     }
-
-	public float MusicPositionToTime(float musicPosition)
+    public float? GetTimeDifference(int timingPointIndex1, int timingPointIndex2)
+    {
+		if (timingPointIndex1 < 0 || timingPointIndex2 < 0 || timingPointIndex1 > TimingPoints.Count || timingPointIndex2 > TimingPoints.Count) return null;
+        return TimingPoints[timingPointIndex2].Time - TimingPoints[timingPointIndex1].Time;
+    }
+    public float MusicPositionToTime(float musicPosition)
 	{
 		TimingPoint timingPoint = GetOperatingTimingPoint(musicPosition);
 		if (timingPoint == null) return musicPosition / 0.5f; // default 120 bpm from time=0
@@ -210,7 +246,6 @@ public partial class Timing : Node
 
 		return time;
     }
-
 	public float TimeToMusicPosition(float time)
 	{
 		if (TimingPoints.Count == 0) return time * 0.5f; // default 120 bpm from time=0
@@ -231,15 +266,12 @@ public partial class Timing : Node
 
 		// creating new Timing points with <= picks itself, tho there's no music position
 	}
-
-
 	public int[] GetTimeSignature(float musicPosition)
 	{
 		TimingPoint timingPoint = GetOperatingTimingPoint(musicPosition);
 		if (timingPoint == null) return new int[] { 4, 4 };
 		else return timingPoint.TimeSignature;
     }
-
 	/// <summary>
 	/// Returns the music position of the beat at or right before the given music position.
 	/// </summary>
@@ -253,7 +285,6 @@ public partial class Timing : Node
 		float position = (int)(relativePosition / beatIncrement) * beatIncrement + (int)musicPosition;
 		return position;
 	}
-
 	public static float GetRelativeNotePosition(int[] timeSignature, int gridDivisor, int index)
 	{
         // For a quarter-note:
@@ -270,11 +301,11 @@ public partial class Timing : Node
         float position = index * timeSignature[1] / (float)(timeSignature[0] * gridDivisor);
         return position;
     }
-
 	public int GetLengthInMeasures()
 	{
 		float lengthInSeconds = AudioFile.SampleIndexToSeconds(AudioFile.AudioData.Length - 1);
 		float lengthInMeasures = TimeToMusicPosition(lengthInSeconds);
 		return (int)lengthInMeasures;
 	}
+    #endregion
 }

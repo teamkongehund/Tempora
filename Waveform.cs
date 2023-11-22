@@ -31,15 +31,15 @@ public partial class Waveform : Line2D
         }
     }
 
-    public float PixelsPerSecond
-    {
-        get
-        {
-            int totalSamples = AudioDataRange[1] - AudioDataRange[0];
-            float totalSeconds = (float)totalSamples / (float)AudioFile.SampleRate;
-            return Length / totalSeconds * 2f;
-        }
-    }
+    //public float PixelsPerSecond
+    //{
+    //    get
+    //    {
+    //        int totalSamples = AudioDataRange[1] - AudioDataRange[0];
+    //        float totalSeconds = (float)totalSamples / (float)AudioFile.SampleRate;
+    //        return Length / totalSeconds * 2f;
+    //    }
+    //}
 
     private AudioFile _audioFile;
     public AudioFile AudioFile
@@ -214,15 +214,15 @@ public partial class Waveform : Line2D
         Points = VectorTools.CombineArraysToVector2(xValues, yValues);
     }
 
-    public float PlaybackTimeToPixelPosition(float playbackTime)
-    {
-        // Warning: Unless fixed, there may be a discrepancy if the waveform goes before the audio file beginning,
-        // or goes after the audio file end. 
+    //public float PlaybackTimeToPixelPosition(float playbackTime)
+    //{
+    //    // Warning: Unless fixed, there may be a discrepancy if the waveform goes before the audio file beginning,
+    //    // or goes after the audio file end. 
 
-        float pixelPosition = (playbackTime - TimeRange[0]) * PixelsPerSecond ;
+    //    float pixelPosition = (playbackTime - TimeRange[0]) * PixelsPerSecond ;
 
-        return pixelPosition;
-    }
+    //    return pixelPosition;
+    //}
 
     //public float PixelPositionToPlaybackTime(float pixelPosition)
     //{

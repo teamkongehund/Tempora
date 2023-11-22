@@ -148,7 +148,7 @@ public partial class WaveformWindow : Control
             float mouseRelativeMusicPosition = XPositionToRelativeMusicPosition(mousePos.X);
 
             // HeldTimingPoint
-            SnapHeldTimingPointMusicPosition(mouseMusicPosition, mouseRelativeMusicPosition);
+            Timing.SnapTimingPoint(Context.Instance.HeldTimingPoint, mouseMusicPosition);
 
             // PreviewLine
             PreviewLine.Position = new Vector2(MusicPositionToXPosition(mouseMusicPosition), 0);
@@ -157,38 +157,6 @@ public partial class WaveformWindow : Control
             if (!Context.Instance.IsSelectedPositionMoving) return;
             Context.Instance.SelectedPosition = XPositionToMusicPosition(mousePos.X);
         }
-    }
-
-	public void SnapHeldTimingPointMusicPosition(float mouseMusicPosition, float mouseRelativeMusicPosition)
-	{
-        
-
-        TimingPoint timingPoint = Context.Instance.HeldTimingPoint;
-        if (timingPoint == null)
-            return;
-
-        if (!Settings.Instance.SnapToGrid)
-        {
-            timingPoint.MusicPosition = mouseMusicPosition;
-            return;
-        }
-
-        float closestGridRelativeMusicPosition = 0;
-        float lastMusicPositionDifference = 1000f; // large number
-        float currentMusicPositionDifference;
-
-        foreach (GridLine gridLine in GridFolder.GetChildren())
-        {
-            currentMusicPositionDifference = Math.Abs(gridLine.RelativeMusicPosition - mouseRelativeMusicPosition);
-            if (currentMusicPositionDifference > lastMusicPositionDifference)
-                break;
-
-            lastMusicPositionDifference = currentMusicPositionDifference;
-
-            closestGridRelativeMusicPosition = gridLine.RelativeMusicPosition;
-        }
-
-        timingPoint.MusicPosition = closestGridRelativeMusicPosition + NominalMusicPositionStartForWindow;
     }
 
 	public void OnTimingChanged()
