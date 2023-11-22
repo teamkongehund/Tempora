@@ -84,7 +84,7 @@ public partial class Main : Control
                 // Ensure a mouse release is always captured.
                 GD.Print("Main: MouseLeftReleased");
                 Signals.Instance.EmitSignal("MouseLeftReleased");
-                Context.Instance.IsSelectedPositionMoving = false;
+                Context.Instance.IsSelectedMusicPositionMoving = false;
             }
         }
     }
@@ -159,17 +159,6 @@ public partial class Main : Control
         }
     }
 
-    //   public void OnMoveButtonPressed()
-    //{
-    //	int index = Int32.Parse(IndexField.Text);
-    //       float position = float.Parse(PositionField.Text);
-
-    //	TimingPoint timingPoint = Timing.TimingPoints[index];
-
-    //	timingPoint.MusicPosition = position;
-    //   }
-
-
 	public void UpdateChildrensAudioFiles()
 	{
         AudioPlayer.AudioFile = AudioFile;
@@ -230,8 +219,11 @@ public partial class Main : Control
 	{
 		TimingPoint timingPoint;
 		Timing.AddTimingPoint(playbackTime, out timingPoint);
-		if (timingPoint != null) 
+		if (timingPoint != null)
+		{
 			Context.Instance.HeldTimingPoint = timingPoint;
+			Timing.SnapTimingPoint(timingPoint, (float)timingPoint.MusicPosition);
+		}
 	}
 
 }

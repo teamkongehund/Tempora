@@ -172,34 +172,35 @@ public partial class Timing : Node
     }
 
 	/// <summary>
-	/// Snap a <see cref="TimingPoint"/> to the grid using <see cref="Settings.Divisor"/>
+	/// Snap a <see cref="TimingPoint"/> to the grid using <see cref="Settings.Divisor"/> and <see cref="Settings.SnapToGridEnabled"/>
 	/// </summary>
 	/// <param name="timingPoint"></param>
 	/// <param name="musicPosition"></param>
-    public void SnapTimingPoint(TimingPoint timingPoint, float musicPosition)
+    public static void SnapTimingPoint(TimingPoint timingPoint, float musicPosition)
     {
         if (timingPoint == null)
             return;
 
-        if (!Settings.Instance.SnapToGrid)
+		float snappedMusicPosition = SnapMusicPosition(musicPosition);
+		timingPoint.MusicPosition = snappedMusicPosition;
+    }
+
+	public static float SnapMusicPosition(float musicPosition)
+	{
+        if (!Settings.Instance.SnapToGridEnabled)
         {
-            timingPoint.MusicPosition = musicPosition;
-            return;
+            return musicPosition;
         }
 
-		int divisor = Settings.Instance.Divisor;
-		float divisionLength = 1f / divisor;
-		float relativePosition = musicPosition - (int)musicPosition;
+        int divisor = Settings.Instance.Divisor;
+        float divisionLength = 1f / divisor;
+        float relativePosition = musicPosition - (int)musicPosition;
 
-		//int leftDivisionIndex = (int)(relativePosition / divisionLength);
-		//float fractionalPart = relativePosition / divisionLength - leftDivisionIndex;
-		//int divisionIndex = leftDivisionIndex + (int)Math.Round(fractionalPart);
+        int divisionIndex = (int)Math.Round(relativePosition / divisionLength);
 
-		int divisionIndex = (int)Math.Round(relativePosition / divisionLength);
+        float snappedMusicPosition = (int)musicPosition + divisionIndex * divisionLength;
 
-		float snappedMusicPosition = (int)musicPosition + divisionIndex * divisionLength;
-
-		timingPoint.MusicPosition = snappedMusicPosition;
+		return snappedMusicPosition;
     }
 
     #endregion

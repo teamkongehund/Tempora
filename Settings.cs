@@ -67,7 +67,7 @@ public partial class Settings : Node
 	/// Should always be true because osu's timing points are always on-grid. 
 	/// Probably best to exclude from any settings menu beacuse of this.
 	/// </summary>
-	public bool SnapToGrid = true;
+	public bool SnapToGridEnabled = true;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()

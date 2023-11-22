@@ -129,8 +129,8 @@ public partial class WaveformWindow : Control
                 }
                 else
                 {
-                    Context.Instance.IsSelectedPositionMoving = true;
-                    Context.Instance.SelectedPosition = XPositionToMusicPosition(x);
+                    Context.Instance.IsSelectedMusicPositionMoving = true;
+                    Context.Instance.SelectedMusicPosition = XPositionToMusicPosition(x);
                 }
             }
             if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick && !Input.IsKeyPressed(Key.Alt))
@@ -154,8 +154,8 @@ public partial class WaveformWindow : Control
             PreviewLine.Position = new Vector2(MusicPositionToXPosition(mouseMusicPosition), 0);
 
             // SelectedPosition
-            if (!Context.Instance.IsSelectedPositionMoving) return;
-            Context.Instance.SelectedPosition = XPositionToMusicPosition(mousePos.X);
+            if (!Context.Instance.IsSelectedMusicPositionMoving) return;
+            Context.Instance.SelectedMusicPosition = XPositionToMusicPosition(mousePos.X);
         }
     }
 
@@ -351,7 +351,7 @@ public partial class WaveformWindow : Control
 
     public void UpdateSelectedPositionLine()
     {
-        float x = MusicPositionToXPosition(Context.Instance.SelectedPosition);
+        float x = MusicPositionToXPosition(Context.Instance.SelectedMusicPosition);
         SelectedPositionLine.Position = new Vector2(x, 0);
         SelectedPositionLine.Visible = (x >= 0 && x <= Size.X);
     }

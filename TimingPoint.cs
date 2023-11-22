@@ -87,7 +87,7 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
             if (NextTimingPoint != null && NextTimingPoint.MusicPosition <= value) return;
 
             _musicPosition = value;
-			EmitSignal(nameof(Changed), this); // Should happen when user drags timing point to new position
+			EmitSignal(nameof(Changed), this);
 		}
 	}
 

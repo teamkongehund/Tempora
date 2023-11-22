@@ -8,10 +8,10 @@ public partial class Context : Node
 {
     public static Context Instance;
 
-    public bool IsSelectedPositionMoving = false;
+    public bool IsSelectedMusicPositionMoving = false;
 
     private float _selectedPosition;
-    public float SelectedPosition
+    public float SelectedMusicPosition
     {
         get => _selectedPosition;
         set

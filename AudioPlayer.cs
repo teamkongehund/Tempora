@@ -32,7 +32,7 @@ public partial class AudioPlayer : AudioStreamPlayer
 
 	public void OnSelectedPositionChanged()
 	{
-		float time = Timing.Instance.MusicPositionToTime(Context.Instance.SelectedPosition);
+		float time = Timing.Instance.MusicPositionToTime(Context.Instance.SelectedMusicPosition);
 		if (time >= 0)
             PauseTime = time;
 		else

@@ -21,7 +21,7 @@ public partial class BlockScrollBar : VScrollBar
 
     public void UpdateMaxValue()
 	{
-		int length = Timing.GetLengthInMeasures();
+		int length = Timing.GetLengthInMeasures() - (Settings.Instance.NumberOfBlocks - 1);
 		MaxValue = length;
 	}
 }
