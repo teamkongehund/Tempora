@@ -1,13 +1,12 @@
-[gd_scene load_steps=9 format=3 uid="uid://bk0ofb078cvgm"]
+[gd_scene load_steps=8 format=3 uid="uid://bfjpurpj2ub8n"]
 
-[ext_resource type="Script" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
-[ext_resource type="PackedScene" uid="uid://djvimmuyfu0pu" path="res://Classes/Audio/AudioPlayer.tscn" id="2_nrfju"]
-[ext_resource type="Script" path="res://Classes/Visual/AudioVisualsContainer.cs" id="3_bj8ok"]
-[ext_resource type="PackedScene" uid="uid://bnbif04ymgk1h" path="res://Classes/Audio/Metronome.tscn" id="4_n2ir2"]
-[ext_resource type="Script" path="res://Classes/Visual/BlockScrollBar.cs" id="5_aqu3i"]
-[ext_resource type="Script" path="res://Classes/Visual/VolumeSlider.cs" id="6_w0n8n"]
-[ext_resource type="Script" path="res://Classes/Visual/GridScrollBar.cs" id="7_i2h88"]
-[ext_resource type="Script" path="res://Classes/Visual/PlaybackRateScrollBar.cs" id="8_6jrsb"]
+[ext_resource type="Script" path="res://Main.cs" id="1_t2kkt"]
+[ext_resource type="Script" path="res://AudioVisualsContainer.cs" id="3_7vuxd"]
+[ext_resource type="PackedScene" path="res://AudioPlayer.tscn" id="3_gyi28"]
+[ext_resource type="PackedScene" path="res://Metronome.tscn" id="5_fbm2c"]
+[ext_resource type="Script" path="res://BlockScrollBar.cs" id="5_mw7l2"]
+[ext_resource type="Script" path="res://VolumeSlider.cs" id="6_c6j3g"]
+[ext_resource type="Script" path="res://GridScrollBar.cs" id="7_drw13"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -16,7 +15,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_n5xe1")
+script = ExtResource("1_t2kkt")
 metadata/_edit_lock_ = true
 
 [node name="ColorRect" type="ColorRect" parent="."]
@@ -38,22 +37,24 @@ offset_right = 197.0
 offset_bottom = 210.0
 text = "Show/Hide"
 
-[node name="AudioPlayer" parent="." instance=ExtResource("2_nrfju")]
+[node name="AudioPlayer" parent="." instance=ExtResource("3_gyi28")]
 bus = &"Music"
 
 [node name="AudioVisualsContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
+anchor_left = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 151.0
+offset_left = -1122.0
 offset_top = 16.0
 offset_right = -58.0
 offset_bottom = -12.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("3_bj8ok")
+script = ExtResource("3_7vuxd")
+NumberOfBlocks = null
 
-[node name="Metronome" parent="." instance=ExtResource("4_n2ir2")]
+[node name="Metronome" parent="." instance=ExtResource("5_fbm2c")]
 
 [node name="BlockScrollBar" type="VScrollBar" parent="."]
 layout_mode = 1
@@ -67,7 +68,7 @@ offset_right = -14.0
 offset_bottom = -12.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("5_aqu3i")
+script = ExtResource("5_mw7l2")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1
@@ -87,9 +88,8 @@ size_flags_horizontal = 3
 max_value = 1.0
 step = 0.001
 value = 1.0
-script = ExtResource("6_w0n8n")
+script = ExtResource("6_c6j3g")
 BusName = "Master"
-metadata/_edit_group_ = true
 
 [node name="Label" type="Label" parent="HBoxContainer/VolumeSliderMaster"]
 layout_mode = 1
@@ -116,9 +116,8 @@ size_flags_horizontal = 3
 max_value = 1.0
 step = 0.001
 value = 1.0
-script = ExtResource("6_w0n8n")
+script = ExtResource("6_c6j3g")
 BusName = "Music"
-metadata/_edit_group_ = true
 
 [node name="Label" type="Label" parent="HBoxContainer/VolumeSliderMusic"]
 layout_mode = 1
@@ -145,9 +144,8 @@ size_flags_horizontal = 3
 max_value = 1.0
 step = 0.001
 value = 1.0
-script = ExtResource("6_w0n8n")
+script = ExtResource("6_c6j3g")
 BusName = "Metronome"
-metadata/_edit_group_ = true
 
 [node name="Label" type="Label" parent="HBoxContainer/VolumeSliderMetronome"]
 layout_mode = 1
@@ -169,15 +167,11 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="ExportButton" type="Button" parent="."]
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
+layout_mode = 0
 offset_left = 14.0
-offset_top = -242.0
+offset_top = 478.0
 offset_right = 113.0
-offset_bottom = -188.0
-grow_vertical = 0
+offset_bottom = 532.0
 text = "Export .osz 
 & Open"
 
@@ -191,7 +185,7 @@ min_value = 1.0
 max_value = 12.0
 step = 1.0
 value = 4.0
-script = ExtResource("7_i2h88")
+script = ExtResource("7_drw13")
 metadata/_edit_group_ = true
 
 [node name="Label" type="Label" parent="GridScrollBar"]
@@ -210,7 +204,7 @@ grow_vertical = 2
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Title" type="Label" parent="GridScrollBar"]
+[node name="Grid" type="Label" parent="GridScrollBar"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
@@ -220,49 +214,6 @@ offset_top = -26.0
 offset_right = 46.04
 grow_horizontal = 2
 text = "Grid
-"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="PlaybackRateScrollBar" type="HScrollBar" parent="."]
-layout_mode = 0
-offset_left = 14.0
-offset_top = 98.0
-offset_right = 110.0
-offset_bottom = 122.0
-min_value = 0.25
-max_value = 1.0
-step = 0.01
-value = 1.0
-script = ExtResource("8_6jrsb")
-metadata/_edit_group_ = true
-
-[node name="Label" type="Label" parent="PlaybackRateScrollBar"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -48.0
-offset_top = -12.0
-offset_right = 48.0
-offset_bottom = 12.0
-grow_horizontal = 2
-grow_vertical = 2
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Title" type="Label" parent="PlaybackRateScrollBar"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.5
-anchor_right = 0.51
-offset_left = -48.0
-offset_top = -26.0
-offset_right = 46.04
-grow_horizontal = 2
-text = "Playback rate
 "
 horizontal_alignment = 1
 vertical_alignment = 1

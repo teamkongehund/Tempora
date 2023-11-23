@@ -29,3 +29,34 @@ default_color = Color(0.419608, 0.419608, 0.419608, 1)
 [node name="SelectedPositionLine" type="Line2D" parent="."]
 width = 2.0
 default_color = Color(0.117647, 0.368627, 1, 1)
+
+[node name="MeasureLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -23.0
+offset_right = -8.0
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0.72549, 0.894118, 0.588235)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.666667)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="TimeSignatureLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_right = -8.0
+offset_bottom = 23.0
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0.72549, 0.894118, 0.666667)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.666667)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 2
