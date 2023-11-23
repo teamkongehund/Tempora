@@ -14,6 +14,10 @@ public partial class TimeSignatureLineEdit : LineEdit
 	public void OnTextSubmitted(string text)
 	{
 		string[] textSplit = text.Split("/", 2);
+
+		if (textSplit.Length != 2)
+			return;
+
 		int upper;
 		int lower;
 		bool upperIsInt = int.TryParse(textSplit[0], out upper);
@@ -22,7 +26,7 @@ public partial class TimeSignatureLineEdit : LineEdit
 		if (!upperIsInt || !lowerIsInt)
 			return;
 
-		if (lower != 4 || lower != 8)
+		if (lower != 4 && lower != 8)
 			return;
 
 		if (upper < 1)
@@ -30,6 +34,7 @@ public partial class TimeSignatureLineEdit : LineEdit
 
 		int[] timeSignature = new int[] { upper, lower };
 
-		EmitSignal(nameof(TimeSignatureSubmitted), timeSignature);
+		ReleaseFocus();
+        EmitSignal(nameof(TimeSignatureSubmitted), timeSignature);
 	}
 }

@@ -19,7 +19,7 @@ public partial class WaveformWindow : Control
 	public Line2D PreviewLine;
     public Line2D SelectedPositionLine;
     public Label MeasureLabel;
-    public LineEdit TimeSignatureLineEdit;
+    public TimeSignatureLineEdit TimeSignatureLineEdit;
 
 
     private AudioFile _audioFile;
@@ -51,6 +51,7 @@ public partial class WaveformWindow : Control
             RenderTimingPoints();
             UpdateSelectedPositionLine();
             UpdateLabels();
+            CreateGridLines();
         }
 	}
 
@@ -84,7 +85,7 @@ public partial class WaveformWindow : Control
         PreviewLine = GetNode<Line2D>("PreviewLine");
         SelectedPositionLine = GetNode<Line2D>("SelectedPositionLine");
         MeasureLabel = GetNode<Label>("MeasureLabel");
-        TimeSignatureLineEdit = GetNode<LineEdit>("TimeSignatureLineEdit");
+        TimeSignatureLineEdit = GetNode<TimeSignatureLineEdit>("TimeSignatureLineEdit");
 
         Timing = Timing.Instance;
 		
@@ -101,6 +102,8 @@ public partial class WaveformWindow : Control
         Signals.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
         Signals.Instance.Scrolled += UpdateSelectedPositionLine;
 
+        TimeSignatureLineEdit.TimeSignatureSubmitted += OnTimingSignatureSubmitted;
+
 		MouseEntered += OnMouseEntered;
 		MouseExited += OnMouseExited;
 
@@ -108,7 +111,7 @@ public partial class WaveformWindow : Control
 		// disposed WaveformWindows will still react to this signal, causing exceptions.
         // This seems to be a bug with the += syntax when the signal transmitter is an autoload
         // See https://github.com/godotengine/godot/issues/70414 (haven't read this through)
-        Signals.Instance.Connect("TimingChanged", Callable.From(OnTimingChanged)); 
+        Signals.Instance.Connect("TimingChanged", Callable.From(OnTimingChanged));
     }
 
 	// Note to self: This can be used instead of .Connect to fix the signal issue.

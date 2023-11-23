@@ -10,7 +10,7 @@ public partial class Timing : Node
     #region Properties & Signals
     Signals Signals;
 
-	[Signal] public delegate void TimingChangedEventHandler();
+	//[Signal] public delegate void TimingChangedEventHandler();
 
 	public List<TimingPoint> TimingPoints = new List<TimingPoint>();
 
@@ -195,7 +195,9 @@ public partial class Timing : Node
         }
 
         int divisor = Settings.Instance.Divisor;
-        float divisionLength = 1f / divisor;
+        //float divisionLength = 1f / divisor;
+		float divisionLength = GetRelativeNotePosition(Timing.Instance.GetTimeSignature(musicPosition), divisor, 1);
+
         float relativePosition = musicPosition - (int)musicPosition;
 
         int divisionIndex = (int)Math.Round(relativePosition / divisionLength);
@@ -207,12 +209,6 @@ public partial class Timing : Node
 
 	public void UpdateTimeSignature(int[] timeSignature, int musicPosition)
 	{
-		// Check if a TimeSignaturePoint with this musicPosition exists in the list
-		// If not, add it
-		// If yes, change the timeSignature for it
-		// If the timeSignature is now the same as for the previous TimeSignaturePoint, delete the current point and return
-		// Sort the list
-
 		int foundPointIndex = TimeSignaturePoints.FindIndex(point => point.MusicPosition == musicPosition);
 
 		TimeSignaturePoint timeSignaturePoint;
@@ -236,6 +232,7 @@ public partial class Timing : Node
 			return;
 		}
 
+		Signals.Instance.EmitSignal("TimingChanged");
     }
 
     #endregion
@@ -304,9 +301,15 @@ public partial class Timing : Node
 	}
 	public int[] GetTimeSignature(float musicPosition)
 	{
-		TimingPoint timingPoint = GetOperatingTimingPoint(musicPosition);
-		if (timingPoint == null) return new int[] { 4, 4 };
-		else return timingPoint.TimeSignature;
+		//TimingPoint timingPoint = GetOperatingTimingPoint(musicPosition);
+		//if (timingPoint == null) return new int[] { 4, 4 };
+		//else return timingPoint.TimeSignature;
+
+		TimeSignaturePoint timeSignaturePoint = TimeSignaturePoints.FindLast(point => point.MusicPosition <= musicPosition);
+		if (timeSignaturePoint == null)
+			return new int[] { 4, 4 };
+
+		return timeSignaturePoint.TimeSignature;
     }
 	/// <summary>
 	/// Returns the music position of the beat at or right before the given music position.
