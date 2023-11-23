@@ -14,6 +14,8 @@ public partial class Timing : Node
 
 	public List<TimingPoint> TimingPoints = new List<TimingPoint>();
 
+	public List<TimeSignaturePoint> TimeSignaturePoints = new List<TimeSignaturePoint>();
+
 	public AudioFile AudioFile;
 
 	public static Timing Instance;
@@ -201,6 +203,39 @@ public partial class Timing : Node
         float snappedMusicPosition = (int)musicPosition + divisionIndex * divisionLength;
 
 		return snappedMusicPosition;
+    }
+
+	public void UpdateTimeSignature(int[] timeSignature, int musicPosition)
+	{
+		// Check if a TimeSignaturePoint with this musicPosition exists in the list
+		// If not, add it
+		// If yes, change the timeSignature for it
+		// If the timeSignature is now the same as for the previous TimeSignaturePoint, delete the current point and return
+		// Sort the list
+
+		int foundPointIndex = TimeSignaturePoints.FindIndex(point => point.MusicPosition == musicPosition);
+
+		TimeSignaturePoint timeSignaturePoint;
+
+        if (foundPointIndex == -1)
+		{
+			timeSignaturePoint = new TimeSignaturePoint(timeSignature, musicPosition);
+			TimeSignaturePoints.Add(timeSignaturePoint);
+			TimeSignaturePoints.Sort();
+			foundPointIndex = TimeSignaturePoints.FindIndex(point => point.MusicPosition == musicPosition);
+        }
+		else
+		{
+			timeSignaturePoint = TimeSignaturePoints[foundPointIndex];
+			timeSignaturePoint.TimeSignature = timeSignature;
+        }
+
+		if (foundPointIndex > 0 && TimeSignaturePoints[foundPointIndex-1].MusicPosition == timeSignaturePoint.MusicPosition)
+		{
+			TimeSignaturePoints.Remove(timeSignaturePoint);
+			return;
+		}
+
     }
 
     #endregion

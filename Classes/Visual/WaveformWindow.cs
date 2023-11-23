@@ -19,7 +19,7 @@ public partial class WaveformWindow : Control
 	public Line2D PreviewLine;
     public Line2D SelectedPositionLine;
     public Label MeasureLabel;
-    public Label TimeSignatureLabel;
+    public LineEdit TimeSignatureLineEdit;
 
 
     private AudioFile _audioFile;
@@ -84,7 +84,7 @@ public partial class WaveformWindow : Control
         PreviewLine = GetNode<Line2D>("PreviewLine");
         SelectedPositionLine = GetNode<Line2D>("SelectedPositionLine");
         MeasureLabel = GetNode<Label>("MeasureLabel");
-        TimeSignatureLabel = GetNode<Label>("TimeSignatureLabel");
+        TimeSignatureLineEdit = GetNode<LineEdit>("TimeSignatureLineEdit");
 
         Timing = Timing.Instance;
 		
@@ -179,6 +179,11 @@ public partial class WaveformWindow : Control
 		RenderTimingPoints();
 		CreateGridLines();
         UpdateLabels();
+    }
+
+    public void OnTimingSignatureSubmitted(int[] timeSignature)
+    {
+        Timing.Instance.UpdateTimeSignature(timeSignature, NominalMusicPositionStartForWindow);
     }
 	public void OnResized() => UpdateVisuals();
 
@@ -348,7 +353,7 @@ public partial class WaveformWindow : Control
     {
         int[] timeSignature = Timing.GetTimeSignature(NominalMusicPositionStartForWindow);
         MeasureLabel.Text = NominalMusicPositionStartForWindow.ToString();
-        TimeSignatureLabel.Text = $"{timeSignature[0]}/{timeSignature[1]}";
+        TimeSignatureLineEdit.Text = $"{timeSignature[0]}/{timeSignature[1]}";
     }
 
     public void UpdatePlayheadScaling()

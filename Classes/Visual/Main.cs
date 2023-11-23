@@ -89,6 +89,9 @@ public partial class Main : Control
 		}
         if (@event is InputEventMouseButton mouseEvent)
         {
+            //GD.Print("Main registered Input mouse event");
+            //GrabFocus();
+            //ReleaseFocus();
             if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased())
             {
                 // Ensure a mouse release is always captured.
@@ -96,6 +99,16 @@ public partial class Main : Control
                 Signals.Instance.EmitSignal("MouseLeftReleased");
                 Context.Instance.IsSelectedMusicPositionMoving = false;
             }
+        }
+    }
+
+    public override void _GuiInput(InputEvent @event)
+    {
+        if (@event is InputEventMouseButton mouseEvent)
+		{
+			if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsPressed())
+            GrabFocus();
+            ReleaseFocus();
         }
     }
 

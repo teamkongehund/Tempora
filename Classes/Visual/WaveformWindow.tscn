@@ -1,6 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://xf0kngdc5d36"]
+[gd_scene load_steps=4 format=3 uid="uid://xf0kngdc5d36"]
 
 [ext_resource type="Script" path="res://Classes/Visual/WaveformWindow.cs" id="1_mrh5y"]
+[ext_resource type="Script" path="res://Classes/Visual/TimeSignatureLineEdit.cs" id="2_hj0au"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1ad7l"]
 
 [node name="WaveformWindow" type="Control"]
 layout_mode = 3
@@ -39,24 +42,26 @@ offset_left = -40.0
 offset_top = -23.0
 offset_right = -8.0
 grow_vertical = 2
-theme_override_colors/font_color = Color(0, 0.72549, 0.894118, 0.588235)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.666667)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 12
 horizontal_alignment = 2
-vertical_alignment = 2
+vertical_alignment = 1
 
-[node name="TimeSignatureLabel" type="Label" parent="."]
+[node name="TimeSignatureLineEdit" type="LineEdit" parent="."]
 layout_mode = 1
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
-offset_left = -40.0
-offset_right = -8.0
+offset_left = -51.0
+offset_right = -6.6875
 offset_bottom = 23.0
 grow_vertical = 2
-theme_override_colors/font_color = Color(0, 0.72549, 0.894118, 0.666667)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.666667)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 12
-horizontal_alignment = 2
+theme_override_styles/normal = SubResource("StyleBoxEmpty_1ad7l")
+alignment = 2
+script = ExtResource("2_hj0au")
