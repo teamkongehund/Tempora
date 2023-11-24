@@ -70,10 +70,6 @@ public partial class Main : Control
 
 	// TODO 2: Scroll to set BPM
 
-	// TODO 1: Change time signature
-	// Time signature is per measure, not per timing point
-	// Each block should have a measure number and time signature on the left-hand side
-
 	// TODO 2: Double / halve BPM for a point
 
 	// TODO 2: Copy osu time stamp into app

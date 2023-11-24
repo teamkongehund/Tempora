@@ -60,7 +60,8 @@ public partial class Timing : Node
 	{
 		TimingPoint timingPoint = new TimingPoint() 
 		{ 
-			Time = time 
+			Time = time,
+			TimeSignature = GetTimeSignature(time),
 		};
 		TimingPoints.Add(timingPoint);
 		//AddChild(timingPoint);
@@ -232,20 +233,30 @@ public partial class Timing : Node
 			return;
 		}
 
+		// Go through all timing points until the next TimeSignaturePoint and update TimeSignature
+
+		int maxIndex = TimingPoints.Count - 1;
+
+        if (foundPointIndex < TimeSignaturePoints.Count - 1)
+		{
+			int nextMusicPositionWithDifferentTimeSignature = TimeSignaturePoints[foundPointIndex + 1].MusicPosition;
+			maxIndex = TimingPoints.FindLastIndex(point => point.MusicPosition < nextMusicPositionWithDifferentTimeSignature);
+        }
+
+		int indexForFirstTimingPointWithThisTimeSignature = TimingPoints.FindIndex(point => point.MusicPosition >= musicPosition);
+
+		for (int i = indexForFirstTimingPointWithThisTimeSignature; i <= maxIndex; i++)
+		{
+			TimingPoint timingPoint = TimingPoints[i];
+			TimingPoints[i].TimeSignature = timeSignature;
+		}
+
 		Signals.Instance.EmitSignal("TimingChanged");
+
+		// TODO 1: Check if this is done
     }
 
     #endregion
-
-    public void PrintTimingPoints()
-    {
-        GD.Print("Current Timing points:");
-        foreach (TimingPoint child in TimingPoints)
-        {
-            //GD.Print("Time " + child.Time + " , MusicPosition " + child.MusicPosition);
-            GD.Print($"Time {child.Time}, Music Position {child.MusicPosition}, BPM {child.BPM}");
-        }
-    }
 
     #region Calculators
     /// <summary>

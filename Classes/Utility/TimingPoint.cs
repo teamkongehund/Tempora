@@ -51,19 +51,19 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
     }
 
 	private float _bpm;
-    public float BPM
-    {
+	public float BPM
+	{
 		get
 		{
-            if (_bpm == 0) BPM_Update(); 
+			if (_bpm == 0) BPM_Update();
 			return _bpm;
 		}
-        private set { }
-    }
-    public void BPM_Update()
+		private set { }
+	}
+	public void BPM_Update()
 	{
 		_bpm = MeasuresPerSecond * 60 * (TimeSignature[0] * 4f / TimeSignature[1]);
-    }
+	}
 
 	public float BeatLength
 	{
@@ -85,6 +85,8 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
 			if (_musicPosition == value) return;
 			if (PreviousTimingPoint != null && PreviousTimingPoint.MusicPosition >= value) return;
             if (NextTimingPoint != null && NextTimingPoint.MusicPosition <= value) return;
+
+			//GD.Print($"{PreviousTimingPoint.MusicPosition} , {PreviousTimingPoint.MusicPosition} , snapping to {value}");
 
             _musicPosition = value;
 			EmitSignal(nameof(Changed), this);
