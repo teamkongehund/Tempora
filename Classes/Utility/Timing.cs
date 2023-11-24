@@ -64,7 +64,6 @@ public partial class Timing : Node
 			TimeSignature = GetTimeSignature(time),
 		};
 		TimingPoints.Add(timingPoint);
-		//AddChild(timingPoint);
 
         TimingPoints.Sort();
 
@@ -79,8 +78,8 @@ public partial class Timing : Node
             timingPoint.MusicPosition = TimeToMusicPosition(time); // TODO 3: verify this doesn't accidentally use itself to get value
             timingPoint.MeasuresPerSecond = previousTimingPoint.MeasuresPerSecond;
 
-			timingPoint.NextTimingPoint = (TimingPoints.Count > index + 1) ? TimingPoints[index + 1] : null;
-		}
+			nextTimingPoint = (TimingPoints.Count > index + 1) ? TimingPoints[index + 1] : null;
+        }
 		else if (index == 0) // Set MusicPosition based on next TimingPoint
 		{
             nextTimingPoint = TimingPoints.Count > 1 ? TimingPoints[index + 1] : null;
@@ -99,8 +98,8 @@ public partial class Timing : Node
 
         if (previousTimingPoint?.MusicPosition == timingPoint.MusicPosition
                 || nextTimingPoint?.MusicPosition == timingPoint.MusicPosition 
-				|| (previousTimingPoint?.Time is { } previousTime && Mathf.Abs(previousTime - timingPoint.Time) < 0.04f)
-				|| (nextTimingPoint?.Time is { } nextTime && Mathf.Abs(nextTime - timingPoint.Time) < 0.04f)
+				|| (previousTimingPoint?.Time is float previousTime && Mathf.Abs(previousTime - timingPoint.Time) < 0.04f)
+				|| (nextTimingPoint?.Time is float nextTime && Mathf.Abs(nextTime - timingPoint.Time) < 0.04f)
                 )
         {
             TimingPoints.Remove(timingPoint);
@@ -252,8 +251,6 @@ public partial class Timing : Node
 		}
 
 		Signals.Instance.EmitSignal("TimingChanged");
-
-		// TODO 1: Check if this is done
     }
 
     #endregion
