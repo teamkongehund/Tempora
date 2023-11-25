@@ -15,6 +15,7 @@ public partial class Main : Control
 
 	HScrollBar GridScrollBar;
     HScrollBar PlaybackRateScrollBar;
+    HScrollBar BlockAmountScrollBar;
 
     WaveformWindow WaveformWindow;
 	
@@ -47,6 +48,7 @@ public partial class Main : Control
 		BlockScrollBar = GetNode<BlockScrollBar>("BlockScrollBar");
         GridScrollBar = GetNode<HScrollBar>("GridScrollBar");
         PlaybackRateScrollBar = GetNode<HScrollBar>("PlaybackRateScrollBar");
+		BlockAmountScrollBar = GetNode<HScrollBar>("BlockAmountScrollBar");
 
         Project.Instance.AudioFile = new AudioFile(AudioPath);
 		
@@ -65,6 +67,7 @@ public partial class Main : Control
 		GetTree().Root.FilesDropped += OnFilesDropped;
 		GridScrollBar.ValueChanged += OnGridScrollBarValueChanged;
 		PlaybackRateScrollBar.ValueChanged += OnPlaybackRateScrollBarValueChanged;
+        BlockAmountScrollBar.ValueChanged += OnBlockAmountScrollBarValueChanged;
 
 
         UpdatePlayHeads();
@@ -170,6 +173,13 @@ public partial class Main : Control
 	public void OnPlaybackRateScrollBarValueChanged(double value)
 	{
 		AudioPlayer.PitchScale = (float)value;
+	}
+
+	public void OnBlockAmountScrollBarValueChanged(double value)
+	{
+		GD.Print(value);
+		int intValue = (int)value;
+		Settings.Instance.NumberOfBlocks = intValue;
 	}
 
 

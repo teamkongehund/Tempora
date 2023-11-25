@@ -55,9 +55,6 @@ public partial class WaveformWindow : Control
         }
 	}
 
-    // TODO 1: Investigate why the waveform is rendered wrong
-    // when you load res://savedProject.txt and you move the timing point on MP = 193
-
     // TODO 1: Investigate why the program gets slow with more timing points
     // - particularly loading a file with a lot of points, but also scrolling etc.
 
@@ -212,6 +209,8 @@ public partial class WaveformWindow : Control
     #endregion
     #region Render
 
+    // TODO 2: Add 20 ms grid line window delimeters (or make width of grid lines 20 ms)
+
     public void CreateWaveforms()
 	{
 		//GD.Print($"{Time.GetTicksMsec()/1e3} - Now rendering waveform window {MusicPositionStart}!");
@@ -258,21 +257,23 @@ public partial class WaveformWindow : Control
 			//GD.Print($"Now rendering waveform for index {i}");
 			TimingPoint timingPoint = Timing.Instance.TimingPoints[i];
 
-			float startTime = (i == FirstTimingPointIndex)
+			float waveSegmentStartTime = (i == FirstTimingPointIndex)
 				? timeWhereWindowBegins
                 : (float)timingPoint.Time;
 
-			float endTime = (i == LastTimingPointIndex)
+			float waveSegmentEndTime = (i == LastTimingPointIndex)
 				? timeWhereWindowEnds
                 : (float)Timing.Instance.TimingPoints[i+1].Time;
 
-            float musicPositionStart = Timing.Instance.TimeToMusicPosition(startTime);
-			float musicPositionEnd = Timing.Instance.TimeToMusicPosition(endTime);
+            GD.Print($"Timing Points {FirstTimingPointIndex} - {LastTimingPointIndex}: Time {waveSegmentStartTime} - {waveSegmentEndTime}");
+
+            float musicPositionStart = Timing.Instance.TimeToMusicPosition(waveSegmentStartTime);
+			float musicPositionEnd = Timing.Instance.TimeToMusicPosition(waveSegmentEndTime);
 
             float length = Size.X * (musicPositionEnd - musicPositionStart) / (1f + 2 * margin);
             float xPosition = Size.X * (musicPositionStart - ActualMusicPositionStartForWindow) / (1f + 2 * margin);
 
-            Waveform waveform = new Waveform(Project.Instance.AudioFile, length, Size.Y, new float[2] { startTime, endTime })
+            Waveform waveform = new Waveform(Project.Instance.AudioFile, length, Size.Y, new float[2] { waveSegmentStartTime, waveSegmentEndTime })
 			{
 				Position = new Vector2(xPosition, Size.Y / 2),
 			};
@@ -303,6 +304,7 @@ public partial class WaveformWindow : Control
 				visualTimingPoint.TimingPoint = timingPoint;
                 visualTimingPoint.Position = new Vector2(x, Size.Y / 2);
 				visualTimingPoint.Scale = new Vector2(0.2f, 0.2f);
+                visualTimingPoint.ZIndex = 95;
                 VisualTimingPointFolder.AddChild(visualTimingPoint);
 			}
 		}
@@ -327,7 +329,7 @@ public partial class WaveformWindow : Control
 
 			if (gridLine == null || gridLine.RelativeMusicPosition > 1) break;
 
-			gridLine.ZIndex = 99;
+			gridLine.ZIndex = 90;
 
 			divisionIndex++;
 
@@ -408,18 +410,16 @@ public partial class WaveformWindow : Control
 	{
 		if (Timing.Instance.TimingPoints.Count == 0) return;
 
-		//float startTime = Timing.Instance.MusicPositionToTime(MusicPositionStart);
+        float margin = Settings.Instance.MusicPositionMargin;
 
-		int firstIndex = Timing.Instance.TimingPoints.FindLastIndex(point => point.MusicPosition <= NominalMusicPositionStartForWindow);
-
+        int firstIndex = Timing.Instance.TimingPoints.FindLastIndex(point => point.MusicPosition <= ActualMusicPositionStartForWindow);
         // If there's only TimingPoints AFTER MusicPositionStart
-        if (firstIndex == -1) 
-            firstIndex = Timing.Instance.TimingPoints.FindIndex(point => point.MusicPosition > NominalMusicPositionStartForWindow);
-
-        int lastIndex = Timing.Instance.TimingPoints.FindLastIndex(point => point.MusicPosition < NominalMusicPositionStartForWindow + 1);
+        if (firstIndex == -1)
+            firstIndex = Timing.Instance.TimingPoints.FindIndex(point => point.MusicPosition > ActualMusicPositionStartForWindow);
+        int lastIndex = Timing.Instance.TimingPoints.FindLastIndex(point => point.MusicPosition < ActualMusicPositionStartForWindow + 1 + 2 * margin);
         if (lastIndex == -1) lastIndex = firstIndex;
 
-		FirstTimingPointIndex = firstIndex;
+        FirstTimingPointIndex = firstIndex;
 		LastTimingPointIndex = lastIndex;
     }
 

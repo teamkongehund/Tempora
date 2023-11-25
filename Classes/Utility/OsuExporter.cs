@@ -6,6 +6,7 @@ using System.Globalization;
 public partial class OsuExporter : Node
 {
 	public static int ExportOffsetMS = -29;
+	// TODO 3: Verify that -29 ms is correct (time ranked mp3s and compare offset)
 
 	public static string GetDotOsu(Timing timing)
 	{

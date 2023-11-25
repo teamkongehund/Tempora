@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bk0ofb078cvgm"]
+[gd_scene load_steps=10 format=3 uid="uid://bk0ofb078cvgm"]
 
 [ext_resource type="Script" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
 [ext_resource type="PackedScene" uid="uid://djvimmuyfu0pu" path="res://Classes/Audio/AudioPlayer.tscn" id="2_nrfju"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://Classes/Visual/VolumeSlider.cs" id="6_w0n8n"]
 [ext_resource type="Script" path="res://Classes/Visual/GridScrollBar.cs" id="7_i2h88"]
 [ext_resource type="Script" path="res://Classes/Visual/PlaybackRateScrollBar.cs" id="8_6jrsb"]
+[ext_resource type="Script" path="res://Classes/Visual/BlockAmountScrollBar.cs" id="9_22ufa"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -293,5 +294,47 @@ offset_right = 46.04
 grow_horizontal = 2
 text = "Playback rate
 "
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BlockAmountScrollBar" type="HScrollBar" parent="."]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 148.0
+offset_right = 110.0
+offset_bottom = 172.0
+min_value = 1.0
+max_value = 30.0
+step = 1.0
+value = 10.0
+script = ExtResource("9_22ufa")
+metadata/_edit_group_ = true
+
+[node name="Label" type="Label" parent="BlockAmountScrollBar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -48.0
+offset_top = -12.0
+offset_right = 48.0
+offset_bottom = 12.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Title" type="Label" parent="BlockAmountScrollBar"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.51
+offset_left = -48.0
+offset_top = -26.0
+offset_right = 46.04
+grow_horizontal = 2
+text = "Blocks"
 horizontal_alignment = 1
 vertical_alignment = 1

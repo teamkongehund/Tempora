@@ -5,6 +5,9 @@ public partial class VisualTimingPoint : Node2D
 {
 	public TimingPoint TimingPoint;
 
+	public Label NumberLabel;
+	public Label BPMLabel;
+
     Area2D Area2D;
 	CollisionShape2D CollisionShape2D;
 
@@ -15,9 +18,27 @@ public partial class VisualTimingPoint : Node2D
 	{
 		Area2D = GetNode<Area2D>("Area2D");
 		CollisionShape2D = Area2D.GetNode<CollisionShape2D>("CollisionShape2D");
+		NumberLabel = GetNode<Label>("NumberLabel");
+        BPMLabel = GetNode<Label>("BPMLabel");
 
-		SystemTimeWhenCreated = Time.GetTicksMsec();
+        NumberLabel.Text = Timing.Instance.TimingPoints.FindIndex(point => point == TimingPoint).ToString();
+        BPMLabel.Text = TimingPoint.BPM.ToString("0.00");
+
+        SystemTimeWhenCreated = Time.GetTicksMsec();
+
+		TimingPoint.Changed += OnTimingPointChanged;
+    }
+
+	public void OnTimingPointChanged(TimingPoint timingPoint)
+	{
+		NumberLabel.Text = Timing.Instance.TimingPoints.FindIndex(point => point == timingPoint).ToString();
+		BPMLabel.Text = timingPoint.BPM.ToString("0.00");
 	}
+
+    public override void _ExitTree()
+    {
+        TimingPoint.Changed -= OnTimingPointChanged; // Necessary due to Godot bug
+    }
 
     public override void _Input(InputEvent @event)
     {

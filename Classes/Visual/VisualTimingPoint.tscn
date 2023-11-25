@@ -23,3 +23,29 @@ rotation = 0.785398
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("RectangleShape2D_rj6no")
+
+[node name="NumberLabel" type="Label" parent="."]
+offset_left = -160.0
+offset_top = -96.0
+offset_right = 161.0
+size_flags_horizontal = 6
+size_flags_vertical = 8
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 30
+theme_override_font_sizes/font_size = 70
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BPMLabel" type="Label" parent="."]
+offset_left = -160.0
+offset_right = 161.0
+offset_bottom = 96.0
+size_flags_horizontal = 6
+size_flags_vertical = 8
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 30
+theme_override_font_sizes/font_size = 70
+horizontal_alignment = 1
+vertical_alignment = 1

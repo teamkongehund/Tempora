@@ -40,7 +40,7 @@ public partial class Settings : Node
 
 	public static int DivisorToSlider(int divisor) => SliderToDivisorDict.FirstOrDefault(x => x.Value == divisor).Key;
 
-	private int _numberOfBlocks = 10;
+	private int _numberOfBlocks = 2 ;
 	/// <summary>
 	/// Number of waveform blocks to display
 	/// </summary>
@@ -49,11 +49,10 @@ public partial class Settings : Node
 		get => _numberOfBlocks;
 		set
 		{
-			if (_numberOfBlocks != value)
-			{
-				_numberOfBlocks = value;
-				Signals.Instance.EmitSignal("SettingsChanged");
-			}
+			if (_numberOfBlocks == value) return;
+			GD.Print($"NumberOfBlocks actually changed to {value}!");
+			_numberOfBlocks = value;
+			Signals.Instance.EmitSignal("SettingsChanged");
 		}
 	}
 
