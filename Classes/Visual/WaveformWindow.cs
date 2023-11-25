@@ -46,6 +46,7 @@ public partial class WaveformWindow : Control
 		set
 		{
 			_musicPositionStart = value;
+            GD.Print($"WaveformWindow: NominalMusicPositionStartForWindow = {NominalMusicPositionStartForWindow}");
 			UpdateTimingPointsIndices();
 			CreateWaveforms();
             RenderTimingPoints();
@@ -97,18 +98,19 @@ public partial class WaveformWindow : Control
         UpdateSelectedPositionLine();
 
         Resized += OnResized;
-		Signals.Instance.SettingsChanged += OnSettingsChanged;
-        Signals.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
-        Signals.Instance.Scrolled += UpdateSelectedPositionLine;
-        //Signals.Instance.Connect("SettingsChanged", Callable.From(OnSettingsChanged));
-        //Signals.Instance.Connect("SelectedPositionChanged", Callable.From(OnSelectedPositionChanged));
-        //Signals.Instance.Connect("Scrolled", Callable.From(UpdateSelectedPositionLine));
+		//Signals.Instance.SettingsChanged += OnSettingsChanged;
+  //      Signals.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
+  //      Signals.Instance.Scrolled += UpdateSelectedPositionLine;
+        Signals.Instance.Connect("SettingsChanged", Callable.From(OnSettingsChanged));
+        Signals.Instance.Connect("SelectedPositionChanged", Callable.From(OnSelectedPositionChanged));
+        Signals.Instance.Connect("Scrolled", Callable.From(UpdateSelectedPositionLine));
 
         Signals.Instance.AudioFileChanged += OnAudioFileChanged;
 
-        TimeSignatureLineEdit.TimeSignatureSubmitted += OnTimingSignatureSubmitted;
+        //TimeSignatureLineEdit.TimeSignatureSubmitted += OnTimingSignatureSubmitted;
+        TimeSignatureLineEdit.Connect("TimeSignatureSubmitted", new Callable(this, "OnTimingSignatureSubmitted"));
 
-		MouseEntered += OnMouseEntered;
+        MouseEntered += OnMouseEntered;
 		MouseExited += OnMouseExited;
 
         // If I used recommended += syntax here,

@@ -61,14 +61,15 @@ public partial class Main : Control
         AudioVisualsContainer.SeekPlaybackTime += OnSeekPlaybackTime;
 		AudioVisualsContainer.DoubleClicked += OnDoubleClick;
 		AudioVisualsContainer.CreateBlocks();
-		//MoveButton.Pressed += OnMoveButtonPressed;
-		Signals.Instance.Scrolled += OnScrolled;
+        //AudioVisualsContainer.CreateBlocks();
+        //MoveButton.Pressed += OnMoveButtonPressed;
+        Signals.Instance.Scrolled += OnScrolled;
 		BlockScrollBar.ValueChanged += OnBlockScrollBarValueChanged;
 		GetTree().Root.FilesDropped += OnFilesDropped;
 		GridScrollBar.ValueChanged += OnGridScrollBarValueChanged;
 		PlaybackRateScrollBar.ValueChanged += OnPlaybackRateScrollBarValueChanged;
         BlockAmountScrollBar.ValueChanged += OnBlockAmountScrollBarValueChanged;
-
+		Signals.Instance.SettingsChanged += OnSettingsChanged;
 
         UpdatePlayHeads();
 		BlockScrollBar.UpdateRange();
@@ -124,6 +125,11 @@ public partial class Main : Control
 		}
     }
 
+	public void OnSettingsChanged()
+	{
+		AudioVisualsContainer.CreateBlocks();
+	}
+
 	public void OnFilesDropped(string[] filePaths)
 	{
 		if (filePaths.Length != 1) return;
@@ -177,7 +183,6 @@ public partial class Main : Control
 
 	public void OnBlockAmountScrollBarValueChanged(double value)
 	{
-		GD.Print(value);
 		int intValue = (int)value;
 		Settings.Instance.NumberOfBlocks = intValue;
 	}

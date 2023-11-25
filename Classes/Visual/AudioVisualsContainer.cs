@@ -1,9 +1,10 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public partial class AudioVisualsContainer : VBoxContainer
 {
-	[Export] public int NumberOfBlocks = 10;
+	//[Export] public int NumberOfBlocks = 10;
 
 	/// <summary>
 	/// Forward childrens' signals to Main
@@ -11,6 +12,8 @@ public partial class AudioVisualsContainer : VBoxContainer
 	/// <param name="playbackTime"></param>
     [Signal] public delegate void SeekPlaybackTimeEventHandler(float playbackTime);
     [Signal] public delegate void DoubleClickedEventHandler(float playbackTime);
+
+	public List<WaveformWindow> WaveformWindows = new List<WaveformWindow>();
 
 	//public float FirstBlockStartTime = 0;
 
@@ -50,8 +53,7 @@ public partial class AudioVisualsContainer : VBoxContainer
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{
-		NumberOfBlocks = Settings.Instance.NumberOfBlocks;
-        //	CreateBlocks();
+		//NumberOfBlocks = Settings.Instance.NumberOfBlocks;
     }
 
     public override void _GuiInput(InputEvent @event)
@@ -78,29 +80,30 @@ public partial class AudioVisualsContainer : VBoxContainer
 	/// </summary>
     public void CreateBlocks()
 	{
+		GD.Print("CreateBlocks(): NominalMusicPositionStartForTopBlock = " + NominalMusicPositionStartForTopBlock);
 		foreach (var child in GetChildren())
 		{
 			child.QueueFree();
 		}
+		WaveformWindows.Clear();
 
 		//float startTime = FirstBlockStartTime;
 		var packedWaveformWindow = ResourceLoader.Load<PackedScene>("res://Classes/Visual/WaveformWindow.tscn");
 
 		// Instantiate block scenes and add as children
-        for (int i = 0; i < NumberOfBlocks; i++) 
+        for (int i = 0; i < Settings.Instance.NumberOfBlocks; i++) 
 		{
-			var waveformWindow = packedWaveformWindow.Instantiate();
+			WaveformWindow waveformWindow = packedWaveformWindow.Instantiate() as WaveformWindow;
 			AddChild(waveformWindow);
+			WaveformWindows.Add(waveformWindow);
 		}
 
 		int musicPositionStart = NominalMusicPositionStartForTopBlock;
 
-		var children = GetChildren();
+		//var children = GetChildren();
 
-		foreach (WaveformWindow waveformWindow in children)
+		foreach (WaveformWindow waveformWindow in WaveformWindows)
 		{
-			//waveformWindow.AudioFile = Project.Instance.AudioFile;
-
 			waveformWindow.SizeFlagsVertical = SizeFlags.ExpandFill;
 
 			waveformWindow.NominalMusicPositionStartForWindow = musicPositionStart;

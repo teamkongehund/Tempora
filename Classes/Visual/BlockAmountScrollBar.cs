@@ -8,7 +8,9 @@ public partial class BlockAmountScrollBar : HScrollBar
     public override void _Ready()
     {
         Label = GetNode<Label>("Label");
+
         UpdateLabel(Settings.Instance.NumberOfBlocks);
+        Value = Settings.Instance.NumberOfBlocks;
 
         ValueChanged += OnValueChanged;
     }
