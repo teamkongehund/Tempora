@@ -109,6 +109,8 @@ public partial class AudioVisualsContainer : VBoxContainer
 			waveformWindow.NominalMusicPositionStartForWindow = musicPositionStart;
             musicPositionStart++;
 
+			waveformWindow.Playhead.Visible = false;
+
 			waveformWindow.SeekPlaybackTime += OnSeekPlaybackTime;
 			waveformWindow.DoubleClicked += OnDoubleClick;
 		}

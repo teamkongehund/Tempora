@@ -10,6 +10,21 @@ public partial class Timing : Node
     #region Properties & Signals
     Signals Signals;
 
+	private bool _isInstantiating = false;
+	public bool IsInstantiating
+	{
+		get => _isInstantiating;
+		set
+		{
+			if (_isInstantiating == value) return;
+			_isInstantiating = value;
+			//if (value == false)
+			//{
+			//	Signals.Instance.EmitSignal("TimingChanged");
+			//}
+		}
+	}
+
 	//[Signal] public delegate void TimingChangedEventHandler();
 
 	public List<TimingPoint> TimingPoints = new List<TimingPoint>();
@@ -48,9 +63,8 @@ public partial class Timing : Node
             timingPoint.PreviousTimingPoint = TimingPoints[index - 1];
         }
 
-		//UpdateMPS(index);
-
-        Signals.Instance.EmitSignal("TimingChanged");
+		if (!IsInstantiating)
+	       Signals.Instance.EmitSignal("TimingChanged");
     }
 
 	public void AddTimingPoint(float time)

@@ -81,6 +81,7 @@ public partial class ProjectFileManager : Node
 	public void LoadProjectFromFile(string projectFile)
 	{
 		Timing.Instance = new Timing();
+		Timing.Instance.IsInstantiating = true;
 
         string[] lines = projectFile.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
@@ -146,6 +147,9 @@ public partial class ProjectFileManager : Node
 					break;
 			}
         }
+
+		Timing.Instance.IsInstantiating = false;
+		Signals.Instance.EmitSignal("TimingChanged");
     }
 
 	public void LoadProjectFromFilePath(string filePath)

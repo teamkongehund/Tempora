@@ -46,13 +46,15 @@ public partial class WaveformWindow : Control
 		set
 		{
 			_musicPositionStart = value;
-            GD.Print($"WaveformWindow: NominalMusicPositionStartForWindow = {NominalMusicPositionStartForWindow}");
-			UpdateTimingPointsIndices();
-			CreateWaveforms();
-            RenderTimingPoints();
-            UpdateSelectedPositionLine();
-            UpdateLabels();
-            CreateGridLines();
+
+			//UpdateTimingPointsIndices();
+			//CreateWaveforms();
+   //         RenderTimingPoints();
+   //         UpdateSelectedPositionLine();
+   //         UpdateLabels();
+   //         CreateGridLines();
+
+            UpdateVisuals();
         }
 	}
 
@@ -251,10 +253,12 @@ public partial class WaveformWindow : Control
 			return;
         }
 
-		//GD.Print($"Window {MusicPositionStart}: timeWhereWindowBeginds = {timeWhereWindowBegins} , timeWhereWindowEnds = {timeWhereWindowEnds}");
+        //GD.Print($"Window {MusicPositionStart}: timeWhereWindowBeginds = {timeWhereWindowBegins} , timeWhereWindowEnds = {timeWhereWindowEnds}");
 
-		// Create each waveform segment
-		for (int i = FirstTimingPointIndex; i <= LastTimingPointIndex; i++) 
+        UpdateTimingPointsIndices();
+
+        // Create each waveform segment
+        for (int i = FirstTimingPointIndex; i <= LastTimingPointIndex; i++) 
 		{
 			//GD.Print($"Now rendering waveform for index {i}");
 			TimingPoint timingPoint = Timing.Instance.TimingPoints[i];
