@@ -3,19 +3,19 @@ using System;
 
 public partial class AudioPlayer : AudioStreamPlayer
 {
-	private AudioFile _audioFile;
-	public AudioFile AudioFile
-	{
-		get => _audioFile;
-		set
-		{
-			if (value != _audioFile)
-			{
-				_audioFile = value;
-				LoadMp3();
-			}
-		}
-	}
+	//private AudioFile _audioFile;
+	//public AudioFile AudioFile
+	//{
+	//	get => _audioFile;
+	//	set
+	//	{
+	//		if (value != _audioFile)
+	//		{
+	//			_audioFile = value;
+	//			LoadMp3();
+	//		}
+	//	}
+	//}
 
 	public double PauseTime;
 
@@ -28,6 +28,7 @@ public partial class AudioPlayer : AudioStreamPlayer
     public override void _Ready()
     {
 		Signals.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
+		Signals.Instance.AudioFileChanged += LoadMp3;
     }
 
 	public void OnSelectedPositionChanged()
@@ -64,7 +65,7 @@ public partial class AudioPlayer : AudioStreamPlayer
 			: PauseTime;
 	}
 
-    public void LoadMp3() => Stream = Godot.FileAccess.FileExists(AudioFile.Path)
-        ? FileHandler.LoadFileAsAudioStreamMP3(AudioFile.Path)
-        : throw new Exception($"Failed to update songPlayer stream - check if {AudioFile.Path} exists.");
+    public void LoadMp3() => Stream = Godot.FileAccess.FileExists(Project.Instance.AudioFile.Path)
+        ? FileHandler.LoadFileAsAudioStreamMP3(Project.Instance.AudioFile.Path)
+        : throw new Exception($"Failed to update songPlayer stream - check if {Project.Instance.AudioFile.Path} exists.");
 }

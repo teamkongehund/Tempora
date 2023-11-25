@@ -16,7 +16,7 @@ public partial class GridLine : Line2D
         RelativeMusicPosition = Timing.GetRelativeNotePosition(timeSignature, divisor, index);
 
         DefaultColor = new Color(1f, 0, 0, 0.7f);
-        Width = 4;
+        Width = 3;
     }
 
 	// TODO 2: Add a method that determines color. Execute it in _Ready().

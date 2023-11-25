@@ -12,7 +12,6 @@ public partial class OsuExporter : Node
         List<TimingPoint> timingPoints = timing.TimingPoints;
 		string timingPointsData = TimingPointToText(timingPoints);
 		string dotOsu = $"{DefaultDotOsuFormer}{timingPointsData}{DefaultDotOsuLatter}";
-		//GD.Print(dotOsu);
 		return dotOsu;
     }
 

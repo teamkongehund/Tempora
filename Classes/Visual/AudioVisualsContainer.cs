@@ -28,24 +28,24 @@ public partial class AudioVisualsContainer : VBoxContainer
 		}
 	}
 
-	private AudioFile _audioFile;
-    public AudioFile AudioFile
-	{
-		get => _audioFile;
-		set
-		{
-			if (_audioFile != value && _audioFile != null)
-			{
-				_audioFile = value;
-				CreateBlocks();
-			}
-			else if (_audioFile != value)
-			{
-				_audioFile = value;
-			}
+	//private AudioFile _audioFile;
+ //   public AudioFile AudioFile
+	//{
+	//	get => _audioFile;
+	//	set
+	//	{
+	//		if (_audioFile != value && _audioFile != null)
+	//		{
+	//			_audioFile = value;
+	//			CreateBlocks();
+	//		}
+	//		else if (_audioFile != value)
+	//		{
+	//			_audioFile = value;
+	//		}
 
-        }
-	}
+ //       }
+	//}
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -71,8 +71,11 @@ public partial class AudioVisualsContainer : VBoxContainer
         }
     }
 
-    public float BlockDuration = 2f;
+    //public float BlockDuration = 2f;
 
+	/// <summary>
+	/// Note to self - if this runs twice, the app is fucked.
+	/// </summary>
     public void CreateBlocks()
 	{
 		foreach (var child in GetChildren())
@@ -96,7 +99,7 @@ public partial class AudioVisualsContainer : VBoxContainer
 
 		foreach (WaveformWindow waveformWindow in children)
 		{
-			waveformWindow.AudioFile = AudioFile;
+			//waveformWindow.AudioFile = Project.Instance.AudioFile;
 
 			waveformWindow.SizeFlagsVertical = SizeFlags.ExpandFill;
 

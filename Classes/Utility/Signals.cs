@@ -14,6 +14,7 @@ public partial class Signals : Node
     [Signal] public delegate void ScrolledEventHandler();
     [Signal] public delegate void SettingsChangedEventHandler();
     [Signal] public delegate void SelectedPositionChangedEventHandler();
+    [Signal] public delegate void AudioFileChangedEventHandler();
 
     public override void _Ready()
     {

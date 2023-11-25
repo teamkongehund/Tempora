@@ -4,12 +4,14 @@ using System;
 public partial class Main : Control
 {
 	Button ExportButton;
+    Button SaveButton;
+	Button LoadButton;
     //Button MoveButton;
-	
-	//TextEdit IndexField;
-	//TextEdit PositionField;
 
-	BlockScrollBar BlockScrollBar;
+    //TextEdit IndexField;
+    //TextEdit PositionField;
+
+    BlockScrollBar BlockScrollBar;
 
 	HScrollBar GridScrollBar;
     HScrollBar PlaybackRateScrollBar;
@@ -19,10 +21,11 @@ public partial class Main : Control
 	AudioVisualsContainer AudioVisualsContainer;
 	
 	AudioPlayer AudioPlayer;
-	
-	Timing Timing;
 
-    AudioFile AudioFile;
+
+    //AudioFile AudioFile;
+
+	ProjectFileManager ProjectFileManager;
 
 	Metronome Metronome;
     
@@ -32,22 +35,26 @@ public partial class Main : Control
     public override void _Ready()
 	{
         ExportButton = GetNode<Button>("ExportButton");
+        SaveButton = GetNode<Button>("SaveButton");
+        LoadButton = GetNode<Button>("LoadButton");
         AudioPlayer = GetNode<AudioPlayer>("AudioPlayer");
         AudioVisualsContainer = GetNode<AudioVisualsContainer>("AudioVisualsContainer");
-		Timing = Timing.Instance;
-		//MoveButton = GetNode<Button>("MoveButton");
-		//IndexField = GetNode<TextEdit>("IndexField");
-		//PositionField = GetNode<TextEdit>("PositionField");
-		Metronome = GetNode<Metronome>("Metronome");
+		ProjectFileManager = ProjectFileManager.Instance;
+        //MoveButton = GetNode<Button>("MoveButton");
+        //IndexField = GetNode<TextEdit>("IndexField");
+        //PositionField = GetNode<TextEdit>("PositionField");
+        Metronome = GetNode<Metronome>("Metronome");
 		BlockScrollBar = GetNode<BlockScrollBar>("BlockScrollBar");
         GridScrollBar = GetNode<HScrollBar>("GridScrollBar");
         PlaybackRateScrollBar = GetNode<HScrollBar>("PlaybackRateScrollBar");
 
-        AudioFile = new AudioFile(AudioPath);
+        Project.Instance.AudioFile = new AudioFile(AudioPath);
 		
 		ExportButton.Pressed += OnExportButtonPressed;
+		SaveButton.Pressed += OnSaveButtonPressed;
+		LoadButton.Pressed += OnLoadButtonPressed;
 
-		UpdateChildrensAudioFiles();
+        //UpdateChildrensAudioFiles();
 
         AudioVisualsContainer.SeekPlaybackTime += OnSeekPlaybackTime;
 		AudioVisualsContainer.DoubleClicked += OnDoubleClick;
@@ -63,10 +70,6 @@ public partial class Main : Control
         UpdatePlayHeads();
 		BlockScrollBar.UpdateRange();
     }
-
-	// TODO 1: Fix bug where you can add and snap a point right before an existing one
-
-	// TODO 1: Save projects
 
 	// TODO 2: Scroll to set BPM
 
@@ -91,7 +94,7 @@ public partial class Main : Control
             if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased())
             {
                 // Ensure a mouse release is always captured.
-                GD.Print("Main: MouseLeftReleased");
+                //GD.Print("Main: MouseLeftReleased");
                 Signals.Instance.EmitSignal("MouseLeftReleased");
                 Context.Instance.IsSelectedMusicPositionMoving = false;
             }
@@ -127,8 +130,9 @@ public partial class Main : Control
 		try
 		{
 			audioFile = new AudioFile(path);
-			AudioFile = audioFile;
-            UpdateChildrensAudioFiles();
+			Project.Instance.AudioFile = audioFile;
+			AudioPlayer.LoadMp3();
+            //UpdateChildrensAudioFiles();
         }
 		catch { return; }
 	}
@@ -142,7 +146,17 @@ public partial class Main : Control
 		ExportButton.ReleaseFocus();
 	}
     
-	public void OnBlockScrollBarValueChanged(double value)
+	public void OnSaveButtonPressed()
+	{
+		ProjectFileManager.Instance.SaveProjectAs("user://savedProject.txt");
+    }
+
+    public void OnLoadButtonPressed()
+    {
+		ProjectFileManager.Instance.LoadProjectFromFilePath("user://savedProject.txt");
+    }
+
+    public void OnBlockScrollBarValueChanged(double value)
 	{
 		AudioVisualsContainer.NominalMusicPositionStartForTopBlock = (int)value;
 	}
@@ -162,15 +176,15 @@ public partial class Main : Control
     public void ExportOsu()
 	{
 		string path = "user://blob.osu";
-        string dotOsu = OsuExporter.GetDotOsu(Timing);
+        string dotOsu = OsuExporter.GetDotOsu(Timing.Instance);
         OsuExporter.SaveOsu(path, dotOsu);
     }
 
 	public void ExportOsz()
 	{
         string path = "user://exported.osz";
-        string dotOsu = OsuExporter.GetDotOsu(Timing);
-        OsuExporter.SaveOsz(path, dotOsu, AudioFile);
+        string dotOsu = OsuExporter.GetDotOsu(Timing.Instance);
+        OsuExporter.SaveOsz(path, dotOsu, Project.Instance.AudioFile);
 
 		// Open with system:
 		string globalPath = ProjectSettings.GlobalizePath(path);
@@ -180,12 +194,16 @@ public partial class Main : Control
         }
     }
 
-	public void UpdateChildrensAudioFiles()
-	{
-        AudioPlayer.AudioFile = AudioFile;
-        AudioVisualsContainer.AudioFile = AudioFile;
-		Timing.AudioFile = AudioFile;
-    }
+	//public void UpdateChildrensAudioFiles()
+	//{
+	//	//AudioPlayer.AudioFile = AudioFile;
+	//	AudioPlayer.LoadMp3();
+
+ //       //AudioVisualsContainer.AudioFile = AudioFile;
+	//	//AudioVisualsContainer.CreateBlocks();
+
+	//	//Timing.AudioFile = AudioFile;
+ //   }
 
 	public void Play()
 	{
@@ -213,7 +231,7 @@ public partial class Main : Control
 	public void UpdatePlayHeads()
 	{
 		double playbackTime = AudioPlayer.GetPlaybackTime();
-		float musicPosition = Timing.TimeToMusicPosition((float)playbackTime);
+		float musicPosition = Timing.Instance.TimeToMusicPosition((float)playbackTime);
 		foreach (WaveformWindow waveformWindow in AudioVisualsContainer.GetChildren())
 		{
 			float x = waveformWindow.MusicPositionToXPosition(musicPosition);
@@ -225,7 +243,7 @@ public partial class Main : Control
 	public void UpdateMetronome()
 	{
 		double playbackTime = AudioPlayer.GetPlaybackTime();
-        float musicPosition = Timing.TimeToMusicPosition((float)playbackTime);
+        float musicPosition = Timing.Instance.TimeToMusicPosition((float)playbackTime);
 		Metronome.Click(musicPosition);
     }
 
@@ -239,7 +257,7 @@ public partial class Main : Control
 	public void OnDoubleClick(float playbackTime)
 	{
 		TimingPoint timingPoint;
-		Timing.AddTimingPoint(playbackTime, out timingPoint);
+		Timing.Instance.AddTimingPoint(playbackTime, out timingPoint);
 		if (timingPoint != null)
 		{
 			Context.Instance.HeldTimingPoint = timingPoint;

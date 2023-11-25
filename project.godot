@@ -22,9 +22,11 @@ buses/default_bus_layout="res://Classes/Audio/default_bus_layout.tres"
 [autoload]
 
 Signals="*res://Classes/Utility/Signals.tscn"
+Project="*res://Classes/Utility/Project.tscn"
 Timing="*res://Classes/Utility/Timing.tscn"
 Settings="*res://Classes/Utility/Settings.tscn"
 Context="*res://Classes/Utility/Context.tscn"
+ProjectFileManager="*res://Classes/Utility/ProjectFileManager.tscn"
 
 [display]
 

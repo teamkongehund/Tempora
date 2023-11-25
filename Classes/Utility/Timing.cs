@@ -16,7 +16,7 @@ public partial class Timing : Node
 
 	public List<TimeSignaturePoint> TimeSignaturePoints = new List<TimeSignaturePoint>();
 
-	public AudioFile AudioFile;
+	//public AudioFile AudioFile;
 
 	public static Timing Instance;
     #endregion
@@ -24,26 +24,33 @@ public partial class Timing : Node
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{
-        Signals = Signals.Instance;
         Instance = this;
 	}
 
     #region Timing modifiers
 
-    public void AddTimingPoint(float MusicPosition, float Time)
+    public void AddTimingPoint(float musicPosition, float time)
 	{
 		TimingPoint timingPoint = new TimingPoint()
 		{
-			MusicPosition = MusicPosition,
-			Time = Time
+			MusicPosition = musicPosition,
+			Time = time
 		};
 		TimingPoints.Add(timingPoint);
-		//AddChild(timingPoint);
 		timingPoint.Changed += OnTimingPointChanged;
-		TimingPoints.Sort();
+        timingPoint.Deleted += OnTimingPointDeleted;
+        TimingPoints.Sort();
 
-		//EmitSignal(nameof(TimingChanged));
-        Signals.EmitSignal("TimingChanged");
+        int index = TimingPoints.FindIndex(point => point == timingPoint);
+
+        if (index >= 1) // Set previous timing point
+        {
+            timingPoint.PreviousTimingPoint = TimingPoints[index - 1];
+        }
+
+		//UpdateMPS(index);
+
+        Signals.Instance.EmitSignal("TimingChanged");
     }
 
 	public void AddTimingPoint(float time)
@@ -76,7 +83,7 @@ public partial class Timing : Node
             previousTimingPoint = TimingPoints[index - 1];
 
             timingPoint.MusicPosition = TimeToMusicPosition(time); // TODO 3: verify this doesn't accidentally use itself to get value
-            timingPoint.MeasuresPerSecond = previousTimingPoint.MeasuresPerSecond;
+            //timingPoint.MeasuresPerSecond = previousTimingPoint.MeasuresPerSecond;
 
 			nextTimingPoint = (TimingPoints.Count > index + 1) ? TimingPoints[index + 1] : null;
         }
@@ -98,12 +105,13 @@ public partial class Timing : Node
 
         if (previousTimingPoint?.MusicPosition == timingPoint.MusicPosition
                 || nextTimingPoint?.MusicPosition == timingPoint.MusicPosition 
-				|| (previousTimingPoint?.Time is float previousTime && Mathf.Abs(previousTime - timingPoint.Time) < 0.04f)
-				|| (nextTimingPoint?.Time is float nextTime && Mathf.Abs(nextTime - timingPoint.Time) < 0.04f)
+				|| (previousTimingPoint?.Time is float previousTime && Mathf.Abs(previousTime - timingPoint.Time) < 0.01f)
+				|| (nextTimingPoint?.Time is float nextTime && Mathf.Abs(nextTime - timingPoint.Time) < 0.01f)
                 )
         {
             TimingPoints.Remove(timingPoint);
             outTimingPoint = null;
+			GD.Print("Timing Point refused to add!");
             return;
         }
 
@@ -116,17 +124,17 @@ public partial class Timing : Node
 		outTimingPoint = timingPoint;
 
         //EmitSignal(nameof(TimingChanged));
-        Signals.EmitSignal("TimingChanged");
+        Signals.Instance.EmitSignal("TimingChanged");
     }
 
 	public void OnTimingPointChanged(TimingPoint timingPoint)
 	{
         int index = TimingPoints.FindIndex(i => i == timingPoint);
 
-        UpdateMPSBasedOnNextTimingPoint(index-1);
-        UpdateMPSBasedOnNextTimingPoint(index);
+        //UpdateMPS(index-1);
+        //UpdateMPS(index);
 
-        Signals.EmitSignal("TimingChanged");
+        Signals.Instance.EmitSignal("TimingChanged");
     }
 
 	public void OnTimingPointDeleted(TimingPoint timingPoint)
@@ -136,42 +144,42 @@ public partial class Timing : Node
         timingPoint.QueueFree();
         TimingPoints.Remove(timingPoint);
 
-        UpdateMPSBasedOnNextTimingPoint(index - 1);
-        UpdateMPSBasedOnNextTimingPoint(index);
+        //UpdateMPS(index - 1);
+        //UpdateMPS(index);
 
-        Signals.EmitSignal("TimingChanged");
+        Signals.Instance.EmitSignal("TimingChanged");
     }
 
 	/// <summary>
 	/// Use differences between time and music position to calculate <see cref="TimingPoint.MeasuresPerSecond"/> (BPM analogy)
 	/// </summary>
-	public void UpdateMPSBasedOnNextTimingPoint(int index)
-	{
-		// If the current index doesn't exist, don't do anything
-		if (index >= TimingPoints.Count || index < 0) return;
+	//public void UpdateMPS(int index)
+	//{
+	//	// If the current index doesn't exist, don't do anything
+	//	if (index >= TimingPoints.Count || index < 0) return;
 
-		// If the next index doesn't exist and there's no previous timing point, don't do anything
-		else if (index + 1 >= TimingPoints.Count && index - 1 < 0 && index < TimingPoints.Count) return;
+	//	// If the next index doesn't exist and there's no previous timing point, don't do anything
+	//	else if (index + 1 >= TimingPoints.Count && index - 1 < 0 && index < TimingPoints.Count) return;
 
-        // If the next index doesn't exist, but there's a previous timing point, continue the MPS from previous timing point.
-        else if (index+1 >= TimingPoints.Count && index - 1 >= 0 && index < TimingPoints.Count)
-        {
-            TimingPoints[index].MeasuresPerSecond = TimingPoints[index - 1].MeasuresPerSecond;
-            return;
-        }
+ //       // If the next index doesn't exist, but there's a previous timing point, continue the MPS from previous timing point.
+ //       else if (index+1 >= TimingPoints.Count && index - 1 >= 0 && index < TimingPoints.Count)
+ //       {
+ //           TimingPoints[index].MeasuresPerSecond = TimingPoints[index - 1].MeasuresPerSecond;
+ //           return;
+ //       }
 
-		// If the next index exists, use the differences between time and music position to calculate the MPS
-        float? timeDifference = GetTimeDifference(index, index+1);
-		if (timeDifference == null)
-		{
-			throw new Exception("GetTimeDifference returned null - Check the index checks in the method that threw this error.");
-		}
+	//	// If the next index exists, use the differences between time and music position to calculate the MPS
+ //       float? timeDifference = GetTimeDifference(index, index+1);
+	//	if (timeDifference == null)
+	//	{
+	//		throw new Exception("GetTimeDifference returned null - Check the index checks in the method that threw this error.");
+	//	}
 
-        float? musicPositionDifference = TimingPoints[index+1].MusicPosition - TimingPoints[index].MusicPosition;
-        if (musicPositionDifference == null) throw new Exception("Previous Timing Point did not have a Music Position");
+ //       float? musicPositionDifference = TimingPoints[index+1].MusicPosition - TimingPoints[index].MusicPosition;
+ //       if (musicPositionDifference == null) throw new Exception("Previous Timing Point did not have a Music Position");
 
-		TimingPoints[index].MeasuresPerSecond = (float)musicPositionDifference/(float)timeDifference;
-    }
+	//	TimingPoints[index].MeasuresPerSecond = (float)musicPositionDifference/(float)timeDifference;
+ //   }
 
 	/// <summary>
 	/// Snap a <see cref="TimingPoint"/> to the grid using <see cref="Settings.Divisor"/> and <see cref="Settings.SnapToGridEnabled"/>
@@ -246,6 +254,7 @@ public partial class Timing : Node
 
 		for (int i = indexForFirstTimingPointWithThisTimeSignature; i <= maxIndex; i++)
 		{
+			if (i == -1) break;
 			TimingPoint timingPoint = TimingPoints[i];
 			TimingPoints[i].TimeSignature = timeSignature;
 		}
@@ -281,7 +290,10 @@ public partial class Timing : Node
     public float MusicPositionToTime(float musicPosition)
 	{
 		TimingPoint timingPoint = GetOperatingTimingPoint(musicPosition);
-		if (timingPoint == null) return musicPosition / 0.5f; // default 120 bpm from time=0
+		if (timingPoint == null)
+		{
+			return musicPosition / 0.5f; // default 120 bpm from time=0
+		}
 
         float time = (float)(timingPoint.Time + (musicPosition - timingPoint.MusicPosition) / timingPoint.MeasuresPerSecond);
 
@@ -289,7 +301,10 @@ public partial class Timing : Node
     }
 	public float TimeToMusicPosition(float time)
 	{
-		if (TimingPoints.Count == 0) return time * 0.5f; // default 120 bpm from time=0
+		if (TimingPoints.Count == 0)
+		{
+			return time * 0.5f; // default 120 bpm from time=0
+		}
 
         int timingPointIndex = TimingPoints.FindLastIndex(point => point.Time <= time);
 		TimingPoint timingPoint;
@@ -350,7 +365,7 @@ public partial class Timing : Node
     }
 	public int GetLastMeasure()
 	{
-		float lengthInSeconds = AudioFile.SampleIndexToSeconds(AudioFile.AudioData.Length - 1);
+		float lengthInSeconds = Project.Instance.AudioFile.SampleIndexToSeconds(Project.Instance.AudioFile.AudioData.Length - 1);
 		float lastMeasure = TimeToMusicPosition(lengthInSeconds);
 		return (int)lastMeasure;
 	}

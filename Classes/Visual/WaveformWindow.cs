@@ -22,21 +22,21 @@ public partial class WaveformWindow : Control
     public TimeSignatureLineEdit TimeSignatureLineEdit;
 
 
-    private AudioFile _audioFile;
-	public AudioFile AudioFile
-	{
-		get => _audioFile;
-		set
-		{
-			if (_audioFile != value)
-			{
-				_audioFile = value;
-				//UpdateWaveformAudioFiles();
-				CreateWaveforms();
-				RenderTimingPoints();
-			}
-        }
-	}
+ //   private AudioFile _audioFile;
+	//public AudioFile AudioFile
+	//{
+	//	get => _audioFile;
+	//	set
+	//	{
+	//		if (_audioFile != value)
+	//		{
+	//			_audioFile = value;
+	//			//UpdateWaveformAudioFiles();
+	//			CreateWaveforms();
+	//			RenderTimingPoints();
+	//		}
+ //       }
+	//}
 	Waveform Waveform1;
 
 	private int _musicPositionStart;
@@ -55,6 +55,12 @@ public partial class WaveformWindow : Control
         }
 	}
 
+    // TODO 1: Investigate why the waveform is rendered wrong
+    // when you load res://savedProject.txt and you move the timing point on MP = 193
+
+    // TODO 1: Investigate why the program gets slow with more timing points
+    // - particularly loading a file with a lot of points, but also scrolling etc.
+
 	public float ActualMusicPositionStartForWindow
     {
         get => NominalMusicPositionStartForWindow - Settings.Instance.MusicPositionMargin;
@@ -68,8 +74,6 @@ public partial class WaveformWindow : Control
 
     //public float StartTime = 0;
     //public float EndTime = 10;
-
-    Timing Timing;
 
 	public int FirstTimingPointIndex;
 	public int LastTimingPointIndex;
@@ -86,8 +90,6 @@ public partial class WaveformWindow : Control
         SelectedPositionLine = GetNode<Line2D>("SelectedPositionLine");
         MeasureLabel = GetNode<Label>("MeasureLabel");
         TimeSignatureLineEdit = GetNode<TimeSignatureLineEdit>("TimeSignatureLineEdit");
-
-        Timing = Timing.Instance;
 		
 		Playhead = GetNode<Line2D>("Playhead");
         Playhead.Width = 4;
@@ -101,6 +103,11 @@ public partial class WaveformWindow : Control
 		Signals.Instance.SettingsChanged += OnSettingsChanged;
         Signals.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
         Signals.Instance.Scrolled += UpdateSelectedPositionLine;
+        //Signals.Instance.Connect("SettingsChanged", Callable.From(OnSettingsChanged));
+        //Signals.Instance.Connect("SelectedPositionChanged", Callable.From(OnSelectedPositionChanged));
+        //Signals.Instance.Connect("Scrolled", Callable.From(UpdateSelectedPositionLine));
+
+        Signals.Instance.AudioFileChanged += OnAudioFileChanged;
 
         TimeSignatureLineEdit.TimeSignatureSubmitted += OnTimingSignatureSubmitted;
 
@@ -124,12 +131,11 @@ public partial class WaveformWindow : Control
     {
         if (@event is InputEventMouseButton mouseEvent)
         {
-            //GD.Print("WaveformWindow is handling mouseEvent");
             if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed)
             {
                 float x = mouseEvent.Position.X;
 				float musicPosition = XPositionToMusicPosition(x);
-				float time = Timing.MusicPositionToTime(musicPosition);
+				float time = Timing.Instance.MusicPositionToTime(musicPosition);
                 GD.Print($"WaveformWindow was clicked at playback time {time} seconds");
 
                 if (Input.IsKeyPressed(Key.Alt))
@@ -146,14 +152,14 @@ public partial class WaveformWindow : Control
             {
                 float x = mouseEvent.Position.X;
                 float musicPosition = XPositionToMusicPosition(x);
-                float time = Timing.MusicPositionToTime(musicPosition);
+                float time = Timing.Instance.MusicPositionToTime(musicPosition);
                 EmitSignal(nameof(DoubleClicked), time);
             }
             else if (mouseEvent.ButtonIndex == MouseButton.Right && mouseEvent.Pressed)
             {
                 float x = mouseEvent.Position.X;
                 float musicPosition = XPositionToMusicPosition(x);
-                float time = Timing.MusicPositionToTime(musicPosition);
+                float time = Timing.Instance.MusicPositionToTime(musicPosition);
                 EmitSignal(nameof(SeekPlaybackTime), time);
             }
         }
@@ -162,7 +168,7 @@ public partial class WaveformWindow : Control
             Vector2 mousePos = mouseMotion.Position;
             float mouseMusicPosition = XPositionToMusicPosition(mousePos.X);
             float mouseRelativeMusicPosition = XPositionToRelativeMusicPosition(mousePos.X);
-
+;
             // HeldTimingPoint
             Timing.SnapTimingPoint(Context.Instance.HeldTimingPoint, mouseMusicPosition);
 
@@ -182,6 +188,11 @@ public partial class WaveformWindow : Control
 		RenderTimingPoints();
 		CreateGridLines();
         UpdateLabels();
+    }
+
+    public void OnAudioFileChanged()
+    {
+        CreateWaveforms();
     }
 
     public void OnTimingSignatureSubmitted(int[] timeSignature)
@@ -219,15 +230,15 @@ public partial class WaveformWindow : Control
 
 		float margin = Settings.Instance.MusicPositionMargin;
 
-        float timeWhereWindowBegins = Timing.MusicPositionToTime(ActualMusicPositionStartForWindow);
-        float timeWhereWindowEnds = Timing.MusicPositionToTime(ActualMusicPositionStartForWindow + 1 + 2 * margin);
+        float timeWhereWindowBegins = Timing.Instance.MusicPositionToTime(ActualMusicPositionStartForWindow);
+        float timeWhereWindowEnds = Timing.Instance.MusicPositionToTime(ActualMusicPositionStartForWindow + 1 + 2 * margin);
 
-        if (Timing.TimingPoints.Count == 0)
+        if (Timing.Instance.TimingPoints.Count == 0)
 		{
 			float startTime = timeWhereWindowBegins;
 			float endTime = timeWhereWindowEnds;
 
-            Waveform waveform = new Waveform(AudioFile, Size.X, Size.Y, new float[2] { startTime, endTime })
+            Waveform waveform = new Waveform(Project.Instance.AudioFile, Size.X, Size.Y, new float[2] { startTime, endTime })
             {
                 Position = new Vector2(0, Size.Y / 2),
             };
@@ -245,7 +256,7 @@ public partial class WaveformWindow : Control
 		for (int i = FirstTimingPointIndex; i <= LastTimingPointIndex; i++) 
 		{
 			//GD.Print($"Now rendering waveform for index {i}");
-			TimingPoint timingPoint = Timing.TimingPoints[i];
+			TimingPoint timingPoint = Timing.Instance.TimingPoints[i];
 
 			float startTime = (i == FirstTimingPointIndex)
 				? timeWhereWindowBegins
@@ -253,15 +264,15 @@ public partial class WaveformWindow : Control
 
 			float endTime = (i == LastTimingPointIndex)
 				? timeWhereWindowEnds
-                : (float)Timing.TimingPoints[i+1].Time;
+                : (float)Timing.Instance.TimingPoints[i+1].Time;
 
-            float musicPositionStart = Timing.TimeToMusicPosition(startTime);
-			float musicPositionEnd = Timing.TimeToMusicPosition(endTime);
+            float musicPositionStart = Timing.Instance.TimeToMusicPosition(startTime);
+			float musicPositionEnd = Timing.Instance.TimeToMusicPosition(endTime);
 
             float length = Size.X * (musicPositionEnd - musicPositionStart) / (1f + 2 * margin);
             float xPosition = Size.X * (musicPositionStart - ActualMusicPositionStartForWindow) / (1f + 2 * margin);
 
-            Waveform waveform = new Waveform(AudioFile, length, Size.Y, new float[2] { startTime, endTime })
+            Waveform waveform = new Waveform(Project.Instance.AudioFile, length, Size.Y, new float[2] { startTime, endTime })
 			{
 				Position = new Vector2(xPosition, Size.Y / 2),
 			};
@@ -281,7 +292,7 @@ public partial class WaveformWindow : Control
             if (child is VisualTimingPoint visualTimingPoint)
                 visualTimingPoint.QueueFree();
         }
-        foreach (TimingPoint timingPoint in Timing.TimingPoints)
+        foreach (TimingPoint timingPoint in Timing.Instance.TimingPoints)
 		{
             var packedVisualTimingPoint = ResourceLoader.Load<PackedScene>("res://Classes/Visual/VisualTimingPoint.tscn");
             if (timingPoint.MusicPosition >= ActualMusicPositionStartForWindow 
@@ -304,7 +315,7 @@ public partial class WaveformWindow : Control
 		}
 
 		int divisor = Settings.Instance.Divisor;
-        int[] timeSignature = Timing.GetTimeSignature(NominalMusicPositionStartForWindow);
+        int[] timeSignature = Timing.Instance.GetTimeSignature(NominalMusicPositionStartForWindow);
 
 		int divisionIndex = 0;
 		float latestPosition = 0;
@@ -354,7 +365,7 @@ public partial class WaveformWindow : Control
 
     public void UpdateLabels()
     {
-        int[] timeSignature = Timing.GetTimeSignature(NominalMusicPositionStartForWindow);
+        int[] timeSignature = Timing.Instance.GetTimeSignature(NominalMusicPositionStartForWindow);
         MeasureLabel.Text = NominalMusicPositionStartForWindow.ToString();
         TimeSignatureLineEdit.Text = $"{timeSignature[0]}/{timeSignature[1]}";
     }
@@ -395,17 +406,17 @@ public partial class WaveformWindow : Control
 
 	public void UpdateTimingPointsIndices()
 	{
-		if (Timing.TimingPoints.Count == 0) return;
+		if (Timing.Instance.TimingPoints.Count == 0) return;
 
-		//float startTime = Timing.MusicPositionToTime(MusicPositionStart);
+		//float startTime = Timing.Instance.MusicPositionToTime(MusicPositionStart);
 
-		int firstIndex = Timing.TimingPoints.FindLastIndex(point => point.MusicPosition <= NominalMusicPositionStartForWindow);
+		int firstIndex = Timing.Instance.TimingPoints.FindLastIndex(point => point.MusicPosition <= NominalMusicPositionStartForWindow);
 
         // If there's only TimingPoints AFTER MusicPositionStart
         if (firstIndex == -1) 
-            firstIndex = Timing.TimingPoints.FindIndex(point => point.MusicPosition > NominalMusicPositionStartForWindow);
+            firstIndex = Timing.Instance.TimingPoints.FindIndex(point => point.MusicPosition > NominalMusicPositionStartForWindow);
 
-        int lastIndex = Timing.TimingPoints.FindLastIndex(point => point.MusicPosition < NominalMusicPositionStartForWindow + 1);
+        int lastIndex = Timing.Instance.TimingPoints.FindLastIndex(point => point.MusicPosition < NominalMusicPositionStartForWindow + 1);
         if (lastIndex == -1) lastIndex = firstIndex;
 
 		FirstTimingPointIndex = firstIndex;
@@ -417,6 +428,7 @@ public partial class WaveformWindow : Control
 
     public float XPositionToMusicPosition(float x)
 	{
+        //GD.Print($"XPositionToMusicPosition: NominalMusicPositionStartForWindow = {NominalMusicPositionStartForWindow}");
         return XPositionToRelativeMusicPosition(x) + NominalMusicPositionStartForWindow;
 	}
 

@@ -15,7 +15,8 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
 			if (_previousTimingPoint == value) return;
 			_previousTimingPoint = value;
 			if (PreviousTimingPoint != null) PreviousTimingPoint.NextTimingPoint = this;
-		}
+            MeasuresPerSecond_Update();
+        }
 	}
     private TimingPoint _nextTimingPoint;
     public TimingPoint NextTimingPoint
@@ -26,12 +27,23 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
             if (_nextTimingPoint == value) return;
             _nextTimingPoint = value;
             if (NextTimingPoint != null) NextTimingPoint.PreviousTimingPoint = this;
+            MeasuresPerSecond_Update();
         }
     }
 
     public int[] TimeSignature = new int[] { 4, 4 };
 
-	public float Time;
+	private float _time;
+	public float Time
+	{
+		get => _time;
+		set
+		{
+			if (_time == value) return;
+			_time = value;
+			MeasuresPerSecond_Update();
+		}
+	}
 
 	/// <summary>
 	/// The tempo from this timing point until the next. The value is proportional to BPM if the time signature doesn't change.
@@ -40,7 +52,7 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
 	public float MeasuresPerSecond
     {
         get => _measuresPerSecond;
-        set
+        private set
         {
 			if (_measuresPerSecond != value)
 			{
@@ -49,6 +61,25 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
 			}
         }
     }
+
+	public void MeasuresPerSecond_Update()
+	{
+		if (MusicPosition == null)
+			return;
+		if (PreviousTimingPoint?.MusicPosition != null)
+		{
+			PreviousTimingPoint.MeasuresPerSecond =
+				((float)MusicPosition - (float)PreviousTimingPoint.MusicPosition)
+				/ (Time - PreviousTimingPoint.Time);
+			MeasuresPerSecond = PreviousTimingPoint.MeasuresPerSecond;
+		}
+		if (NextTimingPoint?.MusicPosition != null)
+		{
+			MeasuresPerSecond =
+				((float)NextTimingPoint.MusicPosition - (float)MusicPosition)
+				/ (NextTimingPoint.Time - Time);
+		}
+	}
 
 	private float _bpm;
 	public float BPM
@@ -86,9 +117,11 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
 			if (PreviousTimingPoint != null && PreviousTimingPoint.MusicPosition >= value) return;
             if (NextTimingPoint != null && NextTimingPoint.MusicPosition <= value) return;
 
-			//GD.Print($"{PreviousTimingPoint.MusicPosition} , {PreviousTimingPoint.MusicPosition} , snapping to {value}");
-
             _musicPosition = value;
+
+            // Update MPS for this timing point and the previous one
+			MeasuresPerSecond_Update();
+
 			EmitSignal(nameof(Changed), this);
 		}
 	}

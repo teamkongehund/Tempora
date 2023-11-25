@@ -27,15 +27,12 @@ public partial class FileHandler : Node
     {
         using var fileNew = Godot.FileAccess.Open(pathTo, Godot.FileAccess.ModeFlags.Write);
         fileNew.StoreBuffer(GetFileAsBuffer(pathFrom));
-        GD.Print($"FileHandler.CopyFile: Copied {pathFrom} to {pathTo}");
     }
 
     public static AudioStreamMP3 LoadFileAsAudioStreamMP3(string path)
     {
         var sound = new AudioStreamMP3();
         sound.Data = GetFileAsBuffer(path);
-        //Byte[] buffer = LoadFileAsBuffer(path);
-        //GD.Print("Is (AudioStreamMp3.Data = LoadFileAsBuffer(path)) the same as (LoadFileAsBuffer(path))? " + (sound.Data.SequenceEqual<Byte>(buffer)));
         return sound;
     }
 
@@ -43,7 +40,6 @@ public partial class FileHandler : Node
     {
         using var file = ReadFile(path);
         string text = file.GetAsText();
-        GD.Print($"FileHandler.LoadFileAsTextArray: Loaded the follwing text: {text}");
         string[] textAsArray = text.Split("\n",StringSplitOptions.RemoveEmptyEntries);
         return textAsArray;
     }

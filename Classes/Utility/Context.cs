@@ -35,7 +35,6 @@ public partial class Context : Node
     public void OnTimingPointHolding(TimingPoint timingPoint)
     {
         HeldTimingPoint = timingPoint;
-        GD.Print($"Signals - HeldTimingPoint MusicPosition = {timingPoint?.MusicPosition}");
     }
 
     public void OnMouseLeftReleased()

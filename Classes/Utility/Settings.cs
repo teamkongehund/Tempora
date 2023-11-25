@@ -40,7 +40,7 @@ public partial class Settings : Node
 
 	public static int DivisorToSlider(int divisor) => SliderToDivisorDict.FirstOrDefault(x => x.Value == divisor).Key;
 
-    private int _numberOfBlocks = 10;
+	private int _numberOfBlocks = 10;
 	/// <summary>
 	/// Number of waveform blocks to display
 	/// </summary>

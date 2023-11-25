@@ -170,6 +170,33 @@ text = "Metronome"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="SaveButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 15.0
+offset_top = -364.0
+offset_right = 114.0
+offset_bottom = -310.0
+grow_vertical = 0
+focus_mode = 0
+text = "Save
+"
+
+[node name="LoadButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 15.0
+offset_top = -303.0
+offset_right = 114.0
+offset_bottom = -249.0
+grow_vertical = 0
+focus_mode = 0
+text = "Load"
+
 [node name="ExportButton" type="Button" parent="."]
 layout_mode = 1
 anchors_preset = 2
