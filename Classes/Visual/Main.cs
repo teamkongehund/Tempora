@@ -127,7 +127,7 @@ public partial class Main : Control
 
 	public void OnSettingsChanged()
 	{
-		AudioVisualsContainer.CreateBlocks();
+		AudioVisualsContainer.UpdateNumberOfBlocks();
 	}
 
 	public void OnFilesDropped(string[] filePaths)

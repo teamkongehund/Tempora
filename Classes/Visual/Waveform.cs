@@ -216,22 +216,5 @@ public partial class Waveform : Line2D
         // This is the toughest job in the Waveform creation process after getting rid of min/max rendering
         Points = VectorTools.CombineArraysToVector2(xValues, yValues); 
     }
-
-    //public float PlaybackTimeToPixelPosition(float playbackTime)
-    //{
-    //    // Warning: Unless fixed, there may be a discrepancy if the waveform goes before the audio file beginning,
-    //    // or goes after the audio file end. 
-
-    //    float pixelPosition = (playbackTime - TimeRange[0]) * PixelsPerSecond ;
-
-    //    return pixelPosition;
-    //}
-
-    //public float PixelPositionToPlaybackTime(float pixelPosition)
-    //{
-    //    float playbackTime = pixelPosition / PixelsPerSecond + TimeRange[0];
-
-    //    return playbackTime;
-    //}
     #endregion
 }

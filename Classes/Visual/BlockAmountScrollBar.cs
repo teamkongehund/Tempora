@@ -12,6 +12,8 @@ public partial class BlockAmountScrollBar : HScrollBar
         UpdateLabel(Settings.Instance.NumberOfBlocks);
         Value = Settings.Instance.NumberOfBlocks;
 
+        MaxValue = Settings.Instance.MaxNumberOfBlocks;
+
         ValueChanged += OnValueChanged;
     }
 

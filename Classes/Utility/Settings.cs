@@ -52,9 +52,14 @@ public partial class Settings : Node
 	}
 
 	/// <summary>
-	/// How many measures of overlapping time is added to the beginning and end of each waveform block
+	/// Should not be changed during runtime!
 	/// </summary>
-	public float MusicPositionMargin = 0.04f;
+	public int MaxNumberOfBlocks = 30;
+
+    /// <summary>
+    /// How many measures of overlapping time is added to the beginning and end of each waveform block
+    /// </summary>
+    public float MusicPositionMargin = 0.04f;
 
 	/// <summary>
 	/// Snap timing points to beat grid when moving them. 

@@ -31,9 +31,14 @@ public partial class VisualTimingPoint : Node2D
 
 	public void OnTimingPointChanged(TimingPoint timingPoint)
 	{
-		NumberLabel.Text = Timing.Instance.TimingPoints.FindIndex(point => point == timingPoint).ToString();
-		BPMLabel.Text = timingPoint.BPM.ToString("0.00");
+		UpdateLabels(timingPoint);
 	}
+
+	public void UpdateLabels(TimingPoint timingPoint)
+	{
+        NumberLabel.Text = Timing.Instance.TimingPoints.FindIndex(point => point == timingPoint).ToString();
+        BPMLabel.Text = timingPoint.BPM.ToString("0.00");
+    }
 
     public override void _ExitTree()
     {

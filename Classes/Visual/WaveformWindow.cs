@@ -21,6 +21,9 @@ public partial class WaveformWindow : Control
     public Label MeasureLabel;
     public TimeSignatureLineEdit TimeSignatureLineEdit;
 
+    PackedScene PackedVisualTimingPoint = ResourceLoader.Load<PackedScene>("res://Classes/Visual/VisualTimingPoint.tscn");
+
+    public bool IsInstantiating = true;
 
  //   private AudioFile _audioFile;
 	//public AudioFile AudioFile
@@ -45,20 +48,13 @@ public partial class WaveformWindow : Control
 		get => _musicPositionStart;
 		set
 		{
+            if (_musicPositionStart == value) return;
 			_musicPositionStart = value;
 
-			//UpdateTimingPointsIndices();
-			//CreateWaveforms();
-   //         RenderTimingPoints();
-   //         UpdateSelectedPositionLine();
-   //         UpdateLabels();
-   //         CreateGridLines();
-
-            UpdateVisuals();
+            if (!IsInstantiating)
+                UpdateVisuals();
         }
 	}
-
-    // TODO 1: Investigate why the program gets slow with more timing points
 
 	public float ActualMusicPositionStartForWindow
     {
@@ -97,6 +93,8 @@ public partial class WaveformWindow : Control
 		UpdatePreviewLineScaling();
         UpdateSelectedPositionScaling();
         UpdateSelectedPositionLine();
+
+        CreateEmptyTimingPoints(8);
 
         Resized += OnResized;
 		//Signals.Instance.SettingsChanged += OnSettingsChanged;
@@ -199,7 +197,11 @@ public partial class WaveformWindow : Control
     {
         Timing.Instance.UpdateTimeSignature(timeSignature, NominalMusicPositionStartForWindow);
     }
-	public void OnResized() => UpdateVisuals();
+	public void OnResized()
+    {
+        //GD.Print("Resized!");
+        UpdateVisuals();
+    }
 
     public void OnSettingsChanged() => UpdateVisuals();
 
@@ -294,33 +296,73 @@ public partial class WaveformWindow : Control
         }
 	}
 
-	public void RenderTimingPoints()
-	{
+    /// <summary>
+    /// Instantiate an amount of <see cref="VisualTimingPoint"/> nodes and adds as children. 
+    /// These are then modified whenever the visuals need to change, instead of re-instantiating them.
+    /// This is significantly faster than creating them anew each time.
+    /// </summary>
+    public void CreateEmptyTimingPoints(int amount)
+    {
         foreach (var child in VisualTimingPointFolder.GetChildren())
         {
             if (child is VisualTimingPoint visualTimingPoint)
                 visualTimingPoint.QueueFree();
         }
-        var packedVisualTimingPoint = ResourceLoader.Load<PackedScene>("res://Classes/Visual/VisualTimingPoint.tscn");
+
+        TimingPoint dummyTimingPoint = new TimingPoint()
+        {
+            Time = 0f,
+            MusicPosition = 0f,
+            MeasuresPerSecond = 120
+        };
+
+        for (int i = 0; i < amount; i++)
+        {
+            VisualTimingPoint visualTimingPoint = PackedVisualTimingPoint.Instantiate() as VisualTimingPoint;
+            visualTimingPoint.Visible = false;
+            visualTimingPoint.Scale = new Vector2(0.2f, 0.2f);
+            visualTimingPoint.ZIndex = 95;
+            visualTimingPoint.TimingPoint = dummyTimingPoint;
+            VisualTimingPointFolder.AddChild(visualTimingPoint);
+        }
+    }
+
+    public void RenderTimingPoints()
+    {
+        Godot.Collections.Array<Node> children = VisualTimingPointFolder.GetChildren();
+        int childrenAmount = children.Count;
+        int index = 0;
+
+        foreach (Node2D child in children)
+        {
+            child.Visible = false;
+        }
+
+        // this assumes all children are VisualTimingPoint
         foreach (TimingPoint timingPoint in Timing.Instance.TimingPoints)
-		{
-            if (timingPoint.MusicPosition >= ActualMusicPositionStartForWindow 
-				&& timingPoint.MusicPosition < ActualMusicPositionStartForWindow + 1 + 2 * Settings.Instance.MusicPositionMargin)
-			{
-                // TODO 1: Pre-instantiate and add i.e 5 or 10 VisualTimingPoints in the scene, then change them instead of instantiating anew.
-                // The .AddChild and .Instantiate take a lot fo CPU processing every time you scroll in the app.
-                // Likewise, the .Load also takes up a bunch, but not quite as much.
-                // The desribed solution should speed the program up significantly (as deduced from CPU Usage diagnostics)
-				VisualTimingPoint visualTimingPoint = packedVisualTimingPoint.Instantiate() as VisualTimingPoint; 
-				float x = MusicPositionToXPosition((float)timingPoint.MusicPosition);
-				visualTimingPoint.TimingPoint = timingPoint;
-                visualTimingPoint.Position = new Vector2(x, Size.Y / 2);
-				visualTimingPoint.Scale = new Vector2(0.2f, 0.2f);
-                visualTimingPoint.ZIndex = 95;
+        {
+            if (timingPoint.MusicPosition < ActualMusicPositionStartForWindow
+               || timingPoint.MusicPosition > (ActualMusicPositionStartForWindow + 1 + 2 * Settings.Instance.MusicPositionMargin))
+                continue;
+
+            VisualTimingPoint visualTimingPoint;
+            if (index >= childrenAmount)
+            {
+                visualTimingPoint = PackedVisualTimingPoint.Instantiate() as VisualTimingPoint;
                 VisualTimingPointFolder.AddChild(visualTimingPoint);
-			}
-		}
-	}
+            }
+            else
+            {
+                visualTimingPoint = children[index] as VisualTimingPoint;
+            }
+            float x = MusicPositionToXPosition((float)timingPoint.MusicPosition);
+            visualTimingPoint.TimingPoint = timingPoint;
+            visualTimingPoint.Position = new Vector2(x, Size.Y / 2);
+            visualTimingPoint.UpdateLabels(timingPoint);
+            visualTimingPoint.Visible = true;
+            index++;
+        }
+    }
 	public void CreateGridLines()
 	{
 		foreach (var child in GridFolder.GetChildren())
@@ -372,6 +414,7 @@ public partial class WaveformWindow : Control
     #region Updaters
     public void UpdateVisuals()
     {
+        if (!Visible) return;
         UpdatePlayheadScaling();
         UpdatePreviewLineScaling();
         UpdateSelectedPositionScaling();

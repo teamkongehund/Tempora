@@ -26,29 +26,10 @@ public partial class AudioVisualsContainer : VBoxContainer
 			if (value != _nominalMusicPositionStartForTopBlock)
 			{
 				_nominalMusicPositionStartForTopBlock = value;
-				UpdateBlocks();
+				UpdateBlocksScroll();
 			}
 		}
 	}
-
-	//private AudioFile _audioFile;
- //   public AudioFile AudioFile
-	//{
-	//	get => _audioFile;
-	//	set
-	//	{
-	//		if (_audioFile != value && _audioFile != null)
-	//		{
-	//			_audioFile = value;
-	//			CreateBlocks();
-	//		}
-	//		else if (_audioFile != value)
-	//		{
-	//			_audioFile = value;
-	//		}
-
- //       }
-	//}
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -73,50 +54,57 @@ public partial class AudioVisualsContainer : VBoxContainer
         }
     }
 
-    //public float BlockDuration = 2f;
-
-	/// <summary>
-	/// Note to self - if this runs twice, the app is fucked.
-	/// </summary>
-    public void CreateBlocks()
+	public void CreateBlocks()
 	{
-		GD.Print("CreateBlocks(): NominalMusicPositionStartForTopBlock = " + NominalMusicPositionStartForTopBlock);
-		foreach (var child in GetChildren())
-		{
-			child.QueueFree();
-		}
-		WaveformWindows.Clear();
+        foreach (var child in GetChildren())
+        {
+            child.QueueFree();
+        }
+        WaveformWindows.Clear();
 
-		//float startTime = FirstBlockStartTime;
-		var packedWaveformWindow = ResourceLoader.Load<PackedScene>("res://Classes/Visual/WaveformWindow.tscn");
+        var packedWaveformWindow = ResourceLoader.Load<PackedScene>("res://Classes/Visual/WaveformWindow.tscn");
 
-		// Instantiate block scenes and add as children
-        for (int i = 0; i < Settings.Instance.NumberOfBlocks; i++) 
-		{
-			WaveformWindow waveformWindow = packedWaveformWindow.Instantiate() as WaveformWindow;
-			AddChild(waveformWindow);
-			WaveformWindows.Add(waveformWindow);
-		}
+        // Instantiate block scenes and add as children
+        for (int i = 0; i < Settings.Instance.MaxNumberOfBlocks; i++)
+        {
+            WaveformWindow waveformWindow = packedWaveformWindow.Instantiate() as WaveformWindow;
+            AddChild(waveformWindow);
+            WaveformWindows.Add(waveformWindow);
+        }
 
-		int musicPositionStart = NominalMusicPositionStartForTopBlock;
+        int musicPositionStart = NominalMusicPositionStartForTopBlock;
 
-		//var children = GetChildren();
+        foreach (WaveformWindow waveformWindow in WaveformWindows)
+        {
+            waveformWindow.SizeFlagsVertical = SizeFlags.ExpandFill;
 
-		foreach (WaveformWindow waveformWindow in WaveformWindows)
-		{
-			waveformWindow.SizeFlagsVertical = SizeFlags.ExpandFill;
-
-			waveformWindow.NominalMusicPositionStartForWindow = musicPositionStart; //29 ms from top of CreateBlocks
+            waveformWindow.NominalMusicPositionStartForWindow = musicPositionStart;
             musicPositionStart++;
 
-			waveformWindow.Playhead.Visible = false;
+            waveformWindow.Playhead.Visible = false;
 
-			waveformWindow.SeekPlaybackTime += OnSeekPlaybackTime;
-			waveformWindow.DoubleClicked += OnDoubleClick;
-		}
+            waveformWindow.SeekPlaybackTime += OnSeekPlaybackTime;
+            waveformWindow.DoubleClicked += OnDoubleClick;
+
+            waveformWindow.IsInstantiating = false;
+        }
+
+		UpdateNumberOfBlocks();
     }
 
-	public void UpdateBlocks()
+	public void UpdateNumberOfBlocks()
+	{
+        var children = GetChildren();
+
+        for (int i = 0; i < children.Count; i++)
+		{
+			WaveformWindow waveformWindow = children[i] as WaveformWindow;
+			waveformWindow.Visible = (i < Settings.Instance.NumberOfBlocks);
+        }
+    }
+
+
+    public void UpdateBlocksScroll()
 	{
 		int musicPositionStart = NominalMusicPositionStartForTopBlock;
 
@@ -126,7 +114,7 @@ public partial class AudioVisualsContainer : VBoxContainer
 		{
 			waveformWindow.NominalMusicPositionStartForWindow = musicPositionStart;
             musicPositionStart++;
-		} // 4-8 ms per iteration.
+		} 
     }
 
 	public void OnSeekPlaybackTime(float playbackTime)

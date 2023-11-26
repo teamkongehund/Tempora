@@ -52,7 +52,7 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
 	public float MeasuresPerSecond
     {
         get => _measuresPerSecond;
-        private set
+        set
         {
 			if (_measuresPerSecond != value)
 			{
@@ -61,6 +61,8 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
 			}
         }
     }
+
+	// TODO 1: Allow easy integer BPM
 
 	public void MeasuresPerSecond_Update()
 	{
