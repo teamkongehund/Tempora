@@ -32,6 +32,17 @@ public partial class Main : Control
     
 	string AudioPath = "res://Audio/21csm.mp3";
 
+	// TODO 3: Add input field and/or number visualizer for dB on volume sliders
+
+	// TODO 1: Add measure offset, so you don't have to switch from left and right side of the screen all the time when making points
+
+	// TODO 2: Add transient snapping:
+	// A method finds the local loudest part of the song
+	// Holding down a certain key combination and moving your mouse down through the transients will snap all of them when you release
+	// So, whichever grid line you're closest to, all of them will snap to it - the grid line in question should light up.
+
+	// TODO 2: Add offsetting option to timing points when you change time signature (keep measures or keep beats)
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{

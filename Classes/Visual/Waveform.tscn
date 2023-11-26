@@ -1,8 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://rccwc26tjsew"]
+[gd_scene load_steps=2 format=3 uid="uid://bqd6a4eqhpf"]
 
-[ext_resource type="Script" path="res://Classes/Visual/Waveform.cs" id="1_87ld3"]
+[ext_resource type="Script" path="res://Classes/Visual/Waveform.cs" id="1_32gig"]
 
-[node name="Waveform" type="Line2D"]
-points = PackedVector2Array(410, -139)
-width = 1.0
-script = ExtResource("1_87ld3")
+[node name="Waveform" type="Node2D"]
+script = ExtResource("1_32gig")

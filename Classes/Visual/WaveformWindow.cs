@@ -40,7 +40,7 @@ public partial class WaveformWindow : Control
 	//		}
  //       }
 	//}
-	Waveform Waveform1;
+	//WaveformLine2D Waveform1;
 
 	private int _musicPositionStart;
 	public int NominalMusicPositionStartForWindow
@@ -138,20 +138,16 @@ public partial class WaveformWindow : Control
 
                 if (Input.IsKeyPressed(Key.Alt))
                 {
-                    EmitSignal(nameof(SeekPlaybackTime), time);
-                }
-                else
-                {
                     Context.Instance.IsSelectedMusicPositionMoving = true;
                     Context.Instance.SelectedMusicPosition = XPositionToMusicPosition(x);
                 }
-            }
-            if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick && !Input.IsKeyPressed(Key.Alt))
-            {
-                float x = mouseEvent.Position.X;
-                float musicPosition = XPositionToMusicPosition(x);
-                float time = Timing.Instance.MusicPositionToTime(musicPosition);
-                EmitSignal(nameof(DoubleClicked), time);
+                else
+                {
+                    x = mouseEvent.Position.X;
+                    musicPosition = XPositionToMusicPosition(x);
+                    time = Timing.Instance.MusicPositionToTime(musicPosition);
+                    EmitSignal(nameof(DoubleClicked), time);
+                }
             }
             else if (mouseEvent.ButtonIndex == MouseButton.Right && mouseEvent.Pressed)
             {

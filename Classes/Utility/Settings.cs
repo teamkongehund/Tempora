@@ -54,7 +54,7 @@ public partial class Settings : Node
 	/// <summary>
 	/// Should not be changed during runtime!
 	/// </summary>
-	public int MaxNumberOfBlocks = 30;
+	public int MaxNumberOfBlocks = 20;
 
     /// <summary>
     /// How many measures of overlapping time is added to the beginning and end of each waveform block
