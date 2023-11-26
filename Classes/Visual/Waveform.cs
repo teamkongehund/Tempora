@@ -56,7 +56,7 @@ public partial class Waveform : Line2D
     /// Instead of putting one data point in the plot arrays, a larger number may show a better waveform.
     /// Even numbers should be used, as the plotter alternates between mix and max for each data point
     /// </summary>
-    public int DataPointsPerPixel = 2;
+    public int DataPointsPerPixel = 6;
 
     public bool ShouldDisplayWholeFile = true;
 
@@ -198,20 +198,23 @@ public partial class Waveform : Line2D
                 pickedValue = AudioFile.AudioData[sampleAtDataPointStart];
             else
             {
-                float max = AudioFile.AudioData[sampleAtDataPointStart..sampleAtDataPointEnd].Max();
-                float min = AudioFile.AudioData[sampleAtDataPointStart..sampleAtDataPointEnd].Min();
+                //float max = AudioFile.AudioData[sampleAtDataPointStart..sampleAtDataPointEnd].Max();
+                //float min = AudioFile.AudioData[sampleAtDataPointStart..sampleAtDataPointEnd].Min();
 
-                if (DataPointsPerPixel > 1)
-                    pickedValue = (dataPointIndex % 2 == 0) ? min : max; // Alternate to capture as much data as possible
-                else
-                    pickedValue = AudioFile.AudioData[sampleAtDataPointStart..sampleAtDataPointEnd].Average();
+                //if (DataPointsPerPixel > 1)
+                //    pickedValue = (dataPointIndex % 2 == 0) ? min : max; // Alternate to capture as much data as possible
+                //else
+                //    pickedValue = AudioFile.AudioData[sampleAtDataPointStart];
+
+                pickedValue = AudioFile.AudioData[sampleAtDataPointStart];
             }
 
             yValues[dataPointIndex] = pickedValue * Height / 2;
 
         }
         
-        Points = VectorTools.CombineArraysToVector2(xValues, yValues);
+        // This is the toughest job in the Waveform creation process after getting rid of min/max rendering
+        Points = VectorTools.CombineArraysToVector2(xValues, yValues); 
     }
 
     //public float PlaybackTimeToPixelPosition(float playbackTime)

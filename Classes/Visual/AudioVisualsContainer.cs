@@ -106,7 +106,7 @@ public partial class AudioVisualsContainer : VBoxContainer
 		{
 			waveformWindow.SizeFlagsVertical = SizeFlags.ExpandFill;
 
-			waveformWindow.NominalMusicPositionStartForWindow = musicPositionStart;
+			waveformWindow.NominalMusicPositionStartForWindow = musicPositionStart; //29 ms from top of CreateBlocks
             musicPositionStart++;
 
 			waveformWindow.Playhead.Visible = false;
@@ -126,7 +126,7 @@ public partial class AudioVisualsContainer : VBoxContainer
 		{
 			waveformWindow.NominalMusicPositionStartForWindow = musicPositionStart;
             musicPositionStart++;
-		}
+		} // 4-8 ms per iteration.
     }
 
 	public void OnSeekPlaybackTime(float playbackTime)

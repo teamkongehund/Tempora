@@ -216,6 +216,8 @@ public partial class WaveformWindow : Control
 
     public void CreateWaveforms()
 	{
+        // TODO 1: Re-do waveform rendering as a shader or piece of code that takes a section of a pre-rendering
+        // image file. This should significantly reduce CPU usage.
 		//GD.Print($"{Time.GetTicksMsec()/1e3} - Now rendering waveform window {MusicPositionStart}!");
 
         foreach (var child in WaveformFolder.GetChildren())
@@ -287,6 +289,7 @@ public partial class WaveformWindow : Control
             //Random random = new Random();
             //waveform.DefaultColor = new Color((float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble(), 1);
 
+            // Note: this one also takes some processing
             WaveformFolder.AddChild(waveform);
         }
 	}
@@ -298,13 +301,17 @@ public partial class WaveformWindow : Control
             if (child is VisualTimingPoint visualTimingPoint)
                 visualTimingPoint.QueueFree();
         }
+        var packedVisualTimingPoint = ResourceLoader.Load<PackedScene>("res://Classes/Visual/VisualTimingPoint.tscn");
         foreach (TimingPoint timingPoint in Timing.Instance.TimingPoints)
 		{
             if (timingPoint.MusicPosition >= ActualMusicPositionStartForWindow 
 				&& timingPoint.MusicPosition < ActualMusicPositionStartForWindow + 1 + 2 * Settings.Instance.MusicPositionMargin)
 			{
-                var packedVisualTimingPoint = ResourceLoader.Load<PackedScene>("res://Classes/Visual/VisualTimingPoint.tscn");
-				VisualTimingPoint visualTimingPoint = packedVisualTimingPoint.Instantiate() as VisualTimingPoint;
+                // TODO 1: Pre-instantiate and add i.e 5 or 10 VisualTimingPoints in the scene, then change them instead of instantiating anew.
+                // The .AddChild and .Instantiate take a lot fo CPU processing every time you scroll in the app.
+                // Likewise, the .Load also takes up a bunch, but not quite as much.
+                // The desribed solution should speed the program up significantly (as deduced from CPU Usage diagnostics)
+				VisualTimingPoint visualTimingPoint = packedVisualTimingPoint.Instantiate() as VisualTimingPoint; 
 				float x = MusicPositionToXPosition((float)timingPoint.MusicPosition);
 				visualTimingPoint.TimingPoint = timingPoint;
                 visualTimingPoint.Position = new Vector2(x, Size.Y / 2);
@@ -338,6 +345,10 @@ public partial class WaveformWindow : Control
 
 			divisionIndex++;
 
+            // TODO 1: Pre-instantiatie grid lines and toggle visibility instead.
+            // AddChild uses a lot of CPU usage.
+            // Further, GetGridLine also uses a bit because of constant instantiation.
+            // Again, if you pre-instantiate and change position, visibility and color, etc, this is more efficient.
 			GridFolder.AddChild(gridLine);
 		}
 	}
@@ -364,8 +375,8 @@ public partial class WaveformWindow : Control
         UpdatePlayheadScaling();
         UpdatePreviewLineScaling();
         UpdateSelectedPositionScaling();
-        CreateWaveforms();
-        RenderTimingPoints();
+        CreateWaveforms(); // takes 2-5 ms on 30 blocks  loaded
+        RenderTimingPoints(); // takes 2-3 ms on 30 blocks loaded
         CreateGridLines();
         UpdateLabels();
     }
