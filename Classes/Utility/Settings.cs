@@ -28,14 +28,10 @@ public partial class Settings : Node
 		{ 2, 2 },
 		{ 3, 3 },
 		{ 4, 4 },
-		{ 5, 5 },
-		{ 6, 6 },
-		{ 7, 7 },
-        { 8, 8 },
-		{ 9, 9 },
-		{ 10, 10 },
-        { 11, 12 },
-		{ 12, 16 }
+		{ 5, 6 },
+		{ 6, 8 },
+		{ 7, 12 },
+        { 8, 16 },
     };
 
 	public static int DivisorToSlider(int divisor) => SliderToDivisorDict.FirstOrDefault(x => x.Value == divisor).Key;

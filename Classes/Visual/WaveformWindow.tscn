@@ -47,16 +47,17 @@ theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 12
 horizontal_alignment = 2
-vertical_alignment = 1
+vertical_alignment = 2
 
 [node name="TimeSignatureLineEdit" type="LineEdit" parent="."]
 layout_mode = 1
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
-offset_left = -51.0
-offset_right = -6.6875
-offset_bottom = 23.0
+offset_left = -52.0
+offset_top = -6.0
+offset_right = -7.6875
+offset_bottom = 17.0
 grow_vertical = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)

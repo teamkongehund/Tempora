@@ -59,7 +59,6 @@ public partial class WaveformWindow : Control
 	}
 
     // TODO 1: Investigate why the program gets slow with more timing points
-    // - particularly loading a file with a lot of points, but also scrolling etc.
 
 	public float ActualMusicPositionStartForWindow
     {
@@ -271,7 +270,7 @@ public partial class WaveformWindow : Control
 				? timeWhereWindowEnds
                 : (float)Timing.Instance.TimingPoints[i+1].Time;
 
-            GD.Print($"Timing Points {FirstTimingPointIndex} - {LastTimingPointIndex}: Time {waveSegmentStartTime} - {waveSegmentEndTime}");
+            //GD.Print($"Timing Points {FirstTimingPointIndex} - {LastTimingPointIndex}: Time {waveSegmentStartTime} - {waveSegmentEndTime}");
 
             float musicPositionStart = Timing.Instance.TimeToMusicPosition(waveSegmentStartTime);
 			float musicPositionEnd = Timing.Instance.TimeToMusicPosition(waveSegmentEndTime);
@@ -301,10 +300,10 @@ public partial class WaveformWindow : Control
         }
         foreach (TimingPoint timingPoint in Timing.Instance.TimingPoints)
 		{
-            var packedVisualTimingPoint = ResourceLoader.Load<PackedScene>("res://Classes/Visual/VisualTimingPoint.tscn");
             if (timingPoint.MusicPosition >= ActualMusicPositionStartForWindow 
 				&& timingPoint.MusicPosition < ActualMusicPositionStartForWindow + 1 + 2 * Settings.Instance.MusicPositionMargin)
 			{
+                var packedVisualTimingPoint = ResourceLoader.Load<PackedScene>("res://Classes/Visual/VisualTimingPoint.tscn");
 				VisualTimingPoint visualTimingPoint = packedVisualTimingPoint.Instantiate() as VisualTimingPoint;
 				float x = MusicPositionToXPosition((float)timingPoint.MusicPosition);
 				visualTimingPoint.TimingPoint = timingPoint;
