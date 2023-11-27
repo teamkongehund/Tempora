@@ -49,8 +49,9 @@ public partial class Timing : Node
 		TimingPoint timingPoint = new TimingPoint()
 		{
 			MusicPosition = musicPosition,
-			Time = time
-		};
+			Time = time,
+			TimeSignature = GetTimeSignature(musicPosition)
+        };
 		TimingPoints.Add(timingPoint);
 		timingPoint.Changed += OnTimingPointChanged;
         timingPoint.Deleted += OnTimingPointDeleted;
@@ -82,7 +83,7 @@ public partial class Timing : Node
 		TimingPoint timingPoint = new TimingPoint() 
 		{ 
 			Time = time,
-			TimeSignature = GetTimeSignature(time),
+			TimeSignature = GetTimeSignature(TimeToMusicPosition(time)),
 		};
 		TimingPoints.Add(timingPoint);
 
@@ -119,8 +120,8 @@ public partial class Timing : Node
 
         if (previousTimingPoint?.MusicPosition == timingPoint.MusicPosition
                 || nextTimingPoint?.MusicPosition == timingPoint.MusicPosition 
-				|| (previousTimingPoint?.Time is float previousTime && Mathf.Abs(previousTime - timingPoint.Time) < 0.01f)
-				|| (nextTimingPoint?.Time is float nextTime && Mathf.Abs(nextTime - timingPoint.Time) < 0.01f)
+				|| (previousTimingPoint?.MusicPosition is float previousMusicPosition && Mathf.Abs(previousMusicPosition - (float)timingPoint.MusicPosition) < 0.015f)
+				|| (nextTimingPoint?.MusicPosition is float nextMusicPosition && Mathf.Abs(nextMusicPosition - (float)timingPoint.MusicPosition) < 0.015f)
                 )
         {
             TimingPoints.Remove(timingPoint);
@@ -255,7 +256,6 @@ public partial class Timing : Node
 		}
 
 		// Go through all timing points until the next TimeSignaturePoint and update TimeSignature
-
 		int maxIndex = TimingPoints.Count - 1;
 
         if (foundPointIndex < TimeSignaturePoints.Count - 1)

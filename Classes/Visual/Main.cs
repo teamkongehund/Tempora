@@ -43,6 +43,8 @@ public partial class Main : Control
 
 	// TODO 2: Add offsetting option to timing points when you change time signature (keep measures or keep beats)
 
+	// TODO 2: Add playhead in scrollbar
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{

@@ -84,7 +84,7 @@ public partial class AudioVisualsContainer : VBoxContainer
             waveformWindow.Playhead.Visible = false;
 
             waveformWindow.SeekPlaybackTime += OnSeekPlaybackTime;
-            waveformWindow.DoubleClicked += OnDoubleClick;
+            waveformWindow.AttemptToAddTimingPoint += OnDoubleClick;
 
             waveformWindow.IsInstantiating = false;
         }

@@ -10,7 +10,7 @@ public partial class WaveformWindow : Control
     #region Properties & Signals
 
     [Signal] public delegate void SeekPlaybackTimeEventHandler(float playbackTime);
-	[Signal] public delegate void DoubleClickedEventHandler(float playbackTime);
+	[Signal] public delegate void AttemptToAddTimingPointEventHandler(float playbackTime);
 
     public Node2D WaveformFolder;
 	public Node2D VisualTimingPointFolder;
@@ -146,7 +146,8 @@ public partial class WaveformWindow : Control
                     x = mouseEvent.Position.X;
                     musicPosition = XPositionToMusicPosition(x);
                     time = Timing.Instance.MusicPositionToTime(musicPosition);
-                    EmitSignal(nameof(DoubleClicked), time);
+                    EmitSignal(nameof(AttemptToAddTimingPoint), time);
+                    GetViewport().SetInputAsHandled();
                 }
             }
             else if (mouseEvent.ButtonIndex == MouseButton.Right && mouseEvent.Pressed)
@@ -177,6 +178,7 @@ public partial class WaveformWindow : Control
 
 	public void OnTimingChanged()
 	{
+        if (!Visible) return;
 		UpdateTimingPointsIndices();
 		CreateWaveforms();
 		RenderTimingPoints();
@@ -314,13 +316,19 @@ public partial class WaveformWindow : Control
 
         for (int i = 0; i < amount; i++)
         {
-            VisualTimingPoint visualTimingPoint = PackedVisualTimingPoint.Instantiate() as VisualTimingPoint;
-            visualTimingPoint.Visible = false;
-            visualTimingPoint.Scale = new Vector2(0.2f, 0.2f);
-            visualTimingPoint.ZIndex = 95;
-            visualTimingPoint.TimingPoint = dummyTimingPoint;
-            VisualTimingPointFolder.AddChild(visualTimingPoint);
+            VisualTimingPoint visualTimingPoint;
+            AddVisualTimingPoint(dummyTimingPoint, out visualTimingPoint);
         }
+    }
+
+    public void AddVisualTimingPoint(TimingPoint timingPoint, out VisualTimingPoint visualTimingPoint)
+    {
+        visualTimingPoint = PackedVisualTimingPoint.Instantiate() as VisualTimingPoint;
+        visualTimingPoint.Visible = false;
+        visualTimingPoint.Scale = new Vector2(0.2f, 0.2f);
+        visualTimingPoint.ZIndex = 95;
+        visualTimingPoint.TimingPoint = timingPoint;
+        VisualTimingPointFolder.AddChild(visualTimingPoint);
     }
 
     public void RenderTimingPoints()
@@ -344,8 +352,7 @@ public partial class WaveformWindow : Control
             VisualTimingPoint visualTimingPoint;
             if (index >= childrenAmount)
             {
-                visualTimingPoint = PackedVisualTimingPoint.Instantiate() as VisualTimingPoint;
-                VisualTimingPointFolder.AddChild(visualTimingPoint);
+                AddVisualTimingPoint(timingPoint, out visualTimingPoint);
             }
             else
             {
@@ -361,7 +368,7 @@ public partial class WaveformWindow : Control
     }
 	public void CreateGridLines()
 	{
-		foreach (var child in GridFolder.GetChildren())
+		foreach (GridLine child in GridFolder.GetChildren())
 		{
 			child.QueueFree();
 		}
@@ -383,7 +390,7 @@ public partial class WaveformWindow : Control
 
 			divisionIndex++;
 
-            // TODO 1: Pre-instantiatie grid lines and toggle visibility instead.
+            // TODO 2: Pre-instantiatie grid lines and toggle visibility instead.
             // AddChild uses a lot of CPU usage.
             // Further, GetGridLine also uses a bit because of constant instantiation.
             // Again, if you pre-instantiate and change position, visibility and color, etc, this is more efficient.

@@ -31,7 +31,15 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
         }
     }
 
-    public int[] TimeSignature = new int[] { 4, 4 };
+	private int[] _timeSignature = new int[] { 4, 4 };
+    public int[] TimeSignature
+	{
+		get => _timeSignature;
+		set
+		{
+			_timeSignature = value;
+		}
+	}
 
 	private float _time;
 	public float Time

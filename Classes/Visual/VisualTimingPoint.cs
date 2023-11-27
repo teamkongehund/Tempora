@@ -29,7 +29,7 @@ public partial class VisualTimingPoint : Node2D
 		TimingPoint.Changed += OnTimingPointChanged;
     }
 
-	public void OnTimingPointChanged(TimingPoint timingPoint)
+    public void OnTimingPointChanged(TimingPoint timingPoint)
 	{
 		UpdateLabels(timingPoint);
 	}
@@ -47,6 +47,7 @@ public partial class VisualTimingPoint : Node2D
 
     public override void _Input(InputEvent @event)
     {
+		if (!Visible) return;
         Vector2 mousePosition = GetLocalMousePosition();
         Rect2 rectangle = (Rect2)CollisionShape2D.Shape.GetRect();
         bool hasMouseInside = rectangle.HasPoint(mousePosition);
@@ -54,6 +55,7 @@ public partial class VisualTimingPoint : Node2D
 		{
 			if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed && hasMouseInside)
 			{
+				GD.Print($"Clicked on TimingPoint with BPM {TimingPoint.BPM} & Time signature {TimingPoint.TimeSignature[0]}/{TimingPoint.TimeSignature[1]}");
 				Signals.Instance.EmitSignal("TimingPointHolding", TimingPoint);
 			}
 			else if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased())
@@ -76,8 +78,6 @@ public partial class VisualTimingPoint : Node2D
 
 				Viewport viewport = GetViewport();
 				viewport.SetInputAsHandled();
-
-				QueueFree();
             }
         }
 	}
