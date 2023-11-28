@@ -232,35 +232,43 @@ public partial class Timing : Node
 
 	public void UpdateTimeSignature(int[] timeSignature, int musicPosition)
 	{
-		int foundPointIndex = TimeSignaturePoints.FindIndex(point => point.MusicPosition == musicPosition);
+		if (timeSignature[1] != 4 || timeSignature[1] != 8) timeSignature[1] = 4;
+		if (timeSignature[0] == 0) timeSignature[0] = 4;
+		else if (timeSignature[0] < 0) timeSignature[0] = -timeSignature[0];
+
+		int foundTSPointIndex = TimeSignaturePoints.FindIndex(point => point.MusicPosition == musicPosition);
 
 		TimeSignaturePoint timeSignaturePoint;
 
-        if (foundPointIndex == -1)
+        if (foundTSPointIndex == -1)
 		{
 			timeSignaturePoint = new TimeSignaturePoint(timeSignature, musicPosition);
 			TimeSignaturePoints.Add(timeSignaturePoint);
 			TimeSignaturePoints.Sort();
-			foundPointIndex = TimeSignaturePoints.FindIndex(point => point.MusicPosition == musicPosition);
+			foundTSPointIndex = TimeSignaturePoints.FindIndex(point => point.MusicPosition == musicPosition);
         }
 		else
 		{
-			timeSignaturePoint = TimeSignaturePoints[foundPointIndex];
+			timeSignaturePoint = TimeSignaturePoints[foundTSPointIndex];
 			timeSignaturePoint.TimeSignature = timeSignature;
         }
 
-		if (foundPointIndex > 0 && TimeSignaturePoints[foundPointIndex-1].MusicPosition == timeSignaturePoint.MusicPosition)
+		if (foundTSPointIndex > 0 && TimeSignaturePoints[foundTSPointIndex-1].TimeSignature == timeSignature)
 		{
 			TimeSignaturePoints.Remove(timeSignaturePoint);
 			return;
+		}
+		if (foundTSPointIndex < TimeSignaturePoints.Count - 1 && TimeSignaturePoints[foundTSPointIndex+1].TimeSignature == timeSignature)
+		{
+			TimeSignaturePoints.RemoveAt(foundTSPointIndex+1);
 		}
 
 		// Go through all timing points until the next TimeSignaturePoint and update TimeSignature
 		int maxIndex = TimingPoints.Count - 1;
 
-        if (foundPointIndex < TimeSignaturePoints.Count - 1)
+        if (foundTSPointIndex < TimeSignaturePoints.Count - 1)
 		{
-			int nextMusicPositionWithDifferentTimeSignature = TimeSignaturePoints[foundPointIndex + 1].MusicPosition;
+			int nextMusicPositionWithDifferentTimeSignature = TimeSignaturePoints[foundTSPointIndex + 1].MusicPosition;
 			maxIndex = TimingPoints.FindLastIndex(point => point.MusicPosition < nextMusicPositionWithDifferentTimeSignature);
         }
 
