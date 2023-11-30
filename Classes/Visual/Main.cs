@@ -48,6 +48,8 @@ public partial class Main : Control
 
 	// TODO 2: Add playhead in scrollbar
 
+	// TODO 3: Update exisiting .osu files to synchronize to a specific beatmap folder.
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{

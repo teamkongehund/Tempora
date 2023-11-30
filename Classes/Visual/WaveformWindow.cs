@@ -384,36 +384,35 @@ public partial class WaveformWindow : Control
         {
             if (divisionIndex >= 50) throw new Exception("Too many measure divisions!");
 
-            GridLine gridLine = GetGridLine(timeSignaturePrevious, divisor, divisionIndex);
+            GridLine gridLine = GetGridLine(timeSignaturePrevious, divisor, divisionIndex, -1);
 
-            if (gridLine == null || gridLine.RelativeMusicPosition > 1) break;
-
-            gridLine.ZIndex = 90;
+            if (gridLine == null || gridLine.RelativeMusicPosition >= 1) break;
 
             divisionIndex++;
-
             latestPosition = gridLine.RelativeMusicPosition;
 
-            // TODO 2: Pre-instantiatie grid lines and toggle visibility instead.
-            // AddChild uses a lot of CPU usage.
-            // Further, GetGridLine also uses a bit because of constant instantiation.
-            // Again, if you pre-instantiate and change position, visibility and color, etc, this is more efficient.
+            float musicPosition = gridLine.RelativeMusicPosition + NominalMusicPositionStartForWindow - 1;
+            if (musicPosition < ActualMusicPositionStartForWindow) continue;
+
             GridFolder.AddChild(gridLine);
         }
+        divisionIndex = 0;
         latestPosition = 0; // TODO 1: finish this offset thingy
         while (latestPosition < 1)
 		{
 			if (divisionIndex >= 50) throw new Exception("Too many measure divisions!");
 
-			GridLine gridLine = GetGridLine(timeSignature, divisor, divisionIndex);
+			GridLine gridLine = GetGridLine(timeSignature, divisor, divisionIndex, 0);
 
-			if (gridLine == null || gridLine.RelativeMusicPosition > 1) break;
+			if (gridLine == null) break;
 
-			gridLine.ZIndex = 90;
-
-			divisionIndex++;
-
+            divisionIndex++;
             latestPosition = gridLine.RelativeMusicPosition;
+
+            float musicPosition = gridLine.RelativeMusicPosition + NominalMusicPositionStartForWindow;
+            if (musicPosition > ActualMusicPositionStartForWindow + 1 + 2 * Settings.Instance.MusicPositionMargin) break;
+
+
 
             // TODO 2: Pre-instantiatie grid lines and toggle visibility instead.
             // AddChild uses a lot of CPU usage.
@@ -422,19 +421,20 @@ public partial class WaveformWindow : Control
 			GridFolder.AddChild(gridLine);
 		}
 	}
-	public GridLine GetGridLine(int[] timeSignature, int divisor, int index)
+	public GridLine GetGridLine(int[] timeSignature, int divisor, int index, int measureOffset)
 	{
 		GridLine gridLine = new GridLine(timeSignature, divisor, index);
 
         float offset = Settings.Instance.MusicPositionOffset;
         float margin = Settings.Instance.MusicPositionMargin;
-        float xPosition = Size.X * ((gridLine.RelativeMusicPosition + margin + offset) / (2 * margin + 1f));
+        float xPosition = Size.X * ((gridLine.RelativeMusicPosition - measureOffset + margin + offset) / (2 * margin + 1f));
         gridLine.Position = new Vector2(xPosition, 0);
         gridLine.Points = new Vector2[2]
         {
             new Vector2(0, 0),
             new Vector2(0, Size.Y)
         };
+        gridLine.ZIndex = 90;
 
         return gridLine;
 	}
