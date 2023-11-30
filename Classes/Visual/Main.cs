@@ -1,6 +1,8 @@
 using Godot;
 using System;
 
+// Tempora
+
 public partial class Main : Control
 {
 	Button ExportButton;
@@ -16,6 +18,7 @@ public partial class Main : Control
 	HScrollBar GridScrollBar;
     HScrollBar PlaybackRateScrollBar;
     HScrollBar BlockAmountScrollBar;
+	HScrollBar OffsetScrollBar;
 
     WaveformWindow WaveformWindow;
 	
@@ -59,9 +62,10 @@ public partial class Main : Control
         //PositionField = GetNode<TextEdit>("PositionField");
         Metronome = GetNode<Metronome>("Metronome");
 		BlockScrollBar = GetNode<BlockScrollBar>("BlockScrollBar");
-        GridScrollBar = GetNode<HScrollBar>("GridScrollBar");
-        PlaybackRateScrollBar = GetNode<HScrollBar>("PlaybackRateScrollBar");
-		BlockAmountScrollBar = GetNode<HScrollBar>("BlockAmountScrollBar");
+        GridScrollBar = GetNode<HScrollBar>("SliderVBox/GridScrollBar");
+        PlaybackRateScrollBar = GetNode<HScrollBar>("SliderVBox/PlaybackRateScrollBar");
+		BlockAmountScrollBar = GetNode<HScrollBar>("SliderVBox/BlockAmountScrollBar");
+        OffsetScrollBar = GetNode<HScrollBar>("SliderVBox/OffsetScrollBar");
 
         Project.Instance.AudioFile = new AudioFile(AudioPath);
 		
@@ -82,17 +86,25 @@ public partial class Main : Control
 		GridScrollBar.ValueChanged += OnGridScrollBarValueChanged;
 		PlaybackRateScrollBar.ValueChanged += OnPlaybackRateScrollBarValueChanged;
         BlockAmountScrollBar.ValueChanged += OnBlockAmountScrollBarValueChanged;
-		Signals.Instance.SettingsChanged += OnSettingsChanged;
+		OffsetScrollBar.ValueChanged += OnOffsetScrollBarValueChanged;
+
+        Signals.Instance.SettingsChanged += OnSettingsChanged;
 
         UpdatePlayHeads();
 		BlockScrollBar.UpdateRange();
     }
 
-	// TODO 2: Scroll to set BPM
+    // TODO 2: Scroll to set BPM
 
-	// TODO 2: Double / halve BPM for a point
+    // TODO 2: Double / halve BPM for a point
 
-	// TODO 2: Copy osu time stamp into app
+    // TODO 2: Copy osu time stamp into app
+
+    // TODO 2: Copy pasting groups of timing points
+
+    // TODO 3: Detached reset points (points that work as metronome resets and don't force anything unto the previous.)
+
+    // TODO 2: Spectral view (blackmann-harris rendering with 4096 bands or 2048 if it's too performance impacting)
 
 	public override void _Input(InputEvent @event)
 	{
@@ -200,6 +212,10 @@ public partial class Main : Control
 		Settings.Instance.NumberOfBlocks = intValue;
 	}
 
+	public void OnOffsetScrollBarValueChanged(double value)
+	{
+		Settings.Instance.MusicPositionOffset = (float)value;
+	}
 
     public void ExportOsu()
 	{

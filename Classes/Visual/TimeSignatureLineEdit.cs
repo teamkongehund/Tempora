@@ -26,7 +26,7 @@ public partial class TimeSignatureLineEdit : LineEdit
 		if (!upperIsInt || !lowerIsInt)
 			return;
 
-		if (lower != 4 && lower != 8)
+		if (lower != 4 && lower != 8 && lower != 16)
 			return;
 
 		if (upper < 1)

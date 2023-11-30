@@ -34,6 +34,8 @@ public partial class Settings : Node
         { 8, 16 },
     };
 
+	// TODO 2: Add support for any grid division with a field entry.
+
 	public static int DivisorToSlider(int divisor) => SliderToDivisorDict.FirstOrDefault(x => x.Value == divisor).Key;
 
 	private int _numberOfBlocks = 10 ;
@@ -60,6 +62,19 @@ public partial class Settings : Node
     /// How many measures of overlapping time is added to the beginning and end of each waveform block
     /// </summary>
     public float MusicPositionMargin = 0.04f;
+
+	private float _musicPositionOffset = 0f;
+
+    public float MusicPositionOffset
+	{
+		get => _musicPositionOffset;
+		set
+		{
+			if (_musicPositionOffset == value) return;
+			_musicPositionOffset = value;
+            Signals.Instance.EmitSignal("SettingsChanged");
+        }
+	}
 
 	/// <summary>
 	/// Snap timing points to beat grid when moving them. 

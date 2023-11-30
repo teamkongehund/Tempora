@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://bk0ofb078cvgm"]
+[gd_scene load_steps=11 format=3 uid="uid://bk0ofb078cvgm"]
 
 [ext_resource type="Script" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
 [ext_resource type="PackedScene" uid="uid://djvimmuyfu0pu" path="res://Classes/Audio/AudioPlayer.tscn" id="2_nrfju"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://Classes/Visual/GridScrollBar.cs" id="7_i2h88"]
 [ext_resource type="Script" path="res://Classes/Visual/PlaybackRateScrollBar.cs" id="8_6jrsb"]
 [ext_resource type="Script" path="res://Classes/Visual/BlockAmountScrollBar.cs" id="9_22ufa"]
+[ext_resource type="Script" path="res://Classes/Visual/OffsetScrollBar.cs" id="10_yfm4l"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -211,12 +212,17 @@ grow_vertical = 0
 text = "Export .osz 
 & Open"
 
-[node name="GridScrollBar" type="HScrollBar" parent="."]
+[node name="SliderVBox" type="VBoxContainer" parent="."]
 layout_mode = 0
-offset_left = 13.0
-offset_top = 38.0
-offset_right = 109.0
-offset_bottom = 62.0
+offset_left = 21.0
+offset_top = 29.0
+offset_right = 117.0
+offset_bottom = 211.0
+theme_override_constants/separation = 30
+
+[node name="GridScrollBar" type="HScrollBar" parent="SliderVBox"]
+layout_mode = 2
+size_flags_vertical = 3
 min_value = 1.0
 max_value = 8.0
 step = 1.0
@@ -224,7 +230,7 @@ value = 4.0
 script = ExtResource("7_i2h88")
 metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="GridScrollBar"]
+[node name="Label" type="Label" parent="SliderVBox/GridScrollBar"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -240,7 +246,7 @@ grow_vertical = 2
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Title" type="Label" parent="GridScrollBar"]
+[node name="Title" type="Label" parent="SliderVBox/GridScrollBar"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
@@ -254,12 +260,9 @@ text = "Grid
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="PlaybackRateScrollBar" type="HScrollBar" parent="."]
-layout_mode = 0
-offset_left = 14.0
-offset_top = 98.0
-offset_right = 110.0
-offset_bottom = 122.0
+[node name="PlaybackRateScrollBar" type="HScrollBar" parent="SliderVBox"]
+layout_mode = 2
+size_flags_vertical = 3
 min_value = 0.25
 max_value = 1.0
 step = 0.01
@@ -267,7 +270,7 @@ value = 1.0
 script = ExtResource("8_6jrsb")
 metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="PlaybackRateScrollBar"]
+[node name="Label" type="Label" parent="SliderVBox/PlaybackRateScrollBar"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -283,7 +286,7 @@ grow_vertical = 2
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Title" type="Label" parent="PlaybackRateScrollBar"]
+[node name="Title" type="Label" parent="SliderVBox/PlaybackRateScrollBar"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
@@ -297,12 +300,9 @@ text = "Playback rate
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="BlockAmountScrollBar" type="HScrollBar" parent="."]
-layout_mode = 0
-offset_left = 14.0
-offset_top = 155.0
-offset_right = 110.0
-offset_bottom = 179.0
+[node name="BlockAmountScrollBar" type="HScrollBar" parent="SliderVBox"]
+layout_mode = 2
+size_flags_vertical = 3
 min_value = 1.0
 max_value = 30.0
 step = 1.0
@@ -310,7 +310,7 @@ value = 10.0
 script = ExtResource("9_22ufa")
 metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="BlockAmountScrollBar"]
+[node name="Label" type="Label" parent="SliderVBox/BlockAmountScrollBar"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -326,7 +326,7 @@ grow_vertical = 2
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Title" type="Label" parent="BlockAmountScrollBar"]
+[node name="Title" type="Label" parent="SliderVBox/BlockAmountScrollBar"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
@@ -336,5 +336,43 @@ offset_top = -26.0
 offset_right = 46.04
 grow_horizontal = 2
 text = "Blocks"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="OffsetScrollBar" type="HScrollBar" parent="SliderVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+max_value = 0.5
+step = 0.05
+value = 0.5
+script = ExtResource("10_yfm4l")
+metadata/_edit_group_ = true
+
+[node name="Label" type="Label" parent="SliderVBox/OffsetScrollBar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -48.0
+offset_top = -12.0
+offset_right = 48.0
+offset_bottom = 12.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Title" type="Label" parent="SliderVBox/OffsetScrollBar"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.51
+offset_left = -48.0
+offset_top = -26.0
+offset_right = 46.04
+grow_horizontal = 2
+text = "Offset"
 horizontal_alignment = 1
 vertical_alignment = 1
