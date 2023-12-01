@@ -61,6 +61,7 @@ public partial class VisualTimingPoint : Node2D
 			else if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased())
 			{
 				Signals.Instance.EmitSignal("MouseLeftReleased");
+				return;
 			}
             if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick && hasMouseInside && !Input.IsKeyPressed(Key.Alt))
             {
@@ -78,7 +79,13 @@ public partial class VisualTimingPoint : Node2D
 
 				Viewport viewport = GetViewport();
 				viewport.SetInputAsHandled();
+				return;
             }
+			if (mouseEvent.ButtonIndex == MouseButton.WheelDown && mouseEvent.Pressed && Input.IsKeyPressed(Key.Ctrl) && hasMouseInside)
+			{
+				// Decrease BPM by 1 (snapping to integers) - only for last timing point.
+
+			}
         }
 	}
 

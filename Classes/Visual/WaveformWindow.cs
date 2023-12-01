@@ -427,7 +427,7 @@ public partial class WaveformWindow : Control
 
         float offset = Settings.Instance.MusicPositionOffset;
         float margin = Settings.Instance.MusicPositionMargin;
-        float xPosition = Size.X * ((gridLine.RelativeMusicPosition - measureOffset + margin + offset) / (2 * margin + 1f));
+        float xPosition = Size.X * ((gridLine.RelativeMusicPosition + measureOffset + margin + offset) / (2 * margin + 1f));
         gridLine.Position = new Vector2(xPosition, 0);
         gridLine.Points = new Vector2[2]
         {

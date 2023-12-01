@@ -64,22 +64,22 @@ public partial class AudioVisualsContainer : VBoxContainer
 
         var packedWaveformWindow = ResourceLoader.Load<PackedScene>("res://Classes/Visual/WaveformWindow.tscn");
 
+        int musicPositionStart = NominalMusicPositionStartForTopBlock;
+
         // Instantiate block scenes and add as children
         for (int i = 0; i < Settings.Instance.MaxNumberOfBlocks; i++)
         {
             WaveformWindow waveformWindow = packedWaveformWindow.Instantiate() as WaveformWindow;
+            waveformWindow.NominalMusicPositionStartForWindow = musicPositionStart;
+            musicPositionStart++;
             AddChild(waveformWindow);
             WaveformWindows.Add(waveformWindow);
         }
 
-        int musicPositionStart = NominalMusicPositionStartForTopBlock;
 
         foreach (WaveformWindow waveformWindow in WaveformWindows)
         {
             waveformWindow.SizeFlagsVertical = SizeFlags.ExpandFill;
-
-            waveformWindow.NominalMusicPositionStartForWindow = musicPositionStart;
-            musicPositionStart++;
 
             waveformWindow.Playhead.Visible = false;
 

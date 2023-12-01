@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Drawing;
 
 public partial class GridLine : Line2D
 {
@@ -15,7 +16,11 @@ public partial class GridLine : Line2D
 		DivisionIndex = index;
         RelativeMusicPosition = Timing.GetRelativeNotePosition(timeSignature, divisor, index);
 
-        DefaultColor = new Color(0.7f, 0, 0, 0.7f);
+		ColorConverter converter = new ColorConverter();
+
+        DefaultColor = new Godot.Color(0.7f, 0, 0, 0.7f);
+		//DefaultColor = (Godot.Color) converter.ConvertFromString("#FFDFD991");
+
         Width = 3;
 
 		UpdateColor();
@@ -26,7 +31,9 @@ public partial class GridLine : Line2D
 	{
 		if (RelativeMusicPosition == 0)
 		{
-			DefaultColor = new Color(1f, 0, 0, 0.7f);
+            DefaultColor = new Godot.Color(1f, 0, 0, 0.7f);
+            //DefaultColor = new Godot.Color(960000);
+            new Godot.Color();
         }
 	}
 }

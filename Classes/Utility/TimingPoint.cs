@@ -99,11 +99,20 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
 			if (_bpm == 0) BPM_Update();
 			return _bpm;
 		}
-		private set { }
+		private set
+		{
+			if (_bpm == value) return;
+			_bpm = value;
+		}
 	}
 	public void BPM_Update()
 	{
-		_bpm = MeasuresPerSecond * 60 * (TimeSignature[0] * 4f / TimeSignature[1]);
+		BPM = MeasuresPerSecond * 60 * (TimeSignature[0] * 4f / TimeSignature[1]);
+	}
+
+	public void BPM_Update(float bpm)
+	{
+		BPM += bpm;
 	}
 
 	public float BeatLength
