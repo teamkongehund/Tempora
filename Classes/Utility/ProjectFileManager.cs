@@ -11,9 +11,12 @@ public partial class ProjectFileManager : Node
 	public static ProjectFileManager Instance;
 	Settings Settings;
 
+	public static readonly string ProjectFileExtension = "tmpr"; 
+
     private enum ParseMode
     {
         None,
+		AudioPath,
         TimingPoints,
 		TimeSignaturePoints
     }
@@ -68,7 +71,9 @@ public partial class ProjectFileManager : Node
         }
 
 		string file = "";
-        file += "[TimeSignaturePoints]\n";
+        file += "[AudioPath]\n";
+		file += Project.Instance.AudioFile.Path + "\n";
+        file += "[TimeSignaturePoints]\n"; 
 		file += timeSignaturePointsLines;
 		file += "[TimingPoints]\n";
 		file += timingPointsLines;
@@ -84,6 +89,7 @@ public partial class ProjectFileManager : Node
 		Timing.Instance.IsInstantiating = true;
 
         string[] lines = projectFile.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+		string audioPath = "";
 
 		ParseMode parseMode = ParseMode.None;
 
@@ -95,6 +101,9 @@ public partial class ProjectFileManager : Node
 
             switch (line)
             {
+                case "[AudioPath]":
+					parseMode = ParseMode.AudioPath;
+					continue;
                 case "[TimeSignaturePoints]":
                     parseMode = ParseMode.TimeSignaturePoints;
                     continue;
@@ -109,6 +118,9 @@ public partial class ProjectFileManager : Node
 
             switch (parseMode)
 			{
+				case ParseMode.AudioPath:
+					audioPath = line;
+					continue;
 				case ParseMode.TimeSignaturePoints:
                     if (lineData.Length != 3)
                         continue;
@@ -148,6 +160,7 @@ public partial class ProjectFileManager : Node
 			}
         }
 
+		Project.Instance.AudioFile = new AudioFile(audioPath);
 		Timing.Instance.IsInstantiating = false;
 		Signals.Instance.EmitSignal("TimingChanged");
     }

@@ -84,8 +84,21 @@ public partial class VisualTimingPoint : Node2D
 			if (mouseEvent.ButtonIndex == MouseButton.WheelDown && mouseEvent.Pressed && Input.IsKeyPressed(Key.Ctrl) && hasMouseInside)
 			{
 				// Decrease BPM by 1 (snapping to integers) - only for last timing point.
+				float previousBPM = TimingPoint.BPM;
+				float newBPM = (previousBPM % 1 == 0) ? previousBPM - 1 : (int) previousBPM;
+				if (Input.IsKeyPressed(Key.Shift)) newBPM -= 4;
 
+				TimingPoint.BPM_Update(newBPM);
 			}
+			else if (mouseEvent.ButtonIndex == MouseButton.WheelUp && mouseEvent.Pressed && Input.IsKeyPressed(Key.Ctrl) && hasMouseInside)
+            {
+                // Decrease BPM by 1 (snapping to integers) - only for last timing point.
+                float previousBPM = TimingPoint.BPM;
+                float newBPM = (int) previousBPM + 1;
+                if (Input.IsKeyPressed(Key.Shift)) newBPM += 4;
+
+                TimingPoint.BPM_Update(newBPM);
+            }
         }
 	}
 

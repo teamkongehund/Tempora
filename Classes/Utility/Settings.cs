@@ -7,7 +7,20 @@ public partial class Settings : Node
 {
 	public static Settings Instance;
 
-	private int _divisor = 4;
+    private string SettingsPath = "user://settings.txt";
+
+	private string _projectFilesDirectory = "";
+	public string ProjectFilesDirectory
+	{
+		get => _projectFilesDirectory;
+		set
+		{
+			_projectFilesDirectory = value;
+			SaveSettings();
+		}
+	}
+
+    private int _divisor = 4;
 	/// <summary>
 	/// Musical grid divisor - can be thought of as 1/Divisor - i.e. a value of 4 means "display quarter notes"
 	/// </summary>
@@ -58,10 +71,20 @@ public partial class Settings : Node
 	/// </summary>
 	public int MaxNumberOfBlocks = 20;
 
+	private float _musicPositionMargin = 0f;
     /// <summary>
     /// How many measures of overlapping time is added to the beginning and end of each waveform block
     /// </summary>
-    public float MusicPositionMargin = 0.04f;
+    public float MusicPositionMargin
+	{
+		get => _musicPositionMargin;
+		set
+		{
+			if (_musicPositionMargin == value) return;
+			_musicPositionMargin = value;
+            Signals.Instance.EmitSignal("SettingsChanged");
+        }
+	}
 
 	private float _musicPositionOffset = 0f;
 
@@ -87,5 +110,37 @@ public partial class Settings : Node
 	public override void _Ready()
 	{
 		Instance = this;
+		LoadSettings();
+    }
+
+	public void LoadSettings()
+	{
+		if (string.IsNullOrEmpty(SettingsPath))
+			return;
+		string settingsFile = FileHandler.LoadText(SettingsPath);
+		string[] lines = settingsFile.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+		for (int i = 0; i < lines.Length; i++)
+		{
+			string line = lines[i];
+			string[] lineSplit = line.Split(";", StringSplitOptions.None);
+			if (lineSplit.Length != 2 || lineSplit[1] == "") 
+				continue;
+
+			switch (lineSplit[0])
+			{
+				case "ProjectFilesDirectory":
+					ProjectFilesDirectory = lineSplit[1];
+					break;
+				default:
+					break;
+			}
+		}
 	}
+
+	public void SaveSettings()
+	{
+		string settingsFile = "";
+		settingsFile += "ProjectFilesDirectory" + ";" + ProjectFilesDirectory + "\n";
+		FileHandler.SaveText(SettingsPath, settingsFile);
+    }
 }

@@ -6,8 +6,9 @@ using System;
 public partial class Main : Control
 {
 	Button ExportButton;
-    Button SaveButton;
-	Button LoadButton;
+	Button ClearAllButton;
+    //Button SaveButton;
+	//Button LoadButton;
     //Button MoveButton;
 
     //TextEdit IndexField;
@@ -19,6 +20,7 @@ public partial class Main : Control
     HScrollBar PlaybackRateScrollBar;
     HScrollBar BlockAmountScrollBar;
 	HScrollBar OffsetScrollBar;
+    HScrollBar OverlapScrollBar;
 
     WaveformWindow WaveformWindow;
 	
@@ -54,8 +56,9 @@ public partial class Main : Control
     public override void _Ready()
 	{
         ExportButton = GetNode<Button>("ExportButton");
-        SaveButton = GetNode<Button>("SaveButton");
-        LoadButton = GetNode<Button>("LoadButton");
+        ClearAllButton = GetNode<Button>("ClearAllButton");
+        //SaveButton = GetNode<Button>("SaveButton");
+        //LoadButton = GetNode<Button>("LoadButton");
         AudioPlayer = GetNode<AudioPlayer>("AudioPlayer");
         AudioVisualsContainer = GetNode<AudioVisualsContainer>("AudioVisualsContainer");
 		ProjectFileManager = ProjectFileManager.Instance;
@@ -68,12 +71,14 @@ public partial class Main : Control
         PlaybackRateScrollBar = GetNode<HScrollBar>("SliderVBox/PlaybackRateScrollBar");
 		BlockAmountScrollBar = GetNode<HScrollBar>("SliderVBox/BlockAmountScrollBar");
         OffsetScrollBar = GetNode<HScrollBar>("SliderVBox/OffsetScrollBar");
+        OverlapScrollBar = GetNode<HScrollBar>("SliderVBox/OverlapScrollBar");
 
         Project.Instance.AudioFile = new AudioFile(AudioPath);
 		
 		ExportButton.Pressed += OnExportButtonPressed;
-		SaveButton.Pressed += OnSaveButtonPressed;
-		LoadButton.Pressed += OnLoadButtonPressed;
+		ClearAllButton.Pressed += OnClearAllButtonPressed;
+        //SaveButton.Pressed += OnSaveButtonPressed;
+        //LoadButton.Pressed += OnLoadButtonPressed;
 
         //UpdateChildrensAudioFiles();
 
@@ -89,6 +94,7 @@ public partial class Main : Control
 		PlaybackRateScrollBar.ValueChanged += OnPlaybackRateScrollBarValueChanged;
         BlockAmountScrollBar.ValueChanged += OnBlockAmountScrollBarValueChanged;
 		OffsetScrollBar.ValueChanged += OnOffsetScrollBarValueChanged;
+        OverlapScrollBar.ValueChanged += OnOverlapScrollBarValueChanged;
 
         Signals.Instance.SettingsChanged += OnSettingsChanged;
 
@@ -181,16 +187,23 @@ public partial class Main : Control
 
 		ExportButton.ReleaseFocus();
 	}
-    
-	public void OnSaveButtonPressed()
+
+    public void OnClearAllButtonPressed()
 	{
-		ProjectFileManager.Instance.SaveProjectAs("user://savedProject.txt");
+		Timing.Instance.TimingPoints.Clear();
+		Timing.Instance.TimeSignaturePoints.Clear();
+        Signals.Instance.EmitSignal("TimingChanged");
     }
 
-    public void OnLoadButtonPressed()
-    {
-		ProjectFileManager.Instance.LoadProjectFromFilePath("user://savedProject.txt");
-    }
+    //public void OnSaveButtonPressed()
+    //{
+    //	ProjectFileManager.Instance.SaveProjectAs("user://savedProject.txt");
+    //   }
+
+    //  public void OnLoadButtonPressed()
+    //  {
+    //ProjectFileManager.Instance.LoadProjectFromFilePath("user://savedProject.txt");
+    //  }
 
     public void OnBlockScrollBarValueChanged(double value)
 	{
@@ -218,6 +231,11 @@ public partial class Main : Control
 	{
 		Settings.Instance.MusicPositionOffset = (float)value;
 	}
+
+    public void OnOverlapScrollBarValueChanged(double value)
+    {
+        Settings.Instance.MusicPositionMargin = (float)value;
+    }
 
     public void ExportOsu()
 	{

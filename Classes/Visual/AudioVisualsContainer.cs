@@ -41,12 +41,12 @@ public partial class AudioVisualsContainer : VBoxContainer
     {
         if (@event is InputEventMouseButton mouseEvent)
         {
-            if (mouseEvent.ButtonIndex == MouseButton.WheelDown && mouseEvent.Pressed)
+            if (mouseEvent.ButtonIndex == MouseButton.WheelDown && mouseEvent.Pressed && !Input.IsKeyPressed(Key.Ctrl))
 			{
 				NominalMusicPositionStartForTopBlock += Input.IsKeyPressed(Key.Shift) ? 5 : 1;
                 Signals.Instance.EmitSignal("Scrolled");
             }
-            else if (mouseEvent.ButtonIndex == MouseButton.WheelUp && mouseEvent.Pressed)
+            else if (mouseEvent.ButtonIndex == MouseButton.WheelUp && mouseEvent.Pressed && !Input.IsKeyPressed(Key.Ctrl))
             {
                 NominalMusicPositionStartForTopBlock -= Input.IsKeyPressed(Key.Shift) ? 5 : 1;
                 Signals.Instance.EmitSignal("Scrolled");

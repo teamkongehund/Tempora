@@ -27,13 +27,33 @@ public partial class Timing : Node
 
 	//[Signal] public delegate void TimingChangedEventHandler();
 
-	public List<TimingPoint> TimingPoints = new List<TimingPoint>();
+	private List<TimingPoint> _timingPoints = new List<TimingPoint>();
+    public List<TimingPoint> TimingPoints
+	{
+		get => _timingPoints;
+		set
+		{
+			if (_timingPoints == value) return;
+			_timingPoints = value;
+			Signals.Instance.EmitSignal("TimingChanged");
+		}
+	}
 
-	public List<TimeSignaturePoint> TimeSignaturePoints = new List<TimeSignaturePoint>();
+    public List<TimeSignaturePoint> _timeSignaturePoints = new List<TimeSignaturePoint>();
+    public List<TimeSignaturePoint> TimeSignaturePoints
+    {
+        get => _timeSignaturePoints;
+        set
+        {
+            if (_timeSignaturePoints == value) return;
+            _timeSignaturePoints = value;
+            Signals.Instance.EmitSignal("TimingChanged");
+        }
+    }
 
-	//public AudioFile AudioFile;
+    //public AudioFile AudioFile;
 
-	public static Timing Instance;
+    public static Timing Instance;
     #endregion
 
     // Called when the node enters the scene tree for the first time.
@@ -390,6 +410,40 @@ public partial class Timing : Node
 		float lengthInSeconds = Project.Instance.AudioFile.SampleIndexToSeconds(Project.Instance.AudioFile.AudioData.Length - 1);
 		float lastMeasure = TimeToMusicPosition(lengthInSeconds);
 		return (int)lastMeasure;
+	}
+
+	public static Timing AddDownbeatPoints(Timing timing)
+	{
+		Timing newTiming = (Timing) timing.MemberwiseClone();
+
+		// Go through each timing point in list
+
+		// if the next timing point is in the same measure, continue
+
+		// if the next timing point is in the next measure, but on the downbeat, continue
+
+		// if the next timing point is in the next measure or further ahead,
+		// create a timing point in the next measure's downbeat
+		// don't add it yet, so we don't mess up the foreach loop
+
+		List<int> downbeatPositions = new List<int>();
+
+		foreach (TimingPoint timingPoint in newTiming.TimingPoints)
+		{
+			if (timingPoint == null) break;
+			if (timingPoint.NextTimingPoint == null) break;
+			if ((int)timingPoint.NextTimingPoint.MusicPosition == (int)timingPoint.MusicPosition) continue;
+			if (timingPoint.NextTimingPoint.MusicPosition == (int)timingPoint.MusicPosition + 1) continue;
+			downbeatPositions.Add((int)timingPoint.MusicPosition + 1);
+        }
+
+		foreach (int downbeat in downbeatPositions)
+		{
+			float time = newTiming.MusicPositionToTime(downbeat);
+            newTiming.AddTimingPoint(downbeat, time);
+		}
+
+		return newTiming;
 	}
     #endregion
 }

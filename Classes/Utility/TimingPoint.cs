@@ -112,7 +112,11 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
 
 	public void BPM_Update(float bpm)
 	{
-		BPM += bpm;
+		if (NextTimingPoint != null)
+			return;
+		BPM = bpm;
+		MeasuresPerSecond = BPM / (60 * (TimeSignature[0] * 4f / TimeSignature[1]));
+		EmitSignal(nameof(Changed), this);
 	}
 
 	public float BeatLength

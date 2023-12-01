@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://bk0ofb078cvgm"]
+[gd_scene load_steps=14 format=3 uid="uid://bk0ofb078cvgm"]
 
 [ext_resource type="Script" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
 [ext_resource type="PackedScene" uid="uid://djvimmuyfu0pu" path="res://Classes/Audio/AudioPlayer.tscn" id="2_nrfju"]
@@ -7,9 +7,12 @@
 [ext_resource type="Script" path="res://Classes/Visual/BlockScrollBar.cs" id="5_aqu3i"]
 [ext_resource type="Script" path="res://Classes/Visual/VolumeSlider.cs" id="6_w0n8n"]
 [ext_resource type="Script" path="res://Classes/Visual/GridScrollBar.cs" id="7_i2h88"]
+[ext_resource type="Script" path="res://Classes/Visual/SaveButton.cs" id="7_vit6a"]
 [ext_resource type="Script" path="res://Classes/Visual/PlaybackRateScrollBar.cs" id="8_6jrsb"]
+[ext_resource type="Script" path="res://Classes/Visual/LoadButton.cs" id="8_kgjts"]
 [ext_resource type="Script" path="res://Classes/Visual/BlockAmountScrollBar.cs" id="9_22ufa"]
 [ext_resource type="Script" path="res://Classes/Visual/OffsetScrollBar.cs" id="10_yfm4l"]
+[ext_resource type="Script" path="res://Classes/Visual/OverlapScrollBar.cs" id="13_wubaw"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -183,8 +186,13 @@ offset_right = 114.0
 offset_bottom = -310.0
 grow_vertical = 0
 focus_mode = 0
-text = "Save
-"
+text = "Save As..."
+script = ExtResource("7_vit6a")
+
+[node name="FileDialog" type="FileDialog" parent="SaveButton"]
+position = Vector2i(170, 70)
+size = Vector2i(1002, 587)
+access = 2
 
 [node name="LoadButton" type="Button" parent="."]
 layout_mode = 1
@@ -197,7 +205,16 @@ offset_right = 114.0
 offset_bottom = -249.0
 grow_vertical = 0
 focus_mode = 0
-text = "Load"
+text = "Open..."
+script = ExtResource("8_kgjts")
+
+[node name="FileDialog" type="FileDialog" parent="LoadButton"]
+title = "Open a File"
+position = Vector2i(170, 70)
+size = Vector2i(1002, 587)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
 
 [node name="ExportButton" type="Button" parent="."]
 layout_mode = 1
@@ -217,7 +234,7 @@ layout_mode = 0
 offset_left = 21.0
 offset_top = 29.0
 offset_right = 117.0
-offset_bottom = 211.0
+offset_bottom = 252.0
 theme_override_constants/separation = 30
 
 [node name="GridScrollBar" type="HScrollBar" parent="SliderVBox"]
@@ -376,3 +393,55 @@ grow_horizontal = 2
 text = "Offset"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="OverlapScrollBar" type="HScrollBar" parent="SliderVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+max_value = 0.2
+step = 0.005
+value = 0.1
+script = ExtResource("13_wubaw")
+metadata/_edit_group_ = true
+
+[node name="Label" type="Label" parent="SliderVBox/OverlapScrollBar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -48.0
+offset_top = -12.0
+offset_right = 48.0
+offset_bottom = 12.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Title" type="Label" parent="SliderVBox/OverlapScrollBar"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.51
+offset_left = -48.0
+offset_top = -26.0
+offset_right = 46.04
+grow_horizontal = 2
+text = "Overlap"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ClearAllButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 15.0
+offset_top = -425.0
+offset_right = 114.0
+offset_bottom = -371.0
+grow_vertical = 0
+focus_mode = 0
+text = "Clear All
+"

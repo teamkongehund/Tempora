@@ -368,7 +368,12 @@ public partial class WaveformWindow : Control
     }
 	public void CreateGridLines()
 	{
-		foreach (GridLine child in GridFolder.GetChildren())
+        // TODO 2: Pre-instantiatie grid lines and toggle visibility instead.
+        // AddChild uses a lot of CPU usage.
+        // Further, GetGridLine also uses a bit because of constant instantiation.
+        // Again, if you pre-instantiate and change position, visibility and color, etc, this is more efficient.
+
+        foreach (GridLine child in GridFolder.GetChildren())
 		{
 			child.QueueFree();
 		}
@@ -397,7 +402,7 @@ public partial class WaveformWindow : Control
             GridFolder.AddChild(gridLine);
         }
         divisionIndex = 0;
-        latestPosition = 0; // TODO 1: finish this offset thingy
+        latestPosition = 0;
         while (latestPosition < 1)
 		{
 			if (divisionIndex >= 50) throw new Exception("Too many measure divisions!");
@@ -414,13 +419,28 @@ public partial class WaveformWindow : Control
 
 
 
-            // TODO 2: Pre-instantiatie grid lines and toggle visibility instead.
-            // AddChild uses a lot of CPU usage.
-            // Further, GetGridLine also uses a bit because of constant instantiation.
-            // Again, if you pre-instantiate and change position, visibility and color, etc, this is more efficient.
+            
 			GridFolder.AddChild(gridLine);
 		}
-	}
+        divisionIndex = 0;
+        latestPosition = 0;
+        while (latestPosition < 1)
+        {
+            if (divisionIndex >= 50) throw new Exception("Too many measure divisions!");
+
+            GridLine gridLine = GetGridLine(timeSignature, divisor, divisionIndex, 1);
+
+            if (gridLine == null) break;
+
+            divisionIndex++;
+            latestPosition = gridLine.RelativeMusicPosition;
+
+            float musicPosition = gridLine.RelativeMusicPosition + NominalMusicPositionStartForWindow;
+            if (musicPosition > ActualMusicPositionStartForWindow + 1 + 2 * Settings.Instance.MusicPositionMargin) break;
+
+            GridFolder.AddChild(gridLine);
+        }
+    }
 	public GridLine GetGridLine(int[] timeSignature, int divisor, int index, int measureOffset)
 	{
 		GridLine gridLine = new GridLine(timeSignature, divisor, index);
