@@ -389,8 +389,9 @@ public partial class Timing : Node
 		{
 			if (timingPoint == null) break;
 			if (timingPoint.NextTimingPoint == null) break;
-			if ((int)timingPoint.NextTimingPoint.MusicPosition == (int)timingPoint.MusicPosition) continue;
-			if (timingPoint.NextTimingPoint.MusicPosition == (int)timingPoint.MusicPosition + 1) continue;
+            if (timingPoint.MusicPosition % 1 == 0) continue; // downbeat point on next is unnecessary
+			if ((int)timingPoint.NextTimingPoint.MusicPosition == (int)timingPoint.MusicPosition) continue; // next is in same measure
+            if (timingPoint.NextTimingPoint.MusicPosition == (int)timingPoint.MusicPosition + 1) continue; // downbeat point on next measure already exists
 			downbeatPositions.Add((int)timingPoint.MusicPosition + 1);
         }
 
