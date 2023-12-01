@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 /// <summary>
 /// Parent class for window containing waveform(s), playhead and timing grid
@@ -346,7 +347,7 @@ public partial class WaveformWindow : Control
         foreach (TimingPoint timingPoint in Timing.Instance.TimingPoints)
         {
             if (timingPoint.MusicPosition < ActualMusicPositionStartForWindow
-               || timingPoint.MusicPosition > (ActualMusicPositionStartForWindow + 1 + 2 * Settings.Instance.MusicPositionMargin))
+               || timingPoint.MusicPosition >= (ActualMusicPositionStartForWindow + 1 + 2 * Settings.Instance.MusicPositionMargin))
                 continue;
 
             VisualTimingPoint visualTimingPoint;
@@ -379,64 +380,38 @@ public partial class WaveformWindow : Control
 		}
 
 		int divisor = Settings.Instance.Divisor;
-        int[] timeSignaturePrevious = Timing.Instance.GetTimeSignature(NominalMusicPositionStartForWindow-1);
-        int[] timeSignature = Timing.Instance.GetTimeSignature(NominalMusicPositionStartForWindow);
+        int[] timeSignature = Timing.Instance.GetTimeSignature(NominalMusicPositionStartForWindow - 1);
 
-		int divisionIndex = 0;
-		float latestPosition = 0;
-        // Render GridLines from previous measure
-        while (latestPosition < 1)
+        int measureOffset = -1;
+        int divisionIndex = 0;
+        while (divisionIndex < 50)
         {
-            if (divisionIndex >= 50) throw new Exception("Too many measure divisions!");
-
-            GridLine gridLine = GetGridLine(timeSignaturePrevious, divisor, divisionIndex, -1);
-
-            if (gridLine == null || gridLine.RelativeMusicPosition >= 1) break;
-
+            GridLine gridLine = GetGridLine(timeSignature, divisor, divisionIndex, measureOffset);
             divisionIndex++;
-            latestPosition = gridLine.RelativeMusicPosition;
 
-            float musicPosition = gridLine.RelativeMusicPosition + NominalMusicPositionStartForWindow - 1;
-            if (musicPosition < ActualMusicPositionStartForWindow) continue;
+            float musicPosition = gridLine.RelativeMusicPosition + NominalMusicPositionStartForWindow + measureOffset;
 
-            GridFolder.AddChild(gridLine);
-        }
-        divisionIndex = 0;
-        latestPosition = 0;
-        while (latestPosition < 1)
-		{
-			if (divisionIndex >= 50) throw new Exception("Too many measure divisions!");
+            if (musicPosition >= NominalMusicPositionStartForWindow && measureOffset == -1)
+            {
+                divisionIndex = 0;
+                measureOffset += 1;
+                timeSignature = Timing.Instance.GetTimeSignature(NominalMusicPositionStartForWindow + measureOffset);
+                continue;
+            }
+            else if (musicPosition >= NominalMusicPositionStartForWindow + 1 && measureOffset == 0)
+            {
+                divisionIndex = 0;
+                measureOffset += 1;
+                timeSignature = Timing.Instance.GetTimeSignature(NominalMusicPositionStartForWindow + measureOffset);
+                continue;
+            }
 
-			GridLine gridLine = GetGridLine(timeSignature, divisor, divisionIndex, 0);
+             if (musicPosition < ActualMusicPositionStartForWindow) 
+                continue;
+            else if (musicPosition > ActualMusicPositionStartForWindow + 1 + 2 * Settings.Instance.MusicPositionMargin) 
+                break;
 
-			if (gridLine == null) break;
-
-            divisionIndex++;
-            latestPosition = gridLine.RelativeMusicPosition;
-
-            float musicPosition = gridLine.RelativeMusicPosition + NominalMusicPositionStartForWindow;
-            if (musicPosition > ActualMusicPositionStartForWindow + 1 + 2 * Settings.Instance.MusicPositionMargin) break;
-
-
-
-            
-			GridFolder.AddChild(gridLine);
-		}
-        divisionIndex = 0;
-        latestPosition = 0;
-        while (latestPosition < 1)
-        {
-            if (divisionIndex >= 50) throw new Exception("Too many measure divisions!");
-
-            GridLine gridLine = GetGridLine(timeSignature, divisor, divisionIndex, 1);
-
-            if (gridLine == null) break;
-
-            divisionIndex++;
-            latestPosition = gridLine.RelativeMusicPosition;
-
-            float musicPosition = gridLine.RelativeMusicPosition + NominalMusicPositionStartForWindow;
-            if (musicPosition > ActualMusicPositionStartForWindow + 1 + 2 * Settings.Instance.MusicPositionMargin) break;
+            timeSignature = Timing.Instance.GetTimeSignature(musicPosition);
 
             GridFolder.AddChild(gridLine);
         }

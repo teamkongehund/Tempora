@@ -252,7 +252,7 @@ public partial class Timing : Node
 
 	public void UpdateTimeSignature(int[] timeSignature, int musicPosition)
 	{
-		if (timeSignature[1] != 4 || timeSignature[1] != 8) timeSignature[1] = 4;
+		if (timeSignature[1] != 4 && timeSignature[1] != 8 && timeSignature[1] != 16) timeSignature[1] = 4;
 		if (timeSignature[0] == 0) timeSignature[0] = 4;
 		else if (timeSignature[0] < 0) timeSignature[0] = -timeSignature[0];
 
