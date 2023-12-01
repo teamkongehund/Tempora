@@ -10,8 +10,8 @@ public partial class OsuExporter : Node
 
 	public static string GetDotOsu(Timing timing)
 	{
-		timing = Timing.AddDownbeatPoints(timing);
-        List<TimingPoint> timingPoints = timing.TimingPoints;
+		Timing newTiming = Timing.CopyAndAddDownbeatPoints(timing);
+        List<TimingPoint> timingPoints = newTiming.TimingPoints;
 		string timingPointsData = TimingPointToText(timingPoints);
 		string dotOsu = $"{DefaultDotOsuFormer}{timingPointsData}{DefaultDotOsuLatter}";
 		return dotOsu;

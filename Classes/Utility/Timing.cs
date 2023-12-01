@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>
 /// Data class controlling how the tempo of the song varies with time.
@@ -380,23 +381,11 @@ public partial class Timing : Node
 		return (int)lastMeasure;
 	}
 
-	public static Timing AddDownbeatPoints(Timing timing)
+	public static Timing CopyAndAddDownbeatPoints(Timing timing)
 	{
-		Timing newTiming = (Timing) timing.MemberwiseClone();
-
-		// Go through each timing point in list
-
-		// if the next timing point is in the same measure, continue
-
-		// if the next timing point is in the next measure, but on the downbeat, continue
-
-		// if the next timing point is in the next measure or further ahead,
-		// create a timing point in the next measure's downbeat
-		// don't add it yet, so we don't mess up the foreach loop
-
 		List<int> downbeatPositions = new List<int>();
 
-		foreach (TimingPoint timingPoint in newTiming.TimingPoints)
+		foreach (TimingPoint timingPoint in timing.TimingPoints)
 		{
 			if (timingPoint == null) break;
 			if (timingPoint.NextTimingPoint == null) break;
@@ -404,6 +393,12 @@ public partial class Timing : Node
 			if (timingPoint.NextTimingPoint.MusicPosition == (int)timingPoint.MusicPosition + 1) continue;
 			downbeatPositions.Add((int)timingPoint.MusicPosition + 1);
         }
+
+		Timing newTiming = new Timing()
+		{
+			TimingPoints = timing.TimingPoints.ToList(),
+			TimeSignaturePoints = timing.TimeSignaturePoints.ToList(),
+		};
 
 		foreach (int downbeat in downbeatPositions)
 		{
