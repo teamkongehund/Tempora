@@ -6,7 +6,6 @@ using System.Globalization;
 public partial class OsuExporter : Node
 {
 	public static int ExportOffsetMS = -29;
-	// TODO 3: Verify that -29 ms is correct (time ranked mp3s and compare offset)
 
 	public static string GetDotOsu(Timing timing)
 	{
@@ -36,9 +35,6 @@ public partial class OsuExporter : Node
 		return $"{offsetMS},{MSPerBeat},{beatsInMeasure},2,0,80,1,0\n";
     }
 
-	// TODO 2: Automatically add timing points on downbeats after a measure with a timing point that isn't on a downbeat
-	// This keeps the timing more accurate in osu
-
 	public static void SaveOsz(string oszPath, string dotOsuString, AudioFile audioFile)
 	{
 		using (ZipPacker zipPacker = new ZipPacker())
@@ -47,7 +43,10 @@ public partial class OsuExporter : Node
 			if (err != Error.Ok)
 				return;
 
-			zipPacker.StartFile("song.osu");
+            Random random = new Random();
+            int rand = random.Next();
+
+            zipPacker.StartFile($"{rand}.osu");
 			zipPacker.WriteFile(dotOsuString.ToUtf8Buffer());
 			zipPacker.CloseFile();
 

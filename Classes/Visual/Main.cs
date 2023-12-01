@@ -39,8 +39,6 @@ public partial class Main : Control
 
 	// TODO 3: Add input field and/or number visualizer for dB on volume sliders
 
-	// TODO 1: Add measure offset, so you don't have to switch from left and right side of the screen all the time when making points
-
 	// TODO 2: Add transient snapping:
 	// A method finds the local loudest part of the song
 	// Holding down a certain key combination and moving your mouse down through the transients will snap all of them when you release
@@ -195,16 +193,6 @@ public partial class Main : Control
         Signals.Instance.EmitSignal("TimingChanged");
     }
 
-    //public void OnSaveButtonPressed()
-    //{
-    //	ProjectFileManager.Instance.SaveProjectAs("user://savedProject.txt");
-    //   }
-
-    //  public void OnLoadButtonPressed()
-    //  {
-    //ProjectFileManager.Instance.LoadProjectFromFilePath("user://savedProject.txt");
-    //  }
-
     public void OnBlockScrollBarValueChanged(double value)
 	{
 		AudioVisualsContainer.NominalMusicPositionStartForTopBlock = (int)value;
@@ -246,7 +234,9 @@ public partial class Main : Control
 
 	public void ExportOsz()
 	{
-        string path = "user://exported.osz";
+		Random random = new Random();
+		int rand = random.Next();
+        string path = $"user://{rand}.osz";
         string dotOsu = OsuExporter.GetDotOsu(Timing.Instance);
         OsuExporter.SaveOsz(path, dotOsu, Project.Instance.AudioFile);
 

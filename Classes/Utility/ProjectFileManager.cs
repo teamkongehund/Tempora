@@ -78,8 +78,6 @@ public partial class ProjectFileManager : Node
 		file += "[TimingPoints]\n";
 		file += timingPointsLines;
 
-		// TODO 1: Add audio path
-
 		return file;
 	}
 
