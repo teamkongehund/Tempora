@@ -118,7 +118,6 @@ public partial class Timing : Node
             previousTimingPoint = TimingPoints[index - 1];
 
             timingPoint.MusicPosition = TimeToMusicPosition(time); // TODO 3: verify this doesn't accidentally use itself to get value
-            //timingPoint.MeasuresPerSecond = previousTimingPoint.MeasuresPerSecond;
 
 			nextTimingPoint = (TimingPoints.Count > index + 1) ? TimingPoints[index + 1] : null;
         }
@@ -184,37 +183,6 @@ public partial class Timing : Node
 
         Signals.Instance.EmitSignal("TimingChanged");
     }
-
-	/// <summary>
-	/// Use differences between time and music position to calculate <see cref="TimingPoint.MeasuresPerSecond"/> (BPM analogy)
-	/// </summary>
-	//public void UpdateMPS(int index)
-	//{
-	//	// If the current index doesn't exist, don't do anything
-	//	if (index >= TimingPoints.Count || index < 0) return;
-
-	//	// If the next index doesn't exist and there's no previous timing point, don't do anything
-	//	else if (index + 1 >= TimingPoints.Count && index - 1 < 0 && index < TimingPoints.Count) return;
-
- //       // If the next index doesn't exist, but there's a previous timing point, continue the MPS from previous timing point.
- //       else if (index+1 >= TimingPoints.Count && index - 1 >= 0 && index < TimingPoints.Count)
- //       {
- //           TimingPoints[index].MeasuresPerSecond = TimingPoints[index - 1].MeasuresPerSecond;
- //           return;
- //       }
-
-	//	// If the next index exists, use the differences between time and music position to calculate the MPS
- //       float? timeDifference = GetTimeDifference(index, index+1);
-	//	if (timeDifference == null)
-	//	{
-	//		throw new Exception("GetTimeDifference returned null - Check the index checks in the method that threw this error.");
-	//	}
-
- //       float? musicPositionDifference = TimingPoints[index+1].MusicPosition - TimingPoints[index].MusicPosition;
- //       if (musicPositionDifference == null) throw new Exception("Previous Timing Point did not have a Music Position");
-
-	//	TimingPoints[index].MeasuresPerSecond = (float)musicPositionDifference/(float)timeDifference;
- //   }
 
 	/// <summary>
 	/// Snap a <see cref="TimingPoint"/> to the grid using <see cref="Settings.Divisor"/> and <see cref="Settings.SnapToGridEnabled"/>

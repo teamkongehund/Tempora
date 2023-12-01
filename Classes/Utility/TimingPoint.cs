@@ -38,6 +38,7 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
 		set
 		{
 			_timeSignature = value;
+			MeasuresPerSecond_Update();
 		}
 	}
 
@@ -69,8 +70,6 @@ public partial class TimingPoint : Node , IComparable<TimingPoint>
 			}
         }
     }
-
-	// TODO 1: Allow easy integer BPM
 
 	public void MeasuresPerSecond_Update()
 	{

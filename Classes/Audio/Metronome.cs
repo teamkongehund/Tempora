@@ -18,11 +18,7 @@ public partial class Metronome : Node
         Click2 = GetNode<AudioStreamPlayer>("Click2");
     }
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-	}
-
+	// Todo 2: Replace metronome sounds
 	public void Click(float musicPosition)
 	{
 		if (!On) return; 
