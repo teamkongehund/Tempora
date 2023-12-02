@@ -89,7 +89,33 @@ public partial class Timing : Node
 	       Signals.Instance.EmitSignal("TimingChanged");
     }
 
-	public void AddTimingPoint(float time)
+    public void AddTimingPoint(float musicPosition, float time, float measuresPerSecond)
+    {
+		TimingPoint timingPoint = new TimingPoint()
+		{
+			MusicPosition = musicPosition,
+			Time = time,
+			TimeSignature = GetTimeSignature(musicPosition),
+        };
+        TimingPoints.Add(timingPoint);
+        timingPoint.Changed += OnTimingPointChanged;
+        timingPoint.Deleted += OnTimingPointDeleted;
+        TimingPoints.Sort();
+
+        int index = TimingPoints.FindIndex(point => point == timingPoint);
+
+        if (index >= 1) // Set previous timing point
+        {
+            timingPoint.PreviousTimingPoint = TimingPoints[index - 1];
+        }
+
+		timingPoint.MeasuresPerSecond = measuresPerSecond;
+
+        if (!IsInstantiating)
+            Signals.Instance.EmitSignal("TimingChanged");
+    }
+
+    public void AddTimingPoint(float time)
 	{
 		TimingPoint timingPoint = null;
 		AddTimingPoint(time, out timingPoint);

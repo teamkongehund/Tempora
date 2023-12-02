@@ -248,17 +248,6 @@ public partial class Main : Control
         }
     }
 
-	//public void UpdateChildrensAudioFiles()
-	//{
-	//	//AudioPlayer.AudioFile = AudioFile;
-	//	AudioPlayer.LoadMp3();
-
- //       //AudioVisualsContainer.AudioFile = AudioFile;
-	//	//AudioVisualsContainer.CreateBlocks();
-
-	//	//Timing.AudioFile = AudioFile;
- //   }
-
 	public void Play()
 	{
         AudioPlayer.Play();

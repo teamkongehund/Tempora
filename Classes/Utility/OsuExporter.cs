@@ -10,7 +10,7 @@ public partial class OsuExporter : Node
 	public static string GetDotOsu(Timing timing)
 	{
 		Timing newTiming = Timing.CopyAndAddDownbeatPoints(timing);
-        List<TimingPoint> timingPoints = newTiming.TimingPoints;
+		List<TimingPoint> timingPoints = newTiming.TimingPoints;
 		string timingPointsData = TimingPointToText(timingPoints);
 		string dotOsu = $"{DefaultDotOsuFormer}{timingPointsData}{DefaultDotOsuLatter}";
 		return dotOsu;
@@ -21,6 +21,7 @@ public partial class OsuExporter : Node
 		string theText = "";
 		foreach(TimingPoint timingPoint in timingPoints)
 		{
+			GD.Print(timingPoint.BPM);
 			theText += TimingPointToText(timingPoint);
 		}
 		return theText;

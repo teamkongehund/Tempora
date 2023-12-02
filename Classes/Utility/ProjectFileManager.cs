@@ -54,7 +54,8 @@ public partial class ProjectFileManager : Node
 
 		// TimingPoint
 		// Time;MusicPosition;TimeSignatureUpper;TimeSignatureLower
-		string timingPointsLines = "";
+		TimingPoint lastTimingPoint = Timing.Instance.TimingPoints[^1];
+        string timingPointsLines = "";
 		foreach (TimingPoint timingPoint in Timing.Instance.TimingPoints)
 		{
 			string timingPointLine = "";
@@ -65,6 +66,8 @@ public partial class ProjectFileManager : Node
             timingPointLine += timingPoint.TimeSignature[0].ToString();
             timingPointLine += ";";
             timingPointLine += timingPoint.TimeSignature[1].ToString();
+			if (timingPoint == lastTimingPoint)
+				timingPointLine += ";" + timingPoint.MeasuresPerSecond.ToString(CultureInfo.InvariantCulture);
             timingPointLine += "\n";
 
 			timingPointsLines += timingPointLine;
@@ -135,7 +138,7 @@ public partial class ProjectFileManager : Node
 
                     break;
 				case ParseMode.TimingPoints:
-					if (lineData.Length != 4)
+					if (lineData.Length != 4 && lineData.Length != 5)
 						continue;
 					
 					bool timeParsed = float.TryParse(
@@ -144,13 +147,26 @@ public partial class ProjectFileManager : Node
 						lineData[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float tpMusicPosition);
 					timeSignatureUpperParsed = int.TryParse(lineData[2], out timeSignatureUpper);
                     timeSignatureLowerParsed = int.TryParse(lineData[3], out timeSignatureLower);
+
+					bool measuresPerSecondParsed = true;
+					float measuresPerSecond = 2f;
+                    if (lineData.Length == 5)
+						measuresPerSecondParsed = float.TryParse(lineData[4], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out measuresPerSecond);
+
 					if (timeParsed == false
 						|| tpMusicPositionParsed == false
 						|| timeSignatureUpperParsed == false
 						|| timeSignatureLowerParsed == false
-						) continue;
+                        || measuresPerSecondParsed == false
+                        ) continue;
 
-					Timing.Instance.AddTimingPoint(tpMusicPosition, time);
+					switch (lineData.Length)
+					{
+						case 4: Timing.Instance.AddTimingPoint(tpMusicPosition, time);
+							break;
+						case 5: Timing.Instance.AddTimingPoint(tpMusicPosition, time, measuresPerSecond);
+							break;
+                    }
 
 					break;
 				default:
