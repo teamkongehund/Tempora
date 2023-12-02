@@ -1,28 +1,26 @@
 using Godot;
-using System;
+using OsuTimer.Classes.Utility;
 
-public partial class LoadButton : Button
-{
-    private FileDialog FileDialog;
+namespace OsuTimer.Classes.Visual;
+
+public partial class LoadButton : Button {
+    private FileDialog fileDialog;
 
     // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-    {
-        FileDialog = GetNode<FileDialog>("FileDialog");
+    public override void _Ready() {
+        fileDialog = GetNode<FileDialog>("FileDialog");
 
         Pressed += OnPressed;
-        FileDialog.FileSelected += OnFileSelected;
+        fileDialog.FileSelected += OnFileSelected;
     }
 
-    private void OnPressed()
-    {
-        FileDialog.CurrentDir = Settings.Instance.ProjectFilesDirectory;
-        FileDialog.Popup();
+    private void OnPressed() {
+        fileDialog.CurrentDir = Settings.Instance.ProjectFilesDirectory;
+        fileDialog.Popup();
     }
     //private void OnFileSelected(string selectedPath) => FileHandler.CopyFile(PathToCopyFrom, selectedPath);
 
-    private void OnFileSelected(string selectedPath)
-    {
+    private void OnFileSelected(string selectedPath) {
         string extension = FileHandler.GetExtension(selectedPath);
 
         string correctExtension = ProjectFileManager.ProjectFileExtension;

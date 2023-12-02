@@ -1,37 +1,36 @@
 using Godot;
-using System;
 
-public partial class TimeSignatureLineEdit : LineEdit
-{
-	[Signal] public delegate void TimeSignatureSubmittedEventHandler(int[] timeSignature);
+namespace OsuTimer.Classes.Visual;
 
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
-	{
-		TextSubmitted += OnTextSubmitted;
-	}
+public partial class TimeSignatureLineEdit : LineEdit {
+    [Signal]
+    public delegate void TimeSignatureSubmittedEventHandler(int[] timeSignature);
 
-	public void OnTextSubmitted(string text)
-	{
-		string[] textSplit = text.Split("/", 2);
+    // Called when the node enters the scene tree for the first time.
+    public override void _Ready() {
+        TextSubmitted += OnTextSubmitted;
+    }
 
-		if (textSplit.Length != 2)
-			return;
+    public void OnTextSubmitted(string text) {
+        string[] textSplit = text.Split("/", 2);
 
-		int upper;
-		int lower;
-		bool upperIsInt = int.TryParse(textSplit[0], out upper);
-		bool lowerIsInt = int.TryParse(textSplit[1], out lower);
+        if (textSplit.Length != 2)
+            return;
 
-		if (!upperIsInt || !lowerIsInt)
-			return;
+        int upper;
+        int lower;
+        bool upperIsInt = int.TryParse(textSplit[0], out upper);
+        bool lowerIsInt = int.TryParse(textSplit[1], out lower);
 
-		if (upper < 1)
-			return;
+        if (!upperIsInt || !lowerIsInt)
+            return;
 
-		int[] timeSignature = new int[] { upper, lower };
+        if (upper < 1)
+            return;
 
-		ReleaseFocus();
+        var timeSignature = new[] { upper, lower };
+
+        ReleaseFocus();
         EmitSignal(nameof(TimeSignatureSubmitted), timeSignature);
-	}
+    }
 }

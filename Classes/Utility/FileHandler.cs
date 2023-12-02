@@ -1,107 +1,93 @@
-using Godot;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using Godot;
 
 // Autoload class to load and save files.
-public partial class FileHandler : Node
-{
+namespace OsuTimer.Classes.Utility;
+
+public partial class FileHandler : Node {
     // Correct usage: "using var file = ReadFile(path)". The 'using' operator is required to free/dispose file from memory.
-    public static Godot.FileAccess ReadFile(string path)
-    {
-        Godot.FileAccess file = Godot.FileAccess.FileExists(path)
-            ? Godot.FileAccess.Open(path, Godot.FileAccess.ModeFlags.Read)
+    public static FileAccess ReadFile(string path) {
+        var file = FileAccess.FileExists(path)
+            ? FileAccess.Open(path, FileAccess.ModeFlags.Read)
             : null;
         if (file == null) throw new Exception($"File \"{path}\" does not exist.");
         return file;
     }
 
-    public static byte[] GetFileAsBuffer(string path)
-    {
+    public static byte[] GetFileAsBuffer(string path) {
         using var file = ReadFile(path);
         ulong size = file.GetLength();
         return file.GetBuffer((long)size);
     }
 
-    public static void CopyFile(string pathFrom, string pathTo)
-    {
-        using var fileNew = Godot.FileAccess.Open(pathTo, Godot.FileAccess.ModeFlags.Write);
+    public static void CopyFile(string pathFrom, string pathTo) {
+        using var fileNew = FileAccess.Open(pathTo, FileAccess.ModeFlags.Write);
         fileNew.StoreBuffer(GetFileAsBuffer(pathFrom));
     }
 
-    public static AudioStreamMP3 LoadFileAsAudioStreamMP3(string path)
-    {
+    public static AudioStreamMP3 LoadFileAsAudioStreamMp3(string path) {
         var sound = new AudioStreamMP3();
         sound.Data = GetFileAsBuffer(path);
         return sound;
     }
 
-    public static string[] LoadFileAsTextArraySplittingByNewlines(string path)
-    {
+    public static string[] LoadFileAsTextArraySplittingByNewlines(string path) {
         using var file = ReadFile(path);
         string text = file.GetAsText();
-        string[] textAsArray = text.Split("\n",StringSplitOptions.RemoveEmptyEntries);
+        string[] textAsArray = text.Split("\n", StringSplitOptions.RemoveEmptyEntries);
         return textAsArray;
     }
 
-    public static void SaveText(string path, string text)
-    {
-        using var file = Godot.FileAccess.Open(path, Godot.FileAccess.ModeFlags.Write);
+    public static void SaveText(string path, string text) {
+        using var file = FileAccess.Open(path, FileAccess.ModeFlags.Write);
         file.StoreString(text);
     }
 
-    public static string LoadText(string path)
-    {
-        if (Godot.FileAccess.FileExists(path))
-        {
-            using var file = Godot.FileAccess.Open(path, Godot.FileAccess.ModeFlags.Read);
+    public static string LoadText(string path) {
+        if (FileAccess.FileExists(path)) {
+            using var file = FileAccess.Open(path, FileAccess.ModeFlags.Read);
             string text = file.GetAsText();
             return text;
         }
-        else { throw new Exception("File does not exist."); }
+
+        throw new Exception("File does not exist.");
     }
 
-    public static List<string> GetFilePathsInDirectory(string directoryPath)
-    {
-        List<string> filePaths = new List<string>();
+    public static List<string> GetFilePathsInDirectory(string directoryPath) {
+        var filePaths = new List<string>();
 
         using var dir = DirAccess.Open(directoryPath);
-        if (dir != null)
-        {
+        if (dir != null) {
             dir.ListDirBegin();
             string fileName = dir.GetNext();
-            while (fileName != "")
-            {
-                if (dir.CurrentIsDir())
-                {
+            while (fileName != "") {
+                if (dir.CurrentIsDir()) {
                     // Do nothing if fileName is a folder
                 }
-                else
-                {
-                    filePaths.Add(directoryPath+"/"+fileName);
+                else {
+                    filePaths.Add(directoryPath + "/" + fileName);
                     //filePaths.Add(fileName);
                 }
+
                 fileName = dir.GetNext();
             }
         }
-        else throw new Exception($"An error occurred while trying to retrieve files from directory.");
+        else {
+            throw new Exception("An error occurred while trying to retrieve files from directory.");
+        }
 
         return filePaths;
     }
 
-    public static string GetDirectory(string filePath)
-    {
-        string dir = "";
+    public static string GetDirectory(string filePath) {
+        var dir = "";
         string[] pathParts = filePath.Split('/');
-        for (int i = 0; i < pathParts.Length - 1; i++)
-        {
-            dir += pathParts[i] + "/";
-        }
+        for (var i = 0; i < pathParts.Length - 1; i++) dir += pathParts[i] + "/";
         return dir;
     }
 
-    public static string GetExtension(string filePath)
-    {
+    public static string GetExtension(string filePath) {
         string[] pathParts = filePath.Split('.');
         if (pathParts.Length < 2)
             return null;

@@ -1,39 +1,33 @@
 using Godot;
-using System;
+using OsuTimer.Classes.Utility;
 
-public partial class Metronome : Node
-{
-	private double PreviousPlaybackTime = 0;
-	private float? PreviousMusicPosition;
+namespace OsuTimer.Classes.Audio;
 
-	AudioStreamPlayer Click1;
-    AudioStreamPlayer Click2;
+public partial class Metronome : Node {
+    private AudioStreamPlayer click1;
+    private AudioStreamPlayer click2;
 
-	public bool On = true;
+    public bool On = true;
+    private float? previousMusicPosition;
+    private double previousPlaybackTime;
 
     // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-	{
-		Click1 = GetNode<AudioStreamPlayer>("Click1");
-        Click2 = GetNode<AudioStreamPlayer>("Click2");
+    public override void _Ready() {
+        click1 = GetNode<AudioStreamPlayer>("Click1");
+        click2 = GetNode<AudioStreamPlayer>("Click2");
     }
 
-	// Todo 2: Replace metronome sounds
-	public void Click(float musicPosition)
-	{
-		if (!On) return; 
-		float beatPosition = Timing.Instance.GetBeatPosition(musicPosition);
-		if (PreviousMusicPosition < beatPosition && musicPosition >= beatPosition)
-		{
-			if (beatPosition % 1 == 0)
-			{
-				Click1.Play();
-			}
-			else
-			{
-				Click2.Play();
-			}
-		}
-		PreviousMusicPosition = musicPosition;
-	}
+    // Todo 2: Replace metronome sounds
+    public void Click(float musicPosition) {
+        if (!On) return;
+        float beatPosition = Timing.Instance.GetBeatPosition(musicPosition);
+        if (previousMusicPosition < beatPosition && musicPosition >= beatPosition) {
+            if (beatPosition % 1 == 0)
+                click1.Play();
+            else
+                click2.Play();
+        }
+
+        previousMusicPosition = musicPosition;
+    }
 }

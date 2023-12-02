@@ -1,28 +1,24 @@
 using Godot;
-using System;
+using OsuTimer.Classes.Utility;
 
-public partial class BlockScrollBar : VScrollBar
-{
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
-	{
-		Signals.Instance.TimingChanged += OnTimingChanged;
-	}
+namespace OsuTimer.Classes.Visual;
 
-    public void OnTimingChanged()
-	{
-		if (Value != MaxValue) // Prevents inadvertent scrolling
-		{
-			UpdateRange();
-		}
-	}
+public partial class BlockScrollBar : VScrollBar {
+    // Called when the node enters the scene tree for the first time.
+    public override void _Ready() {
+        Signals.Instance.TimingChanged += OnTimingChanged;
+    }
 
-    public void UpdateRange()
-	{
+    public void OnTimingChanged() {
+        if (Value != MaxValue) // Prevents inadvertent scrolling
+            UpdateRange();
+    }
+
+    public void UpdateRange() {
         double oldValue = Value;
-		int firstMeasure = (int)Timing.Instance.TimeToMusicPosition(0);
-		int lastMeasure = Timing.Instance.GetLastMeasure() - (Settings.Instance.NumberOfBlocks - 1);
+        var firstMeasure = (int)Timing.Instance.TimeToMusicPosition(0);
+        int lastMeasure = Timing.Instance.GetLastMeasure() - (Settings.Instance.NumberOfBlocks - 1);
         MinValue = firstMeasure;
         MaxValue = lastMeasure;
-	}
+    }
 }

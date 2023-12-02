@@ -1,25 +1,30 @@
 using Godot;
-using System;
+using OsuTimer.Classes.Utility;
 
-public partial class GridScrollBar : HScrollBar
-{
-	public Label Label;
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
-	{
-		Label = GetNode<Label>("Label");
+namespace OsuTimer.Classes.Visual;
 
-		Signals.Instance.SettingsChanged += OnSettingsChanged;
+public partial class GridScrollBar : HScrollBar {
+    public Label Label;
+
+    // Called when the node enters the scene tree for the first time.
+    public override void _Ready() {
+        Label = GetNode<Label>("Label");
+
+        Signals.Instance.SettingsChanged += OnSettingsChanged;
 
         Value = Settings.DivisorToSlider(Settings.Instance.Divisor);
 
-		UpdateLabel();
+        UpdateLabel();
     }
 
-	public void OnSettingsChanged() => UpdateLabel();
+    public void OnSettingsChanged() {
+        UpdateLabel();
+    }
 
-    public void UpdateLabel() => Label.Text = Settings.Instance.Divisor.ToString();
+    public void UpdateLabel() {
+        Label.Text = Settings.Instance.Divisor.ToString();
+    }
 
-	// TODO 3: Implement Timer, such that Label inside slider says "Grid",
-	// and only displays number for a duration when changing grid
+    // TODO 3: Implement Timer, such that Label inside slider says "Grid",
+    // and only displays number for a duration when changing grid
 }

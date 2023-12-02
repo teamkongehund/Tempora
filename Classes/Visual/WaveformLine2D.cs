@@ -1,195 +1,182 @@
-using Godot;
-using System;
 using System.Linq;
+using Godot;
+using OsuTimer.Classes.Audio;
+using OsuTimer.Classes.Utility;
+
+namespace OsuTimer.Classes.Visual;
 
 /// <summary>
-/// Waveform visual representation of audio segment with constant time-distance relation.
+///     Waveform visual representation of audio segment with constant time-distance relation.
 /// </summary>
-public partial class WaveformLine2D : Line2D
-{
+public partial class WaveformLine2D : Line2D {
     #region Properties
 
-    private float _length = 400;
-    public float Length
-    {
-        get => _length;
-        set
-        {
-            _length = value;
-            if (!IsInitializing) PlotWaveform();
+    private float length = 400;
+
+    public float Length {
+        get => length;
+        set {
+            length = value;
+            if (!isInitializing) PlotWaveform();
         }
     }
 
-    private float _height = 100;
-    public float Height
-    {
-        get => _height; 
-        set
-        {
-            _height = value;
-            if (!IsInitializing) PlotWaveform();
+    private float height = 100;
+
+    public float Height {
+        get => height;
+        set {
+            height = value;
+            if (!isInitializing) PlotWaveform();
         }
     }
 
-    private AudioFile _audioFile;
-    public AudioFile AudioFile
-    {
-        get => _audioFile;
-        set
-        {
-            _audioFile = value;
-            if (!IsInitializing) PlotWaveform();
+    private AudioFile audioFile;
+
+    public AudioFile AudioFile {
+        get => audioFile;
+        set {
+            audioFile = value;
+            if (!isInitializing) PlotWaveform();
         }
     }
 
     /// <summary>
-    /// Instead of putting one data point in the plot arrays, a larger number may show a better waveform.
-    /// Even numbers should be used, as the plotter alternates between mix and max for each data point
+    ///     Instead of putting one data point in the plot arrays, a larger number may show a better waveform.
+    ///     Even numbers should be used, as the plotter alternates between mix and max for each data point
     /// </summary>
     public int DataPointsPerPixel = 4;
 
     public bool ShouldDisplayWholeFile = true;
 
-    private int[] _audioDataRange = new int[] { 0, 0 };
+    private int[] audioDataRange = { 0, 0 };
+
     /// <summary>
-    /// Indices for the first and last audio sample to use from <see cref="AudioFile.AudioData"/>
+    ///     Indices for the first and last audio sample to use from <see cref="Audio.AudioFile.AudioData" />
     /// </summary>
-    public int[] AudioDataRange
-    {
-        get
-        {
+    public int[] AudioDataRange {
+        get {
             if (ShouldDisplayWholeFile)
-            {
-                return new int[]
-                {
+                return new[] {
                     0,
                     AudioFile?.AudioData.Length ?? 0
                 };
-            }
 
             int sampleStart = AudioFile?.SecondsToSampleIndex(TimeRange[0]) ?? 0;
             int sampleEnd = AudioFile?.SecondsToSampleIndex(TimeRange[1]) ?? 0;
 
-            return new int[] { sampleStart, sampleEnd };
+            return new[] { sampleStart, sampleEnd };
         }
-        set
-        {
-            _audioDataRange = value;
-        }
+        set => audioDataRange = value;
     }
 
-    private float[] _timeRange;
-    public float[] TimeRange
-    {
-        get { return _timeRange; }
-        set
-        {
-            if (value[0] > value[1])
-            {
+    private float[] timeRange;
 
-            }
-            _timeRange = value;
+    public float[] TimeRange {
+        get => timeRange;
+        set {
+            if (value[0] > value[1]) { }
+
+            timeRange = value;
             ShouldDisplayWholeFile = false;
-            if (!IsInitializing) PlotWaveform();
+            if (!isInitializing) PlotWaveform();
         }
     }
 
-    private bool IsInitializing = true;
+    private bool isInitializing = true;
 
     #endregion
+
     #region Initialization
 
-    public WaveformLine2D(float length, float height)
-    {
+    public WaveformLine2D(float length, float height) {
         Height = height;
         Length = length;
-        IsInitializing = false;
+        isInitializing = false;
     }
 
-    public WaveformLine2D(AudioFile audioFile)
-    {
+    public WaveformLine2D(AudioFile audioFile) {
         AudioFile = audioFile;
-        AudioDataRange = new int[] { 0, AudioFile.AudioData.Length };
-        IsInitializing = false;
+        AudioDataRange = new[] { 0, AudioFile.AudioData.Length };
+        isInitializing = false;
         PlotWaveform();
     }
 
-    public WaveformLine2D(AudioFile audioFile, float length, float height)
-    {
+    public WaveformLine2D(AudioFile audioFile, float length, float height) {
         AudioFile = audioFile;
-        AudioDataRange = new int[] { 0, AudioFile.AudioData.Length };
+        AudioDataRange = new[] { 0, AudioFile.AudioData.Length };
         Height = height;
         Length = length;
-        IsInitializing = false;
+        isInitializing = false;
         PlotWaveform();
     }
 
-    public WaveformLine2D(AudioFile audioFile, float length, float height, float[] timeRange)
-    {
+    public WaveformLine2D(AudioFile audioFile, float length, float height, float[] timeRange) {
         AudioFile = audioFile;
-        AudioDataRange = new int[] { 0, AudioFile.AudioData.Length };
+        AudioDataRange = new[] { 0, AudioFile.AudioData.Length };
         Height = height;
         Length = length;
         TimeRange = timeRange;
-        IsInitializing = false;
+        isInitializing = false;
         PlotWaveform();
     }
 
     #endregion
+
     #region Methods
+
     // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-	{
+    public override void _Ready() {
         Width = 1;
-	}
+    }
 
     /// <summary>
-    /// Generate <see cref="Line2D.Points"/>. This property belongs to a Godot default class, so the setter can't be modified.
-    /// So, unless another programming pattern can auto-update <see cref="Line2D.Points"/>, <see cref="PlotWaveform"/> must be manually called
-    /// whenever something causes the waveform to change.
+    ///     Generate <see cref="Line2D.Points" />. This property belongs to a Godot default class, so the setter can't be
+    ///     modified.
+    ///     So, unless another programming pattern can auto-update <see cref="Line2D.Points" />, <see cref="PlotWaveform" />
+    ///     must be manually called
+    ///     whenever something causes the waveform to change.
     /// </summary>
-    private void PlotWaveform()
-    {
+    private void PlotWaveform() {
         int sampleStart = AudioDataRange[0];
         int sampleEnd = AudioDataRange[1];
 
         int numberOfSamples = sampleEnd - sampleStart;
-        float samplesPerDataPoint = ((float)numberOfSamples / Length / DataPointsPerPixel);
+        float samplesPerDataPoint = numberOfSamples / Length / DataPointsPerPixel;
 
         float[] xValues = VectorTools.CreateLinearSpace(0, Length, (int)Length * DataPointsPerPixel);
-        float[] yValues = new float[xValues.Length];
+        var yValues = new float[xValues.Length];
 
-        if (AudioFile == null)
-        {
-            GD.Print("AudioFile was Null");
+        if (AudioFile == null) {
+            Gd.Print("AudioFile was Null");
             return;
         }
 
-        for (int dataPointIndex = 0; dataPointIndex < yValues.Length; dataPointIndex++)
-        {
-            int sampleAtDataPointStart = (int)(sampleStart + dataPointIndex * samplesPerDataPoint);
-            int sampleAtDataPointEnd = (int)(sampleStart + (dataPointIndex+1) * samplesPerDataPoint);
+        for (var dataPointIndex = 0; dataPointIndex < yValues.Length; dataPointIndex++) {
+            var sampleAtDataPointStart = (int)(sampleStart + dataPointIndex * samplesPerDataPoint);
+            var sampleAtDataPointEnd = (int)(sampleStart + (dataPointIndex + 1) * samplesPerDataPoint);
 
             float pickedValue = 0;
 
             // Check if any sample value is negative - if so, the pickedvalue = 0
             // make sure not to clamp values when you get the AudioDataRange
 
-            bool dataPointIsBeforeAudio = (sampleAtDataPointStart < 0 || sampleAtDataPointEnd < 0);
-            bool dataPointIsAfterAudio = sampleAtDataPointStart > AudioFile.AudioData.Length 
-                || sampleAtDataPointEnd > AudioFile.AudioData.Length;
+            bool dataPointIsBeforeAudio = sampleAtDataPointStart < 0 || sampleAtDataPointEnd < 0;
+            bool dataPointIsAfterAudio = sampleAtDataPointStart > AudioFile.AudioData.Length
+                                         || sampleAtDataPointEnd > AudioFile.AudioData.Length;
 
-            if (dataPointIsBeforeAudio || dataPointIsAfterAudio) 
+            if (dataPointIsBeforeAudio || dataPointIsAfterAudio) {
                 pickedValue = 0;
-            else if (sampleAtDataPointEnd - sampleAtDataPointStart == 0) 
+            }
+            else if (sampleAtDataPointEnd - sampleAtDataPointStart == 0) {
                 pickedValue = AudioFile.AudioData[sampleAtDataPointStart];
-            else
-            {
+            }
+            else {
                 float max = AudioFile.AudioData[sampleAtDataPointStart..sampleAtDataPointEnd].Max();
                 float min = AudioFile.AudioData[sampleAtDataPointStart..sampleAtDataPointEnd].Min();
 
                 if (DataPointsPerPixel > 1)
-                    pickedValue = (dataPointIndex % 2 == 0) ? min : max; // Alternate to capture as much data as possible
+                    pickedValue = dataPointIndex % 2 == 0 ? min : max; // Alternate to capture as much data as possible
                 else
                     pickedValue = AudioFile.AudioData[sampleAtDataPointStart];
 
@@ -197,10 +184,10 @@ public partial class WaveformLine2D : Line2D
             }
 
             yValues[dataPointIndex] = pickedValue * Height / 2;
-
         }
-        
-        Points = VectorTools.CombineArraysToVector2(xValues, yValues); 
+
+        Points = VectorTools.CombineArraysToVector2(xValues, yValues);
     }
+
     #endregion
 }

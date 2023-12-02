@@ -1,65 +1,57 @@
-using Godot;
-using System;
 using System.Collections.Generic;
+using Godot;
+using OsuTimer.Classes.Utility;
 
-public partial class AudioVisualsContainer : VBoxContainer
-{
-	//[Export] public int NumberOfBlocks = 10;
+namespace OsuTimer.Classes.Visual;
 
-	/// <summary>
-	/// Forward childrens' signals to Main
-	/// </summary>
-	/// <param name="playbackTime"></param>
-    [Signal] public delegate void SeekPlaybackTimeEventHandler(float playbackTime);
-    [Signal] public delegate void DoubleClickedEventHandler(float playbackTime);
+public partial class AudioVisualsContainer : VBoxContainer {
+    [Signal]
+    public delegate void DoubleClickedEventHandler(float playbackTime);
+    //[Export] public int NumberOfBlocks = 10;
 
-	public List<WaveformWindow> WaveformWindows = new List<WaveformWindow>();
+    /// <summary>
+    ///     Forward childrens' signals to Main
+    /// </summary>
+    /// <param name="playbackTime"></param>
+    [Signal]
+    public delegate void SeekPlaybackTimeEventHandler(float playbackTime);
 
-	//public float FirstBlockStartTime = 0;
+    //public float FirstBlockStartTime = 0;
 
-	private int _nominalMusicPositionStartForTopBlock = 0;
-    public int NominalMusicPositionStartForTopBlock
-	{
-		get => _nominalMusicPositionStartForTopBlock;
-		set
-		{
-			if (value != _nominalMusicPositionStartForTopBlock)
-			{
-				_nominalMusicPositionStartForTopBlock = value;
-				UpdateBlocksScroll();
-			}
-		}
-	}
+    private int nominalMusicPositionStartForTopBlock;
 
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-	{
-		//NumberOfBlocks = Settings.Instance.NumberOfBlocks;
+    public List<WaveformWindow> WaveformWindows = new();
+
+    public int NominalMusicPositionStartForTopBlock {
+        get => nominalMusicPositionStartForTopBlock;
+        set {
+            if (value != nominalMusicPositionStartForTopBlock) {
+                nominalMusicPositionStartForTopBlock = value;
+                UpdateBlocksScroll();
+            }
+        }
     }
 
-    public override void _GuiInput(InputEvent @event)
-    {
-        if (@event is InputEventMouseButton mouseEvent)
-        {
-            if (mouseEvent.ButtonIndex == MouseButton.WheelDown && mouseEvent.Pressed && !Input.IsKeyPressed(Key.Ctrl))
-			{
-				NominalMusicPositionStartForTopBlock += Input.IsKeyPressed(Key.Shift) ? 5 : 1;
+    // Called when the node enters the scene tree for the first time.
+    public override void _Ready() {
+        //NumberOfBlocks = Settings.Instance.NumberOfBlocks;
+    }
+
+    public override void _GuiInput(InputEvent @event) {
+        if (@event is InputEventMouseButton mouseEvent) {
+            if (mouseEvent.ButtonIndex == MouseButton.WheelDown && mouseEvent.Pressed && !Input.IsKeyPressed(Key.Ctrl)) {
+                NominalMusicPositionStartForTopBlock += Input.IsKeyPressed(Key.Shift) ? 5 : 1;
                 Signals.Instance.EmitSignal("Scrolled");
             }
-            else if (mouseEvent.ButtonIndex == MouseButton.WheelUp && mouseEvent.Pressed && !Input.IsKeyPressed(Key.Ctrl))
-            {
+            else if (mouseEvent.ButtonIndex == MouseButton.WheelUp && mouseEvent.Pressed && !Input.IsKeyPressed(Key.Ctrl)) {
                 NominalMusicPositionStartForTopBlock -= Input.IsKeyPressed(Key.Shift) ? 5 : 1;
                 Signals.Instance.EmitSignal("Scrolled");
             }
         }
     }
 
-	public void CreateBlocks()
-	{
-        foreach (var child in GetChildren())
-        {
-            child.QueueFree();
-        }
+    public void CreateBlocks() {
+        foreach (var child in GetChildren()) child.QueueFree();
         WaveformWindows.Clear();
 
         var packedWaveformWindow = ResourceLoader.Load<PackedScene>("res://Classes/Visual/WaveformWindow.tscn");
@@ -67,9 +59,8 @@ public partial class AudioVisualsContainer : VBoxContainer
         int musicPositionStart = NominalMusicPositionStartForTopBlock;
 
         // Instantiate block scenes and add as children
-        for (int i = 0; i < Settings.Instance.MaxNumberOfBlocks; i++)
-        {
-            WaveformWindow waveformWindow = packedWaveformWindow.Instantiate() as WaveformWindow;
+        for (var i = 0; i < Settings.Instance.MaxNumberOfBlocks; i++) {
+            var waveformWindow = packedWaveformWindow.Instantiate() as WaveformWindow;
             waveformWindow.NominalMusicPositionStartForWindow = musicPositionStart;
             musicPositionStart++;
             AddChild(waveformWindow);
@@ -77,8 +68,7 @@ public partial class AudioVisualsContainer : VBoxContainer
         }
 
 
-        foreach (WaveformWindow waveformWindow in WaveformWindows)
-        {
+        foreach (var waveformWindow in WaveformWindows) {
             waveformWindow.SizeFlagsVertical = SizeFlags.ExpandFill;
 
             waveformWindow.Playhead.Visible = false;
@@ -89,41 +79,35 @@ public partial class AudioVisualsContainer : VBoxContainer
             waveformWindow.IsInstantiating = false;
         }
 
-		UpdateNumberOfBlocks();
+        UpdateNumberOfBlocks();
     }
 
-	public void UpdateNumberOfBlocks()
-	{
+    public void UpdateNumberOfBlocks() {
         var children = GetChildren();
 
-        for (int i = 0; i < children.Count; i++)
-		{
-			WaveformWindow waveformWindow = children[i] as WaveformWindow;
-			waveformWindow.Visible = (i < Settings.Instance.NumberOfBlocks);
+        for (var i = 0; i < children.Count; i++) {
+            var waveformWindow = children[i] as WaveformWindow;
+            waveformWindow.Visible = i < Settings.Instance.NumberOfBlocks;
         }
     }
 
 
-    public void UpdateBlocksScroll()
-	{
-		int musicPositionStart = NominalMusicPositionStartForTopBlock;
+    public void UpdateBlocksScroll() {
+        int musicPositionStart = NominalMusicPositionStartForTopBlock;
 
         var children = GetChildren();
 
-        foreach (WaveformWindow waveformWindow in children)
-		{
-			waveformWindow.NominalMusicPositionStartForWindow = musicPositionStart;
+        foreach (WaveformWindow waveformWindow in children) {
+            waveformWindow.NominalMusicPositionStartForWindow = musicPositionStart;
             musicPositionStart++;
-		} 
+        }
     }
 
-	public void OnSeekPlaybackTime(float playbackTime)
-	{
+    public void OnSeekPlaybackTime(float playbackTime) {
         EmitSignal(nameof(SeekPlaybackTime), playbackTime);
     }
 
-    public void OnDoubleClick(float playbackTime)
-    {
+    public void OnDoubleClick(float playbackTime) {
         EmitSignal(nameof(DoubleClicked), playbackTime);
     }
 }

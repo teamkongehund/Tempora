@@ -1,27 +1,25 @@
-using Godot;
 using System;
+using Godot;
 
-public partial class VolumeSlider : VScrollBar
-{
-	[Export] public string BusName;
+namespace OsuTimer.Classes.Visual;
 
-	private int BusIndex;
+public partial class VolumeSlider : VScrollBar {
+    private int busIndex;
+    [Export] public string BusName;
 
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
-	{
-		BusIndex = AudioServer.GetBusIndex(BusName);
-		ValueChanged += OnValueChanged;
+    // Called when the node enters the scene tree for the first time.
+    public override void _Ready() {
+        busIndex = AudioServer.GetBusIndex(BusName);
+        ValueChanged += OnValueChanged;
 
-		float invertedValue = Mathf.DbToLinear(AudioServer.GetBusVolumeDb(BusIndex));
-		Value = Math.Abs(1 - invertedValue);
-	}
+        float invertedValue = Mathf.DbToLinear(AudioServer.GetBusVolumeDb(busIndex));
+        Value = Math.Abs(1 - invertedValue);
+    }
 
-	public void OnValueChanged(double value)
-	{
-		double invertedValue = Math.Abs(1 - value);
-		AudioServer.SetBusVolumeDb(
-			BusIndex,
-			Mathf.LinearToDb((float)invertedValue));
-	}
+    public void OnValueChanged(double value) {
+        double invertedValue = Math.Abs(1 - value);
+        AudioServer.SetBusVolumeDb(
+            busIndex,
+            Mathf.LinearToDb((float)invertedValue));
+    }
 }

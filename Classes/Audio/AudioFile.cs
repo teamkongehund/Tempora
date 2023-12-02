@@ -1,33 +1,32 @@
-using Godot;
 using System;
+using Godot;
+using OsuTimer.Classes.Utility;
 
-public partial class AudioFile : Node
-{
-    public int SampleRate;
+namespace OsuTimer.Classes.Audio;
 
-    public string Path;
-
+public partial class AudioFile : Node {
     public float[] AudioData;
 
     /// <summary>
-    /// 1 = mono , 2 = stereo
+    ///     1 = mono , 2 = stereo
     /// </summary>
     public int Channels;
 
+    public string Path;
+
     /// <summary>
-    /// Amount of seconds to offset any sample indices. Band-aid fix to compensate the discrepancy between audio playback and audio visualization.
+    ///     Amount of seconds to offset any sample indices. Band-aid fix to compensate the discrepancy between audio playback
+    ///     and audio visualization.
     /// </summary>
     public float SampleIndexOffsetInSeconds = 0.025f;
 
-    public AudioFile(string path)
-    {
-        string extension = FileHandler.GetExtension(path);
-        if (extension != "mp3")
-        {
-            throw new Exception($"Failed to create AudioFile with path {path} : Extention was not .mp3!");
-        }
+    public int SampleRate;
 
-        Byte[] audioFileBytes = FileHandler.GetFileAsBuffer(path);
+    public AudioFile(string path) {
+        string extension = FileHandler.GetExtension(path);
+        if (extension != "mp3") throw new Exception($"Failed to create AudioFile with path {path} : Extention was not .mp3!");
+
+        byte[] audioFileBytes = FileHandler.GetFileAsBuffer(path);
 
         int sampleRate;
         int channels;
@@ -39,17 +38,17 @@ public partial class AudioFile : Node
         Channels = channels;
     }
 
-    public int SecondsToSampleIndex(float seconds)
-    {
-        int sampleIndex = (int)Math.Floor((seconds + SampleIndexOffsetInSeconds) * SampleRate * Channels);
+    public int SecondsToSampleIndex(float seconds) {
+        var sampleIndex = (int)Math.Floor((seconds + SampleIndexOffsetInSeconds) * SampleRate * Channels);
         //int sampleIndexClamped = Math.Clamp(sampleIndex, 0, AudioData.Length);
         return sampleIndex;
     }
 
-    public float SampleIndexToSeconds(int sampleIndex) => sampleIndex / (float)SampleRate / Channels - SampleIndexOffsetInSeconds;
+    public float SampleIndexToSeconds(int sampleIndex) {
+        return sampleIndex / (float)SampleRate / Channels - SampleIndexOffsetInSeconds;
+    }
 
-    public float[] GetAudioDataSegment(int sampleStart,  int sampleStop)
-    {
+    public float[] GetAudioDataSegment(int sampleStart, int sampleStop) {
         if (sampleStart < 0) sampleStart = 0;
         if (sampleStop < 0) sampleStop = 0;
         if (sampleStop > AudioData.Length) sampleStop = AudioData.Length;
@@ -60,8 +59,7 @@ public partial class AudioFile : Node
         return audioDataSegment;
     }
 
-    public float[] GetAudioDataSegment(float secondsStart, float secondsStop)
-    {
+    public float[] GetAudioDataSegment(float secondsStart, float secondsStop) {
         int sampleStart = SecondsToSampleIndex(secondsStart);
         int sampleStop = SecondsToSampleIndex(secondsStop);
 

@@ -1,71 +1,68 @@
-using Godot;
 using System;
+using Godot;
+using OsuTimer.Classes.Utility;
 
-public partial class AudioPlayer : AudioStreamPlayer
-{
-	//private AudioFile _audioFile;
-	//public AudioFile AudioFile
-	//{
-	//	get => _audioFile;
-	//	set
-	//	{
-	//		if (value != _audioFile)
-	//		{
-	//			_audioFile = value;
-	//			LoadMp3();
-	//		}
-	//	}
-	//}
+namespace OsuTimer.Classes.Audio;
 
-	public double PauseTime;
+public partial class AudioPlayer : AudioStreamPlayer {
+    //private AudioFile _audioFile;
+    //public AudioFile AudioFile
+    //{
+    //	get => _audioFile;
+    //	set
+    //	{
+    //		if (value != _audioFile)
+    //		{
+    //			_audioFile = value;
+    //			LoadMp3();
+    //		}
+    //	}
+    //}
 
-	public double CurrentPlaybackTime
-	{
-		get => GetPlaybackTime();
-		private set { }
-	}
+    public double PauseTime;
 
-    public override void _Ready()
-    {
-		Signals.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
-		Signals.Instance.AudioFileChanged += LoadMp3;
+    public double CurrentPlaybackTime {
+        get => GetPlaybackTime();
+        private set { }
     }
 
-	public void OnSelectedPositionChanged()
-	{
-		float time = Timing.Instance.MusicPositionToTime(Context.Instance.SelectedMusicPosition);
-		if (time >= 0)
+    public override void _Ready() {
+        Signals.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
+        Signals.Instance.AudioFileChanged += LoadMp3;
+    }
+
+    public void OnSelectedPositionChanged() {
+        float time = Timing.Instance.MusicPositionToTime(Context.Instance.SelectedMusicPosition);
+        if (time >= 0)
             PauseTime = time;
-		else
-			PauseTime = 0;
+        else
+            PauseTime = 0;
     }
 
-    public void Pause()
-	{
-		//PausePosition = GetPlaybackTime();
-		Stop();
-	}
+    public void Pause() {
+        //PausePosition = GetPlaybackTime();
+        Stop();
+    }
 
-	public void Resume()
-	{
-		Play();
-		Seek((float)PauseTime);
-	}
+    public void Resume() {
+        Play();
+        Seek((float)PauseTime);
+    }
 
-	public void PlayPause()
-	{
-		if (Playing) Pause();
-		else Resume();
-	}
+    public void PlayPause() {
+        if (Playing) Pause();
+        else Resume();
+    }
 
-	public double GetPlaybackTime()
-	{
-		return Playing 
-			? GetPlaybackPosition() + AudioServer.GetTimeSinceLastMix()
-			: PauseTime;
-	}
+    public double GetPlaybackTime() {
+        return Playing
+            ? GetPlaybackPosition() + AudioServer.GetTimeSinceLastMix()
+            : PauseTime;
+    }
 
-    public void LoadMp3() => Stream = Godot.FileAccess.FileExists(Project.Instance.AudioFile.Path)
-        ? FileHandler.LoadFileAsAudioStreamMP3(Project.Instance.AudioFile.Path)
-        : throw new Exception($"Failed to update songPlayer stream - check if {Project.Instance.AudioFile.Path} exists.");
+    public void LoadMp3() {
+        Stream = FileAccess.FileExists(Project.Instance.AudioFile.Path)
+            ? FileHandler.LoadFileAsAudioStreamMp3(Project.Instance.AudioFile.Path)
+            : throw new Exception($"Failed to update songPlayer stream - check if {Project.Instance.AudioFile.Path} exists.");
+    }
 }

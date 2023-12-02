@@ -1,27 +1,26 @@
 using Godot;
-using System;
+using OsuTimer.Classes.Audio;
 
-public partial class Project : Node
-{
-	public static Project Instance;
+namespace OsuTimer.Classes.Utility;
 
-	private AudioFile _audioFile;
-	public AudioFile AudioFile
-	{
-		get => _audioFile;
-		set
-		{
-			if (_audioFile == value) return;
-			_audioFile = value;
-			Signals.Instance.EmitSignal("AudioFileChanged");
-		}
-	}
+public partial class Project : Node {
+    public static Project Instance;
 
-	Settings Settings;
+    private AudioFile audioFile;
 
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
-	{
-		Instance = this;
-	}
+    private Settings settings;
+
+    public AudioFile AudioFile {
+        get => audioFile;
+        set {
+            if (audioFile == value) return;
+            audioFile = value;
+            Signals.Instance.EmitSignal("AudioFileChanged");
+        }
+    }
+
+    // Called when the node enters the scene tree for the first time.
+    public override void _Ready() {
+        Instance = this;
+    }
 }

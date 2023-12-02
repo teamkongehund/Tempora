@@ -1,70 +1,15 @@
-using Godot;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Godot;
+using OsuTimer.Classes.Audio;
 
-public partial class OsuExporter : Node
-{
-	public static int ExportOffsetMS = -29;
+namespace OsuTimer.Classes.Utility;
 
-	public static string GetDotOsu(Timing timing)
-	{
-		Timing newTiming = Timing.CopyAndAddDownbeatPoints(timing);
-		List<TimingPoint> timingPoints = newTiming.TimingPoints;
-		string timingPointsData = TimingPointToText(timingPoints);
-		string dotOsu = $"{DefaultDotOsuFormer}{timingPointsData}{DefaultDotOsuLatter}";
-		return dotOsu;
-    }
+public partial class OsuExporter : Node {
+    public static int ExportOffsetMs = -29;
 
-	public static string TimingPointToText(List<TimingPoint> timingPoints)
-	{
-		string theText = "";
-		foreach(TimingPoint timingPoint in timingPoints)
-		{
-			GD.Print(timingPoint.BPM);
-			theText += TimingPointToText(timingPoint);
-		}
-		return theText;
-	}
-
-	public static string TimingPointToText(TimingPoint timingPoint)
-	{
-		// offsetMS,MSPerBeat,beatsInMeasure,sampleSet,sampleIndex,volume,uninherited,effects
-		string offsetMS = ((int)(timingPoint.Time * 1000) + ExportOffsetMS).ToString();
-		string MSPerBeat = (timingPoint.BeatLength*1000).ToString(CultureInfo.InvariantCulture);
-		string beatsInMeasure = timingPoint.TimeSignature[0].ToString();
-		return $"{offsetMS},{MSPerBeat},{beatsInMeasure},2,0,80,1,0\n";
-    }
-
-	public static void SaveOsz(string oszPath, string dotOsuString, AudioFile audioFile)
-	{
-		using (ZipPacker zipPacker = new ZipPacker())
-		{
-			var err = zipPacker.Open(oszPath);
-			if (err != Error.Ok)
-				return;
-
-            Random random = new Random();
-            int rand = random.Next();
-
-            zipPacker.StartFile($"{rand}.osu");
-			zipPacker.WriteFile(dotOsuString.ToUtf8Buffer());
-			zipPacker.CloseFile();
-
-			zipPacker.StartFile("audio.mp3");
-			zipPacker.WriteFile(FileHandler.GetFileAsBuffer(audioFile.Path));
-			zipPacker.CloseFile();
-
-			zipPacker.Close();
-		}
-    }
-
-	public static void SaveOsu(string osuPath, string dotOsuString)
-	{
-		FileHandler.SaveText(osuPath, dotOsuString);
-	}
-
-	public static string DefaultDotOsuFormer = @"osu file format v14
+    public static string DefaultDotOsuFormer = @"osu file format v14
 
 [General]
 AudioFilename: audio.mp3
@@ -116,7 +61,58 @@ SliderTickRate:1
 [TimingPoints]
 ";
 
-	public static string DefaultDotOsuLatter = @"
+    public static string DefaultDotOsuLatter = @"
 
 [HitObjects]";
+
+    public static string GetDotOsu(Timing timing) {
+        var newTiming = Timing.CopyAndAddDownbeatPoints(timing);
+        var timingPoints = newTiming.TimingPoints;
+        string timingPointsData = TimingPointToText(timingPoints);
+        var dotOsu = $"{DefaultDotOsuFormer}{timingPointsData}{DefaultDotOsuLatter}";
+        return dotOsu;
+    }
+
+    public static string TimingPointToText(List<TimingPoint> timingPoints) {
+        var theText = "";
+        foreach (var timingPoint in timingPoints) {
+            Gd.Print(timingPoint.Bpm);
+            theText += TimingPointToText(timingPoint);
+        }
+
+        return theText;
+    }
+
+    public static string TimingPointToText(TimingPoint timingPoint) {
+        // offsetMS,MSPerBeat,beatsInMeasure,sampleSet,sampleIndex,volume,uninherited,effects
+        var offsetMs = ((int)(timingPoint.Time * 1000) + ExportOffsetMs).ToString();
+        var msPerBeat = (timingPoint.BeatLength * 1000).ToString(CultureInfo.InvariantCulture);
+        var beatsInMeasure = timingPoint.TimeSignature[0].ToString();
+        return $"{offsetMs},{msPerBeat},{beatsInMeasure},2,0,80,1,0\n";
+    }
+
+    public static void SaveOsz(string oszPath, string dotOsuString, AudioFile audioFile) {
+        using (var zipPacker = new ZipPacker()) {
+            var err = zipPacker.Open(oszPath);
+            if (err != Error.Ok)
+                return;
+
+            var random = new Random();
+            int rand = random.Next();
+
+            zipPacker.StartFile($"{rand}.osu");
+            zipPacker.WriteFile(dotOsuString.ToUtf8Buffer());
+            zipPacker.CloseFile();
+
+            zipPacker.StartFile("audio.mp3");
+            zipPacker.WriteFile(FileHandler.GetFileAsBuffer(audioFile.Path));
+            zipPacker.CloseFile();
+
+            zipPacker.Close();
+        }
+    }
+
+    public static void SaveOsu(string osuPath, string dotOsuString) {
+        FileHandler.SaveText(osuPath, dotOsuString);
+    }
 }
