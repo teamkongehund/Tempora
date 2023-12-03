@@ -97,7 +97,12 @@ public partial class AudioVisualsContainer : VBoxContainer {
 
         var children = GetChildren();
 
-        foreach (WaveformWindow waveformWindow in children) {
+        foreach (var child in children) {
+            if (child is not WaveformWindow)
+            {
+                continue;
+            }
+            WaveformWindow waveformWindow = child as WaveformWindow;
             waveformWindow.NominalMusicPositionStartForWindow = musicPositionStart;
             musicPositionStart++;
         }

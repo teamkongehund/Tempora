@@ -356,7 +356,7 @@ public partial class WaveformWindow : Control {
         // Further, GetGridLine also uses a bit because of constant instantiation.
         // Again, if you pre-instantiate and change position, visibility and color, etc, this is more efficient.
 
-        foreach (GridLine child in GridFolder.GetChildren()) child.QueueFree();
+        foreach (var child in GridFolder.GetChildren()) child.QueueFree();
 
         int divisor = Settings.Instance.Divisor;
         int[] timeSignature = Timing.Instance.GetTimeSignature(NominalMusicPositionStartForWindow - 1);
@@ -364,33 +364,36 @@ public partial class WaveformWindow : Control {
         int measureOffset = -1;
         var divisionIndex = 0;
         while (divisionIndex < 50) {
-            var gridLine = GetGridLine(timeSignature, divisor, divisionIndex, measureOffset);
-            divisionIndex++;
+            //using (
+                var gridLine = GetGridLine(timeSignature, divisor, divisionIndex, measureOffset); //)
+            //{
+                divisionIndex++;
 
-            float musicPosition = gridLine.RelativeMusicPosition + NominalMusicPositionStartForWindow + measureOffset;
+                float musicPosition = gridLine.RelativeMusicPosition + NominalMusicPositionStartForWindow + measureOffset;
 
-            if (musicPosition >= NominalMusicPositionStartForWindow && measureOffset == -1) {
-                divisionIndex = 0;
-                measureOffset += 1;
-                timeSignature = Timing.Instance.GetTimeSignature(NominalMusicPositionStartForWindow + measureOffset);
-                continue;
-            }
+                if (musicPosition >= NominalMusicPositionStartForWindow && measureOffset == -1) {
+                    divisionIndex = 0;
+                    measureOffset += 1;
+                    timeSignature = Timing.Instance.GetTimeSignature(NominalMusicPositionStartForWindow + measureOffset);
+                    continue;
+                }
 
-            if (musicPosition >= NominalMusicPositionStartForWindow + 1 && measureOffset == 0) {
-                divisionIndex = 0;
-                measureOffset += 1;
-                timeSignature = Timing.Instance.GetTimeSignature(NominalMusicPositionStartForWindow + measureOffset);
-                continue;
-            }
+                if (musicPosition >= NominalMusicPositionStartForWindow + 1 && measureOffset == 0) {
+                    divisionIndex = 0;
+                    measureOffset += 1;
+                    timeSignature = Timing.Instance.GetTimeSignature(NominalMusicPositionStartForWindow + measureOffset);
+                    continue;
+                }
 
-            if (musicPosition < ActualMusicPositionStartForWindow)
-                continue;
-            if (musicPosition > ActualMusicPositionStartForWindow + 1 + 2 * Settings.Instance.MusicPositionMargin)
-                break;
+                if (musicPosition < ActualMusicPositionStartForWindow)
+                    continue;
+                if (musicPosition > ActualMusicPositionStartForWindow + 1 + 2 * Settings.Instance.MusicPositionMargin)
+                    break;
 
-            timeSignature = Timing.Instance.GetTimeSignature(musicPosition);
+                timeSignature = Timing.Instance.GetTimeSignature(musicPosition);
 
-            GridFolder.AddChild(gridLine);
+                GridFolder.AddChild(gridLine);
+            //}
         }
     }
 

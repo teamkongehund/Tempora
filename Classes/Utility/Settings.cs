@@ -30,7 +30,7 @@ public partial class Settings : Node {
 
     private float musicPositionOffset;
 
-    private int numberOfBlocks = 10;
+    private int numberOfBlocks = 1;
 
     private string projectFilesDirectory = "";
 
