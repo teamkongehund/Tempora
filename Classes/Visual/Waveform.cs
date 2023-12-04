@@ -65,10 +65,7 @@ public partial class Waveform : Node2D {
 
         var white = new Color(1f, 1f, 1f);
 
-        //DrawLine(points[0], points[1], white, 1f, true);
-
-        for (var i = 0; i < nbPoints - 1; i++) DrawLine(points[i], points[i + 1], white, 1f);
-
+        DrawMultiline(points,white, 1f);
 
         // Testing saving waveform result as texture or image to use elsewhere
         //Image waveImage = GetViewport().GetTexture().GetImage();
