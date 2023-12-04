@@ -9,6 +9,8 @@ public partial class Waveform : Node2D {
     #region Methods
 
     public override void _Draw() {
+        float[] audioData = AudioFile.AudioData;
+
         int sampleIndexStart = AudioDataRange[0];
         int sampleEndIndex = AudioDataRange[1];
 
@@ -36,24 +38,38 @@ public partial class Waveform : Node2D {
             // make sure not to clamp values when you get the AudioDataRange
 
             bool pointIsBeforeAudioData = sampleIndexBegin < 0 || sampleIndexEnd < 0;
-            bool pointIsAfterAudioData = sampleIndexBegin > AudioFile.AudioData.Length
-                                         || sampleIndexEnd > AudioFile.AudioData.Length;
+            bool pointIsAfterAudioData = sampleIndexBegin > audioData.Length
+                                         || sampleIndexEnd > audioData.Length;
 
-            // TODO: don't render audio that doesn't exist
+            // TODO 3: don't render audio that doesn't exist
             if (pointIsBeforeAudioData || pointIsAfterAudioData) {
                 pickedValue = 0;
             }
             else if (sampleIndexEnd - sampleIndexBegin == 0) {
-                pickedValue = AudioFile.AudioData[sampleIndexBegin];
+                pickedValue = audioData[sampleIndexBegin];
             }
             else {
-                float max = AudioFile.AudioData[sampleIndexBegin..sampleIndexEnd].Max();
-                float min = AudioFile.AudioData[sampleIndexBegin..sampleIndexEnd].Min();
+                float min;
+                float max;
+                if (sampleIndexEnd - sampleIndexBegin <= 10)
+                {
+                    //min = audioData[sampleIndexBegin..sampleIndexEnd].Min();
+                    //max = audioData[sampleIndexBegin..sampleIndexEnd].Max();
+                    min = EfficientMin(audioData, sampleIndexBegin, sampleIndexEnd);
+                    max = EfficientMax(audioData, sampleIndexBegin, sampleIndexEnd);
+                }
+                else
+                {
+                    //min = audioFile.AudioDataPer10Min[(sampleIndexBegin / 10)..(sampleIndexEnd / 10)].Min();
+                    //max = audioFile.AudioDataPer10Max[(sampleIndexBegin / 10)..(sampleIndexEnd / 10)].Max();
+                    min = EfficientMin(audioFile.AudioDataPer10Min, (sampleIndexBegin / 10), (sampleIndexEnd / 10));
+                    max = EfficientMax(audioFile.AudioDataPer10Max, (sampleIndexBegin / 10), (sampleIndexEnd / 10));
+                }
 
                 if (PointsPerPixel > 1)
                     pickedValue = pointIndex % 2 == 0 ? min : max; // Alternate to capture as much data as possible
                 else
-                    pickedValue = AudioFile.AudioData[sampleIndexBegin];
+                    pickedValue = audioData[sampleIndexBegin];
 
                 //pickedValue = AudioFile.AudioData[sampleIndexBegin];
             }
@@ -70,6 +86,34 @@ public partial class Waveform : Node2D {
         // Testing saving waveform result as texture or image to use elsewhere
         //Image waveImage = GetViewport().GetTexture().GetImage();
         //waveImage.SavePng("user://renderedWave.png");
+    }
+
+    /// <summary>
+    /// A simple way to get min and max value that does not use Linq or subarrays. This is an attempt at increasing performance.
+    /// </summary>
+    /// <param name="dataArray"></param>
+    /// <param name="sampleBegin"></param>
+    /// <param name="sampleEnd"></param>
+    /// <returns></returns>
+    private float EfficientMin(float[] dataArray, int sampleBegin, int sampleEnd)
+    {
+        float min = dataArray[sampleBegin];
+        for (int i = sampleBegin + 1; i < sampleEnd; i++)
+        {
+            float newValue = dataArray[i];
+            if (newValue < min) min = newValue;
+        }
+        return min;
+    }
+    private float EfficientMax(float[] dataArray, int sampleBegin, int sampleEnd)
+    {
+        float max = dataArray[sampleBegin];
+        for (int i = sampleBegin + 1; i < sampleEnd; i++)
+        {
+            float newValue = dataArray[i];
+            if (newValue > max) max = newValue;
+        }
+        return max;
     }
 
     #endregion

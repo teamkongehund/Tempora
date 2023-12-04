@@ -1,11 +1,25 @@
 using System;
 using Godot;
 using OsuTimer.Classes.Utility;
+using System.Linq;
 
 namespace OsuTimer.Classes.Audio;
 
-public partial class AudioFile : Node {
-    public float[] AudioData;
+public partial class AudioFile : Node
+{
+    private float[] _audioData;
+    public float[] AudioData
+    {
+        get => _audioData;
+        set
+        {
+            _audioData = value;
+            CalculatePer10s();
+        }
+    }
+
+    public float[] AudioDataPer10Max;
+    public float[] AudioDataPer10Min;
 
     /// <summary>
     ///     1 = mono , 2 = stereo
@@ -22,7 +36,8 @@ public partial class AudioFile : Node {
 
     public int SampleRate;
 
-    public AudioFile(string path) {
+    public AudioFile(string path)
+    {
         string extension = FileHandler.GetExtension(path);
         if (extension != "mp3") throw new Exception($"Failed to create AudioFile with path {path} : Extention was not .mp3!");
 
@@ -38,17 +53,20 @@ public partial class AudioFile : Node {
         Channels = channels;
     }
 
-    public int SecondsToSampleIndex(float seconds) {
+    public int SecondsToSampleIndex(float seconds)
+    {
         var sampleIndex = (int)Math.Floor((seconds + SampleIndexOffsetInSeconds) * SampleRate * Channels);
         //int sampleIndexClamped = Math.Clamp(sampleIndex, 0, AudioData.Length);
         return sampleIndex;
     }
 
-    public float SampleIndexToSeconds(int sampleIndex) {
+    public float SampleIndexToSeconds(int sampleIndex)
+    {
         return sampleIndex / (float)SampleRate / Channels - SampleIndexOffsetInSeconds;
     }
 
-    public float[] GetAudioDataSegment(int sampleStart, int sampleStop) {
+    public float[] GetAudioDataSegment(int sampleStart, int sampleStop)
+    {
         if (sampleStart < 0) sampleStart = 0;
         if (sampleStop < 0) sampleStop = 0;
         if (sampleStop > AudioData.Length) sampleStop = AudioData.Length;
@@ -59,7 +77,8 @@ public partial class AudioFile : Node {
         return audioDataSegment;
     }
 
-    public float[] GetAudioDataSegment(float secondsStart, float secondsStop) {
+    public float[] GetAudioDataSegment(float secondsStart, float secondsStop)
+    {
         int sampleStart = SecondsToSampleIndex(secondsStart);
         int sampleStop = SecondsToSampleIndex(secondsStop);
 
@@ -73,5 +92,23 @@ public partial class AudioFile : Node {
     public float GetAudioLength()
     {
         return SampleIndexToSeconds(AudioData.Length - 1);
+    }
+
+    public void CalculatePer10s()
+    {
+        int smallLength = (int)(AudioData.Length / 10f);
+        bool isDataLengthDivisibleBy10 = AudioData.Length % 10 == 0;
+        int length = isDataLengthDivisibleBy10 ? smallLength : smallLength + 1;
+
+        AudioDataPer10Min = new float[length];
+        AudioDataPer10Max = new float[length];
+
+        for (int i = 0; i < length - 1; i++)
+        {
+            AudioDataPer10Min[i] = AudioData[(i * 10)..(i * 10 + 10)].Min();
+            AudioDataPer10Max[i] = AudioData[(i * 10)..(i * 10 + 10)].Max();
+        }
+        AudioDataPer10Min[length-1] = AudioData[((length - 1)*10)..^1].Min();
+        AudioDataPer10Max[length-1] = AudioData[((length - 1)*10)..^1].Max();
     }
 }
