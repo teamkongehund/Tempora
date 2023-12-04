@@ -68,6 +68,11 @@ public partial class Waveform : Node2D {
         //DrawLine(points[0], points[1], white, 1f, true);
 
         for (var i = 0; i < nbPoints - 1; i++) DrawLine(points[i], points[i + 1], white, 1f);
+
+
+        // Testing saving waveform result as texture or image to use elsewhere
+        //Image waveImage = GetViewport().GetTexture().GetImage();
+        //waveImage.SavePng("user://renderedWave.png");
     }
 
     #endregion

@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://cre6aux3iwum2"]
+
+[ext_resource type="Script" path="res://Classes/Visual/WaveformRenderViewport.cs" id="1_6hhnu"]
+[ext_resource type="Texture2D" uid="uid://cpvdv75skegy3" path="res://Classes/Visual/icon.svg" id="2_lfy7j"]
+
+[node name="WaveformRenderViewport" type="SubViewport"]
+transparent_bg = true
+size = Vector2i(32000, 500)
+render_target_update_mode = 4
+script = ExtResource("1_6hhnu")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(100, 100)
+texture = ExtResource("2_lfy7j")

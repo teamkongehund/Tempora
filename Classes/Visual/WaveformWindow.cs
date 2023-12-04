@@ -289,6 +289,11 @@ public partial class WaveformWindow : Control {
 
             // Note: this one also takes some processing
             waveformFolder.AddChild(waveform);
+
+
+
+            // Experimentation with offscreen viewports in order to render waveform as a separate image to be manipulated
+            
         }
     }
 
@@ -426,6 +431,10 @@ public partial class WaveformWindow : Control {
         RenderTimingPoints(); // takes 2-3 ms on 30 blocks loaded
         CreateGridLines();
         UpdateLabels();
+        
+        // This works fine
+        //await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
+        //GetViewport().GetTexture().GetImage().SavePng("user://renderedWave.png");
     }
 
     public void UpdateLabels() {

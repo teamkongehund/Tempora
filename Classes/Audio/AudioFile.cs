@@ -65,4 +65,13 @@ public partial class AudioFile : Node {
 
         return GetAudioDataSegment(sampleStart, sampleStop);
     }
+
+    /// <summary>
+    /// Return audio duration in seconds
+    /// </summary>
+    /// <returns></returns>
+    public float GetAudioLength()
+    {
+        return SampleIndexToSeconds(AudioData.Length - 1);
+    }
 }
