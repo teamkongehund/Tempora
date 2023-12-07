@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://bk0ofb078cvgm"]
+[gd_scene load_steps=16 format=3 uid="uid://bk0ofb078cvgm"]
 
 [ext_resource type="Script" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
 [ext_resource type="PackedScene" uid="uid://djvimmuyfu0pu" path="res://Classes/Audio/AudioPlayer.tscn" id="2_nrfju"]
@@ -10,11 +10,13 @@
 [ext_resource type="Script" path="res://Classes/Visual/SaveButton.cs" id="7_vit6a"]
 [ext_resource type="Script" path="res://Classes/Visual/PlaybackRateScrollBar.cs" id="8_6jrsb"]
 [ext_resource type="Script" path="res://Classes/Visual/LoadButton.cs" id="8_kgjts"]
+[ext_resource type="Script" path="res://Classes/Visual/ClearAllButton.cs" id="9_7o3s6"]
 [ext_resource type="Script" path="res://Classes/Visual/BlockAmountScrollBar.cs" id="9_22ufa"]
+[ext_resource type="Script" path="res://Classes/Visual/ExportButton.cs" id="10_y304k"]
 [ext_resource type="Script" path="res://Classes/Visual/OffsetScrollBar.cs" id="10_yfm4l"]
 [ext_resource type="Script" path="res://Classes/Visual/OverlapScrollBar.cs" id="13_wubaw"]
 
-[node name="Main" type="Control"]
+[node name="Main" type="Control" node_paths=PackedStringArray("audioPlayer", "audioVisualsContainer", "metronome", "blockScrollBar", "blockAmountScrollBar", "gridScrollBar", "offsetScrollBar", "overlapScrollBar", "playbackRateScrollBar")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -23,6 +25,16 @@ grow_horizontal = 2
 grow_vertical = 2
 focus_mode = 2
 script = ExtResource("1_n5xe1")
+audioPath = "res://Audio/21csm.mp3"
+audioPlayer = NodePath("AudioPlayer")
+audioVisualsContainer = NodePath("AudioVisualsContainer")
+metronome = NodePath("Metronome")
+blockScrollBar = NodePath("BlockScrollBar")
+blockAmountScrollBar = NodePath("LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/BlockAmountScrollBar")
+gridScrollBar = NodePath("LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/GridScrollBar")
+offsetScrollBar = NodePath("LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/OffsetScrollBar")
+overlapScrollBar = NodePath("LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/OverlapScrollBar")
+playbackRateScrollBar = NodePath("LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/PlaybackRateScrollBar")
 metadata/_edit_lock_ = true
 
 [node name="ColorRect" type="ColorRect" parent="."]
@@ -76,19 +88,296 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("5_aqu3i")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="LeftHandMenuMargins" type="MarginContainer" parent="."]
 layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 12.0
-offset_top = -174.0
-offset_right = 109.0
-offset_bottom = -11.0
-grow_vertical = 0
+anchors_preset = -1
+anchor_bottom = 0.997
+offset_right = 120.0
+offset_bottom = 0.159973
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="LeftHandMenuVBox" type="VBoxContainer" parent="LeftHandMenuMargins"]
+layout_mode = 2
+
+[node name="SettingsSlidersVBox" type="VBoxContainer" parent="LeftHandMenuMargins/LeftHandMenuVBox"]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="GridScrollBar" type="HScrollBar" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+size_flags_vertical = 3
+min_value = 1.0
+max_value = 8.0
+step = 1.0
+value = 4.0
+script = ExtResource("7_i2h88")
+metadata/_edit_group_ = true
+
+[node name="Label" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/GridScrollBar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -48.0
+offset_top = -12.0
+offset_right = 48.0
+offset_bottom = 12.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Title" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/GridScrollBar"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.51
+offset_left = -47.5
+offset_top = -17.0
+offset_right = 46.23
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 12
+text = "Grid
+"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="PlaybackRateScrollBar" type="HScrollBar" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+size_flags_vertical = 3
+min_value = 0.25
+max_value = 1.0
+step = 0.01
+value = 1.0
+script = ExtResource("8_6jrsb")
+metadata/_edit_group_ = true
+
+[node name="Label" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/PlaybackRateScrollBar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -48.0
+offset_top = -12.0
+offset_right = 48.0
+offset_bottom = 12.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Title" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/PlaybackRateScrollBar"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.51
+offset_left = -47.5
+offset_top = -17.0
+offset_right = 46.23
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 12
+text = "Playback rate
+"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="BlockAmountScrollBar" type="HScrollBar" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+size_flags_vertical = 3
+min_value = 1.0
+max_value = 30.0
+step = 1.0
+value = 10.0
+script = ExtResource("9_22ufa")
+metadata/_edit_group_ = true
+
+[node name="Label" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/BlockAmountScrollBar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -48.0
+offset_top = -12.0
+offset_right = 48.0
+offset_bottom = 12.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Title" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/BlockAmountScrollBar"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.51
+offset_left = -47.5
+offset_top = -17.0
+offset_right = 46.23
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 12
+text = "Blocks"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="OffsetScrollBar" type="HScrollBar" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+size_flags_vertical = 3
+max_value = 0.5
+step = 0.05
+value = 0.5
+script = ExtResource("10_yfm4l")
+metadata/_edit_group_ = true
+
+[node name="Label" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/OffsetScrollBar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -48.0
+offset_top = -12.0
+offset_right = 48.0
+offset_bottom = 12.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Title" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/OffsetScrollBar"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.51
+offset_left = -47.5
+offset_top = -17.0
+offset_right = 46.23
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 12
+text = "Offset"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="OverlapScrollBar" type="HScrollBar" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+size_flags_vertical = 3
+max_value = 0.2
+step = 0.005
+value = 0.1
+script = ExtResource("13_wubaw")
+metadata/_edit_group_ = true
+
+[node name="Label" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/OverlapScrollBar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -48.0
+offset_top = -12.0
+offset_right = 48.0
+offset_bottom = 12.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Title" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/OverlapScrollBar"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.51
+offset_left = -47.5
+offset_top = -17.0
+offset_right = 46.23
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 12
+text = "Overlap"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="ButtonsMargins" type="MarginContainer" parent="LeftHandMenuMargins/LeftHandMenuVBox"]
+layout_mode = 2
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="ButtonsVBox" type="VBoxContainer" parent="LeftHandMenuMargins/LeftHandMenuVBox/ButtonsMargins"]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+
+[node name="ClearAllButton" type="Button" parent="LeftHandMenuMargins/LeftHandMenuVBox/ButtonsMargins/ButtonsVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+focus_mode = 0
+theme_override_font_sizes/font_size = 12
+text = "Clear All
+"
+script = ExtResource("9_7o3s6")
+
+[node name="SaveButton" type="Button" parent="LeftHandMenuMargins/LeftHandMenuVBox/ButtonsMargins/ButtonsVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+focus_mode = 0
+theme_override_font_sizes/font_size = 12
+text = "Save As..."
+script = ExtResource("7_vit6a")
+
+[node name="FileDialog" type="FileDialog" parent="LeftHandMenuMargins/LeftHandMenuVBox/ButtonsMargins/ButtonsVBox/SaveButton"]
+position = Vector2i(170, 70)
+size = Vector2i(1002, 587)
+access = 2
+
+[node name="LoadButton" type="Button" parent="LeftHandMenuMargins/LeftHandMenuVBox/ButtonsMargins/ButtonsVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+focus_mode = 0
+theme_override_font_sizes/font_size = 12
+text = "Open..."
+script = ExtResource("8_kgjts")
+
+[node name="FileDialog" type="FileDialog" parent="LeftHandMenuMargins/LeftHandMenuVBox/ButtonsMargins/ButtonsVBox/LoadButton"]
+title = "Open a File"
+position = Vector2i(170, 70)
+size = Vector2i(1002, 587)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+
+[node name="ExportButton" type="Button" parent="LeftHandMenuMargins/LeftHandMenuVBox/ButtonsMargins/ButtonsVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 12
+text = "Export .osz 
+& Open"
+script = ExtResource("10_y304k")
+
+[node name="VolumeSlidersHBox" type="HBoxContainer" parent="LeftHandMenuMargins/LeftHandMenuVBox"]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+size_flags_vertical = 3
 theme_override_constants/separation = 7
 
-[node name="VolumeSliderMaster" type="VScrollBar" parent="HBoxContainer"]
+[node name="VolumeSliderMaster" type="VScrollBar" parent="LeftHandMenuMargins/LeftHandMenuVBox/VolumeSlidersHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 max_value = 1.0
@@ -98,7 +387,7 @@ script = ExtResource("6_w0n8n")
 BusName = "Master"
 metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="HBoxContainer/VolumeSliderMaster"]
+[node name="Label" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/VolumeSlidersHBox/VolumeSliderMaster"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -117,7 +406,7 @@ text = "Master"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="VolumeSliderMusic" type="VScrollBar" parent="HBoxContainer"]
+[node name="VolumeSliderMusic" type="VScrollBar" parent="LeftHandMenuMargins/LeftHandMenuVBox/VolumeSlidersHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 max_value = 1.0
@@ -127,7 +416,7 @@ script = ExtResource("6_w0n8n")
 BusName = "Music"
 metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="HBoxContainer/VolumeSliderMusic"]
+[node name="Label" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/VolumeSlidersHBox/VolumeSliderMusic"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -146,7 +435,7 @@ text = "Music"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="VolumeSliderMetronome" type="VScrollBar" parent="HBoxContainer"]
+[node name="VolumeSliderMetronome" type="VScrollBar" parent="LeftHandMenuMargins/LeftHandMenuVBox/VolumeSlidersHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 max_value = 1.0
@@ -156,7 +445,7 @@ script = ExtResource("6_w0n8n")
 BusName = "Metronome"
 metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="HBoxContainer/VolumeSliderMetronome"]
+[node name="Label" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/VolumeSlidersHBox/VolumeSliderMetronome"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -174,274 +463,3 @@ theme_override_font_sizes/font_size = 12
 text = "Metronome"
 horizontal_alignment = 1
 vertical_alignment = 1
-
-[node name="SaveButton" type="Button" parent="."]
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 15.0
-offset_top = -364.0
-offset_right = 114.0
-offset_bottom = -310.0
-grow_vertical = 0
-focus_mode = 0
-text = "Save As..."
-script = ExtResource("7_vit6a")
-
-[node name="FileDialog" type="FileDialog" parent="SaveButton"]
-position = Vector2i(170, 70)
-size = Vector2i(1002, 587)
-access = 2
-
-[node name="LoadButton" type="Button" parent="."]
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 15.0
-offset_top = -303.0
-offset_right = 114.0
-offset_bottom = -249.0
-grow_vertical = 0
-focus_mode = 0
-text = "Open..."
-script = ExtResource("8_kgjts")
-
-[node name="FileDialog" type="FileDialog" parent="LoadButton"]
-title = "Open a File"
-position = Vector2i(170, 70)
-size = Vector2i(1002, 587)
-ok_button_text = "Open"
-file_mode = 0
-access = 2
-
-[node name="ExportButton" type="Button" parent="."]
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 14.0
-offset_top = -242.0
-offset_right = 113.0
-offset_bottom = -188.0
-grow_vertical = 0
-text = "Export .osz 
-& Open"
-
-[node name="SliderVBox" type="VBoxContainer" parent="."]
-layout_mode = 0
-offset_left = 21.0
-offset_top = 29.0
-offset_right = 117.0
-offset_bottom = 252.0
-theme_override_constants/separation = 30
-
-[node name="GridScrollBar" type="HScrollBar" parent="SliderVBox"]
-layout_mode = 2
-size_flags_vertical = 3
-min_value = 1.0
-max_value = 8.0
-step = 1.0
-value = 4.0
-script = ExtResource("7_i2h88")
-metadata/_edit_group_ = true
-
-[node name="Label" type="Label" parent="SliderVBox/GridScrollBar"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -48.0
-offset_top = -12.0
-offset_right = 48.0
-offset_bottom = 12.0
-grow_horizontal = 2
-grow_vertical = 2
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Title" type="Label" parent="SliderVBox/GridScrollBar"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.5
-anchor_right = 0.51
-offset_left = -48.0
-offset_top = -26.0
-offset_right = 46.04
-grow_horizontal = 2
-text = "Grid
-"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="PlaybackRateScrollBar" type="HScrollBar" parent="SliderVBox"]
-layout_mode = 2
-size_flags_vertical = 3
-min_value = 0.25
-max_value = 1.0
-step = 0.01
-value = 1.0
-script = ExtResource("8_6jrsb")
-metadata/_edit_group_ = true
-
-[node name="Label" type="Label" parent="SliderVBox/PlaybackRateScrollBar"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -48.0
-offset_top = -12.0
-offset_right = 48.0
-offset_bottom = 12.0
-grow_horizontal = 2
-grow_vertical = 2
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Title" type="Label" parent="SliderVBox/PlaybackRateScrollBar"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.5
-anchor_right = 0.51
-offset_left = -48.0
-offset_top = -26.0
-offset_right = 46.04
-grow_horizontal = 2
-text = "Playback rate
-"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="BlockAmountScrollBar" type="HScrollBar" parent="SliderVBox"]
-layout_mode = 2
-size_flags_vertical = 3
-min_value = 1.0
-max_value = 30.0
-step = 1.0
-value = 10.0
-script = ExtResource("9_22ufa")
-metadata/_edit_group_ = true
-
-[node name="Label" type="Label" parent="SliderVBox/BlockAmountScrollBar"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -48.0
-offset_top = -12.0
-offset_right = 48.0
-offset_bottom = 12.0
-grow_horizontal = 2
-grow_vertical = 2
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Title" type="Label" parent="SliderVBox/BlockAmountScrollBar"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.5
-anchor_right = 0.51
-offset_left = -48.0
-offset_top = -26.0
-offset_right = 46.04
-grow_horizontal = 2
-text = "Blocks"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="OffsetScrollBar" type="HScrollBar" parent="SliderVBox"]
-layout_mode = 2
-size_flags_vertical = 3
-max_value = 0.5
-step = 0.05
-value = 0.5
-script = ExtResource("10_yfm4l")
-metadata/_edit_group_ = true
-
-[node name="Label" type="Label" parent="SliderVBox/OffsetScrollBar"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -48.0
-offset_top = -12.0
-offset_right = 48.0
-offset_bottom = 12.0
-grow_horizontal = 2
-grow_vertical = 2
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Title" type="Label" parent="SliderVBox/OffsetScrollBar"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.5
-anchor_right = 0.51
-offset_left = -48.0
-offset_top = -26.0
-offset_right = 46.04
-grow_horizontal = 2
-text = "Offset"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="OverlapScrollBar" type="HScrollBar" parent="SliderVBox"]
-layout_mode = 2
-size_flags_vertical = 3
-max_value = 0.2
-step = 0.005
-value = 0.1
-script = ExtResource("13_wubaw")
-metadata/_edit_group_ = true
-
-[node name="Label" type="Label" parent="SliderVBox/OverlapScrollBar"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -48.0
-offset_top = -12.0
-offset_right = 48.0
-offset_bottom = 12.0
-grow_horizontal = 2
-grow_vertical = 2
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Title" type="Label" parent="SliderVBox/OverlapScrollBar"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.5
-anchor_right = 0.51
-offset_left = -48.0
-offset_top = -26.0
-offset_right = 46.04
-grow_horizontal = 2
-text = "Overlap"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="ClearAllButton" type="Button" parent="."]
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 15.0
-offset_top = -425.0
-offset_right = 114.0
-offset_bottom = -371.0
-grow_vertical = 0
-focus_mode = 0
-text = "Clear All
-"

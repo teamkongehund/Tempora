@@ -115,4 +115,17 @@ SliderTickRate:1
     public static void SaveOsu(string osuPath, string dotOsuString) {
         FileHandler.SaveText(osuPath, dotOsuString);
     }
+
+    public static void ExportOsz()
+    {
+        var random = new Random();
+        int rand = random.Next();
+        var path = $"user://{rand}.osz";
+        string dotOsu = GetDotOsu(Timing.Instance);
+        SaveOsz(path, dotOsu, Project.Instance.AudioFile);
+
+        // Open with system:
+        string globalPath = ProjectSettings.GlobalizePath(path);
+        if (FileAccess.FileExists(globalPath)) OS.ShellOpen(globalPath);
+    }
 }

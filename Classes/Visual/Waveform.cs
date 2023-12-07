@@ -9,6 +9,7 @@ public partial class Waveform : Node2D {
     #region Methods
 
     public override void _Draw() {
+        // TODO 3: don't render audio that doesn't exist
         float[] audioData = AudioFile.AudioData;
 
         int sampleIndexStart = AudioDataRange[0];
@@ -19,9 +20,7 @@ public partial class Waveform : Node2D {
 
         int nbPoints = (int)Length * PointsPerPixel;
         var points = new Vector2[nbPoints];
-
-        //float[] xValues = VectorTools.CreateLinearSpace(0, Length, (int)Length * DataPointsPerPixel);
-        //float[] yValues = new float[xValues.Length];
+        var multilinePoints = new Vector2[nbPoints*2-2];
 
         if (AudioFile == null) {
             Gd.Print("AudioFile was Null");
@@ -34,58 +33,75 @@ public partial class Waveform : Node2D {
 
             float pickedValue;
 
-            // Check if any sample value is negative - if so, the pickedvalue = 0
-            // make sure not to clamp values when you get the AudioDataRange
+            pickedValue = GetPickedValue(sampleIndexBegin, sampleIndexEnd, pointIndex);
 
-            bool pointIsBeforeAudioData = sampleIndexBegin < 0 || sampleIndexEnd < 0;
-            bool pointIsAfterAudioData = sampleIndexBegin > audioData.Length
-                                         || sampleIndexEnd > audioData.Length;
+            Vector2 coordinate = new Vector2((float)pointIndex / PointsPerPixel, pickedValue * Height / 2);
 
-            // TODO 3: don't render audio that doesn't exist
-            if (pointIsBeforeAudioData || pointIsAfterAudioData) {
-                pickedValue = 0;
+            points[pointIndex] = coordinate;
+
+            if (pointIndex == 0)
+            {
+                multilinePoints[pointIndex] = coordinate;
             }
-            else if (sampleIndexEnd - sampleIndexBegin == 0) {
-                pickedValue = audioData[sampleIndexBegin];
+            else if (pointIndex == nbPoints - 1)
+            {
+                multilinePoints[pointIndex * 2 - 1] = coordinate;
             }
-            else {
-                float min;
-                float max;
-                if (sampleIndexEnd - sampleIndexBegin <= 10)
-                {
-                    //min = audioData[sampleIndexBegin..sampleIndexEnd].Min();
-                    //max = audioData[sampleIndexBegin..sampleIndexEnd].Max();
-                    min = EfficientMin(audioData, sampleIndexBegin, sampleIndexEnd);
-                    max = EfficientMax(audioData, sampleIndexBegin, sampleIndexEnd);
-                }
-                else
-                {
-                    //min = audioFile.AudioDataPer10Min[(sampleIndexBegin / 10)..(sampleIndexEnd / 10)].Min();
-                    //max = audioFile.AudioDataPer10Max[(sampleIndexBegin / 10)..(sampleIndexEnd / 10)].Max();
-                    min = EfficientMin(audioFile.AudioDataPer10Min, (sampleIndexBegin / 10), (sampleIndexEnd / 10));
-                    max = EfficientMax(audioFile.AudioDataPer10Max, (sampleIndexBegin / 10), (sampleIndexEnd / 10));
-                }
-
-                if (PointsPerPixel > 1)
-                    pickedValue = pointIndex % 2 == 0 ? min : max; // Alternate to capture as much data as possible
-                else
-                    pickedValue = audioData[sampleIndexBegin];
-
-                //pickedValue = AudioFile.AudioData[sampleIndexBegin];
+            else
+            {
+                multilinePoints[pointIndex * 2 - 1] = coordinate;
+                multilinePoints[pointIndex * 2] = coordinate;
             }
-
-            //yValues[pointIndex] = pickedValue * Height / 2;
-
-            points[pointIndex] = new Vector2((float)pointIndex / PointsPerPixel, pickedValue * Height / 2);
         }
 
         var white = new Color(1f, 1f, 1f);
 
-        DrawMultiline(points,white, 1f);
+        //DrawMultiline(multilinePoints,white, 1f);
+        DrawPolyline(multilinePoints, white, 1f);
 
         // Testing saving waveform result as texture or image to use elsewhere
         //Image waveImage = GetViewport().GetTexture().GetImage();
         //waveImage.SavePng("user://renderedWave.png");
+    }
+
+    private float GetPickedValue(int sampleIndexBegin, int sampleIndexEnd, int pointIndex)
+    {
+        float pickedValue;
+
+        bool pointIsBeforeAudioData = sampleIndexBegin < 0 || sampleIndexEnd < 0;
+        bool pointIsAfterAudioData = sampleIndexBegin > AudioFile.AudioData.Length
+                                     || sampleIndexEnd > AudioFile.AudioData.Length;
+
+        if (pointIsBeforeAudioData || pointIsAfterAudioData)
+        {
+            pickedValue = 0;
+        }
+        else if (sampleIndexEnd - sampleIndexBegin == 0)
+        {
+            pickedValue = AudioFile.AudioData[sampleIndexBegin];
+        }
+        else
+        {
+            float min;
+            float max;
+            if (sampleIndexEnd - sampleIndexBegin <= 10)
+            {
+                min = EfficientMin(AudioFile.AudioData, sampleIndexBegin, sampleIndexEnd);
+                max = EfficientMax(AudioFile.AudioData, sampleIndexBegin, sampleIndexEnd);
+            }
+            else
+            {
+                min = EfficientMin(audioFile.AudioDataPer10Min, (sampleIndexBegin / 10), (sampleIndexEnd / 10));
+                max = EfficientMax(audioFile.AudioDataPer10Max, (sampleIndexBegin / 10), (sampleIndexEnd / 10));
+            }
+
+            if (PointsPerPixel > 1)
+                pickedValue = pointIndex % 2 == 0 ? min : max; // Alternate to capture as much data as possible
+            else
+                pickedValue = AudioFile.AudioData[sampleIndexBegin];
+        }
+
+        return pickedValue;
     }
 
     /// <summary>

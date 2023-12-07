@@ -1,0 +1,50 @@
+Easy to accidentally do BPM half or double the correct bpm
+
+Definitely need to add dragging points to time
+
+Need Ctrl+Z (good to do early)
+
+BPM scrolling: smaller increments
+
+(Open might be confused as mp3 open)
+
+Can't drag to row below - fix
+
+Rounding BPM to 3 decimal digits 
+- makes it possible to use the osu editor to make a timing point with the same BPM
+- no inconsistencies
+
+Optimized red lines 
+- placing timing points that don't change the BPM much can be simplified as 1 timing point
+
+Sliders i.e. volume - should go where you click
+
+maybe change private properties to lwoer case
+
+Add namespaces to folders (Rider has an "Adjust Namespaces" feature)
+
+Maybe make Todo milestones/issues in github
+
+Rename WaveformWindow to WaveformRow
+
+Addressing Rider warnings will already make it a lot better
+
+AudioDataHandler - probably has more support for the stuff you did manually
+
+Add summaries to FileHandler
+
+c# events are easier to debug and follow than Godot signals 
+- look into if it can be changed
+
+Undo/Redo - each action is a command and an inverse should also be defined
+
+There could be optimizations in terms of TimingPoints list
+- can update in Timing.cs and make changes to each Timing Point whenever there's a change,
+instead of using PreviousTimingPoint and NextTimingPoint
+- data classes should not have references to other things, they should just have their own properties
+
+could use json instead of tmpr
+
+DrawLine - can probably batch it - check the _Draw docs for this
+
+Again, Rider has tons of useful suggestions for your code

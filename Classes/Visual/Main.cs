@@ -9,30 +9,25 @@ using OsuTimer.Classes.Utility;
 namespace OsuTimer.Classes.Visual;
 
 public partial class Main : Control {
-    private string audioPath = "res://Audio/21csm.mp3";
-
+    [Export]
+    private string audioPath = "res://Audio/click.mp3";
+    [Export] 
     private AudioPlayer audioPlayer;
-
+    [Export]
     private AudioVisualsContainer audioVisualsContainer;
-
-    private HScrollBar blockAmountScrollBar;
-    //Button SaveButton;
-    //Button LoadButton;
-    //Button MoveButton;
-
-    //TextEdit IndexField;
-    //TextEdit PositionField;
-
-    private BlockScrollBar blockScrollBar;
-
-    private Button clearAllButton;
-    private Button exportButton;
-
-    private HScrollBar gridScrollBar;
-
+    [Export] 
     private Metronome metronome;
+    [Export]
+    private BlockScrollBar blockScrollBar;
+    [Export]
+    private HScrollBar blockAmountScrollBar;
+    [Export]
+    private HScrollBar gridScrollBar;
+    [Export]
     private HScrollBar offsetScrollBar;
+    [Export]
     private HScrollBar overlapScrollBar;
+    [Export]
     private HScrollBar playbackRateScrollBar;
 
 
@@ -57,39 +52,13 @@ public partial class Main : Control {
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() {
-        exportButton = GetNode<Button>("ExportButton");
-        clearAllButton = GetNode<Button>("ClearAllButton");
-        //SaveButton = GetNode<Button>("SaveButton");
-        //LoadButton = GetNode<Button>("LoadButton");
-        audioPlayer = GetNode<AudioPlayer>("AudioPlayer");
-        audioVisualsContainer = GetNode<AudioVisualsContainer>("AudioVisualsContainer");
         projectFileManager = ProjectFileManager.Instance;
-        //MoveButton = GetNode<Button>("MoveButton");
-        //IndexField = GetNode<TextEdit>("IndexField");
-        //PositionField = GetNode<TextEdit>("PositionField");
-        metronome = GetNode<Metronome>("Metronome");
-        blockScrollBar = GetNode<BlockScrollBar>("BlockScrollBar");
-        gridScrollBar = GetNode<HScrollBar>("SliderVBox/GridScrollBar");
-        playbackRateScrollBar = GetNode<HScrollBar>("SliderVBox/PlaybackRateScrollBar");
-        blockAmountScrollBar = GetNode<HScrollBar>("SliderVBox/BlockAmountScrollBar");
-        offsetScrollBar = GetNode<HScrollBar>("SliderVBox/OffsetScrollBar");
-        overlapScrollBar = GetNode<HScrollBar>("SliderVBox/OverlapScrollBar");
-
         Project.Instance.AudioFile = new AudioFile(audioPath);
 
-        exportButton.Pressed += OnExportButtonPressed;
-        clearAllButton.Pressed += OnClearAllButtonPressed;
-        //SaveButton.Pressed += OnSaveButtonPressed;
-        //LoadButton.Pressed += OnLoadButtonPressed;
-
-        //UpdateChildrensAudioFiles();
-
+        Signals.Instance.Scrolled += OnScrolled;
+        Signals.Instance.SettingsChanged += OnSettingsChanged;
         audioVisualsContainer.SeekPlaybackTime += OnSeekPlaybackTime;
         audioVisualsContainer.DoubleClicked += OnDoubleClick;
-        audioVisualsContainer.CreateBlocks();
-        //AudioVisualsContainer.CreateBlocks();
-        //MoveButton.Pressed += OnMoveButtonPressed;
-        Signals.Instance.Scrolled += OnScrolled;
         blockScrollBar.ValueChanged += OnBlockScrollBarValueChanged;
         GetTree().Root.FilesDropped += OnFilesDropped;
         gridScrollBar.ValueChanged += OnGridScrollBarValueChanged;
@@ -98,8 +67,7 @@ public partial class Main : Control {
         offsetScrollBar.ValueChanged += OnOffsetScrollBarValueChanged;
         overlapScrollBar.ValueChanged += OnOverlapScrollBarValueChanged;
 
-        Signals.Instance.SettingsChanged += OnSettingsChanged;
-
+        audioVisualsContainer.CreateBlocks();
         UpdatePlayHeads();
         blockScrollBar.UpdateRange();
     }
@@ -156,11 +124,11 @@ public partial class Main : Control {
         }
     }
 
-    public void OnSettingsChanged() {
+    private void OnSettingsChanged() {
         audioVisualsContainer.UpdateNumberOfBlocks();
     }
 
-    public void OnFilesDropped(string[] filePaths) {
+    private void OnFilesDropped(string[] filePaths) {
         if (filePaths.Length != 1) return;
         string path = filePaths[0];
 
@@ -174,63 +142,57 @@ public partial class Main : Control {
         catch { }
     }
 
-    public void OnExportButtonPressed() {
-        ExportOsz();
+    //public void OnExportButtonPressed() {
+    //    ExportOsz();
 
-        //ExportOsu();
+    //    //ExportOsu();
 
-        exportButton.ReleaseFocus();
-    }
+    //    exportButton.ReleaseFocus();
+    //}
 
-    public void OnClearAllButtonPressed() {
-        Timing.Instance.TimingPoints.Clear();
-        Timing.Instance.TimeSignaturePoints.Clear();
-        Signals.Instance.EmitSignal("TimingChanged");
-    }
+    //public void OnClearAllButtonPressed() {
+    //    Timing.Instance.TimingPoints.Clear();
+    //    Timing.Instance.TimeSignaturePoints.Clear();
+    //    Signals.Instance.EmitSignal("TimingChanged");
+    //}
 
-    public void OnBlockScrollBarValueChanged(double value) {
+    private void OnBlockScrollBarValueChanged(double value) {
         audioVisualsContainer.NominalMusicPositionStartForTopBlock = (int)value;
     }
 
-    public void OnGridScrollBarValueChanged(double value) {
+    private void OnGridScrollBarValueChanged(double value) {
         var intValue = (int)value;
         Settings.Instance.Divisor = Settings.SliderToDivisorDict[intValue];
     }
 
-    public void OnPlaybackRateScrollBarValueChanged(double value) {
+    private void OnPlaybackRateScrollBarValueChanged(double value) {
         audioPlayer.PitchScale = (float)value;
     }
 
-    public void OnBlockAmountScrollBarValueChanged(double value) {
+    private void OnBlockAmountScrollBarValueChanged(double value) {
         var intValue = (int)value;
         Settings.Instance.NumberOfBlocks = intValue;
     }
 
-    public void OnOffsetScrollBarValueChanged(double value) {
+    private void OnOffsetScrollBarValueChanged(double value) {
         Settings.Instance.MusicPositionOffset = (float)value;
     }
 
-    public void OnOverlapScrollBarValueChanged(double value) {
+    private void OnOverlapScrollBarValueChanged(double value) {
         Settings.Instance.MusicPositionMargin = (float)value;
     }
 
-    public void ExportOsu() {
-        var path = "user://blob.osu";
-        string dotOsu = OsuExporter.GetDotOsu(Timing.Instance);
-        OsuExporter.SaveOsu(path, dotOsu);
-    }
+    //public void ExportOsz() {
+    //    var random = new Random();
+    //    int rand = random.Next();
+    //    var path = $"user://{rand}.osz";
+    //    string dotOsu = OsuExporter.GetDotOsu(Timing.Instance);
+    //    OsuExporter.SaveOsz(path, dotOsu, Project.Instance.AudioFile);
 
-    public void ExportOsz() {
-        var random = new Random();
-        int rand = random.Next();
-        var path = $"user://{rand}.osz";
-        string dotOsu = OsuExporter.GetDotOsu(Timing.Instance);
-        OsuExporter.SaveOsz(path, dotOsu, Project.Instance.AudioFile);
-
-        // Open with system:
-        string globalPath = ProjectSettings.GlobalizePath(path);
-        if (FileAccess.FileExists(globalPath)) OS.ShellOpen(globalPath);
-    }
+    //    // Open with system:
+    //    string globalPath = ProjectSettings.GlobalizePath(path);
+    //    if (FileAccess.FileExists(globalPath)) OS.ShellOpen(globalPath);
+    //}
 
     public void Play() {
         audioPlayer.Play();
@@ -268,9 +230,8 @@ public partial class Main : Control {
     }
 
     public void OnSeekPlaybackTime(float playbackTime) {
-        if (!audioPlayer.Playing) Play();
-        if (playbackTime < 0) playbackTime = 0;
-        audioPlayer.Seek(playbackTime);
+        audioPlayer.SeekPlay(playbackTime);
+        //audioPlayer.SeekPlayHarsh(playbackTime);
     }
 
     public void OnDoubleClick(float playbackTime) {
