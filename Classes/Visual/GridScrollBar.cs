@@ -24,7 +24,4 @@ public partial class GridScrollBar : HScrollBar {
     public void UpdateLabel() {
         Label.Text = Settings.Instance.Divisor.ToString();
     }
-
-    // TODO 3: Implement Timer, such that Label inside slider says "Grid",
-    // and only displays number for a duration when changing grid
 }

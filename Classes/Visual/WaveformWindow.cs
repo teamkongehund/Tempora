@@ -222,13 +222,7 @@ public partial class WaveformWindow : Control {
 
     #region Render
 
-    // TODO 2: Add 20 ms grid line window delimeters (or make width of grid lines 20 ms)
-
     public void CreateWaveforms() {
-        // TODO 1: Re-do waveform rendering as a shader or piece of code that takes a section of a pre-rendering
-        // image file. This should significantly reduce CPU usage.
-        //GD.Print($"{Time.GetTicksMsec()/1e3} - Now rendering waveform window {MusicPositionStart}!");
-
         foreach (var child in waveformFolder.GetChildren())
             if (child is Waveform waveform)
                 waveform.QueueFree();
@@ -356,11 +350,6 @@ public partial class WaveformWindow : Control {
     }
 
     public void CreateGridLines() {
-        // TODO 2: Pre-instantiatie grid lines and toggle visibility instead.
-        // AddChild uses a lot of CPU usage.
-        // Further, GetGridLine also uses a bit because of constant instantiation.
-        // Again, if you pre-instantiate and change position, visibility and color, etc, this is more efficient.
-
         foreach (var child in GridFolder.GetChildren()) child.QueueFree();
 
         int divisor = Settings.Instance.Divisor;

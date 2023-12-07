@@ -96,8 +96,6 @@ public partial class Settings : Node {
         }
     }
 
-    // TODO 2: Add support for any grid division with a field entry.
-
     public static int DivisorToSlider(int divisor) {
         return SliderToDivisorDict.FirstOrDefault(x => x.Value == divisor).Key;
     }

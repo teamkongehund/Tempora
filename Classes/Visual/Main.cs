@@ -37,19 +37,6 @@ public partial class Main : Control {
 
     private WaveformWindow waveformWindow;
 
-    // TODO 3: Add input field and/or number visualizer for dB on volume sliders
-
-    // TODO 2: Add transient snapping:
-    // A method finds the local loudest part of the song
-    // Holding down a certain key combination and moving your mouse down through the transients will snap all of them when you release
-    // So, whichever grid line you're closest to, all of them will snap to it - the grid line in question should light up.
-
-    // TODO 2: Add offsetting option to timing points when you change time signature (keep measures or keep beats)
-
-    // TODO 2: Add playhead in scrollbar
-
-    // TODO 3: Update exisiting .osu files to synchronize to a specific beatmap folder.
-
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() {
         projectFileManager = ProjectFileManager.Instance;
@@ -71,18 +58,6 @@ public partial class Main : Control {
         UpdatePlayHeads();
         blockScrollBar.UpdateRange();
     }
-
-    // TODO 2: Scroll to set BPM
-
-    // TODO 2: Double / halve BPM for a point
-
-    // TODO 2: Copy osu time stamp into app
-
-    // TODO 2: Copy pasting groups of timing points
-
-    // TODO 3: Detached reset points (points that work as metronome resets and don't force anything unto the previous.)
-
-    // TODO 2: Spectral view (blackmann-harris rendering with 4096 bands or 2048 if it's too performance impacting)
 
     public override void _Input(InputEvent inputEvent) {
         switch (inputEvent) {
