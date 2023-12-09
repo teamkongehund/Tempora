@@ -27,7 +27,6 @@ public partial class GridLine : Line2D {
         UpdateColor();
     }
 
-    // TODO 2: Add a method that determines color. Execute it in _Ready().
     public void UpdateColor() {
         if (RelativeMusicPosition == 0) {
             DefaultColor = new Color(1f, 0, 0, 0.7f);

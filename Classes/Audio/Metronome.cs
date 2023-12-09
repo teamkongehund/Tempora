@@ -17,7 +17,6 @@ public partial class Metronome : Node {
         click2 = GetNode<AudioStreamPlayer>("Click2");
     }
 
-    // Todo 2: Replace metronome sounds
     public void Click(float musicPosition) {
         if (!On) return;
         float beatPosition = Timing.Instance.GetBeatPosition(musicPosition);

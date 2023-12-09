@@ -9,7 +9,6 @@ public partial class Waveform : Node2D {
     #region Methods
 
     public override void _Draw() {
-        // TODO 3: don't render audio that doesn't exist
         float[] audioData = AudioFile.AudioData;
 
         int sampleIndexStart = AudioDataRange[0];
