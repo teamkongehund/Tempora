@@ -5,7 +5,7 @@
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1ad7l"]
 
-[node name="WaveformWindow" type="Control"]
+[node name="WaveformWindow" type="Control" node_paths=PackedStringArray("Playhead", "waveformFolder", "VisualTimingPointFolder", "GridFolder", "PreviewLine", "SelectedPositionLine", "MeasureLabel", "TimeSignatureLineEdit")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -13,6 +13,14 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_mrh5y")
+Playhead = NodePath("Playhead")
+waveformFolder = NodePath("WaveformFolder")
+VisualTimingPointFolder = NodePath("VisualTimingPointFolder")
+GridFolder = NodePath("GridFolder")
+PreviewLine = NodePath("PreviewLine")
+SelectedPositionLine = NodePath("SelectedPositionLine")
+MeasureLabel = NodePath("MeasureLabel")
+TimeSignatureLineEdit = NodePath("TimeSignatureLineEdit")
 
 [node name="WaveformFolder" type="Node2D" parent="."]
 

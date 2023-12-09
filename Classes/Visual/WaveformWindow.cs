@@ -15,14 +15,22 @@ public partial class WaveformWindow : Control {
     [Signal]
     public delegate void AttemptToAddTimingPointEventHandler(float playbackTime);
 
-    private Node2D waveformFolder;
-    public Node2D VisualTimingPointFolder;
+    [Export]
     public Line2D Playhead;
-    public Node2D GridFolder;
-    public Line2D PreviewLine;
-    public Line2D SelectedPositionLine;
-    public Label MeasureLabel;
-    public TimeSignatureLineEdit TimeSignatureLineEdit;
+    [Export]
+    private Node2D waveformFolder;
+    [Export]
+    private Node2D VisualTimingPointFolder;
+    [Export]
+    private Node2D GridFolder;
+    [Export]
+    private Line2D PreviewLine;
+    [Export]
+    private Line2D SelectedPositionLine;
+    [Export]
+    private Label MeasureLabel;
+    [Export]
+    private TimeSignatureLineEdit TimeSignatureLineEdit;
 
     public event AttemptToAddTimingPointEventHandler SomeEvent;
 
@@ -82,17 +90,8 @@ public partial class WaveformWindow : Control {
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() {
-        GridFolder = GetNode<Node2D>("GridFolder");
-        waveformFolder = GetNode<Node2D>("WaveformFolder");
-        VisualTimingPointFolder = GetNode<Node2D>("VisualTimingPointFolder");
-        PreviewLine = GetNode<Line2D>("PreviewLine");
-        SelectedPositionLine = GetNode<Line2D>("SelectedPositionLine");
-        MeasureLabel = GetNode<Label>("MeasureLabel");
-        TimeSignatureLineEdit = GetNode<TimeSignatureLineEdit>("TimeSignatureLineEdit");
-
-        Playhead = GetNode<Line2D>("Playhead");
-        Playhead.Width = 4;
         Playhead.ZIndex = 100;
+
         UpdatePlayheadScaling();
         UpdatePreviewLineScaling();
         UpdateSelectedPositionScaling();
@@ -101,16 +100,11 @@ public partial class WaveformWindow : Control {
         CreateEmptyTimingPoints(8);
 
         Resized += OnResized;
-        //Signals.Instance.SettingsChanged += OnSettingsChanged;
-        //      Signals.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
-        //      Signals.Instance.Scrolled += UpdateSelectedPositionLine;
         Signals.Instance.Connect("SettingsChanged", Callable.From(OnSettingsChanged));
         Signals.Instance.Connect("SelectedPositionChanged", Callable.From(OnSelectedPositionChanged));
         Signals.Instance.Connect("Scrolled", Callable.From(UpdateSelectedPositionLine));
-
         Signals.Instance.AudioFileChanged += OnAudioFileChanged;
 
-        //TimeSignatureLineEdit.TimeSignatureSubmitted += OnTimingSignatureSubmitted;
         TimeSignatureLineEdit.Connect("TimeSignatureSubmitted", new Callable(this, "OnTimingSignatureSubmitted"));
 
         MouseEntered += OnMouseEntered;
