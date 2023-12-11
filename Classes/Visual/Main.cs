@@ -10,7 +10,7 @@ namespace OsuTimer.Classes.Visual;
 
 public partial class Main : Control {
     [Export]
-    private string audioPath = "res://Audio/click.mp3";
+    private string audioPath = "res://Audio/UMO.mp3";
     [Export] 
     private AudioPlayer audioPlayer;
     [Export]
@@ -29,6 +29,8 @@ public partial class Main : Control {
     private HScrollBar overlapScrollBar;
     [Export]
     private HScrollBar playbackRateScrollBar;
+    [Export]
+    private Label errorLabel;
 
 
     //AudioFile AudioFile;
@@ -40,7 +42,14 @@ public partial class Main : Control {
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() {
         projectFileManager = ProjectFileManager.Instance;
-        Project.Instance.AudioFile = new AudioFile(audioPath);
+        try
+        {
+            Project.Instance.AudioFile = new AudioFile(audioPath);
+        }
+        catch (Exception ex)
+        {
+            errorLabel.Text = ex.Message;
+        }
 
         Signals.Instance.Scrolled += OnScrolled;
         Signals.Instance.SettingsChanged += OnSettingsChanged;
@@ -114,7 +123,10 @@ public partial class Main : Control {
             audioPlayer.LoadMp3();
             //UpdateChildrensAudioFiles();
         }
-        catch { }
+        catch (Exception ex)
+        {
+            errorLabel.Text = ex.Message;
+        }
     }
 
     //public void OnExportButtonPressed() {
