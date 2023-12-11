@@ -21,6 +21,6 @@ public partial class OverlapScrollBar : HScrollBar {
     }
 
     public void UpdateLabel(double value) {
-        Label.Text = (value * 100).ToString("0.0") + " %";
+        Label.Text = (value * 100).ToString("0") + " %";
     }
 }

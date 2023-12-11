@@ -28,9 +28,9 @@ public partial class Settings : Node {
 
     private float musicPositionMargin;
 
-    private float musicPositionOffset;
+    private float musicPositionOffset = 0.125f;
 
-    private int numberOfBlocks = 1;
+    private int numberOfBlocks = 10;
 
     private string projectFilesDirectory = "";
 
@@ -109,7 +109,16 @@ public partial class Settings : Node {
     public void LoadSettings() {
         if (string.IsNullOrEmpty(settingsPath))
             return;
-        string settingsFile = FileHandler.LoadText(settingsPath);
+        string settingsFile;
+        try
+        {
+            settingsFile = FileHandler.LoadText(settingsPath);
+        }
+        catch
+        {
+            GD.Print("Settings.cs: No settings file saved in user folder.");
+            return;
+        }
         string[] lines = settingsFile.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
         for (var i = 0; i < lines.Length; i++) {
             string line = lines[i];
