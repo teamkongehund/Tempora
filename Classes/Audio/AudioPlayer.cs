@@ -87,8 +87,15 @@ public partial class AudioPlayer : AudioStreamPlayer {
     }
 
     public void LoadMp3() {
-        Stream = FileAccess.FileExists(Project.Instance.AudioFile.Path)
-            ? FileHandler.LoadFileAsAudioStreamMp3(Project.Instance.AudioFile.Path)
-            : throw new Exception($"Failed to update songPlayer stream - check if {Project.Instance.AudioFile.Path} exists.");
+        if (Project.Instance.AudioFile.Stream == null)
+        {
+            Stream = FileAccess.FileExists(Project.Instance.AudioFile.Path)
+                ? FileHandler.LoadFileAsAudioStreamMp3(Project.Instance.AudioFile.Path)
+                : throw new Exception($"Failed to update songPlayer stream - check if {Project.Instance.AudioFile.Path} exists.");
+        }
+        else
+        {
+            Stream = Project.Instance.AudioFile.Stream;
+        }
     }
 }

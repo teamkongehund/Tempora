@@ -28,6 +28,8 @@ public partial class AudioFile : Node
 
     public string Path;
 
+    public AudioStream Stream;
+
     /// <summary>
     ///     Amount of seconds to offset any sample indices. Band-aid fix to compensate the discrepancy between audio playback
     ///     and audio visualization.
@@ -36,6 +38,7 @@ public partial class AudioFile : Node
 
     public int SampleRate;
 
+    [Obsolete("WARNING: Using outdated AudioFile(string path) - use AudioFile(AudioStreamMP3 audioStreamMP3) instead")] 
     public AudioFile(string path)
     {
         string extension = FileHandler.GetExtension(path);
@@ -50,6 +53,20 @@ public partial class AudioFile : Node
         AudioData = audioData;
         SampleRate = sampleRate;
         Path = path;
+        Channels = channels;
+    }
+
+    public AudioFile(AudioStreamMP3 audioStreamMP3)
+    {
+        byte[] audioFileBytes = audioStreamMP3.Data;
+
+        int sampleRate;
+        int channels;
+        float[] audioData = AudioDataHandler.Mp3ToAudioFloat(audioFileBytes, out sampleRate, out channels);
+
+        AudioData = audioData;
+        SampleRate = sampleRate;
+        Stream = audioStreamMP3;
         Channels = channels;
     }
 

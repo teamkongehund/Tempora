@@ -369,6 +369,8 @@ public partial class Timing : Node {
     }
 
     public int GetLastMeasure() {
+        GD.Print(Project.Instance);
+        GD.Print(Project.Instance.AudioFile);
         float lengthInSeconds = Project.Instance.AudioFile.SampleIndexToSeconds(Project.Instance.AudioFile.AudioData.Length - 1);
         float lastMeasure = TimeToMusicPosition(lengthInSeconds);
         return (int)lastMeasure;

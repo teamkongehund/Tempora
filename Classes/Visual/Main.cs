@@ -9,8 +9,10 @@ using OsuTimer.Classes.Utility;
 namespace OsuTimer.Classes.Visual;
 
 public partial class Main : Control {
-    [Export]
-    private string audioPath = "res://Audio/UMO.mp3";
+	//[Export]
+	//private string audioPath = "res://Audio/UMO.mp3";
+	[Export]
+	private AudioStreamMP3 defaultMP3;
     [Export] 
     private AudioPlayer audioPlayer;
     [Export]
@@ -42,14 +44,13 @@ public partial class Main : Control {
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() {
         projectFileManager = ProjectFileManager.Instance;
-        try
-        {
-            Project.Instance.AudioFile = new AudioFile(audioPath);
-        }
-        catch (Exception ex)
-        {
-            errorLabel.Text = ex.Message;
-        }
+
+        // This works in Debug if we use i.e. audioPath = "res://Audio/UMO.mp3",
+        // but won't work in production, as resources are converted to different file formats.
+        //Project.Instance.AudioFile = new AudioFile(audioPath);
+        
+		Project.Instance.AudioFile = new AudioFile(defaultMP3);
+
 
 		Signals.Instance.Scrolled += OnScrolled;
 		Signals.Instance.SettingsChanged += OnSettingsChanged;
@@ -118,16 +119,20 @@ public partial class Main : Control {
 		string path = filePaths[0];
 
         AudioFile audioFile;
-        try {
-            audioFile = new AudioFile(path);
-            Project.Instance.AudioFile = audioFile;
-            audioPlayer.LoadMp3();
-            //UpdateChildrensAudioFiles();
-        }
-        catch (Exception ex)
-        {
-            errorLabel.Text = ex.Message;
-        }
+        //try {
+        //    audioFile = new AudioFile(path);
+        //    Project.Instance.AudioFile = audioFile;
+        //    audioPlayer.LoadMp3();
+        //    //UpdateChildrensAudioFiles();
+        //}
+        //catch (Exception ex)
+        //{
+        //    errorLabel.Text = ex.Message;
+        //}
+
+        audioFile = new AudioFile(path);
+        Project.Instance.AudioFile = audioFile;
+        audioPlayer.LoadMp3();
     }
 
 	//public void OnExportButtonPressed() {
