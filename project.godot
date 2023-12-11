@@ -13,7 +13,9 @@ config_version=5
 config/name="Tempora"
 run/main_scene="res://Classes/Visual/Main.tscn"
 config/features=PackedStringArray("4.2", "C#", "Forward Plus")
-config/icon="res://Classes/Visual/icon.svg"
+boot_splash/show_image=false
+config/icon="res://Images/Tempora.png"
+config/windows_native_icon="res://Images/icon.ico"
 
 [audio]
 

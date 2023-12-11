@@ -1,6 +1,7 @@
-[gd_scene load_steps=16 format=3 uid="uid://bk0ofb078cvgm"]
+[gd_scene load_steps=17 format=3 uid="uid://bk0ofb078cvgm"]
 
 [ext_resource type="Script" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
+[ext_resource type="AudioStream" uid="uid://clutjafa1rf7f" path="res://Audio/UMO.mp3" id="2_83owh"]
 [ext_resource type="PackedScene" uid="uid://djvimmuyfu0pu" path="res://Classes/Audio/AudioPlayer.tscn" id="2_nrfju"]
 [ext_resource type="Script" path="res://Classes/Visual/AudioVisualsContainer.cs" id="3_bj8ok"]
 [ext_resource type="PackedScene" uid="uid://bnbif04ymgk1h" path="res://Classes/Audio/Metronome.tscn" id="4_n2ir2"]
@@ -25,6 +26,7 @@ grow_horizontal = 2
 grow_vertical = 2
 focus_mode = 2
 script = ExtResource("1_n5xe1")
+defaultMP3 = ExtResource("2_83owh")
 audioPlayer = NodePath("AudioPlayer")
 audioVisualsContainer = NodePath("AudioVisualsContainer")
 metronome = NodePath("Metronome")
@@ -239,7 +241,7 @@ custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 size_flags_vertical = 3
 max_value = 0.5
-step = 0.05
+step = 0.025
 value = 0.5
 script = ExtResource("10_yfm4l")
 metadata/_edit_group_ = true
@@ -280,7 +282,7 @@ custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 size_flags_vertical = 3
 max_value = 0.2
-step = 0.005
+step = 0.01
 value = 0.1
 script = ExtResource("13_wubaw")
 metadata/_edit_group_ = true
