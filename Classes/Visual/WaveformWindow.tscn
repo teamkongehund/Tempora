@@ -29,8 +29,8 @@ TimeSignatureLineEdit = NodePath("TimeSignatureLineEdit")
 [node name="VisualTimingPointFolder" type="Node2D" parent="."]
 
 [node name="Playhead" type="Line2D" parent="."]
-width = 2.0
-default_color = Color(0.270588, 1, 0.921569, 1)
+width = 6.0
+default_color = Color(0.839216, 0, 0.635294, 1)
 
 [node name="PreviewLine" type="Line2D" parent="."]
 visible = false
@@ -75,3 +75,5 @@ theme_override_font_sizes/font_size = 12
 theme_override_styles/normal = SubResource("StyleBoxEmpty_1ad7l")
 alignment = 2
 script = ExtResource("2_hj0au")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]

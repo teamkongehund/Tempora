@@ -1,7 +1,7 @@
 [gd_scene load_steps=17 format=3 uid="uid://bk0ofb078cvgm"]
 
 [ext_resource type="Script" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
-[ext_resource type="AudioStream" uid="uid://clutjafa1rf7f" path="res://Audio/UMO.mp3" id="2_83owh"]
+[ext_resource type="AudioStream" uid="uid://clutjafa1rf7f" path="res://Audio/UMO.mp3" id="2_klkb2"]
 [ext_resource type="PackedScene" uid="uid://djvimmuyfu0pu" path="res://Classes/Audio/AudioPlayer.tscn" id="2_nrfju"]
 [ext_resource type="Script" path="res://Classes/Visual/AudioVisualsContainer.cs" id="3_bj8ok"]
 [ext_resource type="PackedScene" uid="uid://bnbif04ymgk1h" path="res://Classes/Audio/Metronome.tscn" id="4_n2ir2"]
@@ -26,7 +26,7 @@ grow_horizontal = 2
 grow_vertical = 2
 focus_mode = 2
 script = ExtResource("1_n5xe1")
-defaultMP3 = ExtResource("2_83owh")
+defaultMP3 = ExtResource("2_klkb2")
 audioPlayer = NodePath("AudioPlayer")
 audioVisualsContainer = NodePath("AudioVisualsContainer")
 metronome = NodePath("Metronome")
@@ -36,7 +36,7 @@ gridScrollBar = NodePath("LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVB
 offsetScrollBar = NodePath("LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/OffsetScrollBar")
 overlapScrollBar = NodePath("LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/OverlapScrollBar")
 playbackRateScrollBar = NodePath("LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/PlaybackRateScrollBar")
-errorLabel = NodePath("ErrorLabel")
+errorLabel = NodePath("")
 metadata/_edit_lock_ = true
 
 [node name="ColorRect" type="ColorRect" parent="."]
@@ -69,7 +69,7 @@ anchor_bottom = 1.0
 offset_left = 177.0
 offset_top = 16.0
 offset_right = -77.0
-offset_bottom = -55.0
+offset_bottom = -18.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("3_bj8ok")
@@ -465,16 +465,3 @@ theme_override_font_sizes/font_size = 12
 text = "Metronome"
 horizontal_alignment = 1
 vertical_alignment = 1
-
-[node name="ErrorLabel" type="Label" parent="."]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 132.0
-offset_top = -42.0
-offset_right = -67.0
-offset_bottom = -13.0
-grow_horizontal = 2
-grow_vertical = 0
