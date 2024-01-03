@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using OsuTimer.Classes.Utility;
+using GD = OsuTimer.Classes.Utility.GD;
 using OsuTimer.Classes.Audio;
 using System.Drawing;
 

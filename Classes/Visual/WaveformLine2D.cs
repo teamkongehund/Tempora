@@ -2,6 +2,7 @@ using System.Linq;
 using Godot;
 using OsuTimer.Classes.Audio;
 using OsuTimer.Classes.Utility;
+using GD = OsuTimer.Classes.Utility.GD;
 
 namespace OsuTimer.Classes.Visual;
 
@@ -148,7 +149,7 @@ public partial class WaveformLine2D : Line2D {
         var yValues = new float[xValues.Length];
 
         if (AudioFile == null) {
-            Gd.Print("AudioFile was Null");
+            GD.Print("AudioFile was Null");
             return;
         }
 

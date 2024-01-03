@@ -76,7 +76,7 @@ SliderTickRate:1
     public static string TimingPointToText(List<TimingPoint> timingPoints) {
         var theText = "";
         foreach (var timingPoint in timingPoints) {
-            Gd.Print(timingPoint.Bpm);
+            //GD.Print(timingPoint.Bpm);
             theText += TimingPointToText(timingPoint);
         }
 

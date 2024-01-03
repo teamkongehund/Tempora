@@ -1,5 +1,6 @@
 using Godot;
 using OsuTimer.Classes.Utility;
+using GD = OsuTimer.Classes.Utility.GD;
 
 namespace OsuTimer.Classes.Visual;
 
@@ -129,7 +130,7 @@ public partial class WaveformWindow : Control {
                 float x = mouseEvent.Position.X;
                 float musicPosition = XPositionToMusicPosition(x);
                 float time = Timing.Instance.MusicPositionToTime(musicPosition);
-                Gd.Print($"WaveformWindow was clicked at playback time {time} seconds");
+                GD.Print($"WaveformWindow was clicked at playback time {time} seconds");
 
                 if (Input.IsKeyPressed(Key.Alt)) {
                     Context.Instance.IsSelectedMusicPositionMoving = true;

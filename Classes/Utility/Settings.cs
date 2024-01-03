@@ -24,7 +24,7 @@ public partial class Settings : Node {
     /// <summary>
     ///     Should not be changed during runtime!
     /// </summary>
-    public int MaxNumberOfBlocks = 20;
+    public int MaxNumberOfBlocks = 30;
 
     private float musicPositionMargin;
 

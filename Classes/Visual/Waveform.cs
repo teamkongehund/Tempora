@@ -2,6 +2,7 @@ using System.Linq;
 using Godot;
 using OsuTimer.Classes.Audio;
 using OsuTimer.Classes.Utility;
+using GD = OsuTimer.Classes.Utility.GD;
 
 namespace OsuTimer.Classes.Visual;
 
@@ -22,7 +23,7 @@ public partial class Waveform : Node2D {
         var multilinePoints = new Vector2[nbPoints*2-2];
 
         if (AudioFile == null) {
-            Gd.Print("AudioFile was Null");
+            GD.Print("AudioFile was Null");
             return;
         }
 

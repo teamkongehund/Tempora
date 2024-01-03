@@ -11,7 +11,7 @@ namespace OsuTimer.Classes.Utility;
 ///     A pipe script GD.cs is implemented to allow GD.Print to print to Debugger log, while keeping all other functions
 ///     the same.
 /// </summary>
-public static class Gd {
+public static class GD {
     /// <summary>
     ///     Decodes a byte array back to a <see cref="Variant" /> value, without decoding objects.
     ///     Note: If you need object deserialization, see <see cref="BytesToVarWithObjects" />.
@@ -146,7 +146,7 @@ public static class Gd {
     /// <param name="what">Message that will be printed.</param>
     public static void Print(string what) {
         Debugger.Log(2, "GD.Print()", what);
-        GD.Print(what);
+        Godot.GD.Print(what);
     }
 
     /// <summary>
