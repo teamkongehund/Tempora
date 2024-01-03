@@ -17,7 +17,7 @@
 [ext_resource type="Script" path="res://Classes/Visual/OffsetScrollBar.cs" id="10_yfm4l"]
 [ext_resource type="Script" path="res://Classes/Visual/OverlapScrollBar.cs" id="13_wubaw"]
 
-[node name="Main" type="Control" node_paths=PackedStringArray("audioPlayer", "audioVisualsContainer", "metronome", "blockScrollBar", "blockAmountScrollBar", "gridScrollBar", "offsetScrollBar", "overlapScrollBar", "playbackRateScrollBar", "errorLabel")]
+[node name="Main" type="Control" node_paths=PackedStringArray("audioPlayer", "audioVisualsContainer", "metronome", "blockScrollBar", "blockAmountScrollBar", "gridScrollBar", "offsetScrollBar", "overlapScrollBar", "playbackRateScrollBar")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -36,7 +36,6 @@ gridScrollBar = NodePath("LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVB
 offsetScrollBar = NodePath("LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/OffsetScrollBar")
 overlapScrollBar = NodePath("LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/OverlapScrollBar")
 playbackRateScrollBar = NodePath("LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/PlaybackRateScrollBar")
-errorLabel = NodePath("")
 metadata/_edit_lock_ = true
 
 [node name="ColorRect" type="ColorRect" parent="."]

@@ -38,7 +38,6 @@ public partial class AudioFile : Node
 
     public int SampleRate;
 
-    [Obsolete("WARNING: Using outdated AudioFile(string path) - use AudioFile(AudioStreamMP3 audioStreamMP3) instead")] 
     public AudioFile(string path)
     {
         string extension = FileHandler.GetExtension(path);
@@ -46,13 +45,17 @@ public partial class AudioFile : Node
 
         byte[] audioFileBytes = FileHandler.GetFileAsBuffer(path);
 
+        AudioStreamMP3 audioStreamMP3 = new AudioStreamMP3();
+        audioStreamMP3.Data = audioFileBytes;
+
         int sampleRate;
         int channels;
         float[] audioData = AudioDataHandler.Mp3ToAudioFloat(audioFileBytes, out sampleRate, out channels);
 
         AudioData = audioData;
         SampleRate = sampleRate;
-        Path = path;
+        //Path = path;
+        Stream = audioStreamMP3;
         Channels = channels;
     }
 
