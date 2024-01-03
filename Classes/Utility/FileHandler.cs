@@ -44,6 +44,12 @@ public partial class FileHandler : Node {
         file.StoreString(text);
     }
 
+    public static void SaveMP3(string path, AudioStreamMP3 audioStreamMP3)
+    {
+        using var file = FileAccess.Open(path, FileAccess.ModeFlags.Write);
+        file.StoreBuffer(audioStreamMP3.Data);
+    }
+
     public static string LoadText(string path) {
         if (FileAccess.FileExists(path)) {
             using var file = FileAccess.Open(path, FileAccess.ModeFlags.Read);

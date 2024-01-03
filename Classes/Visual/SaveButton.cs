@@ -23,13 +23,6 @@ public partial class SaveButton : Button {
     //private void OnFileSelected(string selectedPath) => FileHandler.CopyFile(PathToCopyFrom, selectedPath);
 
     private void OnFileSelected(string selectedPath) {
-        string extension = FileHandler.GetExtension(selectedPath);
-
-        string correctExtension = ProjectFileManager.ProjectFileExtension;
-
-        if (extension != correctExtension)
-            selectedPath += "." + correctExtension;
-
         ProjectFileManager.Instance.SaveProjectAs(selectedPath);
 
         string dir = FileHandler.GetDirectory(selectedPath);

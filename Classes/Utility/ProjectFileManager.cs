@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.IO;
 using Godot;
 using OsuTimer.Classes.Audio;
 
@@ -21,11 +22,29 @@ public partial class ProjectFileManager : Node {
     }
 
     public void SaveProjectAs(string filePath) {
-        string file = GetProjectAsString();
+        string extension = FileHandler.GetExtension(filePath);
+
+        string correctExtension = ProjectFileManager.ProjectFileExtension;
+
+        if (extension != correctExtension)
+            filePath += "." + correctExtension;
+
+        string filePathWithoutExtension = filePath;
+        filePathWithoutExtension = Path.ChangeExtension(filePathWithoutExtension, null);
+
+        string mp3Path = $"{filePathWithoutExtension}.mp3";
+
+        string file = GetProjectAsString(mp3Path);
+        FileHandler.SaveMP3(mp3Path, (AudioStreamMP3)Project.Instance.AudioFile.Stream);
         FileHandler.SaveText(filePath, file);
     }
 
-    public string GetProjectAsString() {
+    public string GetProjectAsString()
+    {
+        return GetProjectAsString(Project.Instance.AudioFile.Path);
+    }
+
+    public string GetProjectAsString(string audioPath) {
         // TimeSignaturePoint
         // MusicPosition;TimeSignatureUpper;TimeSignatureLower
         var timeSignaturePointsLines = "";
@@ -41,11 +60,28 @@ public partial class ProjectFileManager : Node {
             timeSignaturePointsLines += timeSignaturePointLine;
         }
 
-        // TimingPoint
+        string timingPointsLines = "";
+        if ((Timing.Instance?.TimingPoints?.Count ?? 0) > 0)
+            timingPointsLines = GetTimingPointsAsString();
+
+        var file = "";
+        file += "[AudioPath]\n";
+        file += audioPath + "\n";
+        file += "[TimeSignaturePoints]\n";
+        file += timeSignaturePointsLines;
+        file += "[TimingPoints]\n";
+        file += timingPointsLines;
+
+        return file; 
+    }
+
+    private string GetTimingPointsAsString()
+    {
         // Time;MusicPosition;TimeSignatureUpper;TimeSignatureLower
-        var lastTimingPoint = Timing.Instance.TimingPoints[^1];
-        var timingPointsLines = "";
-        foreach (var timingPoint in Timing.Instance.TimingPoints) {
+        string timingPointsLines = "";
+        TimingPoint lastTimingPoint = Timing.Instance.TimingPoints[^1];
+        foreach (var timingPoint in Timing.Instance.TimingPoints)
+        {
             var timingPointLine = "";
             timingPointLine += timingPoint.Time.ToString(CultureInfo.InvariantCulture);
             timingPointLine += ";";
@@ -60,19 +96,10 @@ public partial class ProjectFileManager : Node {
 
             timingPointsLines += timingPointLine;
         }
-
-        var file = "";
-        file += "[AudioPath]\n";
-        file += Project.Instance.AudioFile.Path + "\n";
-        file += "[TimeSignaturePoints]\n";
-        file += timeSignaturePointsLines;
-        file += "[TimingPoints]\n";
-        file += timingPointsLines;
-
-        return file;
+        return timingPointsLines;
     }
 
-    public void LoadProjectFromFile(string projectFile) {
+    private void LoadProjectFromFile(string projectFile) {
         Timing.Instance = new Timing();
         Timing.Instance.IsInstantiating = true;
 

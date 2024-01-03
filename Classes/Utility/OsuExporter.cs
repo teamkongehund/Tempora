@@ -36,7 +36,7 @@ ArtistUnicode:
 Creator:
 Version:
 Source:
-Tags: osutimer
+Tags: tempora
 BeatmapID:0
 BeatmapSetID:-1
 
