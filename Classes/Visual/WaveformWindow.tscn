@@ -34,8 +34,8 @@ default_color = Color(0.839216, 0, 0.635294, 1)
 
 [node name="PreviewLine" type="Line2D" parent="."]
 visible = false
-width = 2.0
-default_color = Color(0.419608, 0.419608, 0.419608, 1)
+width = 3.0
+default_color = Color(0.541176, 0, 0.407843, 1)
 
 [node name="SelectedPositionLine" type="Line2D" parent="."]
 visible = false

@@ -353,36 +353,38 @@ public partial class WaveformWindow : Control {
         int measureOffset = -1;
         var divisionIndex = 0;
         while (divisionIndex < 50) {
-            //using (
-                var gridLine = GetGridLine(timeSignature, divisor, divisionIndex, measureOffset); //)
-            //{
-                divisionIndex++;
+        //using (
+            var gridLine = GetGridLine(timeSignature, divisor, divisionIndex, measureOffset); //)
+        //{
+            divisionIndex++;
 
-                float musicPosition = gridLine.RelativeMusicPosition + NominalMusicPositionStartForWindow + measureOffset;
+            float musicPosition = gridLine.RelativeMusicPosition + NominalMusicPositionStartForWindow + measureOffset;
 
-                if (musicPosition >= NominalMusicPositionStartForWindow && measureOffset == -1) {
-                    divisionIndex = 0;
-                    measureOffset += 1;
-                    timeSignature = Timing.Instance.GetTimeSignature(NominalMusicPositionStartForWindow + measureOffset);
-                    continue;
-                }
+            if (musicPosition >= NominalMusicPositionStartForWindow && measureOffset == -1) {
+                divisionIndex = 0;
+                measureOffset += 1;
+                timeSignature = Timing.Instance.GetTimeSignature(NominalMusicPositionStartForWindow + measureOffset);
+                continue;
+            }
 
-                if (musicPosition >= NominalMusicPositionStartForWindow + 1 && measureOffset == 0) {
-                    divisionIndex = 0;
-                    measureOffset += 1;
-                    timeSignature = Timing.Instance.GetTimeSignature(NominalMusicPositionStartForWindow + measureOffset);
-                    continue;
-                }
+            if (musicPosition >= NominalMusicPositionStartForWindow + 1 && measureOffset == 0) {
+                divisionIndex = 0;
+                measureOffset += 1;
+                timeSignature = Timing.Instance.GetTimeSignature(NominalMusicPositionStartForWindow + measureOffset);
+                continue;
+            }
 
-                if (musicPosition < ActualMusicPositionStartForWindow)
-                    continue;
-                if (musicPosition > ActualMusicPositionStartForWindow + 1 + 2 * Settings.Instance.MusicPositionMargin)
-                    break;
+            if (musicPosition < ActualMusicPositionStartForWindow)
+                continue;
+            if (musicPosition > ActualMusicPositionStartForWindow + 1 + 2 * Settings.Instance.MusicPositionMargin)
+                break;
 
-                timeSignature = Timing.Instance.GetTimeSignature(musicPosition);
+            timeSignature = Timing.Instance.GetTimeSignature(musicPosition);
 
-                GridFolder.AddChild(gridLine);
-            //}
+            gridLine.ZIndex = 0;
+
+            GridFolder.AddChild(gridLine);
+        //}
         }
     }
 
@@ -444,7 +446,7 @@ public partial class WaveformWindow : Control {
     public void UpdateSelectedPositionLine() {
         float x = MusicPositionToXPosition(Context.Instance.SelectedMusicPosition);
         SelectedPositionLine.Position = new Vector2(x, 0);
-        SelectedPositionLine.Visible = x >= 0 && x <= Size.X;
+        //SelectedPositionLine.Visible = x >= 0 && x <= Size.X;
     }
 
     public void UpdateSelectedPositionScaling() {
