@@ -105,54 +105,70 @@ public partial class AudioDisplayPanel : Control {
     //	Signals.Instance.TimingChanged -= OnTimingChanged;
     //}
 
-    public override void _GuiInput(InputEvent @event) {
-        switch (@event) {
-            case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } mouseEvent: {
-                float x = mouseEvent.Position.X;
-                float musicPosition = XPositionToMusicPosition(x);
-                float time = Timing.Instance.MusicPositionToTime(musicPosition);
-                GD.Print($"WaveformWindow was clicked at playback time {time} seconds");
-
-                if (Input.IsKeyPressed(Key.Alt)) {
-                    Context.Instance.IsSelectedMusicPositionMoving = true;
-                    Context.Instance.SelectedMusicPosition = XPositionToMusicPosition(x);
-                }
-                else {
-                    x = mouseEvent.Position.X;
-                    musicPosition = XPositionToMusicPosition(x);
-                    time = Timing.Instance.MusicPositionToTime(musicPosition);
-                    EmitSignal(nameof(AttemptToAddTimingPoint), time);
-                    GetViewport().SetInputAsHandled();
-                }
-
-                break;
-            }
-            case InputEventMouseButton mouseEvent: {
-                if (mouseEvent.ButtonIndex == MouseButton.Right && mouseEvent.Pressed) {
+    public override void _GuiInput(InputEvent @event)
+    {
+        switch (@event)
+        {
+            case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } mouseEvent:
+                {
                     float x = mouseEvent.Position.X;
                     float musicPosition = XPositionToMusicPosition(x);
                     float time = Timing.Instance.MusicPositionToTime(musicPosition);
-                    EmitSignal(nameof(SeekPlaybackTime), time);
+                    GD.Print($"WaveformWindow was clicked at playback time {time} seconds");
+
+                    if (Input.IsKeyPressed(Key.Alt))
+                    {
+                        Context.Instance.IsSelectedMusicPositionMoving = true;
+                        Context.Instance.SelectedMusicPosition = XPositionToMusicPosition(x);
+                    }
+                    else
+                    {
+                        x = mouseEvent.Position.X;
+                        musicPosition = XPositionToMusicPosition(x);
+                        if (Input.IsKeyPressed(Key.Shift))
+                        {
+                            musicPosition = Timing.SnapMusicPosition(musicPosition);
+                        }
+                        time = Timing.Instance.MusicPositionToTime(musicPosition);
+                        EmitSignal(nameof(AttemptToAddTimingPoint), time);
+                        GetViewport().SetInputAsHandled();
+                    }
+
+                    break;
                 }
+            case InputEventMouseButton mouseEvent:
+                {
+                    if (mouseEvent.ButtonIndex == MouseButton.Right && mouseEvent.Pressed)
+                    {
+                        float x = mouseEvent.Position.X;
+                        float musicPosition = XPositionToMusicPosition(x);
+                        float time = Timing.Instance.MusicPositionToTime(musicPosition);
+                        EmitSignal(nameof(SeekPlaybackTime), time);
+                    }
 
-                break;
-            }
-            case InputEventMouseMotion mouseMotion: {
-                var mousePos = mouseMotion.Position;
-                float mouseMusicPosition = XPositionToMusicPosition(mousePos.X);
-                //float mouseRelativeMusicPosition = XPositionToRelativeMusicPosition(mousePos.X);
-                ;
-                // HeldTimingPoint
-                Timing.SnapTimingPoint(Context.Instance.HeldTimingPoint, mouseMusicPosition);
+                    break;
+                }
+            case InputEventMouseMotion mouseMotion:
+                {
+                    var mousePos = mouseMotion.Position;
+                    float musicPosition = XPositionToMusicPosition(mousePos.X);
+                    if (Input.IsKeyPressed(Key.Shift))
+                    {
+                        musicPosition = Timing.SnapMusicPosition(musicPosition);
+                    }
+                    //float mouseRelativeMusicPosition = XPositionToRelativeMusicPosition(mousePos.X);
+                    ;
+                    // HeldTimingPoint
+                    Timing.SnapTimingPoint(Context.Instance.HeldTimingPoint, musicPosition);
 
-                // PreviewLine
-                UpdatePreviewLinePosition(mouseMusicPosition);
+                    // PreviewLine
+                    UpdatePreviewLinePosition(musicPosition);
 
-                // SelectedPosition
-                if (!Context.Instance.IsSelectedMusicPositionMoving) return;
-                Context.Instance.SelectedMusicPosition = XPositionToMusicPosition(mousePos.X);
-                break;
-            }
+                    // SelectedPosition
+                    if (!Context.Instance.IsSelectedMusicPositionMoving) return;
+                    Context.Instance.SelectedMusicPosition = XPositionToMusicPosition(mousePos.X);
+                    break;
+                }
         }
     }
 

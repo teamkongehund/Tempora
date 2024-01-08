@@ -64,17 +64,7 @@ public partial class VisualTimingPoint : Node2D {
             }
 
             if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick && hasMouseInside && !Input.IsKeyPressed(Key.Alt)) {
-                Context.Instance.HeldTimingPoint = null;
-
-                // Prevent accidental deletion un inadvertent double-double-clicking
-                if (Time.GetTicksMsec() - SystemTimeWhenCreated > 500)
-                    TimingPoint.Delete();
-                else
-                    Signals.Instance.EmitSignal("TimingPointHolding", TimingPoint);
-
-                var viewport = GetViewport();
-                viewport.SetInputAsHandled();
-                return;
+                DeleteTimingPoint();
             }
 
             if (mouseEvent.ButtonIndex == MouseButton.WheelDown && mouseEvent.Pressed && Input.IsKeyPressed(Key.Ctrl) && hasMouseInside) {
@@ -94,5 +84,20 @@ public partial class VisualTimingPoint : Node2D {
                 TimingPoint.BPM_Update(newBpm);
             }
         }
+    }
+
+    private void DeleteTimingPoint()
+    {
+        Context.Instance.HeldTimingPoint = null;
+
+        // Prevent accidental deletion un inadvertent double-double-clicking
+        if (Time.GetTicksMsec() - SystemTimeWhenCreated > 500)
+            TimingPoint.Delete();
+        else
+            Signals.Instance.EmitSignal("TimingPointHolding", TimingPoint);
+
+        var viewport = GetViewport();
+        viewport.SetInputAsHandled();
+        return;
     }
 }
