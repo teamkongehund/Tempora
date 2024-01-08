@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://bk0ofb078cvgm"]
+[gd_scene load_steps=18 format=3 uid="uid://bk0ofb078cvgm"]
 
 [ext_resource type="Script" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
 [ext_resource type="AudioStream" uid="uid://clutjafa1rf7f" path="res://Audio/UMO.mp3" id="2_klkb2"]
@@ -16,6 +16,7 @@
 [ext_resource type="Script" path="res://Classes/Visual/ExportButton.cs" id="10_y304k"]
 [ext_resource type="Script" path="res://Classes/Visual/OffsetScrollBar.cs" id="10_yfm4l"]
 [ext_resource type="Script" path="res://Classes/Visual/OverlapScrollBar.cs" id="13_wubaw"]
+[ext_resource type="PackedScene" uid="uid://bac4n7j15cns7" path="res://Classes/Visual/AudioBlock.tscn" id="16_mlqa0"]
 
 [node name="Main" type="Control" node_paths=PackedStringArray("audioPlayer", "audioVisualsContainer", "metronome", "blockScrollBar", "blockAmountScrollBar", "gridScrollBar", "offsetScrollBar", "overlapScrollBar", "playbackRateScrollBar")]
 layout_mode = 3
@@ -28,15 +29,20 @@ focus_mode = 2
 script = ExtResource("1_n5xe1")
 defaultMP3 = ExtResource("2_klkb2")
 audioPlayer = NodePath("AudioPlayer")
-audioVisualsContainer = NodePath("AudioVisualsContainer")
+audioVisualsContainer = NodePath("UIHBoxContainer/AudioVisualsMarginContainer/AudioVisualsContainer")
 metronome = NodePath("Metronome")
-blockScrollBar = NodePath("BlockScrollBar")
-blockAmountScrollBar = NodePath("LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/BlockAmountScrollBar")
-gridScrollBar = NodePath("LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/GridScrollBar")
-offsetScrollBar = NodePath("LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/OffsetScrollBar")
-overlapScrollBar = NodePath("LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/OverlapScrollBar")
-playbackRateScrollBar = NodePath("LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/PlaybackRateScrollBar")
+blockScrollBar = NodePath("UIHBoxContainer/BlockScrollBarMarginContainer/BlockScrollBar")
+blockAmountScrollBar = NodePath("UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/SettingsSlidersVBox/BlockAmountScrollBar")
+gridScrollBar = NodePath("UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/SettingsSlidersVBox/GridScrollBar")
+offsetScrollBar = NodePath("UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/SettingsSlidersVBox/OffsetScrollBar")
+overlapScrollBar = NodePath("UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/SettingsSlidersVBox/OverlapScrollBar")
+playbackRateScrollBar = NodePath("UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/SettingsSlidersVBox/PlaybackRateScrollBar")
 metadata/_edit_lock_ = true
+
+[node name="AudioPlayer" parent="." instance=ExtResource("2_nrfju")]
+bus = &"Music"
+
+[node name="Metronome" parent="." instance=ExtResource("4_n2ir2")]
 
 [node name="ColorRect" type="ColorRect" parent="."]
 layout_mode = 1
@@ -49,65 +55,32 @@ mouse_filter = 2
 color = Color(0, 0.2, 0.254902, 1)
 metadata/_edit_lock_ = true
 
-[node name="ShowHide" type="Button" parent="."]
-visible = false
-layout_mode = 0
-offset_left = 23.0
-offset_top = 127.0
-offset_right = 197.0
-offset_bottom = 210.0
-text = "Show/Hide"
+[node name="UIHBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
 
-[node name="AudioPlayer" parent="." instance=ExtResource("2_nrfju")]
-bus = &"Music"
-
-[node name="AudioVisualsContainer" type="VBoxContainer" parent="."]
+[node name="LeftHandMenuMarginContainer" type="MarginContainer" parent="UIHBoxContainer"]
 layout_mode = 2
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 177.0
-offset_top = 16.0
-offset_right = -77.0
-offset_bottom = -18.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("3_bj8ok")
-
-[node name="Metronome" parent="." instance=ExtResource("4_n2ir2")]
-
-[node name="BlockScrollBar" type="VScrollBar" parent="."]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -45.0
-offset_top = 14.0
-offset_right = -14.0
-offset_bottom = -12.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("5_aqu3i")
-
-[node name="LeftHandMenuMargins" type="MarginContainer" parent="."]
-layout_mode = 1
-anchors_preset = -1
-anchor_bottom = 0.997
-offset_right = 120.0
-offset_bottom = 0.159973
+mouse_filter = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 30
-theme_override_constants/margin_right = 10
+theme_override_constants/margin_right = 0
 theme_override_constants/margin_bottom = 10
 
-[node name="LeftHandMenuVBox" type="VBoxContainer" parent="LeftHandMenuMargins"]
+[node name="LeftHandMenuVBox" type="VBoxContainer" parent="UIHBoxContainer/LeftHandMenuMarginContainer"]
 layout_mode = 2
 
-[node name="SettingsSlidersVBox" type="VBoxContainer" parent="LeftHandMenuMargins/LeftHandMenuVBox"]
+[node name="SettingsSlidersVBox" type="VBoxContainer" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox"]
 layout_mode = 2
 theme_override_constants/separation = 30
 
-[node name="GridScrollBar" type="HScrollBar" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox"]
+[node name="GridScrollBar" type="HScrollBar" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/SettingsSlidersVBox"]
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 size_flags_vertical = 3
@@ -118,7 +91,7 @@ value = 4.0
 script = ExtResource("7_i2h88")
 metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/GridScrollBar"]
+[node name="Label" type="Label" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/SettingsSlidersVBox/GridScrollBar"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -135,7 +108,7 @@ theme_override_font_sizes/font_size = 12
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Title" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/GridScrollBar"]
+[node name="Title" type="Label" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/SettingsSlidersVBox/GridScrollBar"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
@@ -150,7 +123,7 @@ text = "Grid
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="PlaybackRateScrollBar" type="HScrollBar" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox"]
+[node name="PlaybackRateScrollBar" type="HScrollBar" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/SettingsSlidersVBox"]
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 size_flags_vertical = 3
@@ -161,7 +134,7 @@ value = 1.0
 script = ExtResource("8_6jrsb")
 metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/PlaybackRateScrollBar"]
+[node name="Label" type="Label" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/SettingsSlidersVBox/PlaybackRateScrollBar"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -178,7 +151,7 @@ theme_override_font_sizes/font_size = 12
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Title" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/PlaybackRateScrollBar"]
+[node name="Title" type="Label" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/SettingsSlidersVBox/PlaybackRateScrollBar"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
@@ -193,7 +166,7 @@ text = "Playback rate
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="BlockAmountScrollBar" type="HScrollBar" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox"]
+[node name="BlockAmountScrollBar" type="HScrollBar" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/SettingsSlidersVBox"]
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 size_flags_vertical = 3
@@ -204,7 +177,7 @@ value = 10.0
 script = ExtResource("9_22ufa")
 metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/BlockAmountScrollBar"]
+[node name="Label" type="Label" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/SettingsSlidersVBox/BlockAmountScrollBar"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -221,7 +194,7 @@ theme_override_font_sizes/font_size = 12
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Title" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/BlockAmountScrollBar"]
+[node name="Title" type="Label" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/SettingsSlidersVBox/BlockAmountScrollBar"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
@@ -235,7 +208,7 @@ text = "Blocks"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="OffsetScrollBar" type="HScrollBar" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox"]
+[node name="OffsetScrollBar" type="HScrollBar" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/SettingsSlidersVBox"]
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 size_flags_vertical = 3
@@ -245,7 +218,7 @@ value = 0.5
 script = ExtResource("10_yfm4l")
 metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/OffsetScrollBar"]
+[node name="Label" type="Label" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/SettingsSlidersVBox/OffsetScrollBar"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -262,7 +235,7 @@ theme_override_font_sizes/font_size = 12
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Title" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/OffsetScrollBar"]
+[node name="Title" type="Label" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/SettingsSlidersVBox/OffsetScrollBar"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
@@ -276,7 +249,7 @@ text = "Offset"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="OverlapScrollBar" type="HScrollBar" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox"]
+[node name="OverlapScrollBar" type="HScrollBar" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/SettingsSlidersVBox"]
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 size_flags_vertical = 3
@@ -286,7 +259,7 @@ value = 0.1
 script = ExtResource("13_wubaw")
 metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/OverlapScrollBar"]
+[node name="Label" type="Label" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/SettingsSlidersVBox/OverlapScrollBar"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -303,7 +276,7 @@ theme_override_font_sizes/font_size = 12
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Title" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/SettingsSlidersVBox/OverlapScrollBar"]
+[node name="Title" type="Label" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/SettingsSlidersVBox/OverlapScrollBar"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
@@ -317,16 +290,16 @@ text = "Overlap"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="ButtonsMargins" type="MarginContainer" parent="LeftHandMenuMargins/LeftHandMenuVBox"]
+[node name="ButtonsMargins" type="MarginContainer" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox"]
 layout_mode = 2
 theme_override_constants/margin_top = 15
 theme_override_constants/margin_bottom = 15
 
-[node name="ButtonsVBox" type="VBoxContainer" parent="LeftHandMenuMargins/LeftHandMenuVBox/ButtonsMargins"]
+[node name="ButtonsVBox" type="VBoxContainer" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/ButtonsMargins"]
 custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 
-[node name="ClearAllButton" type="Button" parent="LeftHandMenuMargins/LeftHandMenuVBox/ButtonsMargins/ButtonsVBox"]
+[node name="ClearAllButton" type="Button" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/ButtonsMargins/ButtonsVBox"]
 layout_mode = 2
 size_flags_vertical = 3
 focus_mode = 0
@@ -335,7 +308,7 @@ text = "Clear All
 "
 script = ExtResource("9_7o3s6")
 
-[node name="SaveButton" type="Button" parent="LeftHandMenuMargins/LeftHandMenuVBox/ButtonsMargins/ButtonsVBox"]
+[node name="SaveButton" type="Button" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/ButtonsMargins/ButtonsVBox"]
 layout_mode = 2
 size_flags_vertical = 3
 focus_mode = 0
@@ -343,12 +316,12 @@ theme_override_font_sizes/font_size = 12
 text = "Save As..."
 script = ExtResource("7_vit6a")
 
-[node name="FileDialog" type="FileDialog" parent="LeftHandMenuMargins/LeftHandMenuVBox/ButtonsMargins/ButtonsVBox/SaveButton"]
+[node name="FileDialog" type="FileDialog" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/ButtonsMargins/ButtonsVBox/SaveButton"]
 position = Vector2i(170, 70)
 size = Vector2i(1002, 587)
 access = 2
 
-[node name="LoadButton" type="Button" parent="LeftHandMenuMargins/LeftHandMenuVBox/ButtonsMargins/ButtonsVBox"]
+[node name="LoadButton" type="Button" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/ButtonsMargins/ButtonsVBox"]
 layout_mode = 2
 size_flags_vertical = 3
 focus_mode = 0
@@ -356,7 +329,7 @@ theme_override_font_sizes/font_size = 12
 text = "Open..."
 script = ExtResource("8_kgjts")
 
-[node name="FileDialog" type="FileDialog" parent="LeftHandMenuMargins/LeftHandMenuVBox/ButtonsMargins/ButtonsVBox/LoadButton"]
+[node name="FileDialog" type="FileDialog" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/ButtonsMargins/ButtonsVBox/LoadButton"]
 title = "Open a File"
 position = Vector2i(170, 70)
 size = Vector2i(1002, 587)
@@ -364,7 +337,7 @@ ok_button_text = "Open"
 file_mode = 0
 access = 2
 
-[node name="ExportButton" type="Button" parent="LeftHandMenuMargins/LeftHandMenuVBox/ButtonsMargins/ButtonsVBox"]
+[node name="ExportButton" type="Button" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/ButtonsMargins/ButtonsVBox"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/font_size = 12
@@ -372,13 +345,13 @@ text = "Export .osz
 & Open"
 script = ExtResource("10_y304k")
 
-[node name="VolumeSlidersHBox" type="HBoxContainer" parent="LeftHandMenuMargins/LeftHandMenuVBox"]
+[node name="VolumeSlidersHBox" type="HBoxContainer" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox"]
 custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 7
 
-[node name="VolumeSliderMaster" type="VScrollBar" parent="LeftHandMenuMargins/LeftHandMenuVBox/VolumeSlidersHBox"]
+[node name="VolumeSliderMaster" type="VScrollBar" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/VolumeSlidersHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 max_value = 1.0
@@ -388,7 +361,7 @@ script = ExtResource("6_w0n8n")
 BusName = "Master"
 metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/VolumeSlidersHBox/VolumeSliderMaster"]
+[node name="Label" type="Label" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/VolumeSlidersHBox/VolumeSliderMaster"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -407,7 +380,7 @@ text = "Master"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="VolumeSliderMusic" type="VScrollBar" parent="LeftHandMenuMargins/LeftHandMenuVBox/VolumeSlidersHBox"]
+[node name="VolumeSliderMusic" type="VScrollBar" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/VolumeSlidersHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 max_value = 1.0
@@ -417,7 +390,7 @@ script = ExtResource("6_w0n8n")
 BusName = "Music"
 metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/VolumeSlidersHBox/VolumeSliderMusic"]
+[node name="Label" type="Label" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/VolumeSlidersHBox/VolumeSliderMusic"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -436,7 +409,7 @@ text = "Music"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="VolumeSliderMetronome" type="VScrollBar" parent="LeftHandMenuMargins/LeftHandMenuVBox/VolumeSlidersHBox"]
+[node name="VolumeSliderMetronome" type="VScrollBar" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/VolumeSlidersHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 max_value = 1.0
@@ -446,7 +419,7 @@ script = ExtResource("6_w0n8n")
 BusName = "Metronome"
 metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="LeftHandMenuMargins/LeftHandMenuVBox/VolumeSlidersHBox/VolumeSliderMetronome"]
+[node name="Label" type="Label" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/VolumeSlidersHBox/VolumeSliderMetronome"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -464,3 +437,31 @@ theme_override_font_sizes/font_size = 12
 text = "Metronome"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="AudioVisualsMarginContainer" type="MarginContainer" parent="UIHBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 20
+
+[node name="AudioVisualsContainer" type="VBoxContainer" parent="UIHBoxContainer/AudioVisualsMarginContainer"]
+layout_mode = 2
+script = ExtResource("3_bj8ok")
+packedAudioBlock = ExtResource("16_mlqa0")
+
+[node name="BlockScrollBarMarginContainer" type="MarginContainer" parent="UIHBoxContainer"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="BlockScrollBar" type="VScrollBar" parent="UIHBoxContainer/BlockScrollBarMarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 1
+script = ExtResource("5_aqu3i")

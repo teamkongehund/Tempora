@@ -39,7 +39,7 @@ public partial class Main : Control {
 
 	private ProjectFileManager projectFileManager;
 
-	private WaveformWindow waveformWindow;
+	private AudioDisplayPanel waveformWindow;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() {
@@ -111,7 +111,7 @@ public partial class Main : Control {
 	}
 
 	private void OnSettingsChanged() {
-		audioVisualsContainer.UpdateNumberOfBlocks();
+		audioVisualsContainer.UpdateNumberOfVisibleBlocks();
 	}
 
 	private void OnFilesDropped(string[] filePaths) {
@@ -209,10 +209,11 @@ public partial class Main : Control {
 	public void UpdatePlayHeads() {
 		double playbackTime = audioPlayer.GetPlaybackTime();
 		float musicPosition = Timing.Instance.TimeToMusicPosition((float)playbackTime);
-		foreach (var tempWaveformWindow in audioVisualsContainer.GetChildren().OfType<WaveformWindow>()) {
-			float x = tempWaveformWindow.MusicPositionToXPosition(musicPosition);
-			tempWaveformWindow.Playhead.Position = new Vector2(x, 0.0f);
-			tempWaveformWindow.Playhead.Visible = x >= 0 && x <= tempWaveformWindow.Size.X && audioPlayer.Playing;
+		foreach (var audioBlock in audioVisualsContainer.GetChildren().OfType<AudioBlock>()) {
+			AudioDisplayPanel audioDisplayPanel = audioBlock.AudioDisplayPanel;
+            float x = audioDisplayPanel.MusicPositionToXPosition(musicPosition);
+			audioDisplayPanel.Playhead.Position = new Vector2(x, 0.0f);
+			audioDisplayPanel.Playhead.Visible = x >= 0 && x <= audioDisplayPanel.Size.X && audioPlayer.Playing;
 		}
 	}
 

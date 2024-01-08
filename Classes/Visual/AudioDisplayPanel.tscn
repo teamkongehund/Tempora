@@ -1,0 +1,62 @@
+[gd_scene load_steps=3 format=3 uid="uid://xf0kngdc5d36"]
+
+[ext_resource type="Script" path="res://Classes/Visual/AudioDisplayPanel.cs" id="1_oemdp"]
+[ext_resource type="Script" path="res://Classes/Visual/PreviewLine.cs" id="2_lfylv"]
+
+[node name="AudioDisplayPanel" type="Control" node_paths=PackedStringArray("Playhead", "waveformSegments", "VisualTimingPointFolder", "GridFolder", "PreviewLine", "SelectedPositionLine")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_oemdp")
+Playhead = NodePath("Playhead")
+waveformSegments = NodePath("WaveformSegments")
+VisualTimingPointFolder = NodePath("VisualTimingPointFolder")
+GridFolder = NodePath("GridFolder")
+PreviewLine = NodePath("PreviewLine")
+SelectedPositionLine = NodePath("SelectedPositionLine")
+
+[node name="WaveformSegments" type="Node2D" parent="."]
+
+[node name="GridFolder" type="Node2D" parent="."]
+
+[node name="VisualTimingPointFolder" type="Node2D" parent="."]
+
+[node name="Playhead" type="Line2D" parent="."]
+width = 6.0
+default_color = Color(0.839216, 0, 0.635294, 1)
+
+[node name="PreviewLine" type="Line2D" parent="." node_paths=PackedStringArray("TimeLabel")]
+visible = false
+width = 3.0
+default_color = Color(0.541176, 0, 0.407843, 1)
+script = ExtResource("2_lfylv")
+TimeLabel = NodePath("TimeLabel")
+
+[node name="TimeLabel" type="Label" parent="PreviewLine"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -23.0
+offset_right = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 14
+text = "asdf"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="SelectedPositionLine" type="Line2D" parent="."]
+visible = false
+width = 2.0
+default_color = Color(0.117647, 0.368627, 1, 1)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]

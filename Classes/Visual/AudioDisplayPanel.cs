@@ -1,4 +1,5 @@
 using Godot;
+using System;
 using OsuTimer.Classes.Utility;
 using GD = OsuTimer.Classes.Utility.GD;
 
@@ -7,7 +8,7 @@ namespace OsuTimer.Classes.Visual;
 /// <summary>
 ///     Parent class for window containing waveform(s), playhead and timing grid
 /// </summary>
-public partial class WaveformWindow : Control {
+public partial class AudioDisplayPanel : Control {
     #region Properties & Signals
 
     [Signal]
@@ -19,42 +20,25 @@ public partial class WaveformWindow : Control {
     [Export]
     public Line2D Playhead;
     [Export]
-    private Node2D waveformFolder;
+    private Node2D waveformSegments;
     [Export]
     private Node2D VisualTimingPointFolder;
     [Export]
     private Node2D GridFolder;
     [Export]
-    private Line2D PreviewLine;
+    private PreviewLine PreviewLine;
     [Export]
     private Line2D SelectedPositionLine;
-    [Export]
-    private Label MeasureLabel;
-    [Export]
-    private TimeSignatureLineEdit TimeSignatureLineEdit;
+    //[Export]
+    //private Label MeasureLabel;
+    //[Export]
+    //private TimeSignatureLineEdit TimeSignatureLineEdit;
 
     public event AttemptToAddTimingPointEventHandler SomeEvent;
 
     private PackedScene packedVisualTimingPoint = ResourceLoader.Load<PackedScene>("res://Classes/Visual/VisualTimingPoint.tscn");
 
     public bool IsInstantiating = true;
-
-    //   private AudioFile _audioFile;
-    //public AudioFile AudioFile
-    //{
-    //	get => _audioFile;
-    //	set
-    //	{
-    //		if (_audioFile != value)
-    //		{
-    //			_audioFile = value;
-    //			//UpdateWaveformAudioFiles();
-    //			CreateWaveforms();
-    //			RenderTimingPoints();
-    //		}
-    //       }
-    //}
-    //WaveformLine2D Waveform1;
 
     private int musicPositionStart;
 
@@ -64,8 +48,7 @@ public partial class WaveformWindow : Control {
             if (musicPositionStart == value) return;
             musicPositionStart = value;
 
-            if (!IsInstantiating)
-                UpdateVisuals();
+            UpdateVisuals();
         }
     }
 
@@ -105,8 +88,6 @@ public partial class WaveformWindow : Control {
         Signals.Instance.Connect("SelectedPositionChanged", Callable.From(OnSelectedPositionChanged));
         Signals.Instance.Connect("Scrolled", Callable.From(UpdateSelectedPositionLine));
         Signals.Instance.AudioFileChanged += OnAudioFileChanged;
-
-        TimeSignatureLineEdit.Connect("TimeSignatureSubmitted", new Callable(this, "OnTimingSignatureSubmitted"));
 
         MouseEntered += OnMouseEntered;
         MouseExited += OnMouseExited;
@@ -159,13 +140,13 @@ public partial class WaveformWindow : Control {
             case InputEventMouseMotion mouseMotion: {
                 var mousePos = mouseMotion.Position;
                 float mouseMusicPosition = XPositionToMusicPosition(mousePos.X);
-                float mouseRelativeMusicPosition = XPositionToRelativeMusicPosition(mousePos.X);
+                //float mouseRelativeMusicPosition = XPositionToRelativeMusicPosition(mousePos.X);
                 ;
                 // HeldTimingPoint
                 Timing.SnapTimingPoint(Context.Instance.HeldTimingPoint, mouseMusicPosition);
 
                 // PreviewLine
-                PreviewLine.Position = new Vector2(MusicPositionToXPosition(mouseMusicPosition), 0);
+                UpdatePreviewLinePosition(mouseMusicPosition);
 
                 // SelectedPosition
                 if (!Context.Instance.IsSelectedMusicPositionMoving) return;
@@ -181,15 +162,10 @@ public partial class WaveformWindow : Control {
         CreateWaveforms();
         RenderTimingPoints();
         CreateGridLines();
-        UpdateLabels();
     }
 
     public void OnAudioFileChanged() {
         CreateWaveforms();
-    }
-
-    public void OnTimingSignatureSubmitted(int[] timeSignature) {
-        Timing.Instance.UpdateTimeSignature(timeSignature, NominalMusicPositionStartForWindow);
     }
 
     public void OnResized() {
@@ -218,7 +194,7 @@ public partial class WaveformWindow : Control {
     #region Render
 
     public void CreateWaveforms() {
-        foreach (var child in waveformFolder.GetChildren())
+        foreach (var child in waveformSegments.GetChildren())
             if (child is Waveform waveform)
                 waveform.QueueFree();
             else if (child is Sprite2D sprite) sprite.QueueFree();
@@ -236,7 +212,7 @@ public partial class WaveformWindow : Control {
                 Position = new Vector2(0, Size.Y / 2)
             };
 
-            waveformFolder.AddChild(waveform);
+            waveformSegments.AddChild(waveform);
 
             //GD.Print($"There were no timing points... Using MusicPositionStart {MusicPositionStartForWindow} to set start and end times.");
 
@@ -277,7 +253,7 @@ public partial class WaveformWindow : Control {
             //waveform.DefaultColor = new Color((float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble(), 1);
 
             // Note: this one also takes some processing
-            waveformFolder.AddChild(waveform);
+            waveformSegments.AddChild(waveform);
 
 
 
@@ -409,6 +385,7 @@ public partial class WaveformWindow : Control {
     #region Updaters
 
     public void UpdateVisuals() {
+        if (IsInstantiating) return;
         if (!Visible) return;
         UpdatePlayheadScaling();
         UpdatePreviewLineScaling();
@@ -416,17 +393,10 @@ public partial class WaveformWindow : Control {
         CreateWaveforms(); // takes 2-5 ms on 30 blocks  loaded
         RenderTimingPoints(); // takes 2-3 ms on 30 blocks loaded
         CreateGridLines();
-        UpdateLabels();
         
         // This works fine
         //await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
         //GetViewport().GetTexture().GetImage().SavePng("user://renderedWave.png");
-    }
-
-    public void UpdateLabels() {
-        int[] timeSignature = Timing.Instance.GetTimeSignature(NominalMusicPositionStartForWindow);
-        MeasureLabel.Text = NominalMusicPositionStartForWindow.ToString();
-        TimeSignatureLineEdit.Text = $"{timeSignature[0]}/{timeSignature[1]}";
     }
 
     public void UpdatePlayheadScaling() {
@@ -441,6 +411,14 @@ public partial class WaveformWindow : Control {
             new(0, 0),
             new(0, Size.Y)
         };
+    }
+
+    private void UpdatePreviewLinePosition(float musicPosition)
+    {
+        PreviewLine.Position = new Vector2(MusicPositionToXPosition(musicPosition), 0);
+
+        TimeSpan musicTime = TimeSpan.FromSeconds(Timing.Instance.MusicPositionToTime(musicPosition));
+        PreviewLine.TimeLabel.Text = musicTime.ToString(@"mm\:ss\:fff");
     }
 
     public void UpdateSelectedPositionLine() {

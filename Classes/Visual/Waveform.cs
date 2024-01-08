@@ -20,7 +20,16 @@ public partial class Waveform : Node2D {
 
         int nbPoints = (int)Length * PointsPerPixel;
         var points = new Vector2[nbPoints];
-        var multilinePoints = new Vector2[nbPoints*2-2];
+
+        Vector2[] multilinePoints;
+        try
+        {
+            multilinePoints = new Vector2[nbPoints*2-2];
+        }
+        catch (System.OverflowException)
+        {
+            return;
+        }
 
         if (AudioFile == null) {
             GD.Print("AudioFile was Null");

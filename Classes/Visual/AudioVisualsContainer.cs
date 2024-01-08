@@ -16,11 +16,14 @@ public partial class AudioVisualsContainer : VBoxContainer {
     [Signal]
     public delegate void SeekPlaybackTimeEventHandler(float playbackTime);
 
+    [Export]
+    private PackedScene packedAudioBlock;
+
     //public float FirstBlockStartTime = 0;
 
     private int nominalMusicPositionStartForTopBlock;
 
-    public List<WaveformWindow> WaveformWindows = new();
+    public List<AudioBlock> AudioBlocks = new();
 
     public int NominalMusicPositionStartForTopBlock {
         get => nominalMusicPositionStartForTopBlock;
@@ -34,7 +37,10 @@ public partial class AudioVisualsContainer : VBoxContainer {
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() {
-        //NumberOfBlocks = Settings.Instance.NumberOfBlocks;
+        //foreach (var waveformWindow in AudioBlocks)
+        //{
+        //    waveformWindow.UpdateVisuals();
+        //}
     }
 
     public override void _GuiInput(InputEvent @event) {
@@ -52,41 +58,40 @@ public partial class AudioVisualsContainer : VBoxContainer {
 
     public void CreateBlocks() {
         foreach (var child in GetChildren()) child.QueueFree();
-        WaveformWindows.Clear();
-
-        var packedWaveformWindow = ResourceLoader.Load<PackedScene>("res://Classes/Visual/WaveformWindow.tscn");
+        AudioBlocks.Clear();
 
         int musicPositionStart = NominalMusicPositionStartForTopBlock;
 
         // Instantiate block scenes and add as children
         for (var i = 0; i < Settings.Instance.MaxNumberOfBlocks; i++) {
-            var waveformWindow = packedWaveformWindow.Instantiate() as WaveformWindow;
-            waveformWindow.NominalMusicPositionStartForWindow = musicPositionStart;
+            var audioBlock = packedAudioBlock.Instantiate() as AudioBlock;
+            audioBlock.NominalMusicPositionStartForWindow = musicPositionStart;
             musicPositionStart++;
-            AddChild(waveformWindow);
-            WaveformWindows.Add(waveformWindow);
+            AddChild(audioBlock);
+            AudioBlocks.Add(audioBlock);
         }
 
 
-        foreach (var waveformWindow in WaveformWindows) {
-            waveformWindow.SizeFlagsVertical = SizeFlags.ExpandFill;
+        foreach (var audioBlock in AudioBlocks) {
+            AudioDisplayPanel audioDisplayPanel = audioBlock.AudioDisplayPanel;
+            audioDisplayPanel.SizeFlagsVertical = SizeFlags.ExpandFill;
 
-            waveformWindow.Playhead.Visible = false;
+            audioDisplayPanel.Playhead.Visible = false;
 
-            waveformWindow.SeekPlaybackTime += OnSeekPlaybackTime;
-            waveformWindow.AttemptToAddTimingPoint += OnDoubleClick;
+            audioDisplayPanel.SeekPlaybackTime += OnSeekPlaybackTime;
+            audioDisplayPanel.AttemptToAddTimingPoint += OnDoubleClick;
 
-            waveformWindow.IsInstantiating = false;
+            audioDisplayPanel.IsInstantiating = false;
         }
 
-        UpdateNumberOfBlocks();
+        UpdateNumberOfVisibleBlocks();
     }
 
-    public void UpdateNumberOfBlocks() {
+    public void UpdateNumberOfVisibleBlocks() {
         var children = GetChildren();
 
         for (var i = 0; i < children.Count; i++) {
-            var waveformWindow = children[i] as WaveformWindow;
+            var waveformWindow = children[i] as AudioBlock;
             waveformWindow.Visible = i < Settings.Instance.NumberOfBlocks;
         }
     }
@@ -98,12 +103,12 @@ public partial class AudioVisualsContainer : VBoxContainer {
         var children = GetChildren();
 
         foreach (var child in children) {
-            if (child is not WaveformWindow)
+            if (child is not AudioBlock)
             {
                 continue;
             }
-            WaveformWindow waveformWindow = child as WaveformWindow;
-            waveformWindow.NominalMusicPositionStartForWindow = musicPositionStart;
+            AudioBlock audioBlock = child as AudioBlock;
+            audioBlock.NominalMusicPositionStartForWindow = musicPositionStart;
             musicPositionStart++;
         }
     }
