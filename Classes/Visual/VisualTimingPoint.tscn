@@ -16,7 +16,7 @@ offset_bottom = 64.0
 rotation = 0.785398
 pivot_offset = Vector2(64, 64)
 mouse_filter = 2
-color = Color(1, 0.6, 0, 1)
+color = Color(1, 0.6, 0, 0.588235)
 
 [node name="Area2D" type="Area2D" parent="."]
 rotation = 0.785398
@@ -25,6 +25,7 @@ rotation = 0.785398
 shape = SubResource("RectangleShape2D_rj6no")
 
 [node name="NumberLabel" type="Label" parent="."]
+visible = false
 offset_left = -160.0
 offset_top = -96.0
 offset_right = 161.0
@@ -38,11 +39,18 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="BPMLabel" type="Label" parent="."]
-offset_left = -160.0
-offset_right = 161.0
-offset_bottom = 96.0
-size_flags_horizontal = 6
-size_flags_vertical = 8
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.5
+offset_top = -48.0
+offset_right = 160.5
+offset_bottom = 48.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 30
