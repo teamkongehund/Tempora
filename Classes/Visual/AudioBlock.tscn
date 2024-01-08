@@ -13,11 +13,11 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 3
 script = ExtResource("1_4j3p3")
-AudioDisplayPanel = NodePath("HBoxContainer/AudioDisplayPanel")
-measureLabel = NodePath("HBoxContainer/HBoxContainer/MeasureLabel")
-timeSignatureLineEdit = NodePath("HBoxContainer/HBoxContainer/TimeSignatureLineEdit")
+AudioDisplayPanel = NodePath("BlockHBoxContainer/AudioDisplayPanel")
+measureLabel = NodePath("BlockHBoxContainer/LabelHBoxContainer/MeasureLabel")
+timeSignatureLineEdit = NodePath("BlockHBoxContainer/LabelHBoxContainer/TimeSignatureLineEdit")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="BlockHBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -26,10 +26,10 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 10
 
-[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer"]
+[node name="LabelHBoxContainer" type="HBoxContainer" parent="BlockHBoxContainer"]
 layout_mode = 2
 
-[node name="MeasureLabel" type="Label" parent="HBoxContainer/HBoxContainer"]
+[node name="MeasureLabel" type="Label" parent="BlockHBoxContainer/LabelHBoxContainer"]
 custom_minimum_size = Vector2(16, 0)
 layout_mode = 2
 size_flags_horizontal = 0
@@ -40,7 +40,7 @@ theme_override_font_sizes/font_size = 12
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="TimeSignatureLineEdit" type="LineEdit" parent="HBoxContainer/HBoxContainer"]
+[node name="TimeSignatureLineEdit" type="LineEdit" parent="BlockHBoxContainer/LabelHBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 4
@@ -51,6 +51,6 @@ theme_override_font_sizes/font_size = 12
 alignment = 2
 script = ExtResource("2_agy5w")
 
-[node name="AudioDisplayPanel" parent="HBoxContainer" instance=ExtResource("2_sidll")]
+[node name="AudioDisplayPanel" parent="BlockHBoxContainer" instance=ExtResource("2_sidll")]
 layout_mode = 2
 size_flags_horizontal = 3

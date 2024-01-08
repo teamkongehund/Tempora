@@ -439,6 +439,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="AudioVisualsMarginContainer" type="MarginContainer" parent="UIHBoxContainer"]
+z_index = 10
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2

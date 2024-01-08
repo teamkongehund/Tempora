@@ -40,6 +40,8 @@ public partial class AudioDisplayPanel : Control {
 
     public bool IsInstantiating = true;
 
+    private bool mouseIsInside = false;
+
     private int musicPositionStart;
 
     public int NominalMusicPositionStartForWindow {
@@ -136,21 +138,18 @@ public partial class AudioDisplayPanel : Control {
 
                     break;
                 }
-            case InputEventMouseButton mouseEvent:
+            case InputEventMouseButton { ButtonIndex: MouseButton.Right, Pressed:true } mouseEvent:
                 {
-                    if (mouseEvent.ButtonIndex == MouseButton.Right && mouseEvent.Pressed)
-                    {
-                        float x = mouseEvent.Position.X;
-                        float musicPosition = XPositionToMusicPosition(x);
-                        float time = Timing.Instance.MusicPositionToTime(musicPosition);
-                        EmitSignal(nameof(SeekPlaybackTime), time);
-                    }
-
+                    float x = mouseEvent.Position.X;
+                    float musicPosition = XPositionToMusicPosition(x);
+                    float time = Timing.Instance.MusicPositionToTime(musicPosition);
+                    EmitSignal(nameof(SeekPlaybackTime), time);
                     break;
                 }
             case InputEventMouseMotion mouseMotion:
                 {
                     var mousePos = mouseMotion.Position;
+                    //GD.Print(mousePos.ToString());
                     float musicPosition = XPositionToMusicPosition(mousePos.X);
                     if (Input.IsKeyPressed(Key.Shift))
                     {
@@ -162,11 +161,36 @@ public partial class AudioDisplayPanel : Control {
                     Timing.SnapTimingPoint(Context.Instance.HeldTimingPoint, musicPosition);
 
                     // PreviewLine
-                    UpdatePreviewLinePosition(musicPosition);
+                    UpdatePreviewLinePosition();
 
                     // SelectedPosition
                     if (!Context.Instance.IsSelectedMusicPositionMoving) return;
                     Context.Instance.SelectedMusicPosition = XPositionToMusicPosition(mousePos.X);
+                    break;
+                }
+        }
+    }
+
+    public override void _Input(InputEvent @event)
+    {
+        switch (@event)
+        {
+            case InputEventKey { Keycode: Key.Shift } keyEvent:
+                {
+                    //if (!mouseIsInside) return;
+                    ////var mousePos = GetViewport().GetMousePosition();
+                    //var mousePos = GetLocalMousePosition();
+                    //float musicPosition = XPositionToMusicPosition(mousePos.X);
+                    //GD.Print("First musicPosition = " + musicPosition);
+                    //if (keyEvent.Pressed)
+                    //{
+                    //    musicPosition = Timing.SnapMusicPosition(musicPosition);
+                    //}
+                    //GD.Print("Second musicPosition = " + musicPosition);
+                    //UpdatePreviewLinePosition(musicPosition);
+                    //GetViewport().SetInputAsHandled();
+
+                    UpdatePreviewLinePosition();
                     break;
                 }
         }
@@ -199,10 +223,12 @@ public partial class AudioDisplayPanel : Control {
 
     public void OnMouseEntered() {
         PreviewLine.Visible = true;
+        mouseIsInside = true;
     }
 
     public void OnMouseExited() {
         PreviewLine.Visible = false;
+        mouseIsInside = false;
     }
 
     #endregion
@@ -405,6 +431,7 @@ public partial class AudioDisplayPanel : Control {
         if (!Visible) return;
         UpdatePlayheadScaling();
         UpdatePreviewLineScaling();
+        UpdatePreviewLinePosition();
         UpdateSelectedPositionScaling();
         CreateWaveforms(); // takes 2-5 ms on 30 blocks  loaded
         RenderTimingPoints(); // takes 2-3 ms on 30 blocks loaded
@@ -429,12 +456,29 @@ public partial class AudioDisplayPanel : Control {
         };
     }
 
-    private void UpdatePreviewLinePosition(float musicPosition)
+    //private void UpdatePreviewLinePosition(float musicPosition)
+    //{
+    //    PreviewLine.Position = new Vector2(MusicPositionToXPosition(musicPosition), 0);
+
+    //    TimeSpan musicTime = TimeSpan.FromSeconds(Timing.Instance.MusicPositionToTime(musicPosition));
+    //    PreviewLine.TimeLabel.Text = musicTime.ToString(@"mm\:ss\:fff");
+    //}
+
+    private void UpdatePreviewLinePosition()
     {
+        var mousePos = GetLocalMousePosition();
+        float musicPosition = XPositionToMusicPosition(mousePos.X);
+
+        if (Input.IsKeyPressed(Key.Shift))
+        {
+            musicPosition = Timing.SnapMusicPosition(musicPosition);
+        }
+
         PreviewLine.Position = new Vector2(MusicPositionToXPosition(musicPosition), 0);
 
-        TimeSpan musicTime = TimeSpan.FromSeconds(Timing.Instance.MusicPositionToTime(musicPosition));
-        PreviewLine.TimeLabel.Text = musicTime.ToString(@"mm\:ss\:fff");
+        float time = Timing.Instance.MusicPositionToTime(musicPosition);
+        TimeSpan musicTime = TimeSpan.FromSeconds(time);
+        PreviewLine.TimeLabel.Text = (time < 0 ? "-" : "") + musicTime.ToString(@"mm\:ss\:fff");
     }
 
     public void UpdateSelectedPositionLine() {
