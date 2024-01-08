@@ -299,7 +299,7 @@ theme_override_constants/margin_bottom = 15
 custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 
-[node name="ClearAllButton" type="Button" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/ButtonsMargins/ButtonsVBox"]
+[node name="ClearAllButton" type="Button" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/ButtonsMargins/ButtonsVBox" node_paths=PackedStringArray("confirmationDialog")]
 layout_mode = 2
 size_flags_vertical = 3
 focus_mode = 0
@@ -307,6 +307,12 @@ theme_override_font_sizes/font_size = 12
 text = "Clear All
 "
 script = ExtResource("9_7o3s6")
+confirmationDialog = NodePath("ConfirmationDialog")
+
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/ButtonsMargins/ButtonsVBox/ClearAllButton"]
+title = "Delete all timing points?"
+initial_position = 1
+size = Vector2i(295, 80)
 
 [node name="SaveButton" type="Button" parent="UIHBoxContainer/LeftHandMenuMarginContainer/LeftHandMenuVBox/ButtonsMargins/ButtonsVBox"]
 layout_mode = 2
