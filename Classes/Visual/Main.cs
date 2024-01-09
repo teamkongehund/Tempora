@@ -75,8 +75,7 @@ public partial class Main : Control {
 			case InputEventKey keyEvent: {
 				if (keyEvent.Keycode == Key.Space && keyEvent.Pressed)
 					PlayPause();
-
-				break;
+                    break;
 			}
 			case InputEventMouseButton mouseEvent: {
 				//GD.Print("Main registered Input mouse event");
