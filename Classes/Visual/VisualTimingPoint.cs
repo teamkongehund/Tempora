@@ -71,8 +71,9 @@ public partial class VisualTimingPoint : Node2D {
             if (mouseEvent.ButtonIndex == MouseButton.WheelDown && mouseEvent.Pressed && Input.IsKeyPressed(Key.Ctrl) && hasMouseInside) {
                 // Decrease BPM by 1 (snapping to integers) - only for last timing point.
                 float previousBpm = TimingPoint.Bpm;
-                float newBpm = previousBpm % 1 == 0 ? previousBpm - 1 : (int)previousBpm;
-                if (Input.IsKeyPressed(Key.Shift)) newBpm -= 4;
+                float newBpm = (int)previousBpm - 1;
+                if (Input.IsKeyPressed(Key.Shift) && !Input.IsKeyPressed(Key.Alt)) newBpm = (int)previousBpm - 5;
+                else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Alt)) newBpm = previousBpm - 0.1f;
 
                 TimingPoint.BPM_Update(newBpm);
             }
@@ -80,7 +81,8 @@ public partial class VisualTimingPoint : Node2D {
                 // Decrease BPM by 1 (snapping to integers) - only for last timing point.
                 float previousBpm = TimingPoint.Bpm;
                 float newBpm = (int)previousBpm + 1;
-                if (Input.IsKeyPressed(Key.Shift)) newBpm += 4;
+                if (Input.IsKeyPressed(Key.Shift) && !Input.IsKeyPressed(Key.Alt)) newBpm = (int)previousBpm + 5;
+                else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Alt)) newBpm = previousBpm + 0.1f;
 
                 TimingPoint.BPM_Update(newBpm);
             }
