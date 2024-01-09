@@ -346,9 +346,13 @@ public partial class Timing : Node {
     /// <returns></returns>
     public float GetBeatPosition(float musicPosition) {
         int[] timeSignature = GetTimeSignature(musicPosition);
-        float beatIncrement = timeSignature[1] / 4f / timeSignature[0];
-        float relativePosition = musicPosition % 1;
-        float position = (int)(relativePosition / beatIncrement) * beatIncrement + (int)musicPosition;
+        float beatLength = timeSignature[1] / 4f / timeSignature[0];
+        int downbeatPosition = (musicPosition >= 0) ? (int)musicPosition : (int)musicPosition - 1;
+        float relativePosition = (musicPosition >= 0)
+            ? musicPosition % 1
+            : 1 + musicPosition % 1;
+        int beatsFromDownbeat = (int)(relativePosition / beatLength);
+        float position = beatsFromDownbeat * beatLength + downbeatPosition;
         return position;
     }
 
