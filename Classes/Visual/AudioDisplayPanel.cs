@@ -156,9 +156,18 @@ public partial class AudioDisplayPanel : Control {
                         musicPosition = Timing.SnapMusicPosition(musicPosition);
                     }
                     //float mouseRelativeMusicPosition = XPositionToRelativeMusicPosition(mousePos.X);
-                    ;
+                    
                     // HeldTimingPoint
-                    Timing.SnapTimingPoint(Context.Instance.HeldTimingPoint, musicPosition);
+                    if (Input.IsKeyPressed(Key.Ctrl) && Context.Instance.HeldTimingPoint != null)
+                    {                        
+                        float xMovement = mouseMotion.Relative.X;
+                        float secondsDifference = xMovement * 0.0002f;
+                        Context.Instance.HeldTimingPoint.Time -= secondsDifference;
+                    }
+                    else
+                    {
+                        Timing.SnapTimingPoint(Context.Instance.HeldTimingPoint, musicPosition);
+                    }
 
                     // PreviewLine
                     UpdatePreviewLinePosition();

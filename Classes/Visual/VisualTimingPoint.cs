@@ -55,7 +55,8 @@ public partial class VisualTimingPoint : Node2D {
         bool hasMouseInside = rectangle.HasPoint(mousePosition);
         if (@event is InputEventMouseButton mouseEvent) {
             if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed && hasMouseInside) {
-                GD.Print($"Clicked on TimingPoint with BPM {TimingPoint.Bpm} & Time signature {TimingPoint.TimeSignature[0]}/{TimingPoint.TimeSignature[1]}");
+                //GD.Print($"Clicked on TimingPoint with BPM {TimingPoint.Bpm} & Time signature {TimingPoint.TimeSignature[0]}/{TimingPoint.TimeSignature[1]}");
+                
                 Signals.Instance.EmitSignal("TimingPointHolding", TimingPoint);
             }
             else if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased()) {

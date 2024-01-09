@@ -59,8 +59,13 @@ public partial class TimingPoint : Node, IComparable<TimingPoint> {
         get => time;
         set {
             if (time == value) return;
+            if (PreviousTimingPoint != null && PreviousTimingPoint.Time >= value) return;
+            if (NextTimingPoint != null && NextTimingPoint.Time <= value) return;
+
             time = value;
             MeasuresPerSecond_Update();
+
+            EmitSignal(nameof(Changed), this);
         }
     }
 
@@ -83,6 +88,13 @@ public partial class TimingPoint : Node, IComparable<TimingPoint> {
             if (bpm == value) return;
             bpm = value;
         }
+    }
+    public void BPM_Update(float bpm) {
+        if (NextTimingPoint != null)
+            return;
+        Bpm = bpm;
+        MeasuresPerSecond = Bpm / (60 * (TimeSignature[0] * 4f / TimeSignature[1]));
+        EmitSignal(nameof(Changed), this);
     }
 
     public float BeatLength => 1 / (Bpm / 60);
@@ -128,13 +140,6 @@ public partial class TimingPoint : Node, IComparable<TimingPoint> {
         Bpm = MeasuresPerSecond * 60 * (TimeSignature[0] * 4f / TimeSignature[1]);
     }
 
-    public void BPM_Update(float bpm) {
-        if (NextTimingPoint != null)
-            return;
-        Bpm = bpm;
-        MeasuresPerSecond = Bpm / (60 * (TimeSignature[0] * 4f / TimeSignature[1]));
-        EmitSignal(nameof(Changed), this);
-    }
 
     /// <summary>
     ///     Relies on parent <see cref="Timing" /> to delete from project.
