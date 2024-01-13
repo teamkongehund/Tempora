@@ -157,7 +157,7 @@ public partial class Timing : Node {
            ) {
             TimingPoints.Remove(timingPoint);
             outTimingPoint = null;
-            GD.Print("Timing Point refused to add!");
+            //GD.Print("Timing Point refused to add!");
             return;
         }
 
@@ -340,13 +340,23 @@ public partial class Timing : Node {
     }
 
     /// <summary>
+    /// Get the music-position length of a quarter-note
+    /// </summary>
+    /// <param name="musicPosition"></param>
+    /// <returns></returns>
+    public float GetBeatLength(float musicPosition)
+    {
+        int[] timeSignature = GetTimeSignature(musicPosition);
+        return timeSignature[1] / 4f / timeSignature[0];
+    }
+
+    /// <summary>
     ///     Returns the music position of the beat at or right before the given music position.
     /// </summary>
     /// <param name="musicPosition"></param>
     /// <returns></returns>
     public float GetBeatPosition(float musicPosition) {
-        int[] timeSignature = GetTimeSignature(musicPosition);
-        float beatLength = timeSignature[1] / 4f / timeSignature[0];
+        float beatLength = GetBeatLength(musicPosition);
         int downbeatPosition = (musicPosition >= 0) ? (int)musicPosition : (int)musicPosition - 1;
         float relativePosition = (musicPosition >= 0)
             ? musicPosition % 1
@@ -380,29 +390,85 @@ public partial class Timing : Node {
         return (int)lastMeasure;
     }
 
-    public static Timing CopyAndAddDownbeatPoints(Timing timing) {
-        var downbeatPositions = new List<int>();
+    /// <summary>
+    /// Returns a copy of a timing object with additional timing poitns on downbeats and quarter-notes where necessary to make the timing rankable in osu.
+    /// </summary>
+    /// <param name="timing"></param>
+    /// <returns></returns>
+    public static Timing CopyAndAddExtraPoints(Timing timing) {
 
-        foreach (var timingPoint in timing.TimingPoints) {
-            if (timingPoint == null) break;
-            if (timingPoint.NextTimingPoint == null) break;
-            if (timingPoint.MusicPosition % 1 == 0) continue; // downbeat point on next is unnecessary
-            if ((int)timingPoint.NextTimingPoint.MusicPosition == (int)timingPoint.MusicPosition) continue; // next is in same measure
-            if (timingPoint.NextTimingPoint.MusicPosition == (int)timingPoint.MusicPosition + 1) continue; // downbeat point on next measure already exists
-            downbeatPositions.Add((int)timingPoint.MusicPosition + 1);
-        }
+        //var newTiming = new Timing
+        //{
+        //    TimingPoints = timing.TimingPoints.ToList(),
+        //    TimeSignaturePoints = timing.TimeSignaturePoints.ToList()
+        //};
 
-        var newTiming = new Timing {
-            TimingPoints = timing.TimingPoints.ToList(),
-            TimeSignaturePoints = timing.TimeSignaturePoints.ToList()
+        //var newTiming = new Timing
+        //{
+        //    TimingPoints = new List<TimingPoint>(timing.timingPoints),
+        //    TimeSignaturePoints = new List<TimeSignaturePoint>(timing.TimeSignaturePoints),
+        //};
+
+        var newTiming = new Timing
+        {
+            TimingPoints = CloneList<TimingPoint>(timing.timingPoints),
+            TimeSignaturePoints = CloneList<TimeSignaturePoint>(timing.TimeSignaturePoints)
         };
 
+        // Add extra downbeat timing points
+        var downbeatPositions = new List<int>();
+        foreach (var timingPoint in timing.TimingPoints) {
+            if (timingPoint == null) break;
+            //if (timingPoint.NextTimingPoint == null) break;
+            if (timingPoint.MusicPosition % 1 == 0) continue; // downbeat point on next is unnecessary
+            if (timingPoint.NextTimingPoint != null && (int)(timingPoint?.NextTimingPoint.MusicPosition) == (int)timingPoint.MusicPosition) continue; // next timing point is in same measure
+            if (timingPoint.NextTimingPoint != null && timingPoint.NextTimingPoint.MusicPosition == (int)timingPoint.MusicPosition + 1) continue; // downbeat point on next measure already exists
+            downbeatPositions.Add((int)timingPoint.MusicPosition + 1);
+        }
         foreach (int downbeat in downbeatPositions) {
             float time = newTiming.MusicPositionToTime(downbeat);
             newTiming.AddTimingPoint(downbeat, time);
         }
 
+        // Add extra quarter-note timing points
+        var quaterNotePositions = new List<float>();
+        foreach (var timingPoint in newTiming.TimingPoints)
+        {
+            if (timingPoint == null) break;
+            //if (timingPoint.NextTimingPoint == null) break;
+            if (timingPoint.MusicPosition == null) break;
+
+            float beatLengthMP = timing.GetBeatLength((float)timingPoint.MusicPosition);
+            float beatPosition = timing.GetBeatPosition((float)timingPoint.MusicPosition);
+            float? nextPointPosition = timingPoint?.NextTimingPoint?.MusicPosition;
+
+            if (timingPoint.MusicPosition % beatLengthMP == 0) continue; // is on quarter-note 
+            if (timingPoint.NextTimingPoint != null 
+                && nextPointPosition <= beatPosition + beatLengthMP) 
+                continue; // next timing point is on or before next quarter-note
+
+            quaterNotePositions.Add(beatPosition + beatLengthMP);
+        }
+        foreach (float quarterNote in quaterNotePositions)
+        {
+            float time = newTiming.MusicPositionToTime(quarterNote);
+            newTiming.AddTimingPoint(quarterNote, time);
+        }
+
         return newTiming;
+    }
+
+    static List<T> CloneList<T>(List<T> originalList) where T : ICloneable
+    {
+        List<T> clonedList = new List<T>();
+
+        foreach (var item in originalList)
+        {
+            T clonedItem = (T)item.Clone();
+            clonedList.Add(clonedItem);
+        }
+
+        return clonedList;
     }
 
     #endregion

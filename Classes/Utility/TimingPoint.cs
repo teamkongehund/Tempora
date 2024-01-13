@@ -3,7 +3,7 @@ using Godot;
 
 namespace OsuTimer.Classes.Utility;
 
-public partial class TimingPoint : Node, IComparable<TimingPoint> {
+public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable {
     [Signal]
     public delegate void ChangedEventHandler(TimingPoint timingPoint);
 
@@ -97,7 +97,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint> {
         EmitSignal(nameof(Changed), this);
     }
 
-    public float BeatLength => 1 / (Bpm / 60);
+    public float BeatLengthSec => 1 / (Bpm / 60);
 
     public float? MusicPosition {
         get => musicPosition;
@@ -117,6 +117,22 @@ public partial class TimingPoint : Node, IComparable<TimingPoint> {
 
     public int CompareTo(TimingPoint other) {
         return Time.CompareTo(other.Time);
+    }
+
+    public object Clone()
+    {
+        var timingPoint = new TimingPoint
+        {
+            MusicPosition = MusicPosition,
+            Time = Time,
+            TimeSignature = TimeSignature,
+            MeasuresPerSecond = MeasuresPerSecond,
+            Bpm = Bpm,
+            PreviousTimingPoint = PreviousTimingPoint,
+            NextTimingPoint = NextTimingPoint
+        };
+
+        return timingPoint;
     }
 
     public void MeasuresPerSecond_Update() {

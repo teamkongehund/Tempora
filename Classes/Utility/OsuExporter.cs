@@ -66,7 +66,7 @@ SliderTickRate:1
 [HitObjects]";
 
     public static string GetDotOsu(Timing timing) {
-        var newTiming = Timing.CopyAndAddDownbeatPoints(timing);
+        var newTiming = Timing.CopyAndAddExtraPoints(timing);
         var timingPoints = newTiming.TimingPoints;
         string timingPointsData = TimingPointToText(timingPoints);
         var dotOsu = $"{DefaultDotOsuFormer}{timingPointsData}{DefaultDotOsuLatter}";
@@ -86,7 +86,7 @@ SliderTickRate:1
     public static string TimingPointToText(TimingPoint timingPoint) {
         // offsetMS,MSPerBeat,beatsInMeasure,sampleSet,sampleIndex,volume,uninherited,effects
         var offsetMs = ((int)(timingPoint.Time * 1000) + ExportOffsetMs).ToString();
-        var msPerBeat = (timingPoint.BeatLength * 1000).ToString(CultureInfo.InvariantCulture);
+        var msPerBeat = (timingPoint.BeatLengthSec * 1000).ToString(CultureInfo.InvariantCulture);
         var beatsInMeasure = timingPoint.TimeSignature[0].ToString();
         return $"{offsetMs},{msPerBeat},{beatsInMeasure},2,0,80,1,0\n";
     }

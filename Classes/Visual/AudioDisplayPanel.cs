@@ -116,7 +116,6 @@ public partial class AudioDisplayPanel : Control {
                     float x = mouseEvent.Position.X;
                     float musicPosition = XPositionToMusicPosition(x);
                     float time = Timing.Instance.MusicPositionToTime(musicPosition);
-                    GD.Print($"WaveformWindow was clicked at playback time {time} seconds");
 
                     if (Input.IsKeyPressed(Key.Alt))
                     {

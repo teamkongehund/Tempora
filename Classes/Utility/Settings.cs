@@ -116,7 +116,7 @@ public partial class Settings : Node {
         }
         catch
         {
-            GD.Print("Settings.cs: No settings file saved in user folder.");
+            GD.Print($"Failed to load {settingsPath}: No settings file saved in user folder.");
             return;
         }
         string[] lines = settingsFile.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);

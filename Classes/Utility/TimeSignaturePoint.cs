@@ -3,7 +3,7 @@ using Godot;
 
 namespace OsuTimer.Classes.Utility;
 
-public partial class TimeSignaturePoint : Node, IComparable<TimeSignaturePoint> {
+public partial class TimeSignaturePoint : Node, IComparable<TimeSignaturePoint>, ICloneable {
     public int MusicPosition;
     public int[] TimeSignature;
 
@@ -14,6 +14,11 @@ public partial class TimeSignaturePoint : Node, IComparable<TimeSignaturePoint> 
 
     public int CompareTo(TimeSignaturePoint other) {
         return MusicPosition.CompareTo(other.MusicPosition);
+    }
+
+    public object Clone()
+    {
+        return new TimeSignaturePoint(TimeSignature, MusicPosition);
     }
 
     // Called when the node enters the scene tree for the first time.
