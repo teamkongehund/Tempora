@@ -11,11 +11,11 @@ public partial class VisualTimingPoint : Node2D {
 
     public Label NumberLabel;
 
-    public ulong SystemTimeWhenCreated;
+    private ulong SystemTimeWhenCreated;
     public TimingPoint TimingPoint;
 
     public VisualTimingPoint(TimingPoint timingPoint) {
-        TimingPoint = timingPoint;
+        this.TimingPoint = timingPoint;
     }
 
     public VisualTimingPoint() { }
@@ -27,7 +27,7 @@ public partial class VisualTimingPoint : Node2D {
         NumberLabel = GetNode<Label>("NumberLabel");
         BpmLabel = GetNode<Label>("BPMLabel");
 
-        NumberLabel.Text = Timing.Instance.TimingPoints.FindIndex(point => point == TimingPoint).ToString();
+        NumberLabel.Text = Timing.Instance.TimingPoints.IndexOf(TimingPoint).ToString();
         BpmLabel.Text = TimingPoint.Bpm.ToString("0.00");
 
         SystemTimeWhenCreated = Time.GetTicksMsec();
@@ -40,7 +40,7 @@ public partial class VisualTimingPoint : Node2D {
     }
 
     public void UpdateLabels(TimingPoint timingPoint) {
-        NumberLabel.Text = Timing.Instance.TimingPoints.FindIndex(point => point == timingPoint).ToString();
+        NumberLabel.Text = Timing.Instance.TimingPoints.IndexOf(timingPoint).ToString();
         BpmLabel.Text = timingPoint.Bpm.ToString("0.00");
     }
 
@@ -75,7 +75,7 @@ public partial class VisualTimingPoint : Node2D {
                 if (Input.IsKeyPressed(Key.Shift) && !Input.IsKeyPressed(Key.Alt)) newBpm = (int)previousBpm - 5;
                 else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Alt)) newBpm = previousBpm - 0.1f;
 
-                TimingPoint.BPM_Update(newBpm);
+                TimingPoint.Bpm = newBpm;
             }
             else if (mouseEvent.ButtonIndex == MouseButton.WheelUp && mouseEvent.Pressed && Input.IsKeyPressed(Key.Ctrl) && hasMouseInside) {
                 // Decrease BPM by 1 (snapping to integers) - only for last timing point.
@@ -84,7 +84,7 @@ public partial class VisualTimingPoint : Node2D {
                 if (Input.IsKeyPressed(Key.Shift) && !Input.IsKeyPressed(Key.Alt)) newBpm = (int)previousBpm + 5;
                 else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Alt)) newBpm = previousBpm + 0.1f;
 
-                TimingPoint.BPM_Update(newBpm);
+                TimingPoint.Bpm = newBpm;
             }
         }
     }

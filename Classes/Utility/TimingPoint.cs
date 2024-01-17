@@ -7,10 +7,12 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable {
     [Signal]
     public delegate void ChangedEventHandler(TimingPoint timingPoint);
 
+    // TODO: Replace all ".Changed += ..." with this event instead.
+    public event EventHandler ChangeFinalized;
+
     [Signal]
     public delegate void DeletedEventHandler(TimingPoint timingPoint);
 
-    private float bpm;
 
     /// <summary>
     ///     The tempo from this timing point until the next. The value is proportional to BPM if the time signature doesn't
@@ -18,34 +20,50 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable {
     /// </summary>
     private float measuresPerSecond = 0.5f;
 
-    private float? musicPosition;
     private TimingPoint nextTimingPoint;
 
     private TimingPoint previousTimingPoint;
 
-    private float time;
 
     private int[] timeSignature = { 4, 4 };
 
-    public TimingPoint PreviousTimingPoint {
-        get => previousTimingPoint;
-        set {
-            if (previousTimingPoint == value) return;
-            previousTimingPoint = value;
-            if (PreviousTimingPoint != null) PreviousTimingPoint.NextTimingPoint = this;
-            MeasuresPerSecond_Update();
-        }
-    }
+    //public TimingPoint PreviousTimingPoint {
+    //    //get => previousTimingPoint;
+    //    get
+    //    {
+    //        // Timing.Instance.GetPreviousTimingPoint(this) != previousTimingPoint
+    //        if (previousTimingPoint != null)
+    //        {
 
-    public TimingPoint NextTimingPoint {
-        get => nextTimingPoint;
-        set {
-            if (nextTimingPoint == value) return;
-            nextTimingPoint = value;
-            if (NextTimingPoint != null) NextTimingPoint.PreviousTimingPoint = this;
-            MeasuresPerSecond_Update();
-        }
-    }
+    //        }
+    //        return previousTimingPoint;
+    //    }
+    //    set {
+    //        if (previousTimingPoint == value) return;
+    //        previousTimingPoint = value;
+    //        if (previousTimingPoint != null) previousTimingPoint.NextTimingPoint = this;
+    //        MeasuresPerSecond_Update();
+    //    }
+    //}
+
+    //public TimingPoint NextTimingPoint {
+    //    //get => nextTimingPoint;
+    //    get
+    //    {
+    //        // Timing.Instance.GetNextTimingPoint(this) != nextTimingPoint
+    //        if (nextTimingPoint != null)
+    //        {
+
+    //        }
+    //        return nextTimingPoint;
+    //    }
+    //    set {
+    //        if (nextTimingPoint == value) return;
+    //        nextTimingPoint = value;
+    //        if (nextTimingPoint != null) nextTimingPoint.PreviousTimingPoint = this;
+    //        MeasuresPerSecond_Update();
+    //    }
+    //}
 
     public int[] TimeSignature {
         get => timeSignature;
@@ -55,17 +73,35 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable {
         }
     }
 
+    private float time;
+    public float NewTime;
+    public bool IsNewTimeValid = false;
+    public event EventHandler TimeChanged;
+
     public float Time {
         get => time;
         set {
-            if (time == value) return;
-            if (PreviousTimingPoint != null && PreviousTimingPoint.Time >= value) return;
-            if (NextTimingPoint != null && NextTimingPoint.Time <= value) return;
+            if (time == value) 
+                return;
+            //if (PreviousTimingPoint != null && PreviousTimingPoint.Time >= value) return;
+            //if (NextTimingPoint != null && NextTimingPoint.Time <= value) return;
 
-            time = value;
-            MeasuresPerSecond_Update();
+            if (IsNewTimeValid)
+            {
+                time = value;
+                IsNewTimeValid = false;
+                MeasuresPerSecond_Update();
+                return;
+            }
 
-            EmitSignal(nameof(Changed), this);
+            NewTime = value;
+
+            TimeChanged?.Invoke(this, EventArgs.Empty); // Received by Timing class
+
+            //time = value;
+            //MeasuresPerSecond_Update();
+
+            //EmitSignal(nameof(Changed), this);
         }
     }
 
@@ -74,44 +110,72 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable {
         set {
             if (measuresPerSecond != value) {
                 measuresPerSecond = value;
-                BPM_Update();
+                Bpm = MpsToBpm(value);
+                EmitSignal(nameof(Changed), this);
             }
         }
     }
 
+    private float bpm;
+    public float NewBpm;
+    public bool IsNewBpmValid = false;
+    public event EventHandler BpmChanged;
     public float Bpm {
         get {
-            if (bpm == 0) BPM_Update();
+            if (bpm == 0) Bpm = MpsToBpm(MeasuresPerSecond);
             return bpm;
         }
-        private set {
-            if (bpm == value) return;
-            bpm = value;
+        set {
+            if (bpm == value) 
+                return;
+            //if (NextTimingPoint != null)
+            //    return;
+            //bpm = value;
+            //MeasuresPerSecond = BpmToMps(bpm);
+
+            if (IsNewBpmValid)
+            {
+                bpm = value;
+                IsNewBpmValid = false;
+                MeasuresPerSecond = BpmToMps(bpm);
+                return;
+            }
+
+            NewBpm = value;
+
+            BpmChanged?.Invoke(this, EventArgs.Empty); // Received by Timing class
         }
     }
-    public void BPM_Update(float bpm) {
-        if (NextTimingPoint != null)
-            return;
-        Bpm = bpm;
-        MeasuresPerSecond = Bpm / (60 * (TimeSignature[0] * 4f / TimeSignature[1]));
-        EmitSignal(nameof(Changed), this);
-    }
+
+    private float BpmToMps(float bpm) => bpm / (60 * (TimeSignature[0] * 4f / TimeSignature[1]));
+
+    private float MpsToBpm(float mps) => mps * 60 * (TimeSignature[0] * 4f / TimeSignature[1]);
 
     public float BeatLengthSec => 1 / (Bpm / 60);
 
+
+    private float? musicPosition;
+    public float? NewMusicPosition;
+    public bool IsNewMusicPositionValid = false;
+    public event EventHandler MusicPositionChanged;
     public float? MusicPosition {
         get => musicPosition;
         set {
             if (musicPosition == value) return;
-            if (PreviousTimingPoint != null && PreviousTimingPoint.MusicPosition >= value) return;
-            if (NextTimingPoint != null && NextTimingPoint.MusicPosition <= value) return;
+            //if (PreviousTimingPoint != null && PreviousTimingPoint.MusicPosition >= value) return;
+            //if (NextTimingPoint != null && NextTimingPoint.MusicPosition <= value) return;
 
-            musicPosition = value;
+            if (IsNewMusicPositionValid)
+            {
+                musicPosition = value;
+                IsNewMusicPositionValid = false;
+                // Update MPS for this timing point and the previous one
+                MeasuresPerSecond_Update();
+            }
 
-            // Update MPS for this timing point and the previous one
-            MeasuresPerSecond_Update();
+            NewMusicPosition = value;
 
-            EmitSignal(nameof(Changed), this);
+            MusicPositionChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 
@@ -128,41 +192,31 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable {
             TimeSignature = TimeSignature,
             MeasuresPerSecond = MeasuresPerSecond,
             Bpm = Bpm,
-            PreviousTimingPoint = PreviousTimingPoint,
-            NextTimingPoint = NextTimingPoint
+            //PreviousTimingPoint = PreviousTimingPoint,
+            //NextTimingPoint = NextTimingPoint
         };
 
         return timingPoint;
     }
 
+    public event EventHandler UpdateMeasuresPerSecond;
+    /// <summary>
+    /// Update <see cref="MeasuresPerSecond"/> based on this and next timing point's <see cref="Time"/> and <see cref="MusicPosition"/> values.
+    /// </summary>
     public void MeasuresPerSecond_Update() {
         if (MusicPosition == null)
             return;
-
-        if (PreviousTimingPoint?.MusicPosition != null) {
-            PreviousTimingPoint.MeasuresPerSecond =
-                ((float)MusicPosition - (float)PreviousTimingPoint.MusicPosition)
-                / (Time - PreviousTimingPoint.Time);
-            MeasuresPerSecond = PreviousTimingPoint.MeasuresPerSecond;
-        }
-
-        if (NextTimingPoint?.MusicPosition != null)
-            MeasuresPerSecond =
-                ((float)NextTimingPoint.MusicPosition - (float)MusicPosition)
-                / (NextTimingPoint.Time - Time);
+        UpdateMeasuresPerSecond?.Invoke(this, EventArgs.Empty);
     }
 
-    public void BPM_Update() {
-        Bpm = MeasuresPerSecond * 60 * (TimeSignature[0] * 4f / TimeSignature[1]);
-    }
 
 
     /// <summary>
     ///     Relies on parent <see cref="Timing" /> to delete from project.
     /// </summary>
     public void Delete() {
-        if (PreviousTimingPoint != null) PreviousTimingPoint.NextTimingPoint = NextTimingPoint;
-        if (NextTimingPoint != null) NextTimingPoint.PreviousTimingPoint = PreviousTimingPoint;
+        //if (PreviousTimingPoint != null) previousTimingPoint.NextTimingPoint = nextTimingPoint;
+        //if (NextTimingPoint != null) nextTimingPoint.PreviousTimingPoint = previousTimingPoint;
         EmitSignal(nameof(Deleted), this);
     }
 }
