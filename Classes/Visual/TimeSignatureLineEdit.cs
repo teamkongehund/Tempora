@@ -2,16 +2,19 @@ using Godot;
 
 namespace OsuTimer.Classes.Visual;
 
-public partial class TimeSignatureLineEdit : LineEdit {
+public partial class TimeSignatureLineEdit : LineEdit
+{
     [Signal]
     public delegate void TimeSignatureSubmittedEventHandler(int[] timeSignature);
 
     // Called when the node enters the scene tree for the first time.
-    public override void _Ready() {
+    public override void _Ready()
+    {
         TextSubmitted += OnTextSubmitted;
     }
 
-    public void OnTextSubmitted(string text) {
+    public void OnTextSubmitted(string text)
+    {
         string[] textSplit = text.Split("/", 2);
 
         if (textSplit.Length != 2)

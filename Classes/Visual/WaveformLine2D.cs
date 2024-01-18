@@ -9,14 +9,17 @@ namespace OsuTimer.Classes.Visual;
 /// <summary>
 ///     Waveform visual representation of audio segment with constant time-distance relation.
 /// </summary>
-public partial class WaveformLine2D : Line2D {
+public partial class WaveformLine2D : Line2D
+{
     #region Properties
 
     private float length = 400;
 
-    public float Length {
+    public float Length
+    {
         get => length;
-        set {
+        set
+        {
             length = value;
             if (!isInitializing) PlotWaveform();
         }
@@ -24,19 +27,23 @@ public partial class WaveformLine2D : Line2D {
 
     private float height = 100;
 
-    public float Height {
+    public float Height
+    {
         get => height;
-        set {
+        set
+        {
             height = value;
             if (!isInitializing) PlotWaveform();
         }
     }
 
-    private AudioFile audioFile;
+    private AudioFile audioFile = null!;
 
-    public AudioFile AudioFile {
+    public AudioFile AudioFile
+    {
         get => audioFile;
-        set {
+        set
+        {
             audioFile = value;
             if (!isInitializing) PlotWaveform();
         }
@@ -55,8 +62,10 @@ public partial class WaveformLine2D : Line2D {
     /// <summary>
     ///     Indices for the first and last audio sample to use from <see cref="Audio.AudioFile.AudioData" />
     /// </summary>
-    public int[] AudioDataRange {
-        get {
+    public int[] AudioDataRange
+    {
+        get
+        {
             if (ShouldDisplayWholeFile)
                 return new[] {
                     0,
@@ -71,11 +80,13 @@ public partial class WaveformLine2D : Line2D {
         set => audioDataRange = value;
     }
 
-    private float[] timeRange;
+    private float[] timeRange = null!;
 
-    public float[] TimeRange {
+    public float[] TimeRange
+    {
         get => timeRange;
-        set {
+        set
+        {
             if (value[0] > value[1]) { }
 
             timeRange = value;
@@ -90,20 +101,23 @@ public partial class WaveformLine2D : Line2D {
 
     #region Initialization
 
-    public WaveformLine2D(float length, float height) {
+    public WaveformLine2D(float length, float height)
+    {
         Height = height;
         Length = length;
         isInitializing = false;
     }
 
-    public WaveformLine2D(AudioFile audioFile) {
+    public WaveformLine2D(AudioFile audioFile)
+    {
         AudioFile = audioFile;
         AudioDataRange = new[] { 0, AudioFile.AudioData.Length };
         isInitializing = false;
         PlotWaveform();
     }
 
-    public WaveformLine2D(AudioFile audioFile, float length, float height) {
+    public WaveformLine2D(AudioFile audioFile, float length, float height)
+    {
         AudioFile = audioFile;
         AudioDataRange = new[] { 0, AudioFile.AudioData.Length };
         Height = height;
@@ -112,7 +126,8 @@ public partial class WaveformLine2D : Line2D {
         PlotWaveform();
     }
 
-    public WaveformLine2D(AudioFile audioFile, float length, float height, float[] timeRange) {
+    public WaveformLine2D(AudioFile audioFile, float length, float height, float[] timeRange)
+    {
         AudioFile = audioFile;
         AudioDataRange = new[] { 0, AudioFile.AudioData.Length };
         Height = height;
@@ -127,7 +142,8 @@ public partial class WaveformLine2D : Line2D {
     #region Methods
 
     // Called when the node enters the scene tree for the first time.
-    public override void _Ready() {
+    public override void _Ready()
+    {
         Width = 1;
     }
 
@@ -138,7 +154,8 @@ public partial class WaveformLine2D : Line2D {
     ///     must be manually called
     ///     whenever something causes the waveform to change.
     /// </summary>
-    private void PlotWaveform() {
+    private void PlotWaveform()
+    {
         int sampleStart = AudioDataRange[0];
         int sampleEnd = AudioDataRange[1];
 
@@ -148,12 +165,14 @@ public partial class WaveformLine2D : Line2D {
         float[] xValues = VectorTools.CreateLinearSpace(0, Length, (int)Length * DataPointsPerPixel);
         var yValues = new float[xValues.Length];
 
-        if (AudioFile == null) {
+        if (AudioFile == null)
+        {
             GD.Print("AudioFile was Null");
             return;
         }
 
-        for (var dataPointIndex = 0; dataPointIndex < yValues.Length; dataPointIndex++) {
+        for (var dataPointIndex = 0; dataPointIndex < yValues.Length; dataPointIndex++)
+        {
             var sampleAtDataPointStart = (int)(sampleStart + dataPointIndex * samplesPerDataPoint);
             var sampleAtDataPointEnd = (int)(sampleStart + (dataPointIndex + 1) * samplesPerDataPoint);
 
@@ -166,13 +185,16 @@ public partial class WaveformLine2D : Line2D {
             bool dataPointIsAfterAudio = sampleAtDataPointStart > AudioFile.AudioData.Length
                                          || sampleAtDataPointEnd > AudioFile.AudioData.Length;
 
-            if (dataPointIsBeforeAudio || dataPointIsAfterAudio) {
+            if (dataPointIsBeforeAudio || dataPointIsAfterAudio)
+            {
                 pickedValue = 0;
             }
-            else if (sampleAtDataPointEnd - sampleAtDataPointStart == 0) {
+            else if (sampleAtDataPointEnd - sampleAtDataPointStart == 0)
+            {
                 pickedValue = AudioFile.AudioData[sampleAtDataPointStart];
             }
-            else {
+            else
+            {
                 float max = AudioFile.AudioData[sampleAtDataPointStart..sampleAtDataPointEnd].Max();
                 float min = AudioFile.AudioData[sampleAtDataPointStart..sampleAtDataPointEnd].Min();
 

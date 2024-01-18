@@ -5,14 +5,16 @@ using NAudio.Wave;
 
 namespace OsuTimer.Classes.Utility;
 
-public partial class AudioDataHandler : Node {
+public partial class AudioDataHandler : Node
+{
     /// <summary>
     ///     Each audio sample consists of TWO consecutive bytes, since the audio is 16-bit.
     ///     This method outputs an array with audio samples
     /// </summary>
     /// <param name="audioBytes"></param>
     /// <returns></returns>
-    public static short[] AudioBytesToSamples(byte[] audioBytes) {
+    public static short[] AudioBytesToSamples(byte[] audioBytes)
+    {
         var audioSamplesShort = new short[audioBytes.Length / 2];
         Buffer.BlockCopy(audioBytes, 0, audioSamplesShort, 0, audioBytes.Length);
 
@@ -24,10 +26,13 @@ public partial class AudioDataHandler : Node {
     /// </summary>
     /// <param name="wavFile"></param>
     /// <returns></returns>
-    public static short[] WavToAudioSamples(byte[] wavFile, out int sampleRate, out int channels) {
+    public static short[] WavToAudioSamples(byte[] wavFile, out int sampleRate, out int channels)
+    {
         byte[] audioBytes;
-        using (var audioFileMemoryStream = new MemoryStream(wavFile)) {
-            using (var reader = new WaveFileReader(audioFileMemoryStream)) {
+        using (var audioFileMemoryStream = new MemoryStream(wavFile))
+        {
+            using (var reader = new WaveFileReader(audioFileMemoryStream))
+            {
                 audioBytes = new byte[reader.Length];
                 reader.Read(audioBytes, 0, audioBytes.Length);
                 sampleRate = reader.WaveFormat.SampleRate;
@@ -38,16 +43,20 @@ public partial class AudioDataHandler : Node {
         return AudioBytesToSamples(audioBytes);
     }
 
-    public static short[] WavToAudioSamples(byte[] wavFile) {
+    public static short[] WavToAudioSamples(byte[] wavFile)
+    {
         int sampleRate;
         int channels;
         return WavToAudioSamples(wavFile, out sampleRate, out channels);
     }
 
-    public static short[] Mp3ToAudioSamples(byte[] mp3File, out int sampleRate, out int channels) {
+    public static short[] Mp3ToAudioSamples(byte[] mp3File, out int sampleRate, out int channels)
+    {
         byte[] audioBytes;
-        using (var audioFileMemoryStream = new MemoryStream(mp3File)) {
-            using (var reader = new Mp3FileReader(audioFileMemoryStream)) {
+        using (var audioFileMemoryStream = new MemoryStream(mp3File))
+        {
+            using (var reader = new Mp3FileReader(audioFileMemoryStream))
+            {
                 audioBytes = new byte[reader.Length];
                 reader.Read(audioBytes, 0, audioBytes.Length);
                 sampleRate = reader.Mp3WaveFormat.SampleRate;
@@ -58,7 +67,8 @@ public partial class AudioDataHandler : Node {
         return AudioBytesToSamples(audioBytes);
     }
 
-    public static short[] Mp3ToAudioSamples(byte[] mp3File) {
+    public static short[] Mp3ToAudioSamples(byte[] mp3File)
+    {
         int sampleRate;
         int channels;
         return Mp3ToAudioSamples(mp3File, out sampleRate, out channels);
@@ -69,7 +79,8 @@ public partial class AudioDataHandler : Node {
     /// </summary>
     /// <param name="audioSamplesShort"></param>
     /// <returns></returns>
-    public static float[] AudioSamplesToFloat(short[] audioSamplesShort) {
+    public static float[] AudioSamplesToFloat(short[] audioSamplesShort)
+    {
         var audioSamplesFloat = new float[audioSamplesShort.Length];
         for (var i = 0; i < audioSamplesShort.Length; i++) audioSamplesFloat[i] = audioSamplesShort[i] / (float)short.MaxValue;
         return audioSamplesFloat;
@@ -80,19 +91,23 @@ public partial class AudioDataHandler : Node {
     /// </summary>
     /// <param name="wavFile"></param>
     /// <returns></returns>
-    public static float[] WavToAudioFloat(byte[] wavFile) {
+    public static float[] WavToAudioFloat(byte[] wavFile)
+    {
         return AudioSamplesToFloat(WavToAudioSamples(wavFile));
     }
 
-    public static float[] WavToAudioFloat(byte[] wavFile, out int sampleRate, out int channels) {
+    public static float[] WavToAudioFloat(byte[] wavFile, out int sampleRate, out int channels)
+    {
         return AudioSamplesToFloat(WavToAudioSamples(wavFile, out sampleRate, out channels));
     }
 
-    public static float[] Mp3ToAudioFloat(byte[] mp3File) {
+    public static float[] Mp3ToAudioFloat(byte[] mp3File)
+    {
         return AudioSamplesToFloat(Mp3ToAudioSamples(mp3File));
     }
 
-    public static float[] Mp3ToAudioFloat(byte[] mp3File, out int sampleRate, out int channels) {
+    public static float[] Mp3ToAudioFloat(byte[] mp3File, out int sampleRate, out int channels)
+    {
         return AudioSamplesToFloat(Mp3ToAudioSamples(mp3File, out sampleRate, out channels));
     }
 }

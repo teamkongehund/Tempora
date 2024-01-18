@@ -1,13 +1,13 @@
 using System;
+using System.Linq;
 using Godot;
 using OsuTimer.Classes.Utility;
-using System.Linq;
 
 namespace OsuTimer.Classes.Audio;
 
 public partial class AudioFile : Node
 {
-    private float[] _audioData;
+    private float[] _audioData = null!;
     public float[] AudioData
     {
         get => _audioData;
@@ -18,17 +18,17 @@ public partial class AudioFile : Node
         }
     }
 
-    public float[] AudioDataPer10Max;
-    public float[] AudioDataPer10Min;
+    public float[] AudioDataPer10Max = null!;
+    public float[] AudioDataPer10Min = null!;
 
     /// <summary>
     ///     1 = mono , 2 = stereo
     /// </summary>
     public int Channels;
 
-    public string Path;
+    public string Path = null!;
 
-    public AudioStream Stream;
+    public AudioStream Stream = null!;
 
     /// <summary>
     ///     Amount of seconds to offset any sample indices. Band-aid fix to compensate the discrepancy between audio playback
@@ -128,7 +128,7 @@ public partial class AudioFile : Node
             AudioDataPer10Min[i] = AudioData[(i * 10)..(i * 10 + 10)].Min();
             AudioDataPer10Max[i] = AudioData[(i * 10)..(i * 10 + 10)].Max();
         }
-        AudioDataPer10Min[length-1] = AudioData[((length - 1)*10)..^1].Min();
-        AudioDataPer10Max[length-1] = AudioData[((length - 1)*10)..^1].Max();
+        AudioDataPer10Min[length - 1] = AudioData[((length - 1) * 10)..^1].Min();
+        AudioDataPer10Max[length - 1] = AudioData[((length - 1) * 10)..^1].Max();
     }
 }

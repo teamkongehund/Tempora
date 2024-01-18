@@ -9,19 +9,22 @@ namespace OsuTimer.Classes.Utility;
 /// <summary>
 ///     Handles saving and loading of project files
 /// </summary>
-public partial class ProjectFileManager : Node {
+public partial class ProjectFileManager : Node
+{
     public static ProjectFileManager Instance = null!;
 
     public static readonly string ProjectFileExtension = "tmpr";
     private Settings settings = null!;
 
     // Called when the node enters the scene tree for the first time.
-    public override void _Ready() {
+    public override void _Ready()
+    {
         Instance = this;
         settings = Settings.Instance;
     }
 
-    public void SaveProjectAs(string filePath) {
+    public void SaveProjectAs(string filePath)
+    {
         string extension = FileHandler.GetExtension(filePath);
 
         string correctExtension = ProjectFileManager.ProjectFileExtension;
@@ -44,11 +47,13 @@ public partial class ProjectFileManager : Node {
         return GetProjectAsString(Project.Instance.AudioFile.Path);
     }
 
-    public string GetProjectAsString(string audioPath) {
+    public string GetProjectAsString(string audioPath)
+    {
         // TimeSignaturePoint
         // MusicPosition;TimeSignatureUpper;TimeSignatureLower
         var timeSignaturePointsLines = "";
-        foreach (var timeSignaturePoint in Timing.Instance.TimeSignaturePoints) {
+        foreach (var timeSignaturePoint in Timing.Instance.TimeSignaturePoints)
+        {
             var timeSignaturePointLine = "";
             timeSignaturePointLine += timeSignaturePoint.MusicPosition.ToString(CultureInfo.InvariantCulture);
             timeSignaturePointLine += ";";
@@ -72,7 +77,7 @@ public partial class ProjectFileManager : Node {
         file += "[TimingPoints]\n";
         file += timingPointsLines;
 
-        return file; 
+        return file;
     }
 
     private string GetTimingPointsAsString()
@@ -101,7 +106,8 @@ public partial class ProjectFileManager : Node {
         return timingPointsLines;
     }
 
-    private void LoadProjectFromFile(string projectFile) {
+    private void LoadProjectFromFile(string projectFile)
+    {
         Timing.Instance = new Timing();
         Timing.Instance.IsInstantiating = true;
 
@@ -110,12 +116,14 @@ public partial class ProjectFileManager : Node {
 
         var parseMode = ParseMode.None;
 
-        for (var i = 0; i < lines.Length; i++) {
+        for (var i = 0; i < lines.Length; i++)
+        {
             string line = lines[i];
             if (line == "TimingPoints")
                 parseMode = ParseMode.TimingPoints;
 
-            switch (line) {
+            switch (line)
+            {
                 case "[AudioPath]":
                     parseMode = ParseMode.AudioPath;
                     continue;
@@ -129,7 +137,8 @@ public partial class ProjectFileManager : Node {
 
             string[] lineData = line.Split(";");
 
-            switch (parseMode) {
+            switch (parseMode)
+            {
                 case ParseMode.AudioPath:
                     audioPath = line;
                     continue;
@@ -171,7 +180,8 @@ public partial class ProjectFileManager : Node {
                         || measuresPerSecondParsed == false
                        ) continue;
 
-                    switch (lineData.Length) {
+                    switch (lineData.Length)
+                    {
                         case 4:
                             Timing.Instance.AddTimingPoint(tpMusicPosition, time);
                             break;
@@ -189,14 +199,16 @@ public partial class ProjectFileManager : Node {
         Signals.Instance.EmitSignal("TimingChanged");
     }
 
-    public void LoadProjectFromFilePath(string filePath) {
+    public void LoadProjectFromFilePath(string filePath)
+    {
         string projectFile = FileHandler.LoadText(filePath);
         if (string.IsNullOrEmpty(projectFile))
             return;
         LoadProjectFromFile(projectFile);
     }
 
-    private enum ParseMode {
+    private enum ParseMode
+    {
         None,
         AudioPath,
         TimingPoints,

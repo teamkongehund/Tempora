@@ -1,9 +1,9 @@
-using Godot;
 using OsuTimer.Classes.Utility;
 
 namespace OsuTimer.Classes.Visual;
 
-public partial class OverlapScrollBar : LabeledScrollbar {
+public partial class OverlapScrollBar : LabeledScrollbar
+{
     protected override void UpdateValueLabel()
     {
         valueLabel.Text = (hScrollBar.Value * 100).ToString("0") + " %";

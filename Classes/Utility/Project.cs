@@ -3,16 +3,19 @@ using OsuTimer.Classes.Audio;
 
 namespace OsuTimer.Classes.Utility;
 
-public partial class Project : Node {
-    public static Project Instance;
+public partial class Project : Node
+{
+    public static Project Instance = null!;
 
-    private AudioFile audioFile;
+    private AudioFile audioFile = null!;
 
-    private Settings settings;
+    private Settings settings = null!;
 
-    public AudioFile AudioFile {
+    public AudioFile AudioFile
+    {
         get => audioFile;
-        set {
+        set
+        {
             if (audioFile == value) return;
             audioFile = value;
             Signals.Instance.EmitSignal("AudioFileChanged");
@@ -20,7 +23,8 @@ public partial class Project : Node {
     }
 
     // Called when the node enters the scene tree for the first time.
-    public override void _Ready() {
+    public override void _Ready()
+    {
         Instance = this;
     }
 }

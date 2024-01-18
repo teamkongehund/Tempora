@@ -4,17 +4,20 @@ using OsuTimer.Classes.Utility;
 
 namespace OsuTimer.Classes.Audio;
 
-public partial class AudioPlayer : AudioStreamPlayer {
+public partial class AudioPlayer : AudioStreamPlayer
+{
 
     //new public float VolumeDb; // Hides actual volume from other API's, so they can't mess with volume while fading.
 
-    public double PlaybackTime {
+    public double PlaybackTime
+    {
         get => GetPlaybackTime();
         private set { }
     }
 
 
-    public override void _Ready() {
+    public override void _Ready()
+    {
         //VolumeDb = base.VolumeDb;
         Signals.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
         Signals.Instance.AudioFileChanged += LoadMp3;
@@ -32,7 +35,8 @@ public partial class AudioPlayer : AudioStreamPlayer {
         }
     }
 
-    public void OnSelectedPositionChanged() {
+    public void OnSelectedPositionChanged()
+    {
         float time = Timing.Instance.MusicPositionToTime(Context.Instance.SelectedMusicPosition);
         if (time >= 0)
             PauseTime = time;
@@ -40,18 +44,21 @@ public partial class AudioPlayer : AudioStreamPlayer {
             PauseTime = 0;
     }
 
-    public void Pause() {
+    public void Pause()
+    {
         //PausePosition = GetPlaybackTime();
         Stop();
     }
 
     public double PauseTime;
-    public void Resume() {
+    public void Resume()
+    {
         Play();
         Seek((float)PauseTime);
     }
 
-    public void PlayPause() {
+    public void PlayPause()
+    {
         if (Playing) Pause();
         else Resume();
     }
@@ -72,7 +79,7 @@ public partial class AudioPlayer : AudioStreamPlayer {
     public void SeekPlayHarsh(float playbackTime)
     {
         float earlierPlaybackTime = playbackTime - 0.02f;
-        
+
         SeekPlay(earlierPlaybackTime);
 
         VolumeDb = -60;
@@ -80,13 +87,15 @@ public partial class AudioPlayer : AudioStreamPlayer {
         timeToResumeHarsly = playbackTime;
     }
 
-    public double GetPlaybackTime() {
+    public double GetPlaybackTime()
+    {
         return Playing
             ? GetPlaybackPosition() + AudioServer.GetTimeSinceLastMix()
             : PauseTime;
     }
 
-    public void LoadMp3() {
+    public void LoadMp3()
+    {
         if (Project.Instance.AudioFile.Stream == null)
         {
             Stream = FileAccess.FileExists(Project.Instance.AudioFile.Path)

@@ -3,12 +3,13 @@ using Godot;
 
 namespace OsuTimer.Classes.Utility;
 
-public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable {
+public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
+{
     [Signal]
     public delegate void ChangedEventHandler(TimingPoint timingPoint);
 
     // TODO: Replace all ".Changed += ..." with this event instead.
-    public event EventHandler ChangeFinalized;
+    public event EventHandler ChangeFinalized = null!;
 
     [Signal]
     public delegate void DeletedEventHandler(TimingPoint timingPoint);
@@ -20,12 +21,10 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable {
     /// </summary>
     private float measuresPerSecond = 0.5f;
 
-    private TimingPoint nextTimingPoint;
-
-    private TimingPoint previousTimingPoint;
-
-
     private int[] timeSignature = { 4, 4 };
+    //private TimingPoint nextTimingPoint;
+
+    //private TimingPoint previousTimingPoint;
 
     //public TimingPoint PreviousTimingPoint {
     //    //get => previousTimingPoint;
@@ -65,9 +64,11 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable {
     //    }
     //}
 
-    public int[] TimeSignature {
+    public int[] TimeSignature
+    {
         get => timeSignature;
-        set {
+        set
+        {
             timeSignature = value;
             MeasuresPerSecond_Update();
         }
@@ -76,12 +77,14 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable {
     private float time;
     public float NewTime;
     public bool IsNewTimeValid = false;
-    public event EventHandler TimeChanged;
+    public event EventHandler TimeChanged = null!;
 
-    public float Time {
+    public float Time
+    {
         get => time;
-        set {
-            if (time == value) 
+        set
+        {
+            if (time == value)
                 return;
             //if (PreviousTimingPoint != null && PreviousTimingPoint.Time >= value) return;
             //if (NextTimingPoint != null && NextTimingPoint.Time <= value) return;
@@ -105,10 +108,13 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable {
         }
     }
 
-    public float MeasuresPerSecond {
+    public float MeasuresPerSecond
+    {
         get => measuresPerSecond;
-        set {
-            if (measuresPerSecond != value) {
+        set
+        {
+            if (measuresPerSecond != value)
+            {
                 measuresPerSecond = value;
                 Bpm = MpsToBpm(value);
                 EmitSignal(nameof(Changed), this);
@@ -119,14 +125,17 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable {
     private float bpm;
     public float NewBpm;
     public bool IsNewBpmValid = false;
-    public event EventHandler BpmChanged;
-    public float Bpm {
-        get {
+    public event EventHandler BpmChanged = null!;
+    public float Bpm
+    {
+        get
+        {
             if (bpm == 0) Bpm = MpsToBpm(MeasuresPerSecond);
             return bpm;
         }
-        set {
-            if (bpm == value) 
+        set
+        {
+            if (bpm == value)
                 return;
             //if (NextTimingPoint != null)
             //    return;
@@ -157,10 +166,12 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable {
     private float? musicPosition;
     public float? NewMusicPosition;
     public bool IsNewMusicPositionValid = false;
-    public event EventHandler MusicPositionChanged;
-    public float? MusicPosition {
+    public event EventHandler MusicPositionChanged = null!;
+    public float? MusicPosition
+    {
         get => musicPosition;
-        set {
+        set
+        {
             if (musicPosition == value) return;
             //if (PreviousTimingPoint != null && PreviousTimingPoint.MusicPosition >= value) return;
             //if (NextTimingPoint != null && NextTimingPoint.MusicPosition <= value) return;
@@ -169,7 +180,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable {
             {
                 musicPosition = value;
                 IsNewMusicPositionValid = false;
-                // Update MPS for this timing point and the previous one
+                // Update MPS for this timing point and the previous ones
                 MeasuresPerSecond_Update();
             }
 
@@ -179,8 +190,9 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable {
         }
     }
 
-    public int CompareTo(TimingPoint other) {
-        return Time.CompareTo(other.Time);
+    public int CompareTo(TimingPoint? other)
+    {
+        return Time.CompareTo(other?.Time);
     }
 
     public object Clone()
@@ -199,11 +211,12 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable {
         return timingPoint;
     }
 
-    public event EventHandler UpdateMeasuresPerSecond;
+    public event EventHandler UpdateMeasuresPerSecond = null!;
     /// <summary>
     /// Update <see cref="MeasuresPerSecond"/> based on this and next timing point's <see cref="Time"/> and <see cref="MusicPosition"/> values.
     /// </summary>
-    public void MeasuresPerSecond_Update() {
+    public void MeasuresPerSecond_Update()
+    {
         if (MusicPosition == null)
             return;
         UpdateMeasuresPerSecond?.Invoke(this, EventArgs.Empty);
@@ -214,7 +227,8 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable {
     /// <summary>
     ///     Relies on parent <see cref="Timing" /> to delete from project.
     /// </summary>
-    public void Delete() {
+    public void Delete()
+    {
         //if (PreviousTimingPoint != null) previousTimingPoint.NextTimingPoint = nextTimingPoint;
         //if (NextTimingPoint != null) nextTimingPoint.PreviousTimingPoint = previousTimingPoint;
         EmitSignal(nameof(Deleted), this);

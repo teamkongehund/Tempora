@@ -1,16 +1,15 @@
 using Godot;
 using OsuTimer.Classes.Audio;
-using OsuTimer.Classes.Utility;
 
 namespace OsuTimer.Classes.Visual;
 
 public partial class PlaybackRateScrollBar : LabeledScrollbar
 {
-    [Export] AudioPlayer audioPlayer;
+    [Export] AudioPlayer audioPlayer = null!;
 
     protected override void UpdateValueLabel()
     {
-        valueLabel.Text = (hScrollBar.Value * 100).ToString("0") +" %";
+        valueLabel.Text = (hScrollBar.Value * 100).ToString("0") + " %";
     }
 
     protected override void UpdateValue()

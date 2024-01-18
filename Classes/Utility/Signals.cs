@@ -5,7 +5,8 @@ namespace OsuTimer.Classes.Utility;
 /// <summary>
 ///     Singleton class that sends signals to keep everything updated when properties change.
 /// </summary>
-public partial class Signals : Node {
+public partial class Signals : Node
+{
     [Signal]
     public delegate void AudioFileChangedEventHandler();
 
@@ -27,9 +28,10 @@ public partial class Signals : Node {
     [Signal]
     public delegate void TimingPointHoldingEventHandler(TimingPoint timingPoint);
 
-    public static Signals Instance;
+    public static Signals Instance = null!;
 
-    public override void _Ready() {
+    public override void _Ready()
+    {
         Instance = this;
     }
 }

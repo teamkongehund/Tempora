@@ -5,8 +5,9 @@ using Godot;
 
 namespace OsuTimer.Classes.Utility;
 
-public partial class Settings : Node {
-    public static Settings Instance;
+public partial class Settings : Node
+{
+    public static Settings Instance = null!;
 
     public static readonly Dictionary<int, int> SliderToDivisorDict = new() {
         { 1, 1 },
@@ -43,9 +44,11 @@ public partial class Settings : Node {
     /// </summary>
     public bool SnapToGridEnabled = true;
 
-    public string ProjectFilesDirectory {
+    public string ProjectFilesDirectory
+    {
         get => projectFilesDirectory;
-        set {
+        set
+        {
             projectFilesDirectory = value;
             SaveSettings();
         }
@@ -54,9 +57,11 @@ public partial class Settings : Node {
     /// <summary>
     ///     Musical grid divisor - can be thought of as 1/Divisor - i.e. a value of 4 means "display quarter notes"
     /// </summary>
-    public int Divisor {
+    public int Divisor
+    {
         get => divisor;
-        set {
+        set
+        {
             if (divisor == value) return;
             divisor = value;
             Signals.Instance.EmitSignal("SettingsChanged");
@@ -66,9 +71,11 @@ public partial class Settings : Node {
     /// <summary>
     ///     Number of waveform blocks to display
     /// </summary>
-    public int NumberOfBlocks {
+    public int NumberOfBlocks
+    {
         get => numberOfBlocks;
-        set {
+        set
+        {
             if (numberOfBlocks == value) return;
             numberOfBlocks = value;
             //GD.Print($"NumberOfBlocks changed to {numberOfBlocks}");
@@ -79,35 +86,42 @@ public partial class Settings : Node {
     /// <summary>
     ///     How many measures of overlapping time is added to the beginning and end of each waveform block
     /// </summary>
-    public float MusicPositionMargin {
+    public float MusicPositionMargin
+    {
         get => musicPositionMargin;
-        set {
+        set
+        {
             if (musicPositionMargin == value) return;
             musicPositionMargin = value;
             Signals.Instance.EmitSignal("SettingsChanged");
         }
     }
 
-    public float MusicPositionOffset {
+    public float MusicPositionOffset
+    {
         get => musicPositionOffset;
-        set {
+        set
+        {
             if (musicPositionOffset == value) return;
             musicPositionOffset = value;
             Signals.Instance.EmitSignal("SettingsChanged");
         }
     }
 
-    public static int DivisorToSlider(int divisor) {
+    public static int DivisorToSlider(int divisor)
+    {
         return SliderToDivisorDict.FirstOrDefault(x => x.Value == divisor).Key;
     }
 
     // Called when the node enters the scene tree for the first time.
-    public override void _Ready() {
+    public override void _Ready()
+    {
         Instance = this;
         LoadSettings();
     }
 
-    public void LoadSettings() {
+    public void LoadSettings()
+    {
         if (string.IsNullOrEmpty(settingsPath))
             return;
         string settingsFile;
@@ -121,13 +135,15 @@ public partial class Settings : Node {
             return;
         }
         string[] lines = settingsFile.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-        for (var i = 0; i < lines.Length; i++) {
+        for (var i = 0; i < lines.Length; i++)
+        {
             string line = lines[i];
             string[] lineSplit = line.Split(";");
             if (lineSplit.Length != 2 || lineSplit[1] == "")
                 continue;
 
-            switch (lineSplit[0]) {
+            switch (lineSplit[0])
+            {
                 case "ProjectFilesDirectory":
                     ProjectFilesDirectory = lineSplit[1];
                     break;
@@ -135,7 +151,8 @@ public partial class Settings : Node {
         }
     }
 
-    public void SaveSettings() {
+    public void SaveSettings()
+    {
         var settingsFile = "";
         settingsFile += "ProjectFilesDirectory" + ";" + ProjectFilesDirectory + "\n";
         FileHandler.SaveText(settingsPath, settingsFile);

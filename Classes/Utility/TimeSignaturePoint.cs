@@ -3,17 +3,20 @@ using Godot;
 
 namespace OsuTimer.Classes.Utility;
 
-public partial class TimeSignaturePoint : Node, IComparable<TimeSignaturePoint>, ICloneable {
+public partial class TimeSignaturePoint : Node, IComparable<TimeSignaturePoint>, ICloneable
+{
     public int MusicPosition;
     public int[] TimeSignature;
 
-    public TimeSignaturePoint(int[] timeSignature, int musicPosition) {
+    public TimeSignaturePoint(int[] timeSignature, int musicPosition)
+    {
         TimeSignature = timeSignature;
         MusicPosition = musicPosition;
     }
 
-    public int CompareTo(TimeSignaturePoint other) {
-        return MusicPosition.CompareTo(other.MusicPosition);
+    public int CompareTo(TimeSignaturePoint? other)
+    {
+        return MusicPosition.CompareTo(other?.MusicPosition);
     }
 
     public object Clone()

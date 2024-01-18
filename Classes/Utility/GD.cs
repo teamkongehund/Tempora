@@ -11,14 +11,16 @@ namespace OsuTimer.Classes.Utility;
 ///     A pipe script GD.cs is implemented to allow GD.Print to print to Debugger log, while keeping all other functions
 ///     the same.
 /// </summary>
-public static class GD {
+public static class GD
+{
     /// <summary>
     ///     Decodes a byte array back to a <see cref="Variant" /> value, without decoding objects.
     ///     Note: If you need object deserialization, see <see cref="BytesToVarWithObjects" />.
     /// </summary>
     /// <param name="bytes">Byte array that will be decoded to a <see cref="Variant" />.</param>
     /// <returns>The decoded <see cref="Variant" />.</returns>
-    public static Variant BytesToVar(Span<byte> bytes) {
+    public static Variant BytesToVar(Span<byte> bytes)
+    {
         return GD.BytesToVar(bytes);
     }
 
@@ -30,7 +32,8 @@ public static class GD {
     /// </summary>
     /// <param name="bytes">Byte array that will be decoded to a <see cref="Variant" />.</param>
     /// <returns>The decoded <see cref="Variant" />.</returns>
-    public static Variant BytesToVarWithObjects(Span<byte> bytes) {
+    public static Variant BytesToVarWithObjects(Span<byte> bytes)
+    {
         return GD.BytesToVarWithObjects(bytes);
     }
 
@@ -49,7 +52,8 @@ public static class GD {
     /// </code>
     /// </example>
     /// <returns>The <c>Variant</c> converted to the given <paramref name="type" />.</returns>
-    public static Variant Convert(Variant what, Variant.Type type) {
+    public static Variant Convert(Variant what, Variant.Type type)
+    {
         return GD.Convert(what, type);
     }
 
@@ -63,7 +67,8 @@ public static class GD {
     /// </example>
     /// <param name="var">Variable that will be hashed.</param>
     /// <returns>Hash of the variable passed.</returns>
-    public static int Hash(Variant var) {
+    public static int Hash(Variant var)
+    {
         return GD.Hash(var);
     }
 
@@ -87,7 +92,8 @@ public static class GD {
     /// </example>
     /// <param name="path">Path of the <see cref="Resource" /> to load.</param>
     /// <returns>The loaded <see cref="Resource" />.</returns>
-    public static Resource Load(string path) {
+    public static Resource Load(string path)
+    {
         return GD.Load(path);
     }
 
@@ -111,11 +117,13 @@ public static class GD {
     /// </example>
     /// <param name="path">Path of the <see cref="Resource" /> to load.</param>
     /// <typeparam name="T">The type to cast to. Should be a descendant of <see cref="Resource" />.</typeparam>
-    public static T Load<T>(string path) where T : class {
+    public static T Load<T>(string path) where T : class
+    {
         return GD.Load<T>(path);
     }
 
-    private static string AppendPrintParams(object[] parameters) {
+    private static string AppendPrintParams(object[] parameters)
+    {
         if (parameters == null) return "null";
 
         var sb = new StringBuilder();
@@ -123,11 +131,13 @@ public static class GD {
         return sb.ToString();
     }
 
-    private static string AppendPrintParams(char separator, object[] parameters) {
+    private static string AppendPrintParams(char separator, object[] parameters)
+    {
         if (parameters == null) return "null";
 
         var sb = new StringBuilder();
-        for (var i = 0; i < parameters.Length; i++) {
+        for (var i = 0; i < parameters.Length; i++)
+        {
             if (i != 0)
                 sb.Append(separator);
             sb.Append(parameters[i]?.ToString() ?? "null");
@@ -144,7 +154,8 @@ public static class GD {
     ///     while also displaying a stack trace when an error or warning is printed.
     /// </summary>
     /// <param name="what">Message that will be printed.</param>
-    public static void Print(string what) {
+    public static void Print(string what)
+    {
         Debugger.Log(2, "GD.Print()", what);
         Godot.GD.Print(what);
     }
@@ -164,7 +175,8 @@ public static class GD {
     /// </code>
     /// </example>
     /// <param name="what">Arguments that will be printed.</param>
-    public static void Print(params object[] what) {
+    public static void Print(params object[] what)
+    {
         Print(AppendPrintParams(what));
     }
 
@@ -185,7 +197,8 @@ public static class GD {
     ///     while also displaying a stack trace when an error or warning is printed.
     /// </summary>
     /// <param name="what">Message that will be printed.</param>
-    public static void PrintRich(string what) {
+    public static void PrintRich(string what)
+    {
         Debugger.Log(2, "inf", "Info: " + what + "\r\n");
         GD.PrintRich(what);
     }
@@ -213,7 +226,8 @@ public static class GD {
     /// </code>
     /// </example>
     /// <param name="what">Arguments that will be printed.</param>
-    public static void PrintRich(params object[] what) {
+    public static void PrintRich(params object[] what)
+    {
         PrintRich(AppendPrintParams(what));
     }
 
@@ -221,7 +235,8 @@ public static class GD {
     ///     Prints a message to standard error line.
     /// </summary>
     /// <param name="what">Message that will be printed.</param>
-    public static void PrintErr(string what) {
+    public static void PrintErr(string what)
+    {
         Debugger.Log(0, "err", "Error: " + what + "\r\n");
         GD.PrintErr(what);
     }
@@ -235,7 +250,8 @@ public static class GD {
     /// </code>
     /// </example>
     /// <param name="what">Arguments that will be printed.</param>
-    public static void PrintErr(params object[] what) {
+    public static void PrintErr(params object[] what)
+    {
         PrintErr(AppendPrintParams(what));
     }
 
@@ -244,7 +260,8 @@ public static class GD {
     ///     Unlike <see cref="Print(string)" />, no newline is added at the end.
     /// </summary>
     /// <param name="what">Message that will be printed.</param>
-    public static void PrintRaw(string what) {
+    public static void PrintRaw(string what)
+    {
         Debugger.Log(2, "inf", what);
         GD.PrintRaw(what);
     }
@@ -262,7 +279,8 @@ public static class GD {
     /// </code>
     /// </example>
     /// <param name="what">Arguments that will be printed.</param>
-    public static void PrintRaw(params object[] what) {
+    public static void PrintRaw(params object[] what)
+    {
         PrintRaw(AppendPrintParams(what));
     }
 
@@ -275,7 +293,8 @@ public static class GD {
     /// </code>
     /// </example>
     /// <param name="what">Arguments that will be printed.</param>
-    public static void PrintS(params object[] what) {
+    public static void PrintS(params object[] what)
+    {
         string message = AppendPrintParams(' ', what);
         PrintErr(message);
         GD.PrintS(what);
@@ -290,7 +309,8 @@ public static class GD {
     /// </code>
     /// </example>
     /// <param name="what">Arguments that will be printed.</param>
-    public static void PrintT(params object[] what) {
+    public static void PrintT(params object[] what)
+    {
         string message = AppendPrintParams('\t', what);
         PrintErr(message);
         GD.PrintT(what);
@@ -306,7 +326,8 @@ public static class GD {
     /// </code>
     /// </example>
     /// <param name="message">Error message.</param>
-    public static void PushError(string message) {
+    public static void PushError(string message)
+    {
         Debugger.Log(0, "err", "Error: " + message);
         GD.PushError(message);
     }
@@ -321,7 +342,8 @@ public static class GD {
     /// </code>
     /// </example>
     /// <param name="what">Arguments that form the error message.</param>
-    public static void PushError(params object[] what) {
+    public static void PushError(params object[] what)
+    {
         PushError(AppendPrintParams(what));
     }
 
@@ -334,7 +356,8 @@ public static class GD {
     /// </code>
     /// </example>
     /// <param name="message">Warning message.</param>
-    public static void PushWarning(string message) {
+    public static void PushWarning(string message)
+    {
         Debugger.Log(1, "wrn", "Warning: " + message + "\r\n");
         GD.PushWarning(message);
     }
@@ -348,7 +371,8 @@ public static class GD {
     /// </code>
     /// </example>
     /// <param name="what">Arguments that form the warning message.</param>
-    public static void PushWarning(params object[] what) {
+    public static void PushWarning(params object[] what)
+    {
         PushWarning(AppendPrintParams(what));
     }
 
@@ -361,7 +385,8 @@ public static class GD {
     /// </code>
     /// </example>
     /// <returns>A random <see langword="float" /> number.</returns>
-    public static float Randf() {
+    public static float Randf()
+    {
         return GD.Randf();
     }
 
@@ -372,7 +397,8 @@ public static class GD {
     ///     This is also called Gaussian distribution.
     /// </summary>
     /// <returns>A random normally-distributed <see langword="float" /> number.</returns>
-    public static double Randfn(double mean, double deviation) {
+    public static double Randfn(double mean, double deviation)
+    {
         return GD.Randfn(mean, deviation);
     }
 
@@ -390,7 +416,8 @@ public static class GD {
     /// </code>
     /// </example>
     /// <returns>A random <see langword="uint" /> number.</returns>
-    public static uint Randi() {
+    public static uint Randi()
+    {
         return GD.Randi();
     }
 
@@ -401,7 +428,8 @@ public static class GD {
     ///     If you need to fix the seed to have consistent, reproducible results,
     ///     use <see cref="Seed(ulong)" /> to initialize the random number generator.
     /// </summary>
-    public static void Randomize() {
+    public static void Randomize()
+    {
         GD.Randomize();
     }
 
@@ -416,7 +444,8 @@ public static class GD {
     /// </code>
     /// </example>
     /// <returns>A random <see langword="double" /> number inside the given range.</returns>
-    public static double RandRange(double from, double to) {
+    public static double RandRange(double from, double to)
+    {
         return GD.RandRange(from, to);
     }
 
@@ -432,7 +461,8 @@ public static class GD {
     /// </code>
     /// </example>
     /// <returns>A random <see langword="int" /> number inside the given range.</returns>
-    public static int RandRange(int from, int to) {
+    public static int RandRange(int from, int to)
+    {
         return GD.RandRange(from, to);
     }
 
@@ -453,7 +483,8 @@ public static class GD {
     ///     If a different seed is used, its value will be modified.
     /// </param>
     /// <returns>A random <see langword="uint" /> number.</returns>
-    public static uint RandFromSeed(ref ulong seed) {
+    public static uint RandFromSeed(ref ulong seed)
+    {
         return GD.RandFromSeed(ref seed);
     }
 
@@ -463,7 +494,8 @@ public static class GD {
     ///     in steps of <c>1</c>.
     /// </summary>
     /// <param name="end">The last index.</param>
-    public static IEnumerable<int> Range(int end) {
+    public static IEnumerable<int> Range(int end)
+    {
         return GD.Range(end);
     }
 
@@ -474,7 +506,8 @@ public static class GD {
     /// </summary>
     /// <param name="start">The first index.</param>
     /// <param name="end">The last index.</param>
-    public static IEnumerable<int> Range(int start, int end) {
+    public static IEnumerable<int> Range(int start, int end)
+    {
         return GD.Range(start, end);
     }
 
@@ -490,7 +523,8 @@ public static class GD {
     /// <param name="start">The first index.</param>
     /// <param name="end">The last index.</param>
     /// <param name="step">The amount by which to increment the index on each iteration.</param>
-    public static IEnumerable<int> Range(int start, int end, int step) {
+    public static IEnumerable<int> Range(int start, int end, int step)
+    {
         return GD.Range(start, end, step);
     }
 
@@ -510,7 +544,8 @@ public static class GD {
     /// </code>
     /// </example>
     /// <param name="seed">Seed that will be used.</param>
-    public static void Seed(ulong seed) {
+    public static void Seed(ulong seed)
+    {
         GD.Seed(seed);
     }
 
@@ -527,7 +562,8 @@ public static class GD {
     /// </example>
     /// <param name="str">String that will be converted to Variant.</param>
     /// <returns>The decoded <c>Variant</c>.</returns>
-    public static Variant StrToVar(string str) {
+    public static Variant StrToVar(string str)
+    {
         return GD.StrToVar(str);
     }
 
@@ -538,7 +574,8 @@ public static class GD {
     /// </summary>
     /// <param name="var"><see cref="Variant" /> that will be encoded.</param>
     /// <returns>The <see cref="Variant" /> encoded as an array of bytes.</returns>
-    public static byte[] VarToBytes(Variant var) {
+    public static byte[] VarToBytes(Variant var)
+    {
         return GD.VarToBytes(var);
     }
 
@@ -548,7 +585,8 @@ public static class GD {
     /// </summary>
     /// <param name="var"><see cref="Variant" /> that will be encoded.</param>
     /// <returns>The <see cref="Variant" /> encoded as an array of bytes.</returns>
-    public static byte[] VarToBytesWithObjects(Variant var) {
+    public static byte[] VarToBytesWithObjects(Variant var)
+    {
         return GD.VarToBytesWithObjects(var);
     }
 
@@ -569,7 +607,8 @@ public static class GD {
     /// </example>
     /// <param name="var">Variant that will be converted to string.</param>
     /// <returns>The <see cref="Variant" /> encoded as a string.</returns>
-    public static string VarToStr(Variant var) {
+    public static string VarToStr(Variant var)
+    {
         return GD.VarToStr(var);
     }
 
@@ -577,7 +616,8 @@ public static class GD {
     ///     Get the <see cref="Variant.Type" /> that corresponds for the given <see cref="Type" />.
     /// </summary>
     /// <returns>The <see cref="Variant.Type" /> for the given <paramref name="type" />.</returns>
-    public static Variant.Type TypeToVariantType(Type type) {
+    public static Variant.Type TypeToVariantType(Type type)
+    {
         return GD.TypeToVariantType(type);
     }
 }

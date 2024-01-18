@@ -6,7 +6,8 @@ using OsuTimer.Classes.Audio;
 
 namespace OsuTimer.Classes.Utility;
 
-public partial class OsuExporter : Node {
+public partial class OsuExporter : Node
+{
     public static int ExportOffsetMs = -29;
 
     public static string DefaultDotOsuFormer = @"osu file format v14
@@ -65,7 +66,8 @@ SliderTickRate:1
 
 [HitObjects]";
 
-    public static string GetDotOsu(Timing timing) {
+    public static string GetDotOsu(Timing timing)
+    {
         var newTiming = Timing.CopyAndAddExtraPoints(timing);
         var timingPoints = newTiming.TimingPoints;
         string timingPointsData = TimingPointToText(timingPoints);
@@ -73,9 +75,11 @@ SliderTickRate:1
         return dotOsu;
     }
 
-    public static string TimingPointToText(List<TimingPoint> timingPoints) {
+    public static string TimingPointToText(List<TimingPoint> timingPoints)
+    {
         var theText = "";
-        foreach (var timingPoint in timingPoints) {
+        foreach (var timingPoint in timingPoints)
+        {
             //GD.Print(timingPoint.Bpm);
             theText += TimingPointToText(timingPoint);
         }
@@ -83,7 +87,8 @@ SliderTickRate:1
         return theText;
     }
 
-    public static string TimingPointToText(TimingPoint timingPoint) {
+    public static string TimingPointToText(TimingPoint timingPoint)
+    {
         // offsetMS,MSPerBeat,beatsInMeasure,sampleSet,sampleIndex,volume,uninherited,effects
         var offsetMs = ((int)(timingPoint.Time * 1000) + ExportOffsetMs).ToString();
         var msPerBeat = (timingPoint.BeatLengthSec * 1000).ToString(CultureInfo.InvariantCulture);
@@ -91,8 +96,10 @@ SliderTickRate:1
         return $"{offsetMs},{msPerBeat},{beatsInMeasure},2,0,80,1,0\n";
     }
 
-    public static void SaveOsz(string oszPath, string dotOsuString, AudioFile audioFile) {
-        using (var zipPacker = new ZipPacker()) {
+    public static void SaveOsz(string oszPath, string dotOsuString, AudioFile audioFile)
+    {
+        using (var zipPacker = new ZipPacker())
+        {
             var err = zipPacker.Open(oszPath);
             if (err != Error.Ok)
                 return;
@@ -113,7 +120,8 @@ SliderTickRate:1
         }
     }
 
-    public static void SaveOsu(string osuPath, string dotOsuString) {
+    public static void SaveOsu(string osuPath, string dotOsuString)
+    {
         FileHandler.SaveText(osuPath, dotOsuString);
     }
 

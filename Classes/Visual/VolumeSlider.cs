@@ -3,12 +3,14 @@ using Godot;
 
 namespace OsuTimer.Classes.Visual;
 
-public partial class VolumeSlider : VScrollBar {
+public partial class VolumeSlider : VScrollBar
+{
     private int busIndex;
-    [Export] public string BusName;
+    [Export] public string BusName = null!;
 
     // Called when the node enters the scene tree for the first time.
-    public override void _Ready() {
+    public override void _Ready()
+    {
         busIndex = AudioServer.GetBusIndex(BusName);
         ValueChanged += OnValueChanged;
 
@@ -16,7 +18,8 @@ public partial class VolumeSlider : VScrollBar {
         Value = Math.Abs(1 - invertedValue);
     }
 
-    public void OnValueChanged(double value) {
+    public void OnValueChanged(double value)
+    {
         double invertedValue = Math.Abs(1 - value);
         AudioServer.SetBusVolumeDb(
             busIndex,

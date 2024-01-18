@@ -3,8 +3,10 @@ using Godot;
 
 namespace OsuTimer.Classes.Utility;
 
-public partial class VectorTools : Node {
-    public static Vector2[] CombineArraysToVector2(float[] xArray, float[] yArray) {
+public partial class VectorTools : Node
+{
+    public static Vector2[] CombineArraysToVector2(float[] xArray, float[] yArray)
+    {
         int length = xArray.Length;
         var combinedArray = new Vector2[length];
 
@@ -13,12 +15,15 @@ public partial class VectorTools : Node {
         return combinedArray;
     }
 
-    public static float[] CreateLinearSpace(float minValue, float maxValue, int numberOfValues) {
+    public static float[] CreateLinearSpace(float minValue, float maxValue, int numberOfValues)
+    {
         var result = new float[0];
-        try {
+        try
+        {
             result = new float[numberOfValues];
         }
-        catch (Exception) {
+        catch (Exception)
+        {
             //
         }
 

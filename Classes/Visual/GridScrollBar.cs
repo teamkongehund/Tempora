@@ -6,7 +6,7 @@ namespace OsuTimer.Classes.Visual;
 
 public partial class GridScrollBar : LabeledScrollbar
 {
-    [Export] AudioPlayer audioPlayer;
+    [Export] AudioPlayer audioPlayer = null!;
 
     protected override void UpdateValueLabel()
     {

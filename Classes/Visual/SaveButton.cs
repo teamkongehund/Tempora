@@ -3,11 +3,13 @@ using OsuTimer.Classes.Utility;
 
 namespace OsuTimer.Classes.Visual;
 
-public partial class SaveButton : Button {
-    private FileDialog fileDialog;
+public partial class SaveButton : Button
+{
+    private FileDialog fileDialog = null!;
 
     // Called when the node enters the scene tree for the first time.
-    public override void _Ready() {
+    public override void _Ready()
+    {
         fileDialog = GetNode<FileDialog>("FileDialog");
 
         //ProjectFileManager.Instance.SaveProjectAs("user://savedProject.txt")
@@ -16,13 +18,15 @@ public partial class SaveButton : Button {
         fileDialog.FileSelected += OnFileSelected;
     }
 
-    private void OnPressed() {
+    private void OnPressed()
+    {
         fileDialog.CurrentDir = Settings.Instance.ProjectFilesDirectory;
         fileDialog.Popup();
     }
     //private void OnFileSelected(string selectedPath) => FileHandler.CopyFile(PathToCopyFrom, selectedPath);
 
-    private void OnFileSelected(string selectedPath) {
+    private void OnFileSelected(string selectedPath)
+    {
         ProjectFileManager.Instance.SaveProjectAs(selectedPath);
 
         string dir = FileHandler.GetDirectory(selectedPath);

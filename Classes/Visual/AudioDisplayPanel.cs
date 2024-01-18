@@ -1,15 +1,14 @@
-using Godot;
 using System;
+using Godot;
 using OsuTimer.Classes.Utility;
-using GD = OsuTimer.Classes.Utility.GD;
-using System.Linq;
 
 namespace OsuTimer.Classes.Visual;
 
 /// <summary>
 ///     Parent class for window containing waveform(s), playhead and timing grid
 /// </summary>
-public partial class AudioDisplayPanel : Control {
+public partial class AudioDisplayPanel : Control
+{
     #region Properties & Signals
 
     [Signal]
@@ -44,9 +43,11 @@ public partial class AudioDisplayPanel : Control {
 
     private int musicPositionStart;
 
-    public int NominalMusicPositionStartForWindow {
+    public int NominalMusicPositionStartForWindow
+    {
         get => musicPositionStart;
-        set {
+        set
+        {
             if (musicPositionStart == value) return;
             musicPositionStart = value;
 
@@ -54,7 +55,8 @@ public partial class AudioDisplayPanel : Control {
         }
     }
 
-    public float ActualMusicPositionStartForWindow {
+    public float ActualMusicPositionStartForWindow
+    {
         get => NominalMusicPositionStartForWindow - Settings.Instance.MusicPositionMargin - Settings.Instance.MusicPositionOffset;
         private set { }
     }
@@ -75,7 +77,8 @@ public partial class AudioDisplayPanel : Control {
     #region Godot & Signals
 
     // Called when the node enters the scene tree for the first time.
-    public override void _Ready() {
+    public override void _Ready()
+    {
         Playhead.ZIndex = 100;
 
         UpdatePlayheadScaling();
@@ -137,7 +140,7 @@ public partial class AudioDisplayPanel : Control {
 
                     break;
                 }
-            case InputEventMouseButton { ButtonIndex: MouseButton.Right, Pressed:true } mouseEvent:
+            case InputEventMouseButton { ButtonIndex: MouseButton.Right, Pressed: true } mouseEvent:
                 {
                     float x = mouseEvent.Position.X;
                     float musicPosition = XPositionToMusicPosition(x);
@@ -155,10 +158,10 @@ public partial class AudioDisplayPanel : Control {
                         musicPosition = Timing.SnapMusicPosition(musicPosition);
                     }
                     //float mouseRelativeMusicPosition = XPositionToRelativeMusicPosition(mousePos.X);
-                    
+
                     // HeldTimingPoint
                     if (Input.IsKeyPressed(Key.Ctrl) && Context.Instance.HeldTimingPoint != null)
-                    {                        
+                    {
                         float xMovement = mouseMotion.Relative.X;
                         float secondsDifference = xMovement * 0.0002f;
                         Context.Instance.HeldTimingPoint.Time -= secondsDifference;
@@ -204,7 +207,8 @@ public partial class AudioDisplayPanel : Control {
         }
     }
 
-    public void OnTimingChanged() {
+    public void OnTimingChanged()
+    {
         if (!Visible) return;
         UpdateTimingPointsIndices();
         CreateWaveforms();
@@ -212,29 +216,35 @@ public partial class AudioDisplayPanel : Control {
         CreateGridLines();
     }
 
-    public void OnAudioFileChanged() {
+    public void OnAudioFileChanged()
+    {
         CreateWaveforms();
     }
 
-    public void OnResized() {
+    public void OnResized()
+    {
         //GD.Print("Resized!");
         UpdateVisuals();
     }
 
-    public void OnSettingsChanged() {
+    public void OnSettingsChanged()
+    {
         UpdateVisuals();
     }
 
-    public void OnSelectedPositionChanged() {
+    public void OnSelectedPositionChanged()
+    {
         UpdateSelectedPositionLine();
     }
 
-    public void OnMouseEntered() {
+    public void OnMouseEntered()
+    {
         PreviewLine.Visible = true;
         mouseIsInside = true;
     }
 
-    public void OnMouseExited() {
+    public void OnMouseExited()
+    {
         PreviewLine.Visible = false;
         mouseIsInside = false;
     }
@@ -243,7 +253,8 @@ public partial class AudioDisplayPanel : Control {
 
     #region Render
 
-    public void CreateWaveforms() {
+    public void CreateWaveforms()
+    {
         foreach (var child in waveformSegments.GetChildren())
             if (child is Waveform waveform)
                 waveform.QueueFree();
@@ -254,11 +265,13 @@ public partial class AudioDisplayPanel : Control {
         float timeWhereWindowBegins = Timing.Instance.MusicPositionToTime(ActualMusicPositionStartForWindow);
         float timeWhereWindowEnds = Timing.Instance.MusicPositionToTime(ActualMusicPositionStartForWindow + 1 + 2 * margin);
 
-        if (Timing.Instance.TimingPoints.Count == 0) {
+        if (Timing.Instance.TimingPoints.Count == 0)
+        {
             float startTime = timeWhereWindowBegins;
             float endTime = timeWhereWindowEnds;
 
-            var waveform = new Waveform(Project.Instance.AudioFile, Size.X, Size.Y, new float[2] { startTime, endTime }) {
+            var waveform = new Waveform(Project.Instance.AudioFile, Size.X, Size.Y, new float[2] { startTime, endTime })
+            {
                 Position = new Vector2(0, Size.Y / 2)
             };
 
@@ -274,7 +287,8 @@ public partial class AudioDisplayPanel : Control {
         UpdateTimingPointsIndices();
 
         // Create each waveform segment
-        for (int i = FirstTimingPointIndex; i <= LastTimingPointIndex; i++) {
+        for (int i = FirstTimingPointIndex; i <= LastTimingPointIndex; i++)
+        {
             //GD.Print($"Now rendering waveform for index {i}");
             var timingPoint = Timing.Instance.TimingPoints[i];
 
@@ -294,7 +308,8 @@ public partial class AudioDisplayPanel : Control {
             float length = Size.X * (musicPositionEnd - musicPositionStart) / (1f + 2 * margin);
             float xPosition = Size.X * (musicPositionStart - ActualMusicPositionStartForWindow) / (1f + 2 * margin);
 
-            var waveform = new Waveform(Project.Instance.AudioFile, length, Size.Y, new float[2] { waveSegmentStartTime, waveSegmentEndTime }) {
+            var waveform = new Waveform(Project.Instance.AudioFile, length, Size.Y, new float[2] { waveSegmentStartTime, waveSegmentEndTime })
+            {
                 Position = new Vector2(xPosition, Size.Y / 2)
             };
 
@@ -308,7 +323,7 @@ public partial class AudioDisplayPanel : Control {
 
 
             // Experimentation with offscreen viewports in order to render waveform as a separate image to be manipulated
-            
+
         }
     }
 
@@ -317,24 +332,28 @@ public partial class AudioDisplayPanel : Control {
     ///     These are then modified whenever the visuals need to change, instead of re-instantiating them.
     ///     This is significantly faster than creating them anew each time.
     /// </summary>
-    public void CreateEmptyTimingPoints(int amount) {
+    public void CreateEmptyTimingPoints(int amount)
+    {
         foreach (var child in VisualTimingPointFolder.GetChildren())
             if (child is VisualTimingPoint visualTimingPoint)
                 visualTimingPoint.QueueFree();
 
-        var dummyTimingPoint = new TimingPoint {
+        var dummyTimingPoint = new TimingPoint
+        {
             Time = 0f,
             MusicPosition = 0f,
             MeasuresPerSecond = 120
         };
 
-        for (var i = 0; i < amount; i++) {
+        for (var i = 0; i < amount; i++)
+        {
             VisualTimingPoint visualTimingPoint;
             AddVisualTimingPoint(dummyTimingPoint, out visualTimingPoint);
         }
     }
 
-    public void AddVisualTimingPoint(TimingPoint timingPoint, out VisualTimingPoint visualTimingPoint) {
+    public void AddVisualTimingPoint(TimingPoint timingPoint, out VisualTimingPoint visualTimingPoint)
+    {
         if (packedVisualTimingPoint == null)
             throw new NullReferenceException($"No scene loaded for {nameof(packedVisualTimingPoint)}");
         var instantiatedVisualTimingPoint = packedVisualTimingPoint.Instantiate();
@@ -343,7 +362,7 @@ public partial class AudioDisplayPanel : Control {
             throw new NullReferenceException($"{nameof(packedVisualTimingPoint)} instantiated as null");
 
         visualTimingPoint = (VisualTimingPoint)instantiatedVisualTimingPoint;
-        
+
         visualTimingPoint.Visible = false;
         visualTimingPoint.Scale = new Vector2(0.2f, 0.2f);
         visualTimingPoint.ZIndex = 95;
@@ -351,16 +370,18 @@ public partial class AudioDisplayPanel : Control {
         VisualTimingPointFolder.AddChild(visualTimingPoint);
     }
 
-    public void RenderTimingPoints() {
+    public void RenderTimingPoints()
+    {
         var children = VisualTimingPointFolder.GetChildren();
         int childrenAmount = children.Count;
         var index = 0;
 
-        foreach (Node2D child in children) 
+        foreach (Node2D child in children)
             child.Visible = false;
 
         // this assumes all children are VisualTimingPoint
-        foreach (var timingPoint in Timing.Instance.TimingPoints) {
+        foreach (var timingPoint in Timing.Instance.TimingPoints)
+        {
             if (timingPoint == null)
                 throw new NullReferenceException($"{nameof(timingPoint)} was null");
             if (timingPoint.MusicPosition == null)
@@ -379,7 +400,7 @@ public partial class AudioDisplayPanel : Control {
                 if (child is not VisualTimingPoint || child == null)
                     continue;
                 else
-                    visualTimingPoint = (VisualTimingPoint) child;
+                    visualTimingPoint = (VisualTimingPoint)child;
 
                 if (visualTimingPoint == null)
                     throw new NullReferenceException($"{nameof(VisualTimingPoint)} was null");
@@ -393,7 +414,8 @@ public partial class AudioDisplayPanel : Control {
         }
     }
 
-    public void CreateGridLines() {
+    public void CreateGridLines()
+    {
         foreach (var child in GridFolder.GetChildren()) child.QueueFree();
 
         int divisor = Settings.Instance.Divisor;
@@ -401,22 +423,25 @@ public partial class AudioDisplayPanel : Control {
 
         int measureOffset = -1;
         var divisionIndex = 0;
-        while (divisionIndex < 50) {
-        //using (
+        while (divisionIndex < 50)
+        {
+            //using (
             var gridLine = GetGridLine(timeSignature, divisor, divisionIndex, measureOffset); //)
-        //{
+                                                                                              //{
             divisionIndex++;
 
             float musicPosition = gridLine.RelativeMusicPosition + NominalMusicPositionStartForWindow + measureOffset;
 
-            if (musicPosition >= NominalMusicPositionStartForWindow && measureOffset == -1) {
+            if (musicPosition >= NominalMusicPositionStartForWindow && measureOffset == -1)
+            {
                 divisionIndex = 0;
                 measureOffset += 1;
                 timeSignature = Timing.Instance.GetTimeSignature(NominalMusicPositionStartForWindow + measureOffset);
                 continue;
             }
 
-            if (musicPosition >= NominalMusicPositionStartForWindow + 1 && measureOffset == 0) {
+            if (musicPosition >= NominalMusicPositionStartForWindow + 1 && measureOffset == 0)
+            {
                 divisionIndex = 0;
                 measureOffset += 1;
                 timeSignature = Timing.Instance.GetTimeSignature(NominalMusicPositionStartForWindow + measureOffset);
@@ -433,11 +458,12 @@ public partial class AudioDisplayPanel : Control {
             gridLine.ZIndex = 0;
 
             GridFolder.AddChild(gridLine);
-        //}
+            //}
         }
     }
 
-    public GridLine GetGridLine(int[] timeSignature, int divisor, int index, int measureOffset) {
+    public GridLine GetGridLine(int[] timeSignature, int divisor, int index, int measureOffset)
+    {
         var gridLine = new GridLine(timeSignature, divisor, index);
 
         float offset = Settings.Instance.MusicPositionOffset;
@@ -457,7 +483,8 @@ public partial class AudioDisplayPanel : Control {
 
     #region Updaters
 
-    public void UpdateVisuals() {
+    public void UpdateVisuals()
+    {
         if (IsInstantiating) return;
         if (!Visible) return;
         UpdatePlayheadScaling();
@@ -467,20 +494,22 @@ public partial class AudioDisplayPanel : Control {
         CreateWaveforms(); // takes 2-5 ms on 30 blocks  loaded
         RenderTimingPoints(); // takes 2-3 ms on 30 blocks loaded
         CreateGridLines();
-        
+
         // This works fine
         //await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
         //GetViewport().GetTexture().GetImage().SavePng("user://renderedWave.png");
     }
 
-    public void UpdatePlayheadScaling() {
+    public void UpdatePlayheadScaling()
+    {
         Playhead.Points = new Vector2[2] {
             new(0, 0),
             new(0, Size.Y)
         };
     }
 
-    public void UpdatePreviewLineScaling() {
+    public void UpdatePreviewLineScaling()
+    {
         PreviewLine.Points = new Vector2[2] {
             new(0, 0),
             new(0, Size.Y)
@@ -512,20 +541,23 @@ public partial class AudioDisplayPanel : Control {
         PreviewLine.TimeLabel.Text = (time < 0 ? "-" : "") + musicTime.ToString(@"mm\:ss\:fff");
     }
 
-    public void UpdateSelectedPositionLine() {
+    public void UpdateSelectedPositionLine()
+    {
         float x = MusicPositionToXPosition(Context.Instance.SelectedMusicPosition);
         SelectedPositionLine.Position = new Vector2(x, 0);
         //SelectedPositionLine.Visible = x >= 0 && x <= Size.X;
     }
 
-    public void UpdateSelectedPositionScaling() {
+    public void UpdateSelectedPositionScaling()
+    {
         SelectedPositionLine.Points = new Vector2[2] {
             new(0, 0),
             new(0, Size.Y)
         };
     }
 
-    public void UpdateTimingPointsIndices() {
+    public void UpdateTimingPointsIndices()
+    {
         if (Timing.Instance.TimingPoints.Count == 0) return;
 
         float margin = Settings.Instance.MusicPositionMargin;
@@ -545,7 +577,8 @@ public partial class AudioDisplayPanel : Control {
 
     #region Calculators
 
-    public float XPositionToMusicPosition(float x) {
+    public float XPositionToMusicPosition(float x)
+    {
         //GD.Print($"XPositionToMusicPosition: NominalMusicPositionStartForWindow = {NominalMusicPositionStartForWindow}");
         return XPositionToRelativeMusicPosition(x) + NominalMusicPositionStartForWindow;
     }
@@ -555,14 +588,16 @@ public partial class AudioDisplayPanel : Control {
     /// </summary>
     /// <param name="x"></param>
     /// <returns></returns>
-    public float XPositionToRelativeMusicPosition(float x) {
+    public float XPositionToRelativeMusicPosition(float x)
+    {
         float offset = Settings.Instance.MusicPositionOffset;
         float margin = Settings.Instance.MusicPositionMargin;
         float windowLengthInMeasures = 1f + 2 * margin;
         return x * windowLengthInMeasures / Size.X - margin - offset;
     }
 
-    public float MusicPositionToXPosition(float musicPosition) {
+    public float MusicPositionToXPosition(float musicPosition)
+    {
         float offset = Settings.Instance.MusicPositionOffset;
         float margin = Settings.Instance.MusicPositionMargin;
         float windowLengthInMeasures = 1f + 2 * margin;

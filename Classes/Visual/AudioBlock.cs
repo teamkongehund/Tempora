@@ -1,16 +1,15 @@
 using Godot;
 using OsuTimer.Classes.Utility;
 using OsuTimer.Classes.Visual;
-using System;
 
 public partial class AudioBlock : Control
 {
     [Export]
-    public AudioDisplayPanel AudioDisplayPanel;
+    public AudioDisplayPanel AudioDisplayPanel = null!;
     [Export]
-    private Label measureLabel;
+    private Label measureLabel = null!;
     [Export]
-    private TimeSignatureLineEdit timeSignatureLineEdit;
+    private TimeSignatureLineEdit timeSignatureLineEdit = null!;
 
     private int musicPositionStart;
     public int NominalMusicPositionStartForWindow
@@ -27,7 +26,7 @@ public partial class AudioBlock : Control
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
-	{
+    {
         // If I used recommended += syntax here,
         // disposed WaveformWindows will still react to this signal, causing exceptions.
         // This seems to be a bug with the += syntax when the signal transmitter is an autoload
