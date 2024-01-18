@@ -56,7 +56,7 @@ public partial class Main : Control
         Signals.Instance.SettingsChanged += OnSettingsChanged;
         audioVisualsContainer.SeekPlaybackTime += OnSeekPlaybackTime;
         audioVisualsContainer.DoubleClicked += OnDoubleClick;
-        blockScrollBar.ValueChanged += OnBlockScrollBarValueChanged;
+        //blockScrollBar.ValueChanged += OnBlockScrollBarValueChanged;
         GetTree().Root.FilesDropped += OnFilesDropped;
         //gridScrollBar.ValueChanged += OnGridScrollBarValueChanged;
         //playbackRateScrollBar.ValueChanged += OnPlaybackRateScrollBarValueChanged;
@@ -157,15 +157,15 @@ public partial class Main : Control
     //    Signals.Instance.EmitSignal("TimingChanged");
     //}
 
-    private void OnBlockScrollBarValueChanged(double value) => audioVisualsContainer.NominalMusicPositionStartForTopBlock = (int)value;
+    //private void OnBlockScrollBarValueChanged(double value) => audioVisualsContainer.NominalMusicPositionStartForTopBlock = (int)value;
 
-    private void OnGridScrollBarValueChanged(double value)
-    {
-        int intValue = (int)value;
-        Settings.Instance.Divisor = Settings.SliderToDivisorDict[intValue];
-    }
+    //private static void OnGridScrollBarValueChanged(double value)
+    //{
+    //    int intValue = (int)value;
+    //    Settings.Instance.Divisor = Settings.SliderToDivisorDict[intValue];
+    //}
 
-    private void OnPlaybackRateScrollBarValueChanged(double value) => audioPlayer.PitchScale = (float)value;
+    //private void OnPlaybackRateScrollBarValueChanged(double value) => audioPlayer.PitchScale = (float)value;
 
     //private void OnBlockAmountScrollBarValueChanged(double value) {
     //	var intValue = (int)value;
@@ -234,7 +234,7 @@ public partial class Main : Control
 
     public void OnSeekPlaybackTime(float playbackTime) => audioPlayer.SeekPlay(playbackTime);//audioPlayer.SeekPlayHarsh(playbackTime);
 
-    public void OnDoubleClick(float playbackTime)
+    public static void OnDoubleClick(float playbackTime)
     {
         Timing.Instance.AddTimingPoint(playbackTime, out TimingPoint? timingPoint);
         if (timingPoint == null)

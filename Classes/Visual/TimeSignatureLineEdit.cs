@@ -26,7 +26,7 @@ public partial class TimeSignatureLineEdit : LineEdit
         if (upper < 1)
             return;
 
-        int[] timeSignature = new[] { upper, lower };
+        int[] timeSignature = [upper, lower];
 
         ReleaseFocus();
         _ = EmitSignal(nameof(TimeSignatureSubmitted), timeSignature);

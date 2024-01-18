@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Godot;
 using OsuTimer.Classes.Utility;
 
@@ -266,7 +267,7 @@ public partial class AudioDisplayPanel : Control
             float startTime = timeWhereWindowBegins;
             float endTime = timeWhereWindowEnds;
 
-            var waveform = new Waveform(Project.Instance.AudioFile, Size.X, Size.Y, new float[2] { startTime, endTime })
+            var waveform = new Waveform(Project.Instance.AudioFile, Size.X, Size.Y, [startTime, endTime])
             {
                 Position = new Vector2(0, Size.Y / 2)
             };
@@ -304,7 +305,7 @@ public partial class AudioDisplayPanel : Control
             float length = Size.X * (musicPositionEnd - musicPositionStart) / (1f + (2 * margin));
             float xPosition = Size.X * (musicPositionStart - ActualMusicPositionStartForWindow) / (1f + (2 * margin));
 
-            var waveform = new Waveform(Project.Instance.AudioFile, length, Size.Y, new float[2] { waveSegmentStartTime, waveSegmentEndTime })
+            var waveform = new Waveform(Project.Instance.AudioFile, length, Size.Y, [waveSegmentStartTime, waveSegmentEndTime])
             {
                 Position = new Vector2(xPosition, Size.Y / 2)
             };
@@ -351,11 +352,7 @@ public partial class AudioDisplayPanel : Control
     {
         if (packedVisualTimingPoint == null)
             throw new NullReferenceException($"No scene loaded for {nameof(packedVisualTimingPoint)}");
-        Node instantiatedVisualTimingPoint = packedVisualTimingPoint.Instantiate();
-
-        if (instantiatedVisualTimingPoint == null)
-            throw new NullReferenceException($"{nameof(packedVisualTimingPoint)} instantiated as null");
-
+        Node instantiatedVisualTimingPoint = packedVisualTimingPoint.Instantiate() ?? throw new NullReferenceException($"{nameof(packedVisualTimingPoint)} instantiated as null");
         visualTimingPoint = (VisualTimingPoint)instantiatedVisualTimingPoint;
 
         visualTimingPoint.Visible = false;
@@ -371,7 +368,7 @@ public partial class AudioDisplayPanel : Control
         int childrenAmount = children.Count;
         int index = 0;
 
-        foreach (Node2D child in children)
+        foreach (Node2D child in children.Cast<Node2D>())
             child.Visible = false;
 
         // this assumes all children are VisualTimingPoint
@@ -470,10 +467,10 @@ public partial class AudioDisplayPanel : Control
         float margin = Settings.Instance.MusicPositionMargin;
         float xPosition = Size.X * ((gridLine.RelativeMusicPosition + measureOffset + margin + offset) / ((2 * margin) + 1f));
         gridLine.Position = new Vector2(xPosition, 0);
-        gridLine.Points = new Vector2[2] {
+        gridLine.Points = [
             new(0, 0),
             new(0, Size.Y)
-        };
+        ];
         gridLine.ZIndex = 90;
 
         return gridLine;
@@ -504,18 +501,18 @@ public partial class AudioDisplayPanel : Control
 
     public void UpdatePlayheadScaling()
     {
-        Playhead.Points = new Vector2[2] {
+        Playhead.Points = [
             new(0, 0),
             new(0, Size.Y)
-        };
+        ];
     }
 
     public void UpdatePreviewLineScaling()
     {
-        PreviewLine.Points = new Vector2[2] {
+        PreviewLine.Points = [
             new(0, 0),
             new(0, Size.Y)
-        };
+        ];
     }
 
     //private void UpdatePreviewLinePosition(float musicPosition)
@@ -552,10 +549,10 @@ public partial class AudioDisplayPanel : Control
 
     public void UpdateSelectedPositionScaling()
     {
-        SelectedPositionLine.Points = new Vector2[2] {
+        SelectedPositionLine.Points = [
             new(0, 0),
             new(0, Size.Y)
-        };
+        ];
     }
 
     public void UpdateTimingPointsIndices()

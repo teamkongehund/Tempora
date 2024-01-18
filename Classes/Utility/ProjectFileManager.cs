@@ -11,10 +11,13 @@ namespace OsuTimer.Classes.Utility;
 /// </summary>
 public partial class ProjectFileManager : Node
 {
-    public static ProjectFileManager Instance = null!;
+    private static ProjectFileManager instance = null!;
 
     public static readonly string ProjectFileExtension = "tmpr";
     private Settings settings = null!;
+    private static readonly string[] separator = ["\r\n", "\r", "\n"];
+
+    public static ProjectFileManager Instance { get => instance; set => instance = value; }
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -23,7 +26,7 @@ public partial class ProjectFileManager : Node
         settings = Settings.Instance;
     }
 
-    public void SaveProjectAs(string filePath)
+    public static void SaveProjectAs(string filePath)
     {
         string extension = FileHandler.GetExtension(filePath);
 
@@ -42,9 +45,9 @@ public partial class ProjectFileManager : Node
         FileHandler.SaveText(filePath, file);
     }
 
-    public string GetProjectAsString() => GetProjectAsString(Project.Instance.AudioFile.Path);
+    public static string GetProjectAsString() => GetProjectAsString(Project.Instance.AudioFile.Path);
 
-    public string GetProjectAsString(string audioPath)
+    public static string GetProjectAsString(string audioPath)
     {
         // TimeSignaturePoint
         // MusicPosition;TimeSignatureUpper;TimeSignatureLower
@@ -77,7 +80,7 @@ public partial class ProjectFileManager : Node
         return file;
     }
 
-    private string GetTimingPointsAsString()
+    private static string GetTimingPointsAsString()
     {
         // Time;MusicPosition;TimeSignatureUpper;TimeSignatureLower
         string timingPointsLines = "";
@@ -110,7 +113,7 @@ public partial class ProjectFileManager : Node
             IsInstantiating = true
         };
 
-        string[] lines = projectFile.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+        string[] lines = projectFile.Split(separator, StringSplitOptions.None);
         string audioPath = "";
 
         ParseMode parseMode = ParseMode.None;
@@ -156,7 +159,7 @@ public partial class ProjectFileManager : Node
                         continue;
                     }
 
-                    Timing.Instance.UpdateTimeSignature(new[] { timeSignatureUpper, timeSignatureLower }, tsMusicPosition);
+                    Timing.Instance.UpdateTimeSignature([timeSignatureUpper, timeSignatureLower], tsMusicPosition);
 
                     break;
                 case ParseMode.TimingPoints:

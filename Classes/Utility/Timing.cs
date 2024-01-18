@@ -63,9 +63,11 @@ public partial class Timing : Node
         }
     }
 
+    public static Timing Instance { get => instance; set => instance = value; }
+
     //public AudioFile AudioFile;
 
-    public static Timing Instance = null!;
+    private static Timing instance = null!;
 
     #endregion
 
@@ -151,8 +153,8 @@ public partial class Timing : Node
 
         ConnectToTimingPointEvents(timingPoint);
 
-        TimingPoint previousTimingPoint = GetPreviousTimingPoint(timingPoint);
-        TimingPoint nextTimingPoint = GetNextTimingPoint(timingPoint);
+        TimingPoint? previousTimingPoint = GetPreviousTimingPoint(timingPoint);
+        TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
 
         int index = TimingPoints.IndexOf(timingPoint);
         if (index >= 1) // Set MusicPosition based on previous TimingPoint
@@ -181,7 +183,7 @@ public partial class Timing : Node
         if (timingPoint.MusicPosition == null)
             throw new NullReferenceException($"Failed to assign a non-null value to {nameof(timingPoint.MusicPosition)}");
 
-        if (previousTimingPoint.MusicPosition == timingPoint.MusicPosition
+        if (previousTimingPoint?.MusicPosition == timingPoint.MusicPosition
             || nextTimingPoint?.MusicPosition == timingPoint.MusicPosition
             || (previousTimingPoint?.MusicPosition is float previousMusicPosition && Mathf.Abs(previousMusicPosition - (float)timingPoint.MusicPosition) < 0.015f)
             || (nextTimingPoint?.MusicPosition is float nextMusicPosition && Mathf.Abs(nextMusicPosition - (float)timingPoint.MusicPosition) < 0.015f)
@@ -229,8 +231,8 @@ public partial class Timing : Node
     {
         if (sender is not TimingPoint timingPoint)
             throw new Exception("Sender wasn't a TimingPoint.");
-        TimingPoint previousTimingPoint = GetPreviousTimingPoint(timingPoint);
-        TimingPoint nextTimingPoint = GetNextTimingPoint(timingPoint);
+        TimingPoint? previousTimingPoint = GetPreviousTimingPoint(timingPoint);
+        TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
 
         // validity checks
         if (previousTimingPoint != null && previousTimingPoint.Time >= timingPoint.NewTime)
@@ -246,7 +248,7 @@ public partial class Timing : Node
     {
         if (sender is not TimingPoint timingPoint)
             throw new Exception("Sender wasn't a TimingPoint.");
-        TimingPoint nextTimingPoint = GetNextTimingPoint(timingPoint);
+        TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
 
         // validity check
         if (nextTimingPoint != null)
@@ -261,8 +263,8 @@ public partial class Timing : Node
         if (sender is not TimingPoint timingPoint)
             throw new Exception("Sender wasn't a TimingPoint.");
 
-        TimingPoint previousTimingPoint = GetPreviousTimingPoint(timingPoint);
-        TimingPoint nextTimingPoint = GetNextTimingPoint(timingPoint);
+        TimingPoint? previousTimingPoint = GetPreviousTimingPoint(timingPoint);
+        TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
 
         // validity checks
         if (previousTimingPoint != null && previousTimingPoint.MusicPosition >= timingPoint.NewMusicPosition)
@@ -281,8 +283,8 @@ public partial class Timing : Node
         if (timingPoint.MusicPosition == null)
             throw new NullReferenceException($"Request to update {nameof(timingPoint.MeasuresPerSecond)} failed because {nameof(timingPoint.MusicPosition)} is null");
 
-        TimingPoint previousTimingPoint = GetPreviousTimingPoint(timingPoint);
-        TimingPoint nextTimingPoint = GetNextTimingPoint(timingPoint);
+        TimingPoint? previousTimingPoint = GetPreviousTimingPoint(timingPoint);
+        TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
 
         if (previousTimingPoint?.MusicPosition != null)
         {
@@ -486,7 +488,7 @@ public partial class Timing : Node
         //else return timingPoint.TimeSignature;
 
         TimeSignaturePoint? timeSignaturePoint = TimeSignaturePoints.FindLast(point => point.MusicPosition <= musicPosition);
-        return timeSignaturePoint == null ? (new[] { 4, 4 }) : timeSignaturePoint.TimeSignature;
+        return timeSignaturePoint == null ? ([4, 4]) : timeSignaturePoint.TimeSignature;
     }
 
     /// <summary>
@@ -580,7 +582,7 @@ public partial class Timing : Node
                 continue; // downbeat point on next is unnecessary
             //if (timingPoint.NextTimingPoint != null && (int)(timingPoint?.NextTimingPoint.MusicPosition) == (int)timingPoint.MusicPosition) continue; // next timing point is in same measure
             //if (timingPoint.NextTimingPoint != null && timingPoint.NextTimingPoint.MusicPosition == (int)timingPoint.MusicPosition + 1) continue; // downbeat point on next measure already exists
-            TimingPoint nextTimingPoint = Timing.Instance.GetNextTimingPoint(timingPoint);
+            TimingPoint? nextTimingPoint = Timing.Instance.GetNextTimingPoint(timingPoint);
             if (nextTimingPoint?.MusicPosition != null && (int)nextTimingPoint.MusicPosition == (int)timingPoint.MusicPosition)
                 continue; // next timing point is in same measure
             if (nextTimingPoint?.MusicPosition != null && nextTimingPoint.MusicPosition == (int)timingPoint.MusicPosition + 1)
@@ -606,7 +608,7 @@ public partial class Timing : Node
             float beatLengthMP = timing.GetBeatLength((float)timingPoint.MusicPosition);
             float beatPosition = timing.GetBeatPosition((float)timingPoint.MusicPosition);
             //float? nextPointPosition = timingPoint?.NextTimingPoint?.MusicPosition;
-            TimingPoint nextTimingPoint = Timing.Instance.GetNextTimingPoint(timingPoint);
+            TimingPoint? nextTimingPoint = Timing.Instance.GetNextTimingPoint(timingPoint);
             float? nextPointPosition = nextTimingPoint?.MusicPosition;
 
             if (timingPoint.MusicPosition % beatLengthMP == 0)

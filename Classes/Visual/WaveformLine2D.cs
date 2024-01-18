@@ -60,7 +60,7 @@ public partial class WaveformLine2D : Line2D
 
     public bool ShouldDisplayWholeFile = true;
 
-    private int[] audioDataRange = { 0, 0 };
+    private int[] audioDataRange = [0, 0];
 
     /// <summary>
     ///     Indices for the first and last audio sample to use from <see cref="Audio.AudioFile.AudioData" />
@@ -71,16 +71,16 @@ public partial class WaveformLine2D : Line2D
         {
             if (ShouldDisplayWholeFile)
             {
-                return new[] {
+                return [
                     0,
                     AudioFile?.AudioData.Length ?? 0
-                };
+                ];
             }
 
             int sampleStart = AudioFile?.SecondsToSampleIndex(TimeRange[0]) ?? 0;
             int sampleEnd = AudioFile?.SecondsToSampleIndex(TimeRange[1]) ?? 0;
 
-            return new[] { sampleStart, sampleEnd };
+            return [sampleStart, sampleEnd];
         }
         set => audioDataRange = value;
     }
@@ -119,7 +119,7 @@ public partial class WaveformLine2D : Line2D
     public WaveformLine2D(AudioFile audioFile)
     {
         AudioFile = audioFile;
-        AudioDataRange = new[] { 0, AudioFile.AudioData.Length };
+        AudioDataRange = [0, AudioFile.AudioData.Length];
         isInitializing = false;
         PlotWaveform();
     }
@@ -127,7 +127,7 @@ public partial class WaveformLine2D : Line2D
     public WaveformLine2D(AudioFile audioFile, float length, float height)
     {
         AudioFile = audioFile;
-        AudioDataRange = new[] { 0, AudioFile.AudioData.Length };
+        AudioDataRange = [0, AudioFile.AudioData.Length];
         Height = height;
         Length = length;
         isInitializing = false;
@@ -137,7 +137,7 @@ public partial class WaveformLine2D : Line2D
     public WaveformLine2D(AudioFile audioFile, float length, float height, float[] timeRange)
     {
         AudioFile = audioFile;
-        AudioDataRange = new[] { 0, AudioFile.AudioData.Length };
+        AudioDataRange = [0, AudioFile.AudioData.Length];
         Height = height;
         Length = length;
         TimeRange = timeRange;

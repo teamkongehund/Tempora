@@ -13,7 +13,7 @@ public partial class WaveformRenderViewport : SubViewport
     {
         var audiofile = new AudioFile("res://audio/21csm.mp3");
 
-        var waveform = new Waveform(audiofile, Size.X, Size.Y * 1.2f, new float[2] { 0, audiofile.GetAudioLength() })
+        var waveform = new Waveform(audiofile, Size.X, Size.Y * 1.2f, [0, audiofile.GetAudioLength()])
         {
             Position = new Vector2(0, Size.Y / 2)
         };

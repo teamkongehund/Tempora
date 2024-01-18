@@ -28,7 +28,9 @@ public partial class Signals : Node
     [Signal]
     public delegate void TimingPointHoldingEventHandler(TimingPoint timingPoint);
 
-    public static Signals Instance = null!;
+    private static Signals instance = null!;
+
+    public static Signals Instance { get => instance; set => instance = value; }
 
     public override void _Ready() => Instance = this;
 }

@@ -7,7 +7,7 @@ namespace OsuTimer.Classes.Utility;
 
 public partial class Settings : Node
 {
-    public static Settings Instance = null!;
+    private static Settings instance = null!;
 
     public static readonly Dictionary<int, int> SliderToDivisorDict = new() {
         { 1, 1 },
@@ -112,6 +112,10 @@ public partial class Settings : Node
         }
     }
 
+    public static Settings Instance { get => instance; set => instance = value; }
+
+    private static readonly string[] separator = ["\r\n", "\r", "\n"];
+
     public static int DivisorToSlider(int divisor) => SliderToDivisorDict.FirstOrDefault(x => x.Value == divisor).Key;
 
     // Called when the node enters the scene tree for the first time.
@@ -135,7 +139,7 @@ public partial class Settings : Node
             GD.Print($"Failed to load {settingsPath}: No settings file saved in user folder.");
             return;
         }
-        string[] lines = settingsFile.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+        string[] lines = settingsFile.Split(separator, StringSplitOptions.None);
         for (int i = 0; i < lines.Length; i++)
         {
             string line = lines[i];

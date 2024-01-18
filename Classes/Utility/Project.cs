@@ -5,11 +5,13 @@ namespace OsuTimer.Classes.Utility;
 
 public partial class Project : Node
 {
-    public static Project Instance = null!;
+    private static Project instance = null!;
 
     private AudioFile audioFile = null!;
 
     private Settings settings = null!;
+
+    public static Project Instance { get => instance; set => instance = value; }
 
     public AudioFile AudioFile
     {

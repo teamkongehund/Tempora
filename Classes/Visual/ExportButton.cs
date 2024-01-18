@@ -1,6 +1,8 @@
 using Godot;
 using OsuTimer.Classes.Utility;
 
+namespace OsuTimer.Classes.Visual;
+
 public partial class ExportButton : Button
 {
     // Called when the node enters the scene tree for the first time.

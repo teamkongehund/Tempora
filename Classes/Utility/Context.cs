@@ -7,7 +7,7 @@ namespace OsuTimer.Classes.Utility;
 /// </summary>
 public partial class Context : Node
 {
-    public static Context Instance = null!;
+    private static Context instance = null!;
 
     public TimingPoint? HeldTimingPoint = null!;
 
@@ -26,6 +26,8 @@ public partial class Context : Node
             _ = Signals.Instance.EmitSignal("SelectedPositionChanged");
         }
     }
+
+    public static Context Instance { get => instance; set => instance = value; }
 
     public override void _Ready()
     {

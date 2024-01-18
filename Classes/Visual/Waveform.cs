@@ -10,8 +10,6 @@ public partial class Waveform : Node2D
 
     public override void _Draw()
     {
-        //_ = AudioFile.AudioData;
-
         int sampleIndexStart = AudioDataRange[0];
         int sampleEndIndex = AudioDataRange[1];
 
@@ -122,7 +120,7 @@ public partial class Waveform : Node2D
     /// <param name="sampleBegin"></param>
     /// <param name="sampleEnd"></param>
     /// <returns></returns>
-    private float EfficientMin(float[] dataArray, int sampleBegin, int sampleEnd)
+    private static float EfficientMin(float[] dataArray, int sampleBegin, int sampleEnd)
     {
         float min = dataArray[sampleBegin];
         for (int i = sampleBegin + 1; i < sampleEnd; i++)
@@ -133,7 +131,7 @@ public partial class Waveform : Node2D
         }
         return min;
     }
-    private float EfficientMax(float[] dataArray, int sampleBegin, int sampleEnd)
+    private static float EfficientMax(float[] dataArray, int sampleBegin, int sampleEnd)
     {
         float max = dataArray[sampleBegin];
         for (int i = sampleBegin + 1; i < sampleEnd; i++)
@@ -193,7 +191,7 @@ public partial class Waveform : Node2D
 
     public bool ShouldDisplayWholeFile = true;
 
-    private int[] audioDataRange = { 0, 0 };
+    private int[] audioDataRange = [0, 0];
 
     /// <summary>
     ///     Indices for the first and last audio sample to use from <see cref="OsuTimer.Classes.Audio.AudioFile.AudioData" />
@@ -204,16 +202,16 @@ public partial class Waveform : Node2D
         {
             if (ShouldDisplayWholeFile)
             {
-                return new[] {
+                return [
                     0,
                     AudioFile?.AudioData.Length ?? 0
-                };
+                ];
             }
 
             int sampleStart = AudioFile?.SecondsToSampleIndex(TimeRange[0]) ?? 0;
             int sampleEnd = AudioFile?.SecondsToSampleIndex(TimeRange[1]) ?? 0;
 
-            return new[] { sampleStart, sampleEnd };
+            return [sampleStart, sampleEnd];
         }
         set => audioDataRange = value;
     }
@@ -248,14 +246,14 @@ public partial class Waveform : Node2D
     public Waveform(AudioFile audioFile)
     {
         AudioFile = audioFile;
-        AudioDataRange = new[] { 0, AudioFile.AudioData.Length };
+        AudioDataRange = [0, AudioFile.AudioData.Length];
         QueueRedraw();
     }
 
     public Waveform(AudioFile audioFile, float length, float height)
     {
         AudioFile = audioFile;
-        AudioDataRange = new[] { 0, AudioFile.AudioData.Length };
+        AudioDataRange = [0, AudioFile.AudioData.Length];
         Height = height;
         Length = length;
         QueueRedraw();
@@ -264,7 +262,7 @@ public partial class Waveform : Node2D
     public Waveform(AudioFile audioFile, float length, float height, float[] timeRange)
     {
         AudioFile = audioFile;
-        AudioDataRange = new[] { 0, AudioFile.AudioData.Length };
+        AudioDataRange = [0, AudioFile.AudioData.Length];
         Height = height;
         Length = length;
         TimeRange = timeRange;

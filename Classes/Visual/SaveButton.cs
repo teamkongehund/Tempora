@@ -27,7 +27,7 @@ public partial class SaveButton : Button
 
     private void OnFileSelected(string selectedPath)
     {
-        ProjectFileManager.Instance.SaveProjectAs(selectedPath);
+        ProjectFileManager.SaveProjectAs(selectedPath);
 
         string dir = FileHandler.GetDirectory(selectedPath);
         Settings.Instance.ProjectFilesDirectory = dir;

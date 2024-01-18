@@ -1,6 +1,7 @@
 using Godot;
 using OsuTimer.Classes.Utility;
-using OsuTimer.Classes.Visual;
+
+namespace OsuTimer.Classes.Visual;
 
 public partial class AudioBlock : Control
 {

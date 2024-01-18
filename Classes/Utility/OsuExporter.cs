@@ -8,9 +8,9 @@ namespace OsuTimer.Classes.Utility;
 
 public partial class OsuExporter : Node
 {
-    public static int ExportOffsetMs = -29;
+    private static int exportOffsetMs = -29;
 
-    public static string DefaultDotOsuFormer = @"osu file format v14
+    private static string defaultDotOsuFormer = @"osu file format v14
 
 [General]
 AudioFilename: audio.mp3
@@ -62,9 +62,13 @@ SliderTickRate:1
 [TimingPoints]
 ";
 
-    public static string DefaultDotOsuLatter = @"
+    private static string defaultDotOsuLatter = @"
 
 [HitObjects]";
+
+    public static int ExportOffsetMs { get => exportOffsetMs; set => exportOffsetMs = value; }
+    public static string DefaultDotOsuFormer { get => defaultDotOsuFormer; set => defaultDotOsuFormer = value; }
+    public static string DefaultDotOsuLatter { get => defaultDotOsuLatter; set => defaultDotOsuLatter = value; }
 
     public static string GetDotOsu(Timing timing)
     {

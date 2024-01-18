@@ -20,7 +20,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
     /// </summary>
     private float measuresPerSecond = 0.5f;
 
-    private int[] timeSignature = { 4, 4 };
+    private int[] timeSignature = [4, 4];
     //private TimingPoint nextTimingPoint;
 
     //private TimingPoint previousTimingPoint;

@@ -1,6 +1,8 @@
 using Godot;
 using OsuTimer.Classes.Utility;
 
+namespace OsuTimer.Classes.Visual;
+
 public partial class ClearAllButton : Button
 {
     [Export]
