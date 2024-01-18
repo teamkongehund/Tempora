@@ -1,3 +1,4 @@
+using System;
 using Godot;
 using OsuTimer.Classes.Utility;
 
@@ -37,7 +38,12 @@ public partial class VisualTimingPoint : Node2D
         TimingPoint.Changed += OnTimingPointChanged;
     }
 
-    public void OnTimingPointChanged(TimingPoint timingPoint) => UpdateLabels(timingPoint);
+    public void OnTimingPointChanged(object? sender, EventArgs e)
+    {
+        if (sender is not TimingPoint timingPoint)
+            return;
+        UpdateLabels(timingPoint);
+    }
 
     public void UpdateLabels(TimingPoint timingPoint)
     {
@@ -60,11 +66,11 @@ public partial class VisualTimingPoint : Node2D
             {
                 //GD.Print($"Clicked on TimingPoint with BPM {TimingPoint.Bpm} & Time signature {TimingPoint.TimeSignature[0]}/{TimingPoint.TimeSignature[1]}");
 
-                _ = Signals.Instance.EmitSignal("TimingPointHolding", TimingPoint);
+                Signals.Instance.EmitEvent(Signals.Events.TimingPointHolding, new Signals.TimingPointArgument(TimingPoint));
             }
             else if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased())
             {
-                _ = Signals.Instance.EmitSignal("MouseLeftReleased");
+                Signals.Instance.EmitEvent(Signals.Events.MouseLeftReleased);
                 return;
             }
 
@@ -108,7 +114,7 @@ public partial class VisualTimingPoint : Node2D
         if (Time.GetTicksMsec() - SystemTimeWhenCreated > 500)
             TimingPoint.Delete();
         else
-            _ = Signals.Instance.EmitSignal("TimingPointHolding", TimingPoint);
+            Signals.Instance.EmitEvent(Signals.Events.TimingPointHolding, new Signals.TimingPointArgument(TimingPoint));
 
         Viewport viewport = GetViewport();
         viewport.SetInputAsHandled();

@@ -7,8 +7,7 @@ namespace OsuTimer.Classes.Visual;
 
 public partial class AudioVisualsContainer : VBoxContainer
 {
-    [Signal]
-    public delegate void DoubleClickedEventHandler(float playbackTime);
+    public event EventHandler AttemptToAddTimingPoint = null!;
     //[Export] public int NumberOfBlocks = 10;
 
     /// <summary>
@@ -43,10 +42,7 @@ public partial class AudioVisualsContainer : VBoxContainer
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        //foreach (var waveformWindow in AudioBlocks)
-        //{
-        //    waveformWindow.UpdateVisuals();
-        //}
+
     }
 
     public override void _GuiInput(InputEvent @event)
@@ -56,12 +52,12 @@ public partial class AudioVisualsContainer : VBoxContainer
             if (mouseEvent.ButtonIndex == MouseButton.WheelDown && mouseEvent.Pressed && !Input.IsKeyPressed(Key.Ctrl))
             {
                 NominalMusicPositionStartForTopBlock += Input.IsKeyPressed(Key.Shift) ? 5 : 1;
-                _ = Signals.Instance.EmitSignal("Scrolled");
+                Signals.Instance.EmitEvent(Signals.Events.Scrolled);
             }
             else if (mouseEvent.ButtonIndex == MouseButton.WheelUp && mouseEvent.Pressed && !Input.IsKeyPressed(Key.Ctrl))
             {
                 NominalMusicPositionStartForTopBlock -= Input.IsKeyPressed(Key.Shift) ? 5 : 1;
-                _ = Signals.Instance.EmitSignal("Scrolled");
+                Signals.Instance.EmitEvent(Signals.Events.Scrolled);
             }
         }
     }
@@ -95,7 +91,7 @@ public partial class AudioVisualsContainer : VBoxContainer
             audioDisplayPanel.Playhead.Visible = false;
 
             audioDisplayPanel.SeekPlaybackTime += OnSeekPlaybackTime;
-            audioDisplayPanel.AttemptToAddTimingPoint += OnDoubleClick;
+            audioDisplayPanel.AttemptToAddTimingPoint += OnAttemptToAddTimingPoint;
 
             audioDisplayPanel.IsInstantiating = false;
         }
@@ -132,7 +128,7 @@ public partial class AudioVisualsContainer : VBoxContainer
         }
     }
 
-    public void OnSeekPlaybackTime(float playbackTime) => EmitSignal(nameof(SeekPlaybackTime), playbackTime);
+    public void OnSeekPlaybackTime(object? sender, EventArgs e) => EmitSignal(nameof(SeekPlaybackTime), ((Signals.FloatArgument)e).Value);
 
-    public void OnDoubleClick(float playbackTime) => EmitSignal(nameof(DoubleClicked), playbackTime);
+    public void OnAttemptToAddTimingPoint(float playbackTime) => AttemptToAddTimingPoint?.Invoke(this, new Signals.FloatArgument(playbackTime));
 }

@@ -100,7 +100,6 @@ size_flags_vertical = 3
 script = ExtResource("9_22ufa")
 title = "Blocks"
 minValue = 1.0
-step = 0.5
 
 [node name="OffsetScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/SettingsSlidersVBox" instance=ExtResource("10_4hwef")]
 layout_mode = 2
@@ -115,7 +114,8 @@ layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("13_wubaw")
 title = "Overlap"
-maxValue = 0.2
+maxValue = 0.25
+step = 0.01
 
 [node name="VSplitContainer" type="VSplitContainer" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer"]
 layout_mode = 2

@@ -11,12 +11,9 @@ namespace OsuTimer.Classes.Visual;
 public partial class AudioDisplayPanel : Control
 {
     #region Properties & Signals
+    public event EventHandler SeekPlaybackTime = null!;
 
-    [Signal]
-    public delegate void SeekPlaybackTimeEventHandler(float playbackTime);
-
-    [Signal]
-    public delegate void AttemptToAddTimingPointEventHandler(float playbackTime);
+    public event EventHandler AttemptToAddTimingPoint = null!;
 
     [Export]
     public Line2D Playhead = null!;
@@ -91,9 +88,9 @@ public partial class AudioDisplayPanel : Control
         CreateEmptyTimingPoints(8);
 
         Resized += OnResized;
-        _ = Signals.Instance.Connect("SettingsChanged", Callable.From(OnSettingsChanged));
-        _ = Signals.Instance.Connect("SelectedPositionChanged", Callable.From(OnSelectedPositionChanged));
-        _ = Signals.Instance.Connect("Scrolled", Callable.From(UpdateSelectedPositionLine));
+        Signals.Instance.SettingsChanged += OnSettingsChanged;
+        Signals.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
+        Signals.Instance.Scrolled += OnScrolled;
         Signals.Instance.AudioFileChanged += OnAudioFileChanged;
 
         MouseEntered += OnMouseEntered;
@@ -103,7 +100,7 @@ public partial class AudioDisplayPanel : Control
         // disposed WaveformWindows will still react to this signal, causing exceptions.
         // This seems to be a bug with the += syntax when the signal transmitter is an autoload
         // See https://github.com/godotengine/godot/issues/70414 (haven't read this through)
-        _ = Signals.Instance.Connect("TimingChanged", Callable.From(OnTimingChanged));
+        Signals.Instance.TimingChanged += OnTimingChanged;
     }
 
     // Note to self: This can be used instead of .Connect to fix the signal issue.
@@ -136,7 +133,7 @@ public partial class AudioDisplayPanel : Control
                             musicPosition = Timing.SnapMusicPosition(musicPosition);
                         }
                         float time = Timing.Instance.MusicPositionToTime(musicPosition);
-                        _ = EmitSignal(nameof(AttemptToAddTimingPoint), time);
+                        AttemptToAddTimingPoint?.Invoke(this, new Signals.FloatArgument(time));
                         GetViewport().SetInputAsHandled();
                     }
 
@@ -147,7 +144,7 @@ public partial class AudioDisplayPanel : Control
                     float x = mouseEvent.Position.X;
                     float musicPosition = XPositionToMusicPosition(x);
                     float time = Timing.Instance.MusicPositionToTime(musicPosition);
-                    _ = EmitSignal(nameof(SeekPlaybackTime), time);
+                    SeekPlaybackTime?.Invoke(this, new Signals.FloatArgument(time));
                     break;
                 }
             case InputEventMouseMotion mouseMotion:
@@ -168,9 +165,9 @@ public partial class AudioDisplayPanel : Control
                         float secondsDifference = xMovement * 0.0002f;
                         Context.Instance.HeldTimingPoint.Time -= secondsDifference;
                     }
-                    else
+                    else if (Context.Instance.HeldTimingPoint != null)
                     {
-                        Timing.SnapTimingPoint(Context.Instance.HeldTimingPoint!, musicPosition);
+                        Timing.SnapTimingPoint(Context.Instance.HeldTimingPoint, musicPosition);
                     }
 
                     // PreviewLine
@@ -211,7 +208,7 @@ public partial class AudioDisplayPanel : Control
         }
     }
 
-    public void OnTimingChanged()
+    public void OnTimingChanged(object? sender, EventArgs e)
     {
         if (!Visible)
             return;
@@ -221,15 +218,15 @@ public partial class AudioDisplayPanel : Control
         CreateGridLines();
     }
 
-    public void OnAudioFileChanged() => CreateWaveforms();
+    public void OnAudioFileChanged(object? sender, EventArgs e) => UpdateVisuals();
 
     public void OnResized() =>
         //GD.Print("Resized!");
         UpdateVisuals();
 
-    public void OnSettingsChanged() => UpdateVisuals();
+    public void OnSettingsChanged(object? sender, EventArgs e) => UpdateVisuals();
 
-    public void OnSelectedPositionChanged() => UpdateSelectedPositionLine();
+    public void OnSelectedPositionChanged(object? sender, EventArgs e) => UpdateSelectedPositionLine();
 
     public void OnMouseEntered()
     {
@@ -243,6 +240,7 @@ public partial class AudioDisplayPanel : Control
         mouseIsInside = false;
     }
 
+    private void OnScrolled(object? sender, EventArgs e) => UpdateSelectedPositionLine();
     #endregion
 
     #region Render
@@ -335,12 +333,7 @@ public partial class AudioDisplayPanel : Control
                 visualTimingPoint.QueueFree();
         }
 
-        var dummyTimingPoint = new TimingPoint
-        {
-            Time = 0f,
-            MusicPosition = 0f,
-            MeasuresPerSecond = 120
-        };
+        var dummyTimingPoint = new TimingPoint(0f, 0f, 120);
 
         for (int i = 0; i < amount; i++)
         {

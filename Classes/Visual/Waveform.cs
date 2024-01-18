@@ -17,17 +17,12 @@ public partial class Waveform : Node2D
         float samplesPerPoint = numberOfSamples / Length / PointsPerPixel;
 
         int nbPoints = (int)Length * PointsPerPixel;
+        if (nbPoints <= 0)
+            return;
+
         var points = new Vector2[nbPoints];
 
-        Vector2[] multilinePoints;
-        try
-        {
-            multilinePoints = new Vector2[(nbPoints * 2) - 2];
-        }
-        catch (System.OverflowException)
-        {
-            return;
-        }
+        var multilinePoints = new Vector2[(nbPoints * 2) - 2];
 
         if (AudioFile == null)
         {

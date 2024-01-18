@@ -65,7 +65,7 @@ public partial class Settings : Node
             if (divisor == value)
                 return;
             divisor = value;
-            _ = Signals.Instance.EmitSignal("SettingsChanged");
+            Signals.Instance.EmitEvent(Signals.Events.SettingsChanged);
         }
     }
 
@@ -81,7 +81,7 @@ public partial class Settings : Node
                 return;
             numberOfBlocks = value;
             //GD.Print($"NumberOfBlocks changed to {numberOfBlocks}");
-            _ = Signals.Instance.EmitSignal("SettingsChanged");
+            Signals.Instance.EmitEvent(Signals.Events.SettingsChanged);
         }
     }
 
@@ -96,7 +96,7 @@ public partial class Settings : Node
             if (musicPositionMargin == value)
                 return;
             musicPositionMargin = value;
-            _ = Signals.Instance.EmitSignal("SettingsChanged");
+            Signals.Instance.EmitEvent(Signals.Events.SettingsChanged);
         }
     }
 
@@ -108,7 +108,7 @@ public partial class Settings : Node
             if (musicPositionOffset == value)
                 return;
             musicPositionOffset = value;
-            _ = Signals.Instance.EmitSignal("SettingsChanged");
+            Signals.Instance.EmitEvent(Signals.Events.SettingsChanged);
         }
     }
 

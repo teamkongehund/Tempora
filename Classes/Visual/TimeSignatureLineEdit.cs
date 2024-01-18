@@ -4,8 +4,7 @@ namespace OsuTimer.Classes.Visual;
 
 public partial class TimeSignatureLineEdit : LineEdit
 {
-    [Signal]
-    public delegate void TimeSignatureSubmittedEventHandler(int[] timeSignature);
+    public event EventHandler TimeSignatureSubmitted;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() => TextSubmitted += OnTextSubmitted;
@@ -29,6 +28,7 @@ public partial class TimeSignatureLineEdit : LineEdit
         int[] timeSignature = [upper, lower];
 
         ReleaseFocus();
-        _ = EmitSignal(nameof(TimeSignatureSubmitted), timeSignature);
+        //_ = EmitSignal(nameof(TimeSignatureSubmitted), timeSignature);
+        TimeSignatureSubmitted?.Invoke(this, timeSignature);
     }
 }

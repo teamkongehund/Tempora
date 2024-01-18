@@ -1,3 +1,5 @@
+using System;
+using System.Reflection.Metadata;
 using Godot;
 using OsuTimer.Classes.Utility;
 
@@ -28,16 +30,12 @@ public partial class AudioBlock : Control
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        // If I used recommended += syntax here,
-        // disposed WaveformWindows will still react to this signal, causing exceptions.
-        // This seems to be a bug with the += syntax when the signal transmitter is an autoload
-        // See https://github.com/godotengine/godot/issues/70414 (haven't read this through)
-        _ = Signals.Instance.Connect("TimingChanged", Callable.From(OnTimingChanged));
+        Signals.Instance.TimingChanged += OnTimingChanged;
 
         _ = timeSignatureLineEdit.Connect("TimeSignatureSubmitted", new Callable(this, "OnTimingSignatureSubmitted"));
     }
 
-    public void OnTimingChanged()
+    public void OnTimingChanged(object? sender, EventArgs e)
     {
         if (!Visible)
             return;

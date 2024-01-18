@@ -21,7 +21,7 @@ public partial class ClearAllButton : Button
     {
         Timing.Instance.TimingPoints.Clear();
         Timing.Instance.TimeSignaturePoints.Clear();
-        _ = Signals.Instance.EmitSignal("TimingChanged");
+        Signals.Instance.EmitEvent(Signals.Events.TimingChanged);;
         ReleaseFocus();
     }
 }

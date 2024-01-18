@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://xf0kngdc5d36"]
+[gd_scene load_steps=4 format=3 uid="uid://xf0kngdc5d36"]
 
 [ext_resource type="Script" path="res://Classes/Visual/AudioDisplayPanel.cs" id="1_oemdp"]
+[ext_resource type="PackedScene" uid="uid://b8325rmwu4cpb" path="res://Classes/Visual/VisualTimingPoint.tscn" id="2_dx65v"]
 [ext_resource type="Script" path="res://Classes/Visual/PreviewLine.cs" id="2_lfylv"]
 
 [node name="AudioDisplayPanel" type="Control" node_paths=PackedStringArray("Playhead", "waveformSegments", "VisualTimingPointFolder", "GridFolder", "PreviewLine", "SelectedPositionLine")]
@@ -17,6 +18,7 @@ VisualTimingPointFolder = NodePath("VisualTimingPointFolder")
 GridFolder = NodePath("GridFolder")
 PreviewLine = NodePath("PreviewLine")
 SelectedPositionLine = NodePath("SelectedPositionLine")
+packedVisualTimingPoint = ExtResource("2_dx65v")
 
 [node name="WaveformSegments" type="Node2D" parent="."]
 

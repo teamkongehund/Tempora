@@ -204,7 +204,7 @@ public partial class ProjectFileManager : Node
 
         Project.Instance.AudioFile = new AudioFile(audioPath);
         Timing.Instance.IsInstantiating = false;
-        _ = Signals.Instance.EmitSignal("TimingChanged");
+        Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
     }
 
     public void LoadProjectFromFilePath(string filePath)

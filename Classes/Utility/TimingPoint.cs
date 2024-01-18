@@ -5,14 +5,9 @@ namespace OsuTimer.Classes.Utility;
 
 public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 {
-    [Signal]
-    public delegate void ChangedEventHandler(TimingPoint timingPoint);
-
-    // TODO: Replace all ".Changed += ..." with this event instead.
-    public event EventHandler ChangeFinalized = null!;
-
-    [Signal]
-    public delegate void DeletedEventHandler(TimingPoint timingPoint);
+    public event EventHandler Changed = null!;
+    public void EmitChangedEvent() => Changed?.Invoke(this, EventArgs.Empty);
+    public event EventHandler Deleted = null!;
 
     /// <summary>
     ///     The tempo from this timing point until the next. The value is proportional to BPM if the time signature doesn't
@@ -99,11 +94,6 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
             NewTime = value;
 
             TimeChanged?.Invoke(this, EventArgs.Empty); // Received by Timing class
-
-            //time = value;
-            //MeasuresPerSecond_Update();
-
-            //EmitSignal(nameof(Changed), this);
         }
     }
 
@@ -116,7 +106,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
             {
                 measuresPerSecond = value;
                 Bpm = MpsToBpm(value);
-                _ = EmitSignal(nameof(Changed), this);
+                Changed?.Invoke(this, EventArgs.Empty);
             }
         }
     }
@@ -190,20 +180,40 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
         }
     }
 
+    public TimingPoint(float time, int[] timeSignature) 
+    {
+        this.time = time;
+        this.timeSignature = timeSignature;
+    }
+
+    public TimingPoint(float time, float musicPosition, float measuresPerSecond)
+    {
+        this.time = time;
+        this.musicPosition = musicPosition;
+        this.measuresPerSecond = measuresPerSecond;
+    }
+
+    public TimingPoint(float time, float musicPosition, int[] timeSignature)
+    {
+        this.time = time;
+        this.musicPosition = musicPosition;
+        this.timeSignature = timeSignature;
+    }
+
+    public TimingPoint(float time, float? musicPosition, int[] timeSignature, float measuresPerSecond, float bpm)
+    {
+        this.time = time;
+        this.musicPosition = musicPosition;
+        this.timeSignature = timeSignature;
+        this.measuresPerSecond = measuresPerSecond;
+        this.bpm = bpm;
+    }
+
     public int CompareTo(TimingPoint? other) => Time.CompareTo(other?.Time);
 
     public object Clone()
     {
-        var timingPoint = new TimingPoint
-        {
-            MusicPosition = MusicPosition,
-            Time = Time,
-            TimeSignature = TimeSignature,
-            MeasuresPerSecond = MeasuresPerSecond,
-            Bpm = Bpm,
-            //PreviousTimingPoint = PreviousTimingPoint,
-            //NextTimingPoint = NextTimingPoint
-        };
+        var timingPoint = new TimingPoint(Time, MusicPosition, TimeSignature, MeasuresPerSecond, Bpm);
 
         return timingPoint;
     }
@@ -225,5 +235,5 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
     public void Delete() =>
         //if (PreviousTimingPoint != null) previousTimingPoint.NextTimingPoint = nextTimingPoint;
         //if (NextTimingPoint != null) nextTimingPoint.PreviousTimingPoint = previousTimingPoint;
-        EmitSignal(nameof(Deleted), this);
+        Deleted?.Invoke(this, EventArgs.Empty);
 }

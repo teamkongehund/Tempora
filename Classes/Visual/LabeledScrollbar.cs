@@ -24,12 +24,7 @@ public partial class LabeledScrollbar : VBoxContainer
         hScrollBar = GetNode<HScrollBar>("HScrollBar");
         valueLabel = hScrollBar.GetNode<Label>("ValueLabel");
 
-        //hScrollBar.Changed += OnHScrollBarChanged;
-
         hScrollBar.ValueChanged += OnValueChanged;
-
-        //hScrollBar.AllowGreater = true;
-        //      hScrollBar.AllowLesser = true;
 
         SetInitialValue();
         UpdateValueLabel();
@@ -38,9 +33,6 @@ public partial class LabeledScrollbar : VBoxContainer
         hScrollBar.MaxValue = maxValue;
         hScrollBar.Step = step;
         titleLabel.Text = title;
-
-        //hScrollBar.AllowGreater = false;
-        //hScrollBar.AllowLesser = false;
     }
 
     protected virtual void OnValueChanged(double value)

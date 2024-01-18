@@ -1,3 +1,4 @@
+using System;
 using Godot;
 
 namespace OsuTimer.Classes.Utility;
@@ -23,7 +24,7 @@ public partial class Context : Node
             if (value == selectedPosition)
                 return;
             selectedPosition = value;
-            _ = Signals.Instance.EmitSignal("SelectedPositionChanged");
+            Signals.Instance.EmitEvent(Signals.Events.SelectedPositionChanged);
         }
     }
 
@@ -37,7 +38,7 @@ public partial class Context : Node
         Signals.Instance.MouseLeftReleased += OnMouseLeftReleased;
     }
 
-    public void OnTimingPointHolding(TimingPoint timingPoint) => HeldTimingPoint = timingPoint;
+    public void OnTimingPointHolding(object? sender, EventArgs e) => HeldTimingPoint = ((Signals.TimingPointArgument)e).TimingPoint;
 
-    public void OnMouseLeftReleased() => HeldTimingPoint = null;
+    public void OnMouseLeftReleased(object? sender, EventArgs e) => HeldTimingPoint = null;
 }

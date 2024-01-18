@@ -55,7 +55,7 @@ public partial class Main : Control
         Signals.Instance.Scrolled += OnScrolled;
         Signals.Instance.SettingsChanged += OnSettingsChanged;
         audioVisualsContainer.SeekPlaybackTime += OnSeekPlaybackTime;
-        audioVisualsContainer.DoubleClicked += OnDoubleClick;
+        audioVisualsContainer.AttemptToAddTimingPoint += OnAttemptToAddTimingPoint;
         //blockScrollBar.ValueChanged += OnBlockScrollBarValueChanged;
         GetTree().Root.FilesDropped += OnFilesDropped;
         //gridScrollBar.ValueChanged += OnGridScrollBarValueChanged;
@@ -88,8 +88,7 @@ public partial class Main : Control
                     if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased())
                     {
                         // Ensure a mouse release is always captured.
-                        //GD.Print("Main: MouseLeftReleased");
-                        _ = Signals.Instance.EmitSignal("MouseLeftReleased");
+                        Signals.Instance.EmitEvent(Signals.Events.MouseLeftReleased);
                         Context.Instance.IsSelectedMusicPositionMoving = false;
                     }
 
@@ -118,7 +117,7 @@ public partial class Main : Control
         }
     }
 
-    private void OnSettingsChanged() => audioVisualsContainer.UpdateNumberOfVisibleBlocks();
+    private void OnSettingsChanged(object? sender, EventArgs e) => audioVisualsContainer.UpdateNumberOfVisibleBlocks();
 
     private void OnFilesDropped(string[] filePaths)
     {
@@ -154,7 +153,7 @@ public partial class Main : Control
     //public void OnClearAllButtonPressed() {
     //    Timing.Instance.TimingPoints.Clear();
     //    Timing.Instance.TimeSignaturePoints.Clear();
-    //    Signals.Instance.EmitSignal("TimingChanged");
+    //    Signals.Instance.EmitEvent(Signals.Events.TimingChanged);;
     //}
 
     //private void OnBlockScrollBarValueChanged(double value) => audioVisualsContainer.NominalMusicPositionStartForTopBlock = (int)value;
@@ -206,7 +205,7 @@ public partial class Main : Control
         UpdatePlayHeads();
     }
 
-    public void OnScrolled()
+    public void OnScrolled(object? sender, EventArgs e)
     {
         UpdatePlayHeads();
         blockScrollBar.Value = audioVisualsContainer.NominalMusicPositionStartForTopBlock;
@@ -234,7 +233,7 @@ public partial class Main : Control
 
     public void OnSeekPlaybackTime(float playbackTime) => audioPlayer.SeekPlay(playbackTime);//audioPlayer.SeekPlayHarsh(playbackTime);
 
-    public static void OnDoubleClick(float playbackTime)
+    public static void OnAttemptToAddTimingPoint(float playbackTime)
     {
         Timing.Instance.AddTimingPoint(playbackTime, out TimingPoint? timingPoint);
         if (timingPoint == null)
