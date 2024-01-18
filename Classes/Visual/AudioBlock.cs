@@ -31,21 +31,19 @@ public partial class AudioBlock : Control
         // disposed WaveformWindows will still react to this signal, causing exceptions.
         // This seems to be a bug with the += syntax when the signal transmitter is an autoload
         // See https://github.com/godotengine/godot/issues/70414 (haven't read this through)
-        Signals.Instance.Connect("TimingChanged", Callable.From(OnTimingChanged));
+        _ = Signals.Instance.Connect("TimingChanged", Callable.From(OnTimingChanged));
 
-        timeSignatureLineEdit.Connect("TimeSignatureSubmitted", new Callable(this, "OnTimingSignatureSubmitted"));
+        _ = timeSignatureLineEdit.Connect("TimeSignatureSubmitted", new Callable(this, "OnTimingSignatureSubmitted"));
     }
 
     public void OnTimingChanged()
     {
-        if (!Visible) return;
+        if (!Visible)
+            return;
         UpdateLabels();
     }
 
-    public void OnTimingSignatureSubmitted(int[] timeSignature)
-    {
-        Timing.Instance.UpdateTimeSignature(timeSignature, NominalMusicPositionStartForWindow);
-    }
+    public void OnTimingSignatureSubmitted(int[] timeSignature) => Timing.Instance.UpdateTimeSignature(timeSignature, NominalMusicPositionStartForWindow);
 
     public void UpdateLabels()
     {
@@ -53,6 +51,4 @@ public partial class AudioBlock : Control
         measureLabel.Text = NominalMusicPositionStartForWindow.ToString();
         timeSignatureLineEdit.Text = $"{timeSignature[0]}/{timeSignature[1]}";
     }
-
-
 }

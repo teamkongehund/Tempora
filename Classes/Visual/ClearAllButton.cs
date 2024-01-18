@@ -13,16 +13,13 @@ public partial class ClearAllButton : Button
         confirmationDialog.Confirmed += ClearAllTimingPoints;
     }
 
-    private void OnPressed()
-    {
-        confirmationDialog.Popup();
-    }
+    private void OnPressed() => confirmationDialog.Popup();
 
     private void ClearAllTimingPoints()
     {
         Timing.Instance.TimingPoints.Clear();
         Timing.Instance.TimeSignaturePoints.Clear();
-        Signals.Instance.EmitSignal("TimingChanged");
+        _ = Signals.Instance.EmitSignal("TimingChanged");
         ReleaseFocus();
     }
 }

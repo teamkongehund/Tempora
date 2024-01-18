@@ -47,20 +47,11 @@ public partial class LabeledScrollbar : VBoxContainer
         UpdateValue();
     }
 
-    protected virtual void UpdateValueLabel()
-    {
-        valueLabel.Text = hScrollBar.Value.ToString("0.00");
-    }
+    protected virtual void UpdateValueLabel() => valueLabel.Text = hScrollBar.Value.ToString("0.00");
 
-    protected virtual void UpdateValue()
-    {
-        GD.Print("No value updated. UpdateValue() must be overridden.");
-    }
+    protected virtual void UpdateValue() => GD.Print("No value updated. UpdateValue() must be overridden.");
 
-    protected virtual void SetInitialValue()
-    {
-        hScrollBar.Value = hScrollBar.MinValue;
-    }
+    protected virtual void SetInitialValue() => hScrollBar.Value = hScrollBar.MinValue;
 
     //private void OnHScrollBarChanged()
     //{

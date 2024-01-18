@@ -10,7 +10,7 @@ public partial class Waveform : Node2D
 
     public override void _Draw()
     {
-        float[] audioData = AudioFile.AudioData;
+        //_ = AudioFile.AudioData;
 
         int sampleIndexStart = AudioDataRange[0];
         int sampleEndIndex = AudioDataRange[1];
@@ -24,7 +24,7 @@ public partial class Waveform : Node2D
         Vector2[] multilinePoints;
         try
         {
-            multilinePoints = new Vector2[nbPoints * 2 - 2];
+            multilinePoints = new Vector2[(nbPoints * 2) - 2];
         }
         catch (System.OverflowException)
         {
@@ -37,16 +37,16 @@ public partial class Waveform : Node2D
             return;
         }
 
-        for (var pointIndex = 0; pointIndex < nbPoints; pointIndex++)
+        for (int pointIndex = 0; pointIndex < nbPoints; pointIndex++)
         {
-            var sampleIndexBegin = (int)(sampleIndexStart + pointIndex * samplesPerPoint);
-            var sampleIndexEnd = (int)(sampleIndexStart + (pointIndex + 1) * samplesPerPoint);
+            int sampleIndexBegin = (int)(sampleIndexStart + (pointIndex * samplesPerPoint));
+            int sampleIndexEnd = (int)(sampleIndexStart + ((pointIndex + 1) * samplesPerPoint));
 
             float pickedValue;
 
             pickedValue = GetPickedValue(sampleIndexBegin, sampleIndexEnd, pointIndex);
 
-            Vector2 coordinate = new Vector2((float)pointIndex / PointsPerPixel, pickedValue * Height / 2);
+            var coordinate = new Vector2((float)pointIndex / PointsPerPixel, pickedValue * Height / 2);
 
             points[pointIndex] = coordinate;
 
@@ -56,11 +56,11 @@ public partial class Waveform : Node2D
             }
             else if (pointIndex == nbPoints - 1)
             {
-                multilinePoints[pointIndex * 2 - 1] = coordinate;
+                multilinePoints[(pointIndex * 2) - 1] = coordinate;
             }
             else
             {
-                multilinePoints[pointIndex * 2 - 1] = coordinate;
+                multilinePoints[(pointIndex * 2) - 1] = coordinate;
                 multilinePoints[pointIndex * 2] = coordinate;
             }
         }
@@ -102,8 +102,8 @@ public partial class Waveform : Node2D
             }
             else
             {
-                min = EfficientMin(audioFile.AudioDataPer10Min, (sampleIndexBegin / 10), (sampleIndexEnd / 10));
-                max = EfficientMax(audioFile.AudioDataPer10Max, (sampleIndexBegin / 10), (sampleIndexEnd / 10));
+                min = EfficientMin(audioFile.AudioDataPer10Min, sampleIndexBegin / 10, sampleIndexEnd / 10);
+                max = EfficientMax(audioFile.AudioDataPer10Max, sampleIndexBegin / 10, sampleIndexEnd / 10);
             }
 
             if (PointsPerPixel > 1)
@@ -128,7 +128,8 @@ public partial class Waveform : Node2D
         for (int i = sampleBegin + 1; i < sampleEnd; i++)
         {
             float newValue = dataArray[i];
-            if (newValue < min) min = newValue;
+            if (newValue < min)
+                min = newValue;
         }
         return min;
     }
@@ -138,7 +139,8 @@ public partial class Waveform : Node2D
         for (int i = sampleBegin + 1; i < sampleEnd; i++)
         {
             float newValue = dataArray[i];
-            if (newValue > max) max = newValue;
+            if (newValue > max)
+                max = newValue;
         }
         return max;
     }
@@ -201,10 +203,12 @@ public partial class Waveform : Node2D
         get
         {
             if (ShouldDisplayWholeFile)
+            {
                 return new[] {
                     0,
                     AudioFile?.AudioData.Length ?? 0
                 };
+            }
 
             int sampleStart = AudioFile?.SecondsToSampleIndex(TimeRange[0]) ?? 0;
             int sampleEnd = AudioFile?.SecondsToSampleIndex(TimeRange[1]) ?? 0;
@@ -221,7 +225,9 @@ public partial class Waveform : Node2D
         get => timeRange;
         set
         {
-            if (value[0] > value[1]) { }
+            if (value[0] > value[1])
+            {
+            }
 
             timeRange = value;
             ShouldDisplayWholeFile = false;

@@ -69,16 +69,16 @@ SliderTickRate:1
     public static string GetDotOsu(Timing timing)
     {
         var newTiming = Timing.CopyAndAddExtraPoints(timing);
-        var timingPoints = newTiming.TimingPoints;
+        List<TimingPoint> timingPoints = newTiming.TimingPoints;
         string timingPointsData = TimingPointToText(timingPoints);
-        var dotOsu = $"{DefaultDotOsuFormer}{timingPointsData}{DefaultDotOsuLatter}";
+        string dotOsu = $"{DefaultDotOsuFormer}{timingPointsData}{DefaultDotOsuLatter}";
         return dotOsu;
     }
 
     public static string TimingPointToText(List<TimingPoint> timingPoints)
     {
-        var theText = "";
-        foreach (var timingPoint in timingPoints)
+        string theText = "";
+        foreach (TimingPoint timingPoint in timingPoints)
         {
             //GD.Print(timingPoint.Bpm);
             theText += TimingPointToText(timingPoint);
@@ -90,51 +90,47 @@ SliderTickRate:1
     public static string TimingPointToText(TimingPoint timingPoint)
     {
         // offsetMS,MSPerBeat,beatsInMeasure,sampleSet,sampleIndex,volume,uninherited,effects
-        var offsetMs = ((int)(timingPoint.Time * 1000) + ExportOffsetMs).ToString();
-        var msPerBeat = (timingPoint.BeatLengthSec * 1000).ToString(CultureInfo.InvariantCulture);
-        var beatsInMeasure = timingPoint.TimeSignature[0].ToString();
+        string offsetMs = ((int)(timingPoint.Time * 1000) + ExportOffsetMs).ToString();
+        string msPerBeat = (timingPoint.BeatLengthSec * 1000).ToString(CultureInfo.InvariantCulture);
+        string beatsInMeasure = timingPoint.TimeSignature[0].ToString();
         return $"{offsetMs},{msPerBeat},{beatsInMeasure},2,0,80,1,0\n";
     }
 
     public static void SaveOsz(string oszPath, string dotOsuString, AudioFile audioFile)
     {
-        using (var zipPacker = new ZipPacker())
-        {
-            var err = zipPacker.Open(oszPath);
-            if (err != Error.Ok)
-                return;
+        using var zipPacker = new ZipPacker();
+        Error err = zipPacker.Open(oszPath);
+        if (err != Error.Ok)
+            return;
 
-            var random = new Random();
-            int rand = random.Next();
+        var random = new Random();
+        int rand = random.Next();
 
-            zipPacker.StartFile($"{rand}.osu");
-            zipPacker.WriteFile(dotOsuString.ToUtf8Buffer());
-            zipPacker.CloseFile();
+        _ = zipPacker.StartFile($"{rand}.osu");
+        _ = zipPacker.WriteFile(dotOsuString.ToUtf8Buffer());
+        _ = zipPacker.CloseFile();
 
-            zipPacker.StartFile("audio.mp3");
-            //zipPacker.WriteFile(FileHandler.GetFileAsBuffer(audioFile.Path));
-            zipPacker.WriteFile(((AudioStreamMP3)audioFile.Stream).Data);
-            zipPacker.CloseFile();
+        _ = zipPacker.StartFile("audio.mp3");
+        //zipPacker.WriteFile(FileHandler.GetFileAsBuffer(audioFile.Path));
+        _ = zipPacker.WriteFile(((AudioStreamMP3)audioFile.Stream).Data);
+        _ = zipPacker.CloseFile();
 
-            zipPacker.Close();
-        }
+        _ = zipPacker.Close();
     }
 
-    public static void SaveOsu(string osuPath, string dotOsuString)
-    {
-        FileHandler.SaveText(osuPath, dotOsuString);
-    }
+    public static void SaveOsu(string osuPath, string dotOsuString) => FileHandler.SaveText(osuPath, dotOsuString);
 
     public static void ExportOsz()
     {
         var random = new Random();
         int rand = random.Next();
-        var path = $"user://{rand}.osz";
+        string path = $"user://{rand}.osz";
         string dotOsu = GetDotOsu(Timing.Instance);
         SaveOsz(path, dotOsu, Project.Instance.AudioFile);
 
         // Open with system:
         string globalPath = ProjectSettings.GlobalizePath(path);
-        if (FileAccess.FileExists(globalPath)) OS.ShellOpen(globalPath);
+        if (FileAccess.FileExists(globalPath))
+            _ = OS.ShellOpen(globalPath);
     }
 }

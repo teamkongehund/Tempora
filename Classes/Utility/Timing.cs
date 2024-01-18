@@ -10,10 +10,7 @@ namespace OsuTimer.Classes.Utility;
 public partial class Timing : Node
 {
     // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-    {
-        Instance = this;
-    }
+    public override void _Ready() => Instance = this;
 
     #region Properties & Signals
 
@@ -26,7 +23,8 @@ public partial class Timing : Node
         get => isInstantiating;
         set
         {
-            if (isInstantiating == value) return;
+            if (isInstantiating == value)
+                return;
             isInstantiating = value;
             //if (value == false)
             //{
@@ -37,29 +35,31 @@ public partial class Timing : Node
 
     //[Signal] public delegate void TimingChangedEventHandler();
 
-    private List<TimingPoint> timingPoints = new();
+    private List<TimingPoint> timingPoints = [];
 
     public List<TimingPoint> TimingPoints
     {
         get => timingPoints;
         set
         {
-            if (timingPoints == value) return;
+            if (timingPoints == value)
+                return;
             timingPoints = value;
-            Signals.Instance.EmitSignal("TimingChanged");
+            _ = Signals.Instance.EmitSignal("TimingChanged");
         }
     }
 
-    private List<TimeSignaturePoint> timeSignaturePoints = new();
+    private List<TimeSignaturePoint> timeSignaturePoints = [];
 
     public List<TimeSignaturePoint> TimeSignaturePoints
     {
         get => timeSignaturePoints;
         set
         {
-            if (timeSignaturePoints == value) return;
+            if (timeSignaturePoints == value)
+                return;
             timeSignaturePoints = value;
-            Signals.Instance.EmitSignal("TimingChanged");
+            _ = Signals.Instance.EmitSignal("TimingChanged");
         }
     }
 
@@ -98,10 +98,12 @@ public partial class Timing : Node
         int index = TimingPoints.IndexOf(timingPoint);
 
         if (index >= 1) // Set previous timing point
-                        //timingPoint.PreviousTimingPoint = TimingPoints[index - 1];
+        {
+            //timingPoint.PreviousTimingPoint = TimingPoints[index - 1];
 
             if (!IsInstantiating)
-                Signals.Instance.EmitSignal("TimingChanged");
+                _ = Signals.Instance.EmitSignal("TimingChanged");
+        }
     }
 
     public void AddTimingPoint(float musicPosition, float time, float measuresPerSecond)
@@ -124,7 +126,7 @@ public partial class Timing : Node
             timingPoint.MeasuresPerSecond = measuresPerSecond;
 
         if (!IsInstantiating)
-            Signals.Instance.EmitSignal("TimingChanged");
+            _ = Signals.Instance.EmitSignal("TimingChanged");
     }
 
     //public void AddTimingPoint(float time) {
@@ -185,7 +187,7 @@ public partial class Timing : Node
             || (nextTimingPoint?.MusicPosition is float nextMusicPosition && Mathf.Abs(nextMusicPosition - (float)timingPoint.MusicPosition) < 0.015f)
            )
         {
-            TimingPoints.Remove(timingPoint);
+            _ = TimingPoints.Remove(timingPoint);
             outTimingPoint = null;
             //GD.Print("Timing Point refused to add!");
             return;
@@ -197,30 +199,30 @@ public partial class Timing : Node
         outTimingPoint = timingPoint;
 
         //EmitSignal(nameof(TimingChanged));
-        Signals.Instance.EmitSignal("TimingChanged");
+        _ = Signals.Instance.EmitSignal("TimingChanged");
     }
 
     public void OnTimingPointChanged(TimingPoint timingPoint)
     {
-        int index = TimingPoints.IndexOf(timingPoint);
+        _ = TimingPoints.IndexOf(timingPoint);
 
         //UpdateMPS(index-1);
         //UpdateMPS(index);
 
-        Signals.Instance.EmitSignal("TimingChanged");
+        _ = Signals.Instance.EmitSignal("TimingChanged");
     }
 
     public void OnTimingPointDeleted(TimingPoint timingPoint)
     {
-        int index = TimingPoints.IndexOf(timingPoint);
+        _ = TimingPoints.IndexOf(timingPoint);
 
         timingPoint.QueueFree();
-        TimingPoints.Remove(timingPoint);
+        _ = TimingPoints.Remove(timingPoint);
 
         //UpdateMPS(index - 1);
         //UpdateMPS(index);
 
-        Signals.Instance.EmitSignal("TimingChanged");
+        _ = Signals.Instance.EmitSignal("TimingChanged");
     }
 
     private void OnTimingPointTimeChanged(object? sender, EventArgs e)
@@ -231,8 +233,10 @@ public partial class Timing : Node
         TimingPoint nextTimingPoint = GetNextTimingPoint(timingPoint);
 
         // validity checks
-        if (previousTimingPoint != null && previousTimingPoint.Time >= timingPoint.NewTime) return;
-        if (nextTimingPoint != null && nextTimingPoint.Time <= timingPoint.NewTime) return;
+        if (previousTimingPoint != null && previousTimingPoint.Time >= timingPoint.NewTime)
+            return;
+        if (nextTimingPoint != null && nextTimingPoint.Time <= timingPoint.NewTime)
+            return;
 
         timingPoint.IsNewTimeValid = true;
         timingPoint.Time = timingPoint.NewTime;
@@ -245,7 +249,8 @@ public partial class Timing : Node
         TimingPoint nextTimingPoint = GetNextTimingPoint(timingPoint);
 
         // validity check
-        if (nextTimingPoint != null) return;
+        if (nextTimingPoint != null)
+            return;
 
         timingPoint.IsNewBpmValid = true;
         timingPoint.Bpm = timingPoint.NewBpm;
@@ -260,8 +265,10 @@ public partial class Timing : Node
         TimingPoint nextTimingPoint = GetNextTimingPoint(timingPoint);
 
         // validity checks
-        if (previousTimingPoint != null && previousTimingPoint.MusicPosition >= timingPoint.NewMusicPosition) return;
-        if (nextTimingPoint != null && nextTimingPoint.MusicPosition <= timingPoint.NewMusicPosition) return;
+        if (previousTimingPoint != null && previousTimingPoint.MusicPosition >= timingPoint.NewMusicPosition)
+            return;
+        if (nextTimingPoint != null && nextTimingPoint.MusicPosition <= timingPoint.NewMusicPosition)
+            return;
 
         timingPoint.IsNewMusicPositionValid = true;
         timingPoint.MusicPosition = timingPoint.NewMusicPosition;
@@ -284,16 +291,17 @@ public partial class Timing : Node
                 / (timingPoint.Time - previousTimingPoint.Time);
             timingPoint.MeasuresPerSecond = previousTimingPoint.MeasuresPerSecond;
 
-            previousTimingPoint.EmitSignal("Changed", previousTimingPoint);
+            _ = previousTimingPoint.EmitSignal("Changed", previousTimingPoint);
         }
 
         if (nextTimingPoint?.MusicPosition != null)
+        {
             timingPoint.MeasuresPerSecond =
                 ((float)nextTimingPoint.MusicPosition - (float)timingPoint.MusicPosition)
                 / (nextTimingPoint.Time - timingPoint.Time);
+        }
 
-        timingPoint.EmitSignal("Changed", timingPoint);
-
+        _ = timingPoint.EmitSignal("Changed", timingPoint);
 
     }
 
@@ -314,7 +322,8 @@ public partial class Timing : Node
 
     public static float SnapMusicPosition(float musicPosition)
     {
-        if (!Settings.Instance.SnapToGridEnabled) return musicPosition;
+        if (!Settings.Instance.SnapToGridEnabled)
+            return musicPosition;
 
         int divisor = Settings.Instance.Divisor;
         //float divisionLength = 1f / divisor;
@@ -322,18 +331,21 @@ public partial class Timing : Node
 
         float relativePosition = musicPosition - (int)musicPosition;
 
-        var divisionIndex = (int)Math.Round(relativePosition / divisionLength);
+        int divisionIndex = (int)Math.Round(relativePosition / divisionLength);
 
-        float snappedMusicPosition = (int)musicPosition + divisionIndex * divisionLength;
+        float snappedMusicPosition = (int)musicPosition + (divisionIndex * divisionLength);
 
         return snappedMusicPosition;
     }
 
     public void UpdateTimeSignature(int[] timeSignature, int musicPosition)
     {
-        if (timeSignature[1] != 4 && timeSignature[1] != 8 && timeSignature[1] != 16) timeSignature[1] = 4;
-        if (timeSignature[0] == 0) timeSignature[0] = 4;
-        else if (timeSignature[0] < 0) timeSignature[0] = -timeSignature[0];
+        if (timeSignature[1] is not 4 and not 8 and not 16)
+            timeSignature[1] = 4;
+        if (timeSignature[0] == 0)
+            timeSignature[0] = 4;
+        else if (timeSignature[0] < 0)
+            timeSignature[0] = -timeSignature[0];
 
         int foundTsPointIndex = TimeSignaturePoints.FindIndex(point => point.MusicPosition == musicPosition);
 
@@ -354,7 +366,7 @@ public partial class Timing : Node
 
         if (foundTsPointIndex > 0 && TimeSignaturePoints[foundTsPointIndex - 1].TimeSignature == timeSignature)
         {
-            TimeSignaturePoints.Remove(timeSignaturePoint);
+            _ = TimeSignaturePoints.Remove(timeSignaturePoint);
             return;
         }
 
@@ -374,12 +386,13 @@ public partial class Timing : Node
 
         for (int i = indexForFirstTimingPointWithThisTimeSignature; i <= maxIndex; i++)
         {
-            if (i == -1) break;
-            var timingPoint = TimingPoints[i];
+            if (i == -1)
+                break;
+            TimingPoint timingPoint = TimingPoints[i];
             TimingPoints[i].TimeSignature = timeSignature;
         }
 
-        Signals.Instance.EmitSignal("TimingChanged");
+        _ = Signals.Instance.EmitSignal("TimingChanged");
     }
 
     #endregion
@@ -394,82 +407,74 @@ public partial class Timing : Node
     /// <returns></returns>
     public TimingPoint GetOperatingTimingPoint(float musicPosition)
     {
-        if (TimingPoints.Count == 0) return null!;
+        if (TimingPoints.Count == 0)
+            return null!;
 
-        var timingPoint = TimingPoints.FindLast(point => point.MusicPosition <= musicPosition);
+        TimingPoint? timingPoint = TimingPoints.FindLast(point => point.MusicPosition <= musicPosition);
 
         // If there's only TimingPoints AFTER MusicPositionStart
-        if (timingPoint == null)
-            timingPoint = TimingPoints.Find(point => point.MusicPosition > musicPosition);
+        timingPoint ??= TimingPoints.Find(point => point.MusicPosition > musicPosition);
 
-        if (timingPoint == null)
-            throw new NullReferenceException("Timing point does not exist");
-
-        if (timingPoint.MusicPosition == null)
-            throw new NullReferenceException($"Operating TimingPoint does not have a non-null {nameof(TimingPoint.MusicPosition)}");
-
-        return timingPoint;
+        return timingPoint == null
+            ? throw new NullReferenceException("Timing point does not exist")
+            : timingPoint.MusicPosition == null
+            ? throw new NullReferenceException($"Operating TimingPoint does not have a non-null {nameof(TimingPoint.MusicPosition)}")
+            : timingPoint;
     }
 
-    public TimingPoint GetPreviousTimingPoint(TimingPoint timingPoint)
+    public TimingPoint? GetPreviousTimingPoint(TimingPoint timingPoint)
     {
         int i = timingPoints.IndexOf(timingPoint);
 
-        if (i == -1) GD.Print("Timing point is not present in the list of timing points");
-        if (i - 1 < 0) return null!;
-        else return timingPoints[i - 1];
+        if (i == -1)
+            GD.Print("Timing point is not present in the list of timing points");
+        return i - 1 < 0 ? null : timingPoints[i - 1];
     }
 
-    public TimingPoint GetNextTimingPoint(TimingPoint timingPoint)
+    public TimingPoint? GetNextTimingPoint(TimingPoint timingPoint)
     {
         int i = timingPoints.IndexOf(timingPoint);
 
-        if (i == -1) GD.Print("Timing point is not present in the list of timing points");
-        if (i + 1 >= timingPoints.Count) return null!;
-        else return timingPoints[i + 1];
+        if (i == -1)
+            GD.Print("Timing point is not present in the list of timing points");
+        return i + 1 >= timingPoints.Count ? null : timingPoints[i + 1];
     }
 
     public float? GetTimeDifference(int timingPointIndex1, int timingPointIndex2)
     {
-        if (timingPointIndex1 < 0 || timingPointIndex2 < 0 || timingPointIndex1 > TimingPoints.Count || timingPointIndex2 > TimingPoints.Count) return null;
-        return TimingPoints[timingPointIndex2].Time - TimingPoints[timingPointIndex1].Time;
+        return timingPointIndex1 < 0 || timingPointIndex2 < 0 || timingPointIndex1 > TimingPoints.Count || timingPointIndex2 > TimingPoints.Count
+            ? null
+            : TimingPoints[timingPointIndex2].Time - TimingPoints[timingPointIndex1].Time;
     }
 
     public float MusicPositionToTime(float musicPosition)
     {
-        var timingPoint = GetOperatingTimingPoint(musicPosition);
+        TimingPoint timingPoint = GetOperatingTimingPoint(musicPosition);
         if (timingPoint == null)
             return musicPosition / 0.5f; // default 120 bpm from time=0
         if (timingPoint.MusicPosition == null)
             throw new NullReferenceException($"Operating TimingPoint does not have a non-null {nameof(TimingPoint.MusicPosition)}");
 
-        var time = (float)(timingPoint.Time + (musicPosition - timingPoint.MusicPosition) / timingPoint.MeasuresPerSecond);
+        float time = (float)(timingPoint.Time + ((musicPosition - timingPoint.MusicPosition) / timingPoint.MeasuresPerSecond));
 
         return time;
     }
 
     public float TimeToMusicPosition(float time)
     {
-        if (TimingPoints.Count == 0) return time * 0.5f; // default 120 bpm from time=0
+        if (TimingPoints.Count == 0)
+            return time * 0.5f; // default 120 bpm from time=0
 
         int timingPointIndex = TimingPoints.FindLastIndex(point => point.Time <= time);
-        TimingPoint? timingPoint;
-
-        if (timingPointIndex == -1) // If there's no TimingPoint behind - find first TimingPoint after.
-            timingPoint = TimingPoints.Find(point => point.Time > time);
-        else
-            timingPoint = TimingPoints[timingPointIndex];
-
+        TimingPoint? timingPoint = timingPointIndex == -1 ? TimingPoints.Find(point => point.Time > time) : TimingPoints[timingPointIndex];
         if (timingPoint?.MusicPosition == null && timingPointIndex > 0)
             timingPoint = TimingPoints[timingPointIndex - 1];
 
-        if (timingPoint == null)
-            throw new NullReferenceException($"Operating {nameof(TimingPoint)} is null");
-
-        if (timingPoint?.MusicPosition == null)
-            throw new NullReferenceException($"Operating {nameof(TimingPoint)} has null {nameof(TimingPoint.MusicPosition)}");
-
-        return (float)((time - timingPoint.Time) * timingPoint.MeasuresPerSecond + timingPoint.MusicPosition);
+        return timingPoint == null
+            ? throw new NullReferenceException($"Operating {nameof(TimingPoint)} is null")
+            : timingPoint?.MusicPosition == null
+            ? throw new NullReferenceException($"Operating {nameof(TimingPoint)} has null {nameof(TimingPoint.MusicPosition)}")
+            : (float)(((time - timingPoint.Time) * timingPoint.MeasuresPerSecond) + timingPoint.MusicPosition);
 
         // creating new Timing points with <= picks itself, tho there's no music position
     }
@@ -480,11 +485,8 @@ public partial class Timing : Node
         //if (timingPoint == null) return new int[] { 4, 4 };
         //else return timingPoint.TimeSignature;
 
-        var timeSignaturePoint = TimeSignaturePoints.FindLast(point => point.MusicPosition <= musicPosition);
-        if (timeSignaturePoint == null)
-            return new[] { 4, 4 };
-
-        return timeSignaturePoint.TimeSignature;
+        TimeSignaturePoint? timeSignaturePoint = TimeSignaturePoints.FindLast(point => point.MusicPosition <= musicPosition);
+        return timeSignaturePoint == null ? (new[] { 4, 4 }) : timeSignaturePoint.TimeSignature;
     }
 
     /// <summary>
@@ -509,9 +511,9 @@ public partial class Timing : Node
         int downbeatPosition = (musicPosition >= 0) ? (int)musicPosition : (int)musicPosition - 1;
         float relativePosition = (musicPosition >= 0)
             ? musicPosition % 1
-            : 1 + musicPosition % 1;
+            : 1 + (musicPosition % 1);
         int beatsFromDownbeat = (int)(relativePosition / beatLength);
-        float position = beatsFromDownbeat * beatLength + downbeatPosition;
+        float position = (beatsFromDownbeat * beatLength) + downbeatPosition;
         return position;
     }
 
@@ -569,16 +571,20 @@ public partial class Timing : Node
 
         // Add extra downbeat timing points
         var downbeatPositions = new List<int>();
-        foreach (var timingPoint in timing.TimingPoints)
+        foreach (TimingPoint timingPoint in timing.TimingPoints)
         {
-            if (timingPoint?.MusicPosition == null) break;
+            if (timingPoint?.MusicPosition == null)
+                break;
             //if (timingPoint.NextTimingPoint == null) break;
-            if (timingPoint.MusicPosition % 1 == 0) continue; // downbeat point on next is unnecessary
+            if (timingPoint.MusicPosition % 1 == 0)
+                continue; // downbeat point on next is unnecessary
             //if (timingPoint.NextTimingPoint != null && (int)(timingPoint?.NextTimingPoint.MusicPosition) == (int)timingPoint.MusicPosition) continue; // next timing point is in same measure
             //if (timingPoint.NextTimingPoint != null && timingPoint.NextTimingPoint.MusicPosition == (int)timingPoint.MusicPosition + 1) continue; // downbeat point on next measure already exists
             TimingPoint nextTimingPoint = Timing.Instance.GetNextTimingPoint(timingPoint);
-            if (nextTimingPoint?.MusicPosition != null && (int)(nextTimingPoint.MusicPosition) == (int)timingPoint.MusicPosition) continue; // next timing point is in same measure
-            if (nextTimingPoint?.MusicPosition != null && nextTimingPoint.MusicPosition == (int)timingPoint.MusicPosition + 1) continue; // downbeat point on next measure already exists
+            if (nextTimingPoint?.MusicPosition != null && (int)nextTimingPoint.MusicPosition == (int)timingPoint.MusicPosition)
+                continue; // next timing point is in same measure
+            if (nextTimingPoint?.MusicPosition != null && nextTimingPoint.MusicPosition == (int)timingPoint.MusicPosition + 1)
+                continue; // downbeat point on next measure already exists
             downbeatPositions.Add((int)timingPoint.MusicPosition + 1);
         }
         foreach (int downbeat in downbeatPositions)
@@ -589,11 +595,13 @@ public partial class Timing : Node
 
         // Add extra quarter-note timing points
         var quaterNotePositions = new List<float>();
-        foreach (var timingPoint in newTiming.TimingPoints)
+        foreach (TimingPoint timingPoint in newTiming.TimingPoints)
         {
-            if (timingPoint == null) break;
+            if (timingPoint == null)
+                break;
             //if (timingPoint.NextTimingPoint == null) break;
-            if (timingPoint.MusicPosition == null) break;
+            if (timingPoint.MusicPosition == null)
+                break;
 
             float beatLengthMP = timing.GetBeatLength((float)timingPoint.MusicPosition);
             float beatPosition = timing.GetBeatPosition((float)timingPoint.MusicPosition);
@@ -601,13 +609,16 @@ public partial class Timing : Node
             TimingPoint nextTimingPoint = Timing.Instance.GetNextTimingPoint(timingPoint);
             float? nextPointPosition = nextTimingPoint?.MusicPosition;
 
-            if (timingPoint.MusicPosition % beatLengthMP == 0) continue; // is on quarter-note 
+            if (timingPoint.MusicPosition % beatLengthMP == 0)
+                continue; // is on quarter-note 
             //if (timingPoint.NextTimingPoint != null 
             //    && nextPointPosition <= beatPosition + beatLengthMP) 
             //    continue; // next timing point is on or before next quarter-note
             if (nextTimingPoint != null
                 && nextPointPosition <= beatPosition + beatLengthMP)
+            {
                 continue; // next timing point is on or before next quarter-note
+            }
 
             quaterNotePositions.Add(beatPosition + beatLengthMP);
         }
@@ -620,13 +631,13 @@ public partial class Timing : Node
         return newTiming;
     }
 
-    static List<T> CloneList<T>(List<T> originalList) where T : ICloneable
+    private static List<T> CloneList<T>(List<T> originalList) where T : ICloneable
     {
-        List<T> clonedList = new List<T>();
+        List<T> clonedList = [];
 
-        foreach (var item in originalList)
+        foreach (T item in originalList)
         {
-            T clonedItem = (T)item.Clone();
+            var clonedItem = (T)item.Clone();
             clonedList.Add(clonedItem);
         }
 

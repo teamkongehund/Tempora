@@ -15,7 +15,6 @@ public partial class AudioPlayer : AudioStreamPlayer
         private set { }
     }
 
-
     public override void _Ready()
     {
         //VolumeDb = base.VolumeDb;
@@ -38,17 +37,12 @@ public partial class AudioPlayer : AudioStreamPlayer
     public void OnSelectedPositionChanged()
     {
         float time = Timing.Instance.MusicPositionToTime(Context.Instance.SelectedMusicPosition);
-        if (time >= 0)
-            PauseTime = time;
-        else
-            PauseTime = 0;
+        PauseTime = time >= 0 ? (double)time : 0;
     }
 
-    public void Pause()
-    {
+    public void Pause() =>
         //PausePosition = GetPlaybackTime();
         Stop();
-    }
 
     public double PauseTime;
     public void Resume()
@@ -59,14 +53,18 @@ public partial class AudioPlayer : AudioStreamPlayer
 
     public void PlayPause()
     {
-        if (Playing) Pause();
-        else Resume();
+        if (Playing)
+            Pause();
+        else
+            Resume();
     }
 
     public void SeekPlay(float playbackTime)
     {
-        if (!Playing) Play();
-        if (playbackTime < 0) playbackTime = 0;
+        if (!Playing)
+            Play();
+        if (playbackTime < 0)
+            playbackTime = 0;
         Seek(playbackTime);
     }
 
@@ -96,15 +94,8 @@ public partial class AudioPlayer : AudioStreamPlayer
 
     public void LoadMp3()
     {
-        if (Project.Instance.AudioFile.Stream == null)
-        {
-            Stream = FileAccess.FileExists(Project.Instance.AudioFile.Path)
+        Stream = Project.Instance.AudioFile.Stream ?? (FileAccess.FileExists(Project.Instance.AudioFile.Path)
                 ? FileHandler.LoadFileAsAudioStreamMp3(Project.Instance.AudioFile.Path)
-                : throw new Exception($"Failed to update songPlayer stream - check if {Project.Instance.AudioFile.Path} exists.");
-        }
-        else
-        {
-            Stream = Project.Instance.AudioFile.Stream;
-        }
+                : throw new Exception($"Failed to update songPlayer stream - check if {Project.Instance.AudioFile.Path} exists."));
     }
 }

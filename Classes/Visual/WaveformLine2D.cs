@@ -21,7 +21,8 @@ public partial class WaveformLine2D : Line2D
         set
         {
             length = value;
-            if (!isInitializing) PlotWaveform();
+            if (!isInitializing)
+                PlotWaveform();
         }
     }
 
@@ -33,7 +34,8 @@ public partial class WaveformLine2D : Line2D
         set
         {
             height = value;
-            if (!isInitializing) PlotWaveform();
+            if (!isInitializing)
+                PlotWaveform();
         }
     }
 
@@ -45,7 +47,8 @@ public partial class WaveformLine2D : Line2D
         set
         {
             audioFile = value;
-            if (!isInitializing) PlotWaveform();
+            if (!isInitializing)
+                PlotWaveform();
         }
     }
 
@@ -67,10 +70,12 @@ public partial class WaveformLine2D : Line2D
         get
         {
             if (ShouldDisplayWholeFile)
+            {
                 return new[] {
                     0,
                     AudioFile?.AudioData.Length ?? 0
                 };
+            }
 
             int sampleStart = AudioFile?.SecondsToSampleIndex(TimeRange[0]) ?? 0;
             int sampleEnd = AudioFile?.SecondsToSampleIndex(TimeRange[1]) ?? 0;
@@ -87,11 +92,14 @@ public partial class WaveformLine2D : Line2D
         get => timeRange;
         set
         {
-            if (value[0] > value[1]) { }
+            if (value[0] > value[1])
+            {
+            }
 
             timeRange = value;
             ShouldDisplayWholeFile = false;
-            if (!isInitializing) PlotWaveform();
+            if (!isInitializing)
+                PlotWaveform();
         }
     }
 
@@ -142,10 +150,7 @@ public partial class WaveformLine2D : Line2D
     #region Methods
 
     // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-    {
-        Width = 1;
-    }
+    public override void _Ready() => Width = 1;
 
     /// <summary>
     ///     Generate <see cref="Line2D.Points" />. This property belongs to a Godot default class, so the setter can't be
@@ -163,7 +168,7 @@ public partial class WaveformLine2D : Line2D
         float samplesPerDataPoint = numberOfSamples / Length / DataPointsPerPixel;
 
         float[] xValues = VectorTools.CreateLinearSpace(0, Length, (int)Length * DataPointsPerPixel);
-        var yValues = new float[xValues.Length];
+        float[] yValues = new float[xValues.Length];
 
         if (AudioFile == null)
         {
@@ -171,12 +176,10 @@ public partial class WaveformLine2D : Line2D
             return;
         }
 
-        for (var dataPointIndex = 0; dataPointIndex < yValues.Length; dataPointIndex++)
+        for (int dataPointIndex = 0; dataPointIndex < yValues.Length; dataPointIndex++)
         {
-            var sampleAtDataPointStart = (int)(sampleStart + dataPointIndex * samplesPerDataPoint);
-            var sampleAtDataPointEnd = (int)(sampleStart + (dataPointIndex + 1) * samplesPerDataPoint);
-
-            float pickedValue = 0;
+            int sampleAtDataPointStart = (int)(sampleStart + (dataPointIndex * samplesPerDataPoint));
+            int sampleAtDataPointEnd = (int)(sampleStart + ((dataPointIndex + 1) * samplesPerDataPoint));
 
             // Check if any sample value is negative - if so, the pickedvalue = 0
             // make sure not to clamp values when you get the AudioDataRange
@@ -185,6 +188,7 @@ public partial class WaveformLine2D : Line2D
             bool dataPointIsAfterAudio = sampleAtDataPointStart > AudioFile.AudioData.Length
                                          || sampleAtDataPointEnd > AudioFile.AudioData.Length;
 
+            float pickedValue;
             if (dataPointIsBeforeAudio || dataPointIsAfterAudio)
             {
                 pickedValue = 0;

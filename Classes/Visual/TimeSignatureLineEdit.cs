@@ -8,10 +8,7 @@ public partial class TimeSignatureLineEdit : LineEdit
     public delegate void TimeSignatureSubmittedEventHandler(int[] timeSignature);
 
     // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-    {
-        TextSubmitted += OnTextSubmitted;
-    }
+    public override void _Ready() => TextSubmitted += OnTextSubmitted;
 
     public void OnTextSubmitted(string text)
     {
@@ -20,10 +17,8 @@ public partial class TimeSignatureLineEdit : LineEdit
         if (textSplit.Length != 2)
             return;
 
-        int upper;
-        int lower;
-        bool upperIsInt = int.TryParse(textSplit[0], out upper);
-        bool lowerIsInt = int.TryParse(textSplit[1], out lower);
+        bool upperIsInt = int.TryParse(textSplit[0], out int upper);
+        bool lowerIsInt = int.TryParse(textSplit[1], out int lower);
 
         if (!upperIsInt || !lowerIsInt)
             return;
@@ -31,9 +26,9 @@ public partial class TimeSignatureLineEdit : LineEdit
         if (upper < 1)
             return;
 
-        var timeSignature = new[] { upper, lower };
+        int[] timeSignature = new[] { upper, lower };
 
         ReleaseFocus();
-        EmitSignal(nameof(TimeSignatureSubmitted), timeSignature);
+        _ = EmitSignal(nameof(TimeSignatureSubmitted), timeSignature);
     }
 }

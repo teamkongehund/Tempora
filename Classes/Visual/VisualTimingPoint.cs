@@ -16,7 +16,7 @@ public partial class VisualTimingPoint : Node2D
 
     public VisualTimingPoint(TimingPoint timingPoint)
     {
-        this.TimingPoint = timingPoint;
+        TimingPoint = timingPoint;
     }
 
     public VisualTimingPoint() { }
@@ -37,10 +37,7 @@ public partial class VisualTimingPoint : Node2D
         TimingPoint.Changed += OnTimingPointChanged;
     }
 
-    public void OnTimingPointChanged(TimingPoint timingPoint)
-    {
-        UpdateLabels(timingPoint);
-    }
+    public void OnTimingPointChanged(TimingPoint timingPoint) => UpdateLabels(timingPoint);
 
     public void UpdateLabels(TimingPoint timingPoint)
     {
@@ -48,16 +45,14 @@ public partial class VisualTimingPoint : Node2D
         BpmLabel.Text = timingPoint.Bpm.ToString("0.00");
     }
 
-    public override void _ExitTree()
-    {
-        TimingPoint.Changed -= OnTimingPointChanged; // Necessary due to Godot bug
-    }
+    public override void _ExitTree() => TimingPoint.Changed -= OnTimingPointChanged; // Necessary due to Godot bug
 
     public override void _Input(InputEvent @event)
     {
-        if (!Visible) return;
-        var mousePosition = GetLocalMousePosition();
-        var rectangle = collisionShape2D.Shape.GetRect();
+        if (!Visible)
+            return;
+        Vector2 mousePosition = GetLocalMousePosition();
+        Rect2 rectangle = collisionShape2D.Shape.GetRect();
         bool hasMouseInside = rectangle.HasPoint(mousePosition);
         if (@event is InputEventMouseButton mouseEvent)
         {
@@ -65,11 +60,11 @@ public partial class VisualTimingPoint : Node2D
             {
                 //GD.Print($"Clicked on TimingPoint with BPM {TimingPoint.Bpm} & Time signature {TimingPoint.TimeSignature[0]}/{TimingPoint.TimeSignature[1]}");
 
-                Signals.Instance.EmitSignal("TimingPointHolding", TimingPoint);
+                _ = Signals.Instance.EmitSignal("TimingPointHolding", TimingPoint);
             }
             else if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased())
             {
-                Signals.Instance.EmitSignal("MouseLeftReleased");
+                _ = Signals.Instance.EmitSignal("MouseLeftReleased");
                 return;
             }
 
@@ -83,8 +78,10 @@ public partial class VisualTimingPoint : Node2D
                 // Decrease BPM by 1 (snapping to integers) - only for last timing point.
                 float previousBpm = TimingPoint.Bpm;
                 float newBpm = (int)previousBpm - 1;
-                if (Input.IsKeyPressed(Key.Shift) && !Input.IsKeyPressed(Key.Alt)) newBpm = (int)previousBpm - 5;
-                else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Alt)) newBpm = previousBpm - 0.1f;
+                if (Input.IsKeyPressed(Key.Shift) && !Input.IsKeyPressed(Key.Alt))
+                    newBpm = (int)previousBpm - 5;
+                else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Alt))
+                    newBpm = previousBpm - 0.1f;
 
                 TimingPoint.Bpm = newBpm;
             }
@@ -93,8 +90,10 @@ public partial class VisualTimingPoint : Node2D
                 // Decrease BPM by 1 (snapping to integers) - only for last timing point.
                 float previousBpm = TimingPoint.Bpm;
                 float newBpm = (int)previousBpm + 1;
-                if (Input.IsKeyPressed(Key.Shift) && !Input.IsKeyPressed(Key.Alt)) newBpm = (int)previousBpm + 5;
-                else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Alt)) newBpm = previousBpm + 0.1f;
+                if (Input.IsKeyPressed(Key.Shift) && !Input.IsKeyPressed(Key.Alt))
+                    newBpm = (int)previousBpm + 5;
+                else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Alt))
+                    newBpm = previousBpm + 0.1f;
 
                 TimingPoint.Bpm = newBpm;
             }
@@ -109,9 +108,9 @@ public partial class VisualTimingPoint : Node2D
         if (Time.GetTicksMsec() - SystemTimeWhenCreated > 500)
             TimingPoint.Delete();
         else
-            Signals.Instance.EmitSignal("TimingPointHolding", TimingPoint);
+            _ = Signals.Instance.EmitSignal("TimingPointHolding", TimingPoint);
 
-        var viewport = GetViewport();
+        Viewport viewport = GetViewport();
         viewport.SetInputAsHandled();
         return;
     }

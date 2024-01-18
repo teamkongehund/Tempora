@@ -62,9 +62,10 @@ public partial class Settings : Node
         get => divisor;
         set
         {
-            if (divisor == value) return;
+            if (divisor == value)
+                return;
             divisor = value;
-            Signals.Instance.EmitSignal("SettingsChanged");
+            _ = Signals.Instance.EmitSignal("SettingsChanged");
         }
     }
 
@@ -76,10 +77,11 @@ public partial class Settings : Node
         get => numberOfBlocks;
         set
         {
-            if (numberOfBlocks == value) return;
+            if (numberOfBlocks == value)
+                return;
             numberOfBlocks = value;
             //GD.Print($"NumberOfBlocks changed to {numberOfBlocks}");
-            Signals.Instance.EmitSignal("SettingsChanged");
+            _ = Signals.Instance.EmitSignal("SettingsChanged");
         }
     }
 
@@ -91,9 +93,10 @@ public partial class Settings : Node
         get => musicPositionMargin;
         set
         {
-            if (musicPositionMargin == value) return;
+            if (musicPositionMargin == value)
+                return;
             musicPositionMargin = value;
-            Signals.Instance.EmitSignal("SettingsChanged");
+            _ = Signals.Instance.EmitSignal("SettingsChanged");
         }
     }
 
@@ -102,16 +105,14 @@ public partial class Settings : Node
         get => musicPositionOffset;
         set
         {
-            if (musicPositionOffset == value) return;
+            if (musicPositionOffset == value)
+                return;
             musicPositionOffset = value;
-            Signals.Instance.EmitSignal("SettingsChanged");
+            _ = Signals.Instance.EmitSignal("SettingsChanged");
         }
     }
 
-    public static int DivisorToSlider(int divisor)
-    {
-        return SliderToDivisorDict.FirstOrDefault(x => x.Value == divisor).Key;
-    }
+    public static int DivisorToSlider(int divisor) => SliderToDivisorDict.FirstOrDefault(x => x.Value == divisor).Key;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -135,7 +136,7 @@ public partial class Settings : Node
             return;
         }
         string[] lines = settingsFile.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-        for (var i = 0; i < lines.Length; i++)
+        for (int i = 0; i < lines.Length; i++)
         {
             string line = lines[i];
             string[] lineSplit = line.Split(";");
@@ -153,7 +154,7 @@ public partial class Settings : Node
 
     public void SaveSettings()
     {
-        var settingsFile = "";
+        string settingsFile = "";
         settingsFile += "ProjectFilesDirectory" + ";" + ProjectFilesDirectory + "\n";
         FileHandler.SaveText(settingsPath, settingsFile);
     }

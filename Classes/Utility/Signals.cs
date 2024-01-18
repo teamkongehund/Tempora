@@ -30,8 +30,5 @@ public partial class Signals : Node
 
     public static Signals Instance = null!;
 
-    public override void _Ready()
-    {
-        Instance = this;
-    }
+    public override void _Ready() => Instance = this;
 }

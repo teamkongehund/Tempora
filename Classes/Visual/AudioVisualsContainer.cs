@@ -25,7 +25,7 @@ public partial class AudioVisualsContainer : VBoxContainer
 
     private int nominalMusicPositionStartForTopBlock;
 
-    public List<AudioBlock> AudioBlocks = new();
+    public List<AudioBlock> AudioBlocks = [];
 
     public int NominalMusicPositionStartForTopBlock
     {
@@ -56,28 +56,28 @@ public partial class AudioVisualsContainer : VBoxContainer
             if (mouseEvent.ButtonIndex == MouseButton.WheelDown && mouseEvent.Pressed && !Input.IsKeyPressed(Key.Ctrl))
             {
                 NominalMusicPositionStartForTopBlock += Input.IsKeyPressed(Key.Shift) ? 5 : 1;
-                Signals.Instance.EmitSignal("Scrolled");
+                _ = Signals.Instance.EmitSignal("Scrolled");
             }
             else if (mouseEvent.ButtonIndex == MouseButton.WheelUp && mouseEvent.Pressed && !Input.IsKeyPressed(Key.Ctrl))
             {
                 NominalMusicPositionStartForTopBlock -= Input.IsKeyPressed(Key.Shift) ? 5 : 1;
-                Signals.Instance.EmitSignal("Scrolled");
+                _ = Signals.Instance.EmitSignal("Scrolled");
             }
         }
     }
 
     public void CreateBlocks()
     {
-        foreach (var child in GetChildren()) child.QueueFree();
+        foreach (Node? child in GetChildren())
+            child.QueueFree();
         AudioBlocks.Clear();
 
         int musicPositionStart = NominalMusicPositionStartForTopBlock;
 
         // Instantiate block scenes and add as children
-        for (var i = 0; i < Settings.Instance.MaxNumberOfBlocks; i++)
+        for (int i = 0; i < Settings.Instance.MaxNumberOfBlocks; i++)
         {
-            var audioBlock = packedAudioBlock.Instantiate() as AudioBlock;
-            if (audioBlock == null)
+            if (packedAudioBlock.Instantiate() is not AudioBlock audioBlock)
             {
                 throw new NullReferenceException(nameof(audioBlock));
             }
@@ -87,8 +87,7 @@ public partial class AudioVisualsContainer : VBoxContainer
             AudioBlocks.Add(audioBlock);
         }
 
-
-        foreach (var audioBlock in AudioBlocks)
+        foreach (AudioBlock audioBlock in AudioBlocks)
         {
             AudioDisplayPanel audioDisplayPanel = audioBlock.AudioDisplayPanel;
             audioDisplayPanel.SizeFlagsVertical = SizeFlags.ExpandFill;
@@ -106,41 +105,34 @@ public partial class AudioVisualsContainer : VBoxContainer
 
     public void UpdateNumberOfVisibleBlocks()
     {
-        var children = GetChildren();
+        Godot.Collections.Array<Node> children = GetChildren();
 
-        for (var i = 0; i < children.Count; i++)
+        for (int i = 0; i < children.Count; i++)
         {
             var waveformWindow = (AudioBlock)children[i];
             waveformWindow.Visible = i < Settings.Instance.NumberOfBlocks;
         }
     }
 
-
     public void UpdateBlocksScroll()
     {
         int musicPositionStart = NominalMusicPositionStartForTopBlock;
 
-        var children = GetChildren();
+        Godot.Collections.Array<Node> children = GetChildren();
 
-        foreach (var child in children)
+        foreach (Node? child in children)
         {
             if (child is not AudioBlock)
             {
                 continue;
             }
-            AudioBlock audioBlock = (AudioBlock)child;
+            var audioBlock = (AudioBlock)child;
             audioBlock.NominalMusicPositionStartForWindow = musicPositionStart;
             musicPositionStart++;
         }
     }
 
-    public void OnSeekPlaybackTime(float playbackTime)
-    {
-        EmitSignal(nameof(SeekPlaybackTime), playbackTime);
-    }
+    public void OnSeekPlaybackTime(float playbackTime) => EmitSignal(nameof(SeekPlaybackTime), playbackTime);
 
-    public void OnDoubleClick(float playbackTime)
-    {
-        EmitSignal(nameof(DoubleClicked), playbackTime);
-    }
+    public void OnDoubleClick(float playbackTime) => EmitSignal(nameof(DoubleClicked), playbackTime);
 }

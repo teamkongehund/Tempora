@@ -20,9 +20,10 @@ public partial class Context : Node
         get => selectedPosition;
         set
         {
-            if (value == selectedPosition) return;
+            if (value == selectedPosition)
+                return;
             selectedPosition = value;
-            Signals.Instance.EmitSignal("SelectedPositionChanged");
+            _ = Signals.Instance.EmitSignal("SelectedPositionChanged");
         }
     }
 
@@ -34,13 +35,7 @@ public partial class Context : Node
         Signals.Instance.MouseLeftReleased += OnMouseLeftReleased;
     }
 
-    public void OnTimingPointHolding(TimingPoint timingPoint)
-    {
-        HeldTimingPoint = timingPoint;
-    }
+    public void OnTimingPointHolding(TimingPoint timingPoint) => HeldTimingPoint = timingPoint;
 
-    public void OnMouseLeftReleased()
-    {
-        HeldTimingPoint = null;
-    }
+    public void OnMouseLeftReleased() => HeldTimingPoint = null;
 }

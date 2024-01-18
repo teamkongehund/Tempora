@@ -10,16 +10,15 @@ public partial class FileHandler : Node
     // Correct usage: "using var file = ReadFile(path)". The 'using' operator is required to free/dispose file from memory.
     public static FileAccess ReadFile(string path)
     {
-        var file = FileAccess.FileExists(path)
+        FileAccess? file = FileAccess.FileExists(path)
             ? FileAccess.Open(path, FileAccess.ModeFlags.Read)
             : null;
-        if (file == null) throw new Exception($"File \"{path}\" does not exist.");
-        return file;
+        return file ?? throw new Exception($"File \"{path}\" does not exist.");
     }
 
     public static byte[] GetFileAsBuffer(string path)
     {
-        using var file = ReadFile(path);
+        using FileAccess file = ReadFile(path);
         ulong size = file.GetLength();
         return file.GetBuffer((long)size);
     }
@@ -32,14 +31,16 @@ public partial class FileHandler : Node
 
     public static AudioStreamMP3 LoadFileAsAudioStreamMp3(string path)
     {
-        var sound = new AudioStreamMP3();
-        sound.Data = GetFileAsBuffer(path);
+        var sound = new AudioStreamMP3
+        {
+            Data = GetFileAsBuffer(path)
+        };
         return sound;
     }
 
     public static string[] LoadFileAsTextArraySplittingByNewlines(string path)
     {
-        using var file = ReadFile(path);
+        using FileAccess file = ReadFile(path);
         string text = file.GetAsText();
         string[] textAsArray = text.Split("\n", StringSplitOptions.RemoveEmptyEntries);
         return textAsArray;
@@ -76,7 +77,7 @@ public partial class FileHandler : Node
         using var dir = DirAccess.Open(directoryPath);
         if (dir != null)
         {
-            dir.ListDirBegin();
+            _ = dir.ListDirBegin();
             string fileName = dir.GetNext();
             while (fileName != "")
             {
@@ -103,9 +104,10 @@ public partial class FileHandler : Node
 
     public static string GetDirectory(string filePath)
     {
-        var dir = "";
+        string dir = "";
         string[] pathParts = filePath.Split('/');
-        for (var i = 0; i < pathParts.Length - 1; i++) dir += pathParts[i] + "/";
+        for (int i = 0; i < pathParts.Length - 1; i++)
+            dir += pathParts[i] + "/";
         return dir;
     }
 
@@ -115,7 +117,7 @@ public partial class FileHandler : Node
         if (pathParts.Length < 2)
             return null!;
 
-        string fileExtension = pathParts[pathParts.Length - 1];
+        string fileExtension = pathParts[^1];
 
         return fileExtension;
     }

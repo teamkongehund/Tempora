@@ -14,7 +14,6 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
     [Signal]
     public delegate void DeletedEventHandler(TimingPoint timingPoint);
 
-
     /// <summary>
     ///     The tempo from this timing point until the next. The value is proportional to BPM if the time signature doesn't
     ///     change.
@@ -117,7 +116,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
             {
                 measuresPerSecond = value;
                 Bpm = MpsToBpm(value);
-                EmitSignal(nameof(Changed), this);
+                _ = EmitSignal(nameof(Changed), this);
             }
         }
     }
@@ -130,7 +129,8 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
     {
         get
         {
-            if (bpm == 0) Bpm = MpsToBpm(MeasuresPerSecond);
+            if (bpm == 0)
+                Bpm = MpsToBpm(MeasuresPerSecond);
             return bpm;
         }
         set
@@ -162,7 +162,6 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 
     public float BeatLengthSec => 1 / (Bpm / 60);
 
-
     private float? musicPosition;
     public float? NewMusicPosition;
     public bool IsNewMusicPositionValid = false;
@@ -172,7 +171,8 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
         get => musicPosition;
         set
         {
-            if (musicPosition == value) return;
+            if (musicPosition == value)
+                return;
             //if (PreviousTimingPoint != null && PreviousTimingPoint.MusicPosition >= value) return;
             //if (NextTimingPoint != null && NextTimingPoint.MusicPosition <= value) return;
 
@@ -190,10 +190,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
         }
     }
 
-    public int CompareTo(TimingPoint? other)
-    {
-        return Time.CompareTo(other?.Time);
-    }
+    public int CompareTo(TimingPoint? other) => Time.CompareTo(other?.Time);
 
     public object Clone()
     {
@@ -222,15 +219,11 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
         UpdateMeasuresPerSecond?.Invoke(this, EventArgs.Empty);
     }
 
-
-
     /// <summary>
     ///     Relies on parent <see cref="Timing" /> to delete from project.
     /// </summary>
-    public void Delete()
-    {
+    public void Delete() =>
         //if (PreviousTimingPoint != null) previousTimingPoint.NextTimingPoint = nextTimingPoint;
         //if (NextTimingPoint != null) nextTimingPoint.PreviousTimingPoint = previousTimingPoint;
         EmitSignal(nameof(Deleted), this);
-    }
 }

@@ -41,16 +41,17 @@ public partial class AudioFile : Node
     public AudioFile(string path)
     {
         string extension = FileHandler.GetExtension(path);
-        if (extension != "mp3") throw new Exception($"Failed to create AudioFile with path {path} : Extention was not .mp3!");
+        if (extension != "mp3")
+            throw new Exception($"Failed to create AudioFile with path {path} : Extention was not .mp3!");
 
         byte[] audioFileBytes = FileHandler.GetFileAsBuffer(path);
 
-        AudioStreamMP3 audioStreamMP3 = new AudioStreamMP3();
-        audioStreamMP3.Data = audioFileBytes;
+        var audioStreamMP3 = new AudioStreamMP3
+        {
+            Data = audioFileBytes
+        };
 
-        int sampleRate;
-        int channels;
-        float[] audioData = AudioDataHandler.Mp3ToAudioFloat(audioFileBytes, out sampleRate, out channels);
+        float[] audioData = AudioDataHandler.Mp3ToAudioFloat(audioFileBytes, out int sampleRate, out int channels);
 
         AudioData = audioData;
         SampleRate = sampleRate;
@@ -63,9 +64,7 @@ public partial class AudioFile : Node
     {
         byte[] audioFileBytes = audioStreamMP3.Data;
 
-        int sampleRate;
-        int channels;
-        float[] audioData = AudioDataHandler.Mp3ToAudioFloat(audioFileBytes, out sampleRate, out channels);
+        float[] audioData = AudioDataHandler.Mp3ToAudioFloat(audioFileBytes, out int sampleRate, out int channels);
 
         AudioData = audioData;
         SampleRate = sampleRate;
@@ -75,22 +74,23 @@ public partial class AudioFile : Node
 
     public int SecondsToSampleIndex(float seconds)
     {
-        var sampleIndex = (int)Math.Floor((seconds + SampleIndexOffsetInSeconds) * SampleRate * Channels);
+        int sampleIndex = (int)Math.Floor((seconds + SampleIndexOffsetInSeconds) * SampleRate * Channels);
         //int sampleIndexClamped = Math.Clamp(sampleIndex, 0, AudioData.Length);
         return sampleIndex;
     }
 
-    public float SampleIndexToSeconds(int sampleIndex)
-    {
-        return sampleIndex / (float)SampleRate / Channels - SampleIndexOffsetInSeconds;
-    }
+    public float SampleIndexToSeconds(int sampleIndex) => (sampleIndex / (float)SampleRate / Channels) - SampleIndexOffsetInSeconds;
 
     public float[] GetAudioDataSegment(int sampleStart, int sampleStop)
     {
-        if (sampleStart < 0) sampleStart = 0;
-        if (sampleStop < 0) sampleStop = 0;
-        if (sampleStop > AudioData.Length) sampleStop = AudioData.Length;
-        if (sampleStart > AudioData.Length) sampleStop = AudioData.Length;
+        if (sampleStart < 0)
+            sampleStart = 0;
+        if (sampleStop < 0)
+            sampleStop = 0;
+        if (sampleStop > AudioData.Length)
+            sampleStop = AudioData.Length;
+        if (sampleStart > AudioData.Length)
+            sampleStop = AudioData.Length;
 
         float[] audioDataSegment = AudioData[sampleStart..sampleStop];
 
@@ -109,10 +109,7 @@ public partial class AudioFile : Node
     /// Return audio duration in seconds
     /// </summary>
     /// <returns></returns>
-    public float GetAudioLength()
-    {
-        return SampleIndexToSeconds(AudioData.Length - 1);
-    }
+    public float GetAudioLength() => SampleIndexToSeconds(AudioData.Length - 1);
 
     public void CalculatePer10s()
     {
@@ -125,8 +122,8 @@ public partial class AudioFile : Node
 
         for (int i = 0; i < length - 1; i++)
         {
-            AudioDataPer10Min[i] = AudioData[(i * 10)..(i * 10 + 10)].Min();
-            AudioDataPer10Max[i] = AudioData[(i * 10)..(i * 10 + 10)].Max();
+            AudioDataPer10Min[i] = AudioData[(i * 10)..((i * 10) + 10)].Min();
+            AudioDataPer10Max[i] = AudioData[(i * 10)..((i * 10) + 10)].Max();
         }
         AudioDataPer10Min[length - 1] = AudioData[((length - 1) * 10)..^1].Min();
         AudioDataPer10Max[length - 1] = AudioData[((length - 1) * 10)..^1].Max();

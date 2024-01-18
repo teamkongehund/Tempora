@@ -35,7 +35,6 @@ public partial class Main : Control
     [Export]
     private Label errorLabel = null!;
 
-
     //AudioFile AudioFile;
 
     private ProjectFileManager projectFileManager = null!;
@@ -52,7 +51,6 @@ public partial class Main : Control
         //Project.Instance.AudioFile = new AudioFile(audioPath);
 
         Project.Instance.AudioFile = new AudioFile(defaultMP3);
-
 
         Signals.Instance.Scrolled += OnScrolled;
         Signals.Instance.SettingsChanged += OnSettingsChanged;
@@ -91,7 +89,7 @@ public partial class Main : Control
                     {
                         // Ensure a mouse release is always captured.
                         //GD.Print("Main: MouseLeftReleased");
-                        Signals.Instance.EmitSignal("MouseLeftReleased");
+                        _ = Signals.Instance.EmitSignal("MouseLeftReleased");
                         Context.Instance.IsSelectedMusicPositionMoving = false;
                     }
 
@@ -120,14 +118,12 @@ public partial class Main : Control
         }
     }
 
-    private void OnSettingsChanged()
-    {
-        audioVisualsContainer.UpdateNumberOfVisibleBlocks();
-    }
+    private void OnSettingsChanged() => audioVisualsContainer.UpdateNumberOfVisibleBlocks();
 
     private void OnFilesDropped(string[] filePaths)
     {
-        if (filePaths.Length != 1) return;
+        if (filePaths.Length != 1)
+            return;
         string path = filePaths[0];
 
         AudioFile audioFile;
@@ -161,21 +157,15 @@ public partial class Main : Control
     //    Signals.Instance.EmitSignal("TimingChanged");
     //}
 
-    private void OnBlockScrollBarValueChanged(double value)
-    {
-        audioVisualsContainer.NominalMusicPositionStartForTopBlock = (int)value;
-    }
+    private void OnBlockScrollBarValueChanged(double value) => audioVisualsContainer.NominalMusicPositionStartForTopBlock = (int)value;
 
     private void OnGridScrollBarValueChanged(double value)
     {
-        var intValue = (int)value;
+        int intValue = (int)value;
         Settings.Instance.Divisor = Settings.SliderToDivisorDict[intValue];
     }
 
-    private void OnPlaybackRateScrollBarValueChanged(double value)
-    {
-        audioPlayer.PitchScale = (float)value;
-    }
+    private void OnPlaybackRateScrollBarValueChanged(double value) => audioPlayer.PitchScale = (float)value;
 
     //private void OnBlockAmountScrollBarValueChanged(double value) {
     //	var intValue = (int)value;
@@ -202,10 +192,7 @@ public partial class Main : Control
     //    if (FileAccess.FileExists(globalPath)) OS.ShellOpen(globalPath);
     //}
 
-    public void Play()
-    {
-        audioPlayer.Play();
-    }
+    public void Play() => audioPlayer.Play();
 
     public void Stop()
     {
@@ -229,7 +216,7 @@ public partial class Main : Control
     {
         double playbackTime = audioPlayer.GetPlaybackTime();
         float musicPosition = Timing.Instance.TimeToMusicPosition((float)playbackTime);
-        foreach (var audioBlock in audioVisualsContainer.GetChildren().OfType<AudioBlock>())
+        foreach (AudioBlock audioBlock in audioVisualsContainer.GetChildren().OfType<AudioBlock>())
         {
             AudioDisplayPanel audioDisplayPanel = audioBlock.AudioDisplayPanel;
             float x = audioDisplayPanel.MusicPositionToXPosition(musicPosition);
@@ -245,16 +232,11 @@ public partial class Main : Control
         metronome.Click(musicPosition);
     }
 
-    public void OnSeekPlaybackTime(float playbackTime)
-    {
-        audioPlayer.SeekPlay(playbackTime);
-        //audioPlayer.SeekPlayHarsh(playbackTime);
-    }
+    public void OnSeekPlaybackTime(float playbackTime) => audioPlayer.SeekPlay(playbackTime);//audioPlayer.SeekPlayHarsh(playbackTime);
 
     public void OnDoubleClick(float playbackTime)
     {
-        TimingPoint? timingPoint;
-        Timing.Instance.AddTimingPoint(playbackTime, out timingPoint);
+        Timing.Instance.AddTimingPoint(playbackTime, out TimingPoint? timingPoint);
         if (timingPoint == null)
             return;
         if (timingPoint.MusicPosition == null)

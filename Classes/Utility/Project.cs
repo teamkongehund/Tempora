@@ -16,15 +16,13 @@ public partial class Project : Node
         get => audioFile;
         set
         {
-            if (audioFile == value) return;
+            if (audioFile == value)
+                return;
             audioFile = value;
-            Signals.Instance.EmitSignal("AudioFileChanged");
+            _ = Signals.Instance.EmitSignal("AudioFileChanged");
         }
     }
 
     // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-    {
-        Instance = this;
-    }
+    public override void _Ready() => Instance = this;
 }
