@@ -4,7 +4,7 @@ using System;
 public partial class LabeledScrollbar : VBoxContainer
 {
 	[Export]
-	protected string title;
+	protected string title = "(Title)";
 	[Export]
 	protected double minValue = 0;
 	[Export]
@@ -12,9 +12,9 @@ public partial class LabeledScrollbar : VBoxContainer
 	[Export]
 	protected double step = 0.01;
 
-	protected Label titleLabel;
-	protected HScrollBar hScrollBar;
-	protected Label valueLabel;
+	protected Label titleLabel = null!;
+    protected HScrollBar hScrollBar = null!;
+	protected Label valueLabel = null!;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()

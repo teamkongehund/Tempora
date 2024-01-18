@@ -96,7 +96,7 @@ public partial class FileHandler : Node {
     public static string GetExtension(string filePath) {
         string[] pathParts = filePath.Split('.');
         if (pathParts.Length < 2)
-            return null;
+            return null!;
 
         string fileExtension = pathParts[pathParts.Length - 1];
 

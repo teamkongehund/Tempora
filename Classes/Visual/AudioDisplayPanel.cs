@@ -2,6 +2,7 @@ using Godot;
 using System;
 using OsuTimer.Classes.Utility;
 using GD = OsuTimer.Classes.Utility.GD;
+using System.Linq;
 
 namespace OsuTimer.Classes.Visual;
 
@@ -18,25 +19,24 @@ public partial class AudioDisplayPanel : Control {
     public delegate void AttemptToAddTimingPointEventHandler(float playbackTime);
 
     [Export]
-    public Line2D Playhead;
+    public Line2D Playhead = null!;
     [Export]
-    private Node2D waveformSegments;
+    private Node2D waveformSegments = null!;
     [Export]
-    private Node2D VisualTimingPointFolder;
+    private Node2D VisualTimingPointFolder = null!;
     [Export]
-    private Node2D GridFolder;
+    private Node2D GridFolder = null!;
     [Export]
-    private PreviewLine PreviewLine;
+    private PreviewLine PreviewLine = null!;
     [Export]
-    private Line2D SelectedPositionLine;
+    private Line2D SelectedPositionLine = null!;
     //[Export]
     //private Label MeasureLabel;
     //[Export]
     //private TimeSignatureLineEdit TimeSignatureLineEdit;
 
-    public event AttemptToAddTimingPointEventHandler SomeEvent;
-
-    private PackedScene packedVisualTimingPoint = ResourceLoader.Load<PackedScene>("res://Classes/Visual/VisualTimingPoint.tscn");
+    [Export]
+    private PackedScene packedVisualTimingPoint = null!;
 
     public bool IsInstantiating = true;
 
@@ -165,7 +165,7 @@ public partial class AudioDisplayPanel : Control {
                     }
                     else
                     {
-                        Timing.SnapTimingPoint(Context.Instance.HeldTimingPoint, musicPosition);
+                        Timing.SnapTimingPoint(Context.Instance.HeldTimingPoint!, musicPosition);
                     }
 
                     // PreviewLine
@@ -335,7 +335,15 @@ public partial class AudioDisplayPanel : Control {
     }
 
     public void AddVisualTimingPoint(TimingPoint timingPoint, out VisualTimingPoint visualTimingPoint) {
-        visualTimingPoint = packedVisualTimingPoint.Instantiate() as VisualTimingPoint;
+        if (packedVisualTimingPoint == null)
+            throw new NullReferenceException($"No scene loaded for {nameof(packedVisualTimingPoint)}");
+        var instantiatedVisualTimingPoint = packedVisualTimingPoint.Instantiate();
+
+        if (instantiatedVisualTimingPoint == null)
+            throw new NullReferenceException($"{nameof(packedVisualTimingPoint)} instantiated as null");
+
+        visualTimingPoint = (VisualTimingPoint)instantiatedVisualTimingPoint;
+        
         visualTimingPoint.Visible = false;
         visualTimingPoint.Scale = new Vector2(0.2f, 0.2f);
         visualTimingPoint.ZIndex = 95;
@@ -348,10 +356,16 @@ public partial class AudioDisplayPanel : Control {
         int childrenAmount = children.Count;
         var index = 0;
 
-        foreach (Node2D child in children) child.Visible = false;
+        foreach (Node2D child in children) 
+            child.Visible = false;
 
         // this assumes all children are VisualTimingPoint
         foreach (var timingPoint in Timing.Instance.TimingPoints) {
+            if (timingPoint == null)
+                throw new NullReferenceException($"{nameof(timingPoint)} was null");
+            if (timingPoint.MusicPosition == null)
+                throw new NullReferenceException($"{nameof(timingPoint.MusicPosition)} was null");
+
             if (timingPoint.MusicPosition < ActualMusicPositionStartForWindow
                 || timingPoint.MusicPosition >= ActualMusicPositionStartForWindow + 1 + 2 * Settings.Instance.MusicPositionMargin)
                 continue;
@@ -360,7 +374,16 @@ public partial class AudioDisplayPanel : Control {
             if (index >= childrenAmount)
                 AddVisualTimingPoint(timingPoint, out visualTimingPoint);
             else
-                visualTimingPoint = children[index] as VisualTimingPoint;
+            {
+                var child = children[index];
+                if (child is not VisualTimingPoint || child == null)
+                    continue;
+                else
+                    visualTimingPoint = (VisualTimingPoint) child;
+
+                if (visualTimingPoint == null)
+                    throw new NullReferenceException($"{nameof(VisualTimingPoint)} was null");
+            }
             float x = MusicPositionToXPosition((float)timingPoint.MusicPosition);
             visualTimingPoint.TimingPoint = timingPoint;
             visualTimingPoint.Position = new Vector2(x, Size.Y / 2);

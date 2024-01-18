@@ -12,34 +12,34 @@ public partial class Main : Control {
 	//[Export]
 	//private string audioPath = "res://Audio/UMO.mp3";
 	[Export]
-	private AudioStreamMP3 defaultMP3;
+	private AudioStreamMP3 defaultMP3 = null!;
     [Export] 
-    private AudioPlayer audioPlayer;
+    private AudioPlayer audioPlayer = null!;
     [Export]
-    private AudioVisualsContainer audioVisualsContainer;
+    private AudioVisualsContainer audioVisualsContainer = null!;
     [Export] 
-    private Metronome metronome;
+    private Metronome metronome = null!;
     [Export]
-    private BlockScrollBar blockScrollBar;
+    private BlockScrollBar blockScrollBar = null!;
     [Export]
-    private HScrollBar blockAmountScrollBar;
+    private HScrollBar blockAmountScrollBar = null!;
     [Export]
-    private HScrollBar gridScrollBar;
+    private HScrollBar gridScrollBar = null!;
     [Export]
-    private HScrollBar offsetScrollBar;
+    private HScrollBar offsetScrollBar = null!;
     [Export]
-    private HScrollBar overlapScrollBar;
+    private HScrollBar overlapScrollBar = null!;
     [Export]
-    private HScrollBar playbackRateScrollBar;
+    private HScrollBar playbackRateScrollBar = null!;
     [Export]
-    private Label errorLabel;
+    private Label errorLabel = null!;
 
 
 	//AudioFile AudioFile;
 
-	private ProjectFileManager projectFileManager;
+	private ProjectFileManager projectFileManager = null!;
 
-	private AudioDisplayPanel waveformWindow;
+	//private AudioDisplayPanel waveformWindow;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() {
@@ -227,12 +227,16 @@ public partial class Main : Control {
 		//audioPlayer.SeekPlayHarsh(playbackTime);
 	}
 
-	public void OnDoubleClick(float playbackTime) {
-		TimingPoint timingPoint;
-		Timing.Instance.AddTimingPoint(playbackTime, out timingPoint);
-		if (timingPoint != null) {
-			Context.Instance.HeldTimingPoint = timingPoint;
-			Timing.SnapTimingPoint(timingPoint, (float)timingPoint.MusicPosition);
-		}
-	}
+	public void OnDoubleClick(float playbackTime)
+    {
+        TimingPoint? timingPoint;
+        Timing.Instance.AddTimingPoint(playbackTime, out timingPoint);
+        if (timingPoint == null)
+            return;
+        if (timingPoint.MusicPosition == null)
+            throw new NullReferenceException($"{nameof(timingPoint.MusicPosition)} was null");
+        Context.Instance.HeldTimingPoint = timingPoint;
+        float musicPosition = (float)timingPoint.MusicPosition;
+        Timing.SnapTimingPoint(timingPoint, musicPosition);
+    }
 }

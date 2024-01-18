@@ -6,9 +6,9 @@ namespace OsuTimer.Classes.Utility;
 ///     Manages user context, such as object selection
 /// </summary>
 public partial class Context : Node {
-    public static Context Instance;
+    public static Context Instance = null!;
 
-    public TimingPoint HeldTimingPoint;
+    public TimingPoint? HeldTimingPoint = null!;
 
     public bool IsSelectedMusicPositionMoving = false;
 

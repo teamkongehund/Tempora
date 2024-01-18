@@ -9,7 +9,6 @@ offset_bottom = 45.0
 size_flags_horizontal = 3
 theme_override_constants/separation = 0
 script = ExtResource("1_em0mv")
-title = "(Title)"
 maxValue = 30.0
 step = 1.0
 

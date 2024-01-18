@@ -10,10 +10,10 @@ namespace OsuTimer.Classes.Utility;
 ///     Handles saving and loading of project files
 /// </summary>
 public partial class ProjectFileManager : Node {
-    public static ProjectFileManager Instance;
+    public static ProjectFileManager Instance = null!;
 
     public static readonly string ProjectFileExtension = "tmpr";
-    private Settings settings;
+    private Settings settings = null!;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() {
@@ -82,6 +82,8 @@ public partial class ProjectFileManager : Node {
         TimingPoint lastTimingPoint = Timing.Instance.TimingPoints[^1];
         foreach (var timingPoint in Timing.Instance.TimingPoints)
         {
+            if (timingPoint?.MusicPosition == null)
+                continue;
             var timingPointLine = "";
             timingPointLine += timingPoint.Time.ToString(CultureInfo.InvariantCulture);
             timingPointLine += ";";
