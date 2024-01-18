@@ -1,0 +1,38 @@
+[gd_scene load_steps=2 format=3 uid="uid://b4x6i8hh1c304"]
+
+[ext_resource type="Script" path="res://Classes/Visual/LabeledScrollbar.cs" id="1_em0mv"]
+
+[node name="LabeledScrollbar" type="VBoxContainer"]
+custom_minimum_size = Vector2(20, 0)
+offset_right = 79.0
+offset_bottom = 45.0
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+script = ExtResource("1_em0mv")
+title = "(Title)"
+maxValue = 30.0
+step = 1.0
+
+[node name="TitleLabel" type="Label" parent="."]
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_font_sizes/font_size = 12
+text = "(Title)"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="HScrollBar" type="HScrollBar" parent="."]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ValueLabel" type="Label" parent="HScrollBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 1
+vertical_alignment = 1

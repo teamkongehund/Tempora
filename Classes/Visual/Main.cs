@@ -58,11 +58,11 @@ public partial class Main : Control {
 		audioVisualsContainer.DoubleClicked += OnDoubleClick;
 		blockScrollBar.ValueChanged += OnBlockScrollBarValueChanged;
 		GetTree().Root.FilesDropped += OnFilesDropped;
-		gridScrollBar.ValueChanged += OnGridScrollBarValueChanged;
-		playbackRateScrollBar.ValueChanged += OnPlaybackRateScrollBarValueChanged;
-		blockAmountScrollBar.ValueChanged += OnBlockAmountScrollBarValueChanged;
-		offsetScrollBar.ValueChanged += OnOffsetScrollBarValueChanged;
-		overlapScrollBar.ValueChanged += OnOverlapScrollBarValueChanged;
+		//gridScrollBar.ValueChanged += OnGridScrollBarValueChanged;
+		//playbackRateScrollBar.ValueChanged += OnPlaybackRateScrollBarValueChanged;
+		//blockAmountScrollBar.ValueChanged += OnBlockAmountScrollBarValueChanged;
+		//offsetScrollBar.ValueChanged += OnOffsetScrollBarValueChanged;
+		//overlapScrollBar.ValueChanged += OnOverlapScrollBarValueChanged;
 
 		audioVisualsContainer.CreateBlocks();
 		UpdatePlayHeads();
@@ -161,18 +161,18 @@ public partial class Main : Control {
 		audioPlayer.PitchScale = (float)value;
 	}
 
-	private void OnBlockAmountScrollBarValueChanged(double value) {
-		var intValue = (int)value;
-		Settings.Instance.NumberOfBlocks = intValue;
-	}
+	//private void OnBlockAmountScrollBarValueChanged(double value) {
+	//	var intValue = (int)value;
+	//	Settings.Instance.NumberOfBlocks = intValue;
+	//}
 
-	private void OnOffsetScrollBarValueChanged(double value) {
-		Settings.Instance.MusicPositionOffset = (float)value;
-	}
+	//private void OnOffsetScrollBarValueChanged(double value) {
+	//	Settings.Instance.MusicPositionOffset = (float)value;
+	//}
 
-	private void OnOverlapScrollBarValueChanged(double value) {
-		Settings.Instance.MusicPositionMargin = (float)value;
-	}
+	//private void OnOverlapScrollBarValueChanged(double value) {
+	//	Settings.Instance.MusicPositionMargin = (float)value;
+	//}
 
 	//public void ExportOsz() {
 	//    var random = new Random();

@@ -1,23 +1,25 @@
 using Godot;
+using OsuTimer.Classes.Audio;
+using OsuTimer.Classes.Utility;
 
 namespace OsuTimer.Classes.Visual;
 
-public partial class PlaybackRateScrollBar : HScrollBar {
-    public Label Label;
+public partial class PlaybackRateScrollBar : LabeledScrollbar
+{
+    [Export] AudioPlayer audioPlayer;
 
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready() {
-        Label = GetNode<Label>("Label");
-        UpdateLabel();
-
-        ValueChanged += OnValueChanged;
+    protected override void UpdateValueLabel()
+    {
+        valueLabel.Text = (hScrollBar.Value * 100).ToString("0") +" %";
     }
 
-    public void OnValueChanged(double value) {
-        UpdateLabel();
+    protected override void UpdateValue()
+    {
+        audioPlayer.PitchScale = (float)hScrollBar.Value;
     }
 
-    public void UpdateLabel() {
-        Label.Text = ((int)(Value * 100)) + " %";
+    protected override void SetInitialValue()
+    {
+        hScrollBar.Value = 1;
     }
 }

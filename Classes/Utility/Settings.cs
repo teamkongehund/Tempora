@@ -71,6 +71,7 @@ public partial class Settings : Node {
         set {
             if (numberOfBlocks == value) return;
             numberOfBlocks = value;
+            //GD.Print($"NumberOfBlocks changed to {numberOfBlocks}");
             Signals.Instance.EmitSignal("SettingsChanged");
         }
     }

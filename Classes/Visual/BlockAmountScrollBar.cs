@@ -3,26 +3,21 @@ using OsuTimer.Classes.Utility;
 
 namespace OsuTimer.Classes.Visual;
 
-public partial class BlockAmountScrollBar : HScrollBar {
-    public Label Label;
-
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready() {
-        Label = GetNode<Label>("Label");
-
-        UpdateLabel(Settings.Instance.NumberOfBlocks);
-        Value = Settings.Instance.NumberOfBlocks;
-
-        MaxValue = Settings.Instance.MaxNumberOfBlocks;
-
-        ValueChanged += OnValueChanged;
+public partial class BlockAmountScrollBar : LabeledScrollbar
+{
+    protected override void UpdateValueLabel()
+    {
+        valueLabel.Text = ((int)hScrollBar.Value).ToString();
     }
 
-    public void OnValueChanged(double value) {
-        UpdateLabel(value);
+    protected override void UpdateValue()
+    {
+        Settings.Instance.NumberOfBlocks = (int)hScrollBar.Value;
     }
 
-    public void UpdateLabel(double value) {
-        Label.Text = ((int)value).ToString();
+    protected override void SetInitialValue()
+    {
+        //GD.Print(Settings.Instance.NumberOfBlocks);
+        hScrollBar.Value = Settings.Instance.NumberOfBlocks;
     }
 }

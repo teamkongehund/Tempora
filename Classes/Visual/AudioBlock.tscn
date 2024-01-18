@@ -30,7 +30,7 @@ theme_override_constants/separation = 10
 layout_mode = 2
 
 [node name="MeasureLabel" type="Label" parent="BlockHBoxContainer/LabelHBoxContainer"]
-custom_minimum_size = Vector2(16, 0)
+custom_minimum_size = Vector2(22, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)

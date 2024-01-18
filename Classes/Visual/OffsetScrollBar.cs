@@ -3,24 +3,20 @@ using OsuTimer.Classes.Utility;
 
 namespace OsuTimer.Classes.Visual;
 
-public partial class OffsetScrollBar : HScrollBar {
-    public Label Label;
-
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready() {
-        Label = GetNode<Label>("Label");
-
-        UpdateLabel(Settings.Instance.MusicPositionOffset);
-        Value = Settings.Instance.MusicPositionOffset;
-
-        ValueChanged += OnValueChanged;
+public partial class OffsetScrollBar : LabeledScrollbar
+{
+    protected override void UpdateValueLabel()
+    {
+        valueLabel.Text = (hScrollBar.Value * 100).ToString("0.0") + " %";
     }
 
-    public void OnValueChanged(double value) {
-        UpdateLabel(value);
+    protected override void UpdateValue()
+    {
+        Settings.Instance.MusicPositionOffset = (float)hScrollBar.Value;
     }
 
-    public void UpdateLabel(double value) {
-        Label.Text = (value * 100).ToString("0.0") + " %";
+    protected override void SetInitialValue()
+    {
+        hScrollBar.Value = Settings.Instance.MusicPositionOffset;
     }
 }
