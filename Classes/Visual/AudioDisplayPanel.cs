@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Godot;
+using GD = Godot.GD;
 using OsuTimer.Classes.Utility;
 
 namespace OsuTimer.Classes.Visual;
@@ -254,7 +255,7 @@ public partial class AudioDisplayPanel : Control
         float margin = Settings.Instance.MusicPositionMargin;
 
         float timeWhereWindowBegins = Timing.Instance.MusicPositionToTime(ActualMusicPositionStartForWindow);
-        float timeWhereWindowEnds = Timing.Instance.MusicPositionToTime(ActualMusicPositionStartForWindow + 1 + (2 * margin));
+        float timeWhereWindowEnds = Timing.Instance.MusicPositionToTime(ActualMusicPositionEndForWindow);
 
         if (Timing.Instance.TimingPoints.Count == 0)
         {
@@ -303,6 +304,8 @@ public partial class AudioDisplayPanel : Control
             {
                 Position = new Vector2(xPosition, Size.Y / 2)
             };
+
+            //GD.Print($"timeWhereWindowBegins = {timeWhereWindowBegins} , musicPositionStart = {musicPositionStart}");
 
             // Randomize color, so it's easy to see what's happening
             //Random random = new Random();

@@ -13,7 +13,7 @@
 [ext_resource type="Script" path="res://Classes/Visual/LoadButton.cs" id="8_kgjts"]
 [ext_resource type="Script" path="res://Classes/Visual/ClearAllButton.cs" id="9_7o3s6"]
 [ext_resource type="Script" path="res://Classes/Visual/BlockAmountScrollBar.cs" id="9_22ufa"]
-[ext_resource type="PackedScene" uid="uid://b4x6i8hh1c304" path="res://Classes/Visual/LabeledScrollbar.tscn" id="10_4hwef"]
+[ext_resource type="PackedScene" uid="uid://dgiyftqx2v7fb" path="res://Classes/Visual/LabeledScrollbar.tscn" id="10_4hwef"]
 [ext_resource type="Script" path="res://Classes/Visual/ExportButton.cs" id="10_y304k"]
 [ext_resource type="Script" path="res://Classes/Visual/OffsetScrollBar.cs" id="10_yfm4l"]
 [ext_resource type="Script" path="res://Classes/Visual/OverlapScrollBar.cs" id="13_wubaw"]

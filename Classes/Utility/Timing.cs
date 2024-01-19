@@ -416,7 +416,8 @@ public partial class Timing : Node
     public TimingPoint? GetOperatingTimingPoint_ByTime(float time)
     {
         // Ensures the method can be used while a TimingPoint is being created.
-        List<TimingPoint>? validTimingPoints = TimingPoints.Where(point => point.MusicPosition != null) as List<TimingPoint>;
+        var validTimingPoints = TimingPoints.Where(point => point.MusicPosition != null).ToList<TimingPoint>();
+
         if (validTimingPoints == null)
             return null;
 
@@ -471,7 +472,9 @@ public partial class Timing : Node
         TimingPoint? operatingTimingPoint = GetOperatingTimingPoint_ByTime(time);
 
         if (operatingTimingPoint?.MusicPosition == null)
+        {
             return time * 0.5f; // default 120 bpm from musicposition origin
+        }
         else 
             return (float)(((time - operatingTimingPoint.Time) * operatingTimingPoint.MeasuresPerSecond) + operatingTimingPoint.MusicPosition);
     }
