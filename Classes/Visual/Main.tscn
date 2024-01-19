@@ -53,6 +53,7 @@ color = Color(0, 0.2, 0.254902, 1)
 metadata/_edit_lock_ = true
 
 [node name="HSplitContainer" type="HSplitContainer" parent="."]
+z_index = 1
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -281,10 +282,6 @@ text = "Metronome"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="VersionLabel" type="Label" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/VBoxContainer"]
-layout_mode = 2
-script = ExtResource("16_j6b0h")
-
 [node name="HSplitContainer" type="HSplitContainer" parent="HSplitContainer"]
 layout_mode = 2
 
@@ -319,3 +316,22 @@ theme_override_constants/margin_bottom = 10
 layout_mode = 2
 size_flags_horizontal = 1
 script = ExtResource("5_aqu3i")
+
+[node name="VersionLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -1.0
+offset_top = -12.0
+grow_horizontal = 0
+grow_vertical = 0
+size_flags_horizontal = 8
+size_flags_vertical = 8
+theme_override_colors/font_color = Color(1, 1, 1, 0.596078)
+theme_override_font_sizes/font_size = 9
+horizontal_alignment = 2
+vertical_alignment = 2
+script = ExtResource("16_j6b0h")
