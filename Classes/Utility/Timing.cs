@@ -184,8 +184,12 @@ public partial class Timing : Node
     {
         TimingPoints.IndexOf(timingPoint);
 
+        TimingPoint? previousTimingPoint = GetPreviousTimingPoint(timingPoint);
+
         timingPoint.QueueFree();
         TimingPoints.Remove(timingPoint);
+
+        previousTimingPoint?.MeasuresPerSecond_Set(this);
 
         Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
     }
