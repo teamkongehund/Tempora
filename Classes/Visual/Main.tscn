@@ -63,6 +63,8 @@ grow_vertical = 2
 
 [node name="LeftHandMenuMarginContainer" type="MarginContainer" parent="HSplitContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.05
 mouse_filter = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
@@ -72,13 +74,16 @@ theme_override_constants/margin_bottom = 10
 [node name="VSplitContainer" type="VSplitContainer" parent="HSplitContainer/LeftHandMenuMarginContainer"]
 layout_mode = 2
 
-[node name="SettingsSlidersVBox" type="VBoxContainer" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer"]
+[node name="VSplitContainer" type="VSplitContainer" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-size_flags_stretch_ratio = 0.4
+
+[node name="SettingsSlidersVBox" type="VBoxContainer" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer"]
+layout_mode = 2
+size_flags_vertical = 3
 theme_override_constants/separation = 5
 
-[node name="GridScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/SettingsSlidersVBox" instance=ExtResource("10_4hwef")]
+[node name="GridScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/SettingsSlidersVBox" instance=ExtResource("10_4hwef")]
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("7_i2h88")
@@ -86,24 +91,24 @@ title = "Grid"
 minValue = 1.0
 maxValue = 8.0
 
-[node name="PlaybackRateScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/SettingsSlidersVBox" node_paths=PackedStringArray("audioPlayer") instance=ExtResource("10_4hwef")]
+[node name="PlaybackRateScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/SettingsSlidersVBox" node_paths=PackedStringArray("audioPlayer") instance=ExtResource("10_4hwef")]
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("8_6jrsb")
-audioPlayer = NodePath("../../../../../AudioPlayer")
+audioPlayer = NodePath("../../../../../../AudioPlayer")
 title = "Playback"
 minValue = 0.1
 maxValue = 1.0
 step = 0.01
 
-[node name="BlockAmountScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/SettingsSlidersVBox" instance=ExtResource("10_4hwef")]
+[node name="BlockAmountScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/SettingsSlidersVBox" instance=ExtResource("10_4hwef")]
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("9_22ufa")
 title = "Blocks"
 minValue = 1.0
 
-[node name="OffsetScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/SettingsSlidersVBox" instance=ExtResource("10_4hwef")]
+[node name="OffsetScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/SettingsSlidersVBox" instance=ExtResource("10_4hwef")]
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("10_yfm4l")
@@ -111,7 +116,7 @@ title = "Offset"
 maxValue = 0.5
 step = 0.025
 
-[node name="OverlapScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/SettingsSlidersVBox" instance=ExtResource("10_4hwef")]
+[node name="OverlapScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/SettingsSlidersVBox" instance=ExtResource("10_4hwef")]
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("13_wubaw")
@@ -119,20 +124,11 @@ title = "Overlap"
 maxValue = 0.25
 step = 0.01
 
-[node name="VSplitContainer" type="VSplitContainer" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer"]
+[node name="ButtonsVBox" type="VBoxContainer" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="ButtonsMargins" type="MarginContainer" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_bottom = 10
-
-[node name="ButtonsVBox" type="VBoxContainer" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsMargins"]
-layout_mode = 2
-
-[node name="ClearAllButton" type="Button" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsMargins/ButtonsVBox" node_paths=PackedStringArray("confirmationDialog")]
+[node name="ClearAllButton" type="Button" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsVBox" node_paths=PackedStringArray("confirmationDialog")]
 layout_mode = 2
 size_flags_vertical = 3
 focus_mode = 0
@@ -142,12 +138,12 @@ text = "Clear All
 script = ExtResource("9_7o3s6")
 confirmationDialog = NodePath("ConfirmationDialog")
 
-[node name="ConfirmationDialog" type="ConfirmationDialog" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsMargins/ButtonsVBox/ClearAllButton"]
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsVBox/ClearAllButton"]
 title = "Delete all timing points?"
 initial_position = 1
 size = Vector2i(295, 80)
 
-[node name="SaveButton" type="Button" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsMargins/ButtonsVBox"]
+[node name="SaveButton" type="Button" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsVBox"]
 layout_mode = 2
 size_flags_vertical = 3
 focus_mode = 0
@@ -155,12 +151,12 @@ theme_override_font_sizes/font_size = 12
 text = "Save As..."
 script = ExtResource("7_vit6a")
 
-[node name="FileDialog" type="FileDialog" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsMargins/ButtonsVBox/SaveButton"]
+[node name="FileDialog" type="FileDialog" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsVBox/SaveButton"]
 position = Vector2i(170, 70)
 size = Vector2i(1002, 587)
 access = 2
 
-[node name="LoadButton" type="Button" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsMargins/ButtonsVBox"]
+[node name="LoadButton" type="Button" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsVBox"]
 layout_mode = 2
 size_flags_vertical = 3
 focus_mode = 0
@@ -168,7 +164,7 @@ theme_override_font_sizes/font_size = 12
 text = "Open..."
 script = ExtResource("8_kgjts")
 
-[node name="FileDialog" type="FileDialog" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsMargins/ButtonsVBox/LoadButton"]
+[node name="FileDialog" type="FileDialog" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsVBox/LoadButton"]
 title = "Open a File"
 position = Vector2i(170, 70)
 size = Vector2i(1002, 587)
@@ -176,26 +172,20 @@ ok_button_text = "Open"
 file_mode = 0
 access = 2
 
-[node name="ExportButton" type="Button" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsMargins/ButtonsVBox"]
+[node name="ExportButton" type="Button" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsVBox"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/font_size = 12
 text = "Open .osz"
 script = ExtResource("10_y304k")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-size_flags_stretch_ratio = 1.6
-
-[node name="VolumeSlidersHBox" type="HBoxContainer" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/VBoxContainer"]
+[node name="VolumeSlidersHBox" type="HBoxContainer" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer"]
 custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
 size_flags_vertical = 3
-size_flags_stretch_ratio = 1.6
 theme_override_constants/separation = 7
 
-[node name="VolumeSliderMaster" type="VScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/VBoxContainer/VolumeSlidersHBox"]
+[node name="VolumeSliderMaster" type="VScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VolumeSlidersHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 max_value = 1.0
@@ -205,7 +195,7 @@ script = ExtResource("6_w0n8n")
 BusName = "Master"
 metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/VBoxContainer/VolumeSlidersHBox/VolumeSliderMaster"]
+[node name="Label" type="Label" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VolumeSlidersHBox/VolumeSliderMaster"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -224,7 +214,7 @@ text = "Master"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="VolumeSliderMusic" type="VScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/VBoxContainer/VolumeSlidersHBox"]
+[node name="VolumeSliderMusic" type="VScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VolumeSlidersHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 max_value = 1.0
@@ -234,7 +224,7 @@ script = ExtResource("6_w0n8n")
 BusName = "Music"
 metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/VBoxContainer/VolumeSlidersHBox/VolumeSliderMusic"]
+[node name="Label" type="Label" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VolumeSlidersHBox/VolumeSliderMusic"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -253,7 +243,7 @@ text = "Music"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="VolumeSliderMetronome" type="VScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/VBoxContainer/VolumeSlidersHBox"]
+[node name="VolumeSliderMetronome" type="VScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VolumeSlidersHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 max_value = 1.0
@@ -263,7 +253,7 @@ script = ExtResource("6_w0n8n")
 BusName = "Metronome"
 metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/VBoxContainer/VolumeSlidersHBox/VolumeSliderMetronome"]
+[node name="Label" type="Label" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VolumeSlidersHBox/VolumeSliderMetronome"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -284,6 +274,7 @@ vertical_alignment = 1
 
 [node name="HSplitContainer" type="HSplitContainer" parent="HSplitContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="AudioVisualsMarginContainer" type="MarginContainer" parent="HSplitContainer/HSplitContainer"]
 z_index = 10
