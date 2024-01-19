@@ -118,19 +118,7 @@ public partial class Main : Control
             return;
         string path = filePaths[0];
 
-        AudioFile audioFile;
-        //try {
-        //    audioFile = new AudioFile(path);
-        //    Project.Instance.AudioFile = audioFile;
-        //    audioPlayer.LoadMp3();
-        //    //UpdateChildrensAudioFiles();
-        //}
-        //catch (Exception ex)
-        //{
-        //    errorLabel.Text = ex.Message;
-        //}
-
-        audioFile = new AudioFile(path);
+        var audioFile = new AudioFile(path);
         Project.Instance.AudioFile = audioFile;
         audioPlayer.LoadMp3();
     }

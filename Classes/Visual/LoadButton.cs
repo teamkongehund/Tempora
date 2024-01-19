@@ -1,10 +1,17 @@
+using System;
+using System.IO;
+using System.Linq;
 using Godot;
+using OsuTimer.Classes.Audio;
 using OsuTimer.Classes.Utility;
 
 namespace OsuTimer.Classes.Visual;
 
 public partial class LoadButton : Button
 {
+    [Export]
+    AudioPlayer audioPlayer = null!;
+
     private FileDialog fileDialog = null!;
 
     // Called when the node enters the scene tree for the first time.
@@ -27,12 +34,29 @@ public partial class LoadButton : Button
     {
         string extension = FileHandler.GetExtension(selectedPath);
 
-        string correctExtension = ProjectFileManager.ProjectFileExtension;
+        string projectFileExtension = ProjectFileManager.ProjectFileExtension;
+        string mp3Extension = "mp3";
 
-        if (extension != correctExtension)
+        string[] allowedExtensions =
+        [
+            projectFileExtension,
+            mp3Extension
+        ];
+
+        if (!allowedExtensions.Contains(extension))
             return;
 
-        ProjectFileManager.Instance.LoadProjectFromFilePath(selectedPath);
+        switch (extension)
+        {
+            case var value when value == mp3Extension:
+                var audioFile = new AudioFile(selectedPath);
+                Project.Instance.AudioFile = audioFile;
+                audioPlayer.LoadMp3();
+                break;
+            case var value when value == projectFileExtension:
+                ProjectFileManager.Instance.LoadProjectFromFilePath(selectedPath);
+                break;
+        }
 
         string dir = FileHandler.GetDirectory(selectedPath);
         Settings.Instance.ProjectFilesDirectory = dir;

@@ -156,13 +156,14 @@ position = Vector2i(170, 70)
 size = Vector2i(1002, 587)
 access = 2
 
-[node name="LoadButton" type="Button" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsVBox"]
+[node name="LoadButton" type="Button" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsVBox" node_paths=PackedStringArray("audioPlayer")]
 layout_mode = 2
 size_flags_vertical = 3
 focus_mode = 0
 theme_override_font_sizes/font_size = 12
 text = "Open..."
 script = ExtResource("8_kgjts")
+audioPlayer = NodePath("../../../../../../AudioPlayer")
 
 [node name="FileDialog" type="FileDialog" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsVBox/LoadButton"]
 title = "Open a File"
