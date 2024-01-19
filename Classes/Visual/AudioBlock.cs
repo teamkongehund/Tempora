@@ -32,7 +32,7 @@ public partial class AudioBlock : Control
     {
         Signals.Instance.TimingChanged += OnTimingChanged;
 
-        _ = timeSignatureLineEdit.Connect("TimeSignatureSubmitted", new Callable(this, "OnTimingSignatureSubmitted"));
+        timeSignatureLineEdit.Connect("TimeSignatureSubmitted", new Callable(this, "OnTimingSignatureSubmitted"));
     }
 
     public void OnTimingChanged(object? sender, EventArgs e)

@@ -19,8 +19,8 @@ public partial class WaveformRenderViewport : SubViewport
         };
         AddChild(waveform);
 
-        _ = await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
-        _ = GetViewport().GetTexture().GetImage().SavePng("user://renderedWave.png");
+        await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
+        GetViewport().GetTexture().GetImage().SavePng("user://renderedWave.png");
         GD.Print("Saved to PNG!");
     }
 }

@@ -180,7 +180,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
         }
     }
 
-    public TimingPoint(float time, int[] timeSignature) 
+    public TimingPoint(float time, int[] timeSignature)
     {
         this.time = time;
         this.timeSignature = timeSignature;

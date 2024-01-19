@@ -19,7 +19,7 @@ public partial class AudioPlayer : AudioStreamPlayer
     {
         //VolumeDb = base.VolumeDb;
         Signals.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
-        Signals.Instance.AudioFileChanged += OnAudioFileChanged;
+        Signals.Instance.AudioFileChanged += LoadMp3;
     }
 
     public override void _Process(double delta)
@@ -34,9 +34,7 @@ public partial class AudioPlayer : AudioStreamPlayer
         }
     }
 
-    private void OnAudioFileChanged(object? sender, EventArgs e) => LoadMp3();
-
-    public void OnSelectedPositionChanged(object? sender, EventArgs e)
+    public void OnSelectedPositionChanged()
     {
         float time = Timing.Instance.MusicPositionToTime(Context.Instance.SelectedMusicPosition);
         PauseTime = time >= 0 ? (double)time : 0;

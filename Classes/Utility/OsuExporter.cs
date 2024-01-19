@@ -110,16 +110,16 @@ SliderTickRate:1
         var random = new Random();
         int rand = random.Next();
 
-        _ = zipPacker.StartFile($"{rand}.osu");
-        _ = zipPacker.WriteFile(dotOsuString.ToUtf8Buffer());
-        _ = zipPacker.CloseFile();
+        zipPacker.StartFile($"{rand}.osu");
+        zipPacker.WriteFile(dotOsuString.ToUtf8Buffer());
+        zipPacker.CloseFile();
 
-        _ = zipPacker.StartFile("audio.mp3");
+        zipPacker.StartFile("audio.mp3");
         //zipPacker.WriteFile(FileHandler.GetFileAsBuffer(audioFile.Path));
-        _ = zipPacker.WriteFile(((AudioStreamMP3)audioFile.Stream).Data);
-        _ = zipPacker.CloseFile();
+        zipPacker.WriteFile(((AudioStreamMP3)audioFile.Stream).Data);
+        zipPacker.CloseFile();
 
-        _ = zipPacker.Close();
+        zipPacker.Close();
     }
 
     public static void SaveOsu(string osuPath, string dotOsuString) => FileHandler.SaveText(osuPath, dotOsuString);
@@ -135,6 +135,6 @@ SliderTickRate:1
         // Open with system:
         string globalPath = ProjectSettings.GlobalizePath(path);
         if (FileAccess.FileExists(globalPath))
-            _ = OS.ShellOpen(globalPath);
+            OS.ShellOpen(globalPath);
     }
 }

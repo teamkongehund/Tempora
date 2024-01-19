@@ -77,7 +77,7 @@ public partial class FileHandler : Node
         using var dir = DirAccess.Open(directoryPath);
         if (dir != null)
         {
-            _ = dir.ListDirBegin();
+            dir.ListDirBegin();
             string fileName = dir.GetNext();
             while (fileName != "")
             {

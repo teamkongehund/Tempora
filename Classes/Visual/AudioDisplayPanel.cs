@@ -117,7 +117,7 @@ public partial class AudioDisplayPanel : Control
                 {
                     float x = mouseEvent.Position.X;
                     float musicPosition = XPositionToMusicPosition(x);
-                    _ = Timing.Instance.MusicPositionToTime(musicPosition);
+                    Timing.Instance.MusicPositionToTime(musicPosition);
 
                     if (Input.IsKeyPressed(Key.Alt))
                     {

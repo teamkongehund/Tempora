@@ -28,7 +28,7 @@ public partial class TimeSignatureLineEdit : LineEdit
         int[] timeSignature = [upper, lower];
 
         ReleaseFocus();
-        //_ = EmitSignal(nameof(TimeSignatureSubmitted), timeSignature);
+        //EmitSignal(nameof(TimeSignatureSubmitted), timeSignature);
         TimeSignatureSubmitted?.Invoke(this, timeSignature);
     }
 }

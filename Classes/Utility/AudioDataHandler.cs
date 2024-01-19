@@ -33,7 +33,7 @@ public partial class AudioDataHandler : Node
         {
             using var reader = new WaveFileReader(audioFileMemoryStream);
             audioBytes = new byte[reader.Length];
-            _ = reader.Read(audioBytes, 0, audioBytes.Length);
+            reader.Read(audioBytes, 0, audioBytes.Length);
             sampleRate = reader.WaveFormat.SampleRate;
             channels = reader.WaveFormat.Channels;
         }
@@ -50,7 +50,7 @@ public partial class AudioDataHandler : Node
         {
             using var reader = new Mp3FileReader(audioFileMemoryStream);
             audioBytes = new byte[reader.Length];
-            _ = reader.Read(audioBytes, 0, audioBytes.Length);
+            reader.Read(audioBytes, 0, audioBytes.Length);
             sampleRate = reader.Mp3WaveFormat.SampleRate;
             channels = reader.Mp3WaveFormat.Channels;
         }

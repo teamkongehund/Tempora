@@ -111,7 +111,7 @@ public static class GD
 
         var sb = new StringBuilder();
         for (int i = 0; i < parameters.Length; i++)
-            _ = sb.Append(parameters[i]?.ToString() ?? "null");
+            sb.Append(parameters[i]?.ToString() ?? "null");
         return sb.ToString();
     }
 
@@ -124,8 +124,8 @@ public static class GD
         for (int i = 0; i < parameters.Length; i++)
         {
             if (i != 0)
-                _ = sb.Append(separator);
-            _ = sb.Append(parameters[i]?.ToString() ?? "null");
+                sb.Append(separator);
+            sb.Append(parameters[i]?.ToString() ?? "null");
         }
 
         return sb.ToString();
