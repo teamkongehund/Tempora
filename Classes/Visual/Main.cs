@@ -55,14 +55,7 @@ public partial class Main : Control
         Signals.Instance.Scrolled += OnScrolled;
         Signals.Instance.SettingsChanged += OnSettingsChanged;
         audioVisualsContainer.SeekPlaybackTime += OnSeekPlaybackTime;
-        audioVisualsContainer.AttemptToAddTimingPoint += OnAttemptToAddTimingPoint;
-        //blockScrollBar.ValueChanged += OnBlockScrollBarValueChanged;
         GetTree().Root.FilesDropped += OnFilesDropped;
-        //gridScrollBar.ValueChanged += OnGridScrollBarValueChanged;
-        //playbackRateScrollBar.ValueChanged += OnPlaybackRateScrollBarValueChanged;
-        //blockAmountScrollBar.ValueChanged += OnBlockAmountScrollBarValueChanged;
-        //offsetScrollBar.ValueChanged += OnOffsetScrollBarValueChanged;
-        //overlapScrollBar.ValueChanged += OnOverlapScrollBarValueChanged;
 
         audioVisualsContainer.CreateBlocks();
         UpdatePlayHeads();
@@ -142,70 +135,13 @@ public partial class Main : Control
         audioPlayer.LoadMp3();
     }
 
-    //public void OnExportButtonPressed() {
-    //    ExportOsz();
-
-    //    //ExportOsu();
-
-    //    exportButton.ReleaseFocus();
-    //}
-
-    //public void OnClearAllButtonPressed() {
-    //    Timing.Instance.TimingPoints.Clear();
-    //    Timing.Instance.TimeSignaturePoints.Clear();
-    //    Signals.Instance.EmitEvent(Signals.Events.TimingChanged);;
-    //}
-
-    //private void OnBlockScrollBarValueChanged(double value) => audioVisualsContainer.NominalMusicPositionStartForTopBlock = (int)value;
-
-    //private static void OnGridScrollBarValueChanged(double value)
-    //{
-    //    int intValue = (int)value;
-    //    Settings.Instance.Divisor = Settings.SliderToDivisorDict[intValue];
-    //}
-
-    //private void OnPlaybackRateScrollBarValueChanged(double value) => audioPlayer.PitchScale = (float)value;
-
-    //private void OnBlockAmountScrollBarValueChanged(double value) {
-    //	var intValue = (int)value;
-    //	Settings.Instance.NumberOfBlocks = intValue;
-    //}
-
-    //private void OnOffsetScrollBarValueChanged(double value) {
-    //	Settings.Instance.MusicPositionOffset = (float)value;
-    //}
-
-    //private void OnOverlapScrollBarValueChanged(double value) {
-    //	Settings.Instance.MusicPositionMargin = (float)value;
-    //}
-
-    //public void ExportOsz() {
-    //    var random = new Random();
-    //    int rand = random.Next();
-    //    var path = $"user://{rand}.osz";
-    //    string dotOsu = OsuExporter.GetDotOsu(Timing.Instance);
-    //    OsuExporter.SaveOsz(path, dotOsu, Project.Instance.AudioFile);
-
-    //    // Open with system:
-    //    string globalPath = ProjectSettings.GlobalizePath(path);
-    //    if (FileAccess.FileExists(globalPath)) OS.ShellOpen(globalPath);
-    //}
-
-    public void Play() => audioPlayer.Play();
-
-    public void Stop()
-    {
-        audioPlayer.Stop();
-        UpdatePlayHeads();
-    }
-
     public void PlayPause()
     {
         audioPlayer.PlayPause();
         UpdatePlayHeads();
     }
 
-    public void OnScrolled(object? sender, EventArgs e)
+    private void OnScrolled(object? sender, EventArgs e)
     {
         UpdatePlayHeads();
         blockScrollBar.Value = audioVisualsContainer.NominalMusicPositionStartForTopBlock;
@@ -231,17 +167,11 @@ public partial class Main : Control
         metronome.Click(musicPosition);
     }
 
-    public void OnSeekPlaybackTime(float playbackTime) => audioPlayer.SeekPlay(playbackTime);//audioPlayer.SeekPlayHarsh(playbackTime);
-
-    public static void OnAttemptToAddTimingPoint(float playbackTime)
+    private void OnSeekPlaybackTime(object? sender, EventArgs e)
     {
-        Timing.Instance.AddTimingPoint(playbackTime, out TimingPoint? timingPoint);
-        if (timingPoint == null)
-            return;
-        if (timingPoint.MusicPosition == null)
-            throw new NullReferenceException($"{nameof(timingPoint.MusicPosition)} was null");
-        Context.Instance.HeldTimingPoint = timingPoint;
-        float musicPosition = (float)timingPoint.MusicPosition;
-        Timing.SnapTimingPoint(timingPoint, musicPosition);
+        if (e is not Signals.ObjectArgument<float> floatArgument)
+            throw new Exception($"{nameof(e)} was not of type {nameof(Signals.ObjectArgument<float>)}");
+        float playbackTime = floatArgument.Value;
+        audioPlayer.SeekPlay(playbackTime);
     }
 }

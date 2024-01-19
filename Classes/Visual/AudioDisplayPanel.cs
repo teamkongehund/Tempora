@@ -60,6 +60,12 @@ public partial class AudioDisplayPanel : Control
         private set { }
     }
 
+    public float ActualMusicPositionEndForWindow
+    {
+        get => ActualMusicPositionStartForWindow + 1 + (2 * Settings.Instance.MusicPositionMargin);
+        private set { }
+    }
+
     /// <summary>
     ///     List of horizontally stacked waveforms to display
     /// </summary>
@@ -96,18 +102,8 @@ public partial class AudioDisplayPanel : Control
         MouseEntered += OnMouseEntered;
         MouseExited += OnMouseExited;
 
-        // If I used recommended += syntax here,
-        // disposed WaveformWindows will still react to this signal, causing exceptions.
-        // This seems to be a bug with the += syntax when the signal transmitter is an autoload
-        // See https://github.com/godotengine/godot/issues/70414 (haven't read this through)
         Signals.Instance.TimingChanged += OnTimingChanged;
     }
-
-    // Note to self: This can be used instead of .Connect to fix the signal issue.
-    //public override void _ExitTree()
-    //{
-    //	Signals.Instance.TimingChanged -= OnTimingChanged;
-    //}
 
     public override void _GuiInput(InputEvent @event)
     {
@@ -133,7 +129,7 @@ public partial class AudioDisplayPanel : Control
                             musicPosition = Timing.SnapMusicPosition(musicPosition);
                         }
                         float time = Timing.Instance.MusicPositionToTime(musicPosition);
-                        AttemptToAddTimingPoint?.Invoke(this, new Signals.FloatArgument(time));
+                        AttemptToAddTimingPoint?.Invoke(this, new Signals.ObjectArgument<float>(time));
                         GetViewport().SetInputAsHandled();
                     }
 
@@ -144,7 +140,7 @@ public partial class AudioDisplayPanel : Control
                     float x = mouseEvent.Position.X;
                     float musicPosition = XPositionToMusicPosition(x);
                     float time = Timing.Instance.MusicPositionToTime(musicPosition);
-                    SeekPlaybackTime?.Invoke(this, new Signals.FloatArgument(time));
+                    SeekPlaybackTime?.Invoke(this, new Signals.ObjectArgument<float>(time));
                     break;
                 }
             case InputEventMouseMotion mouseMotion:
@@ -208,7 +204,7 @@ public partial class AudioDisplayPanel : Control
         }
     }
 
-    public void OnTimingChanged(object? sender, EventArgs e)
+    private void OnTimingChanged(object? sender, EventArgs e)
     {
         if (!Visible)
             return;
@@ -218,23 +214,23 @@ public partial class AudioDisplayPanel : Control
         CreateGridLines();
     }
 
-    public void OnAudioFileChanged(object? sender, EventArgs e) => UpdateVisuals();
+    private void OnAudioFileChanged(object? sender, EventArgs e) => UpdateVisuals();
 
-    public void OnResized() =>
+    private void OnResized() =>
         //GD.Print("Resized!");
         UpdateVisuals();
 
-    public void OnSettingsChanged(object? sender, EventArgs e) => UpdateVisuals();
+    private void OnSettingsChanged(object? sender, EventArgs e) => UpdateVisuals();
 
-    public void OnSelectedPositionChanged(object? sender, EventArgs e) => UpdateSelectedPositionLine();
+    private void OnSelectedPositionChanged(object? sender, EventArgs e) => UpdateSelectedPositionLine();
 
-    public void OnMouseEntered()
+    private void OnMouseEntered()
     {
         PreviewLine.Visible = true;
         mouseIsInside = true;
     }
 
-    public void OnMouseExited()
+    private void OnMouseExited()
     {
         PreviewLine.Visible = false;
         mouseIsInside = false;
@@ -373,7 +369,7 @@ public partial class AudioDisplayPanel : Control
                 throw new NullReferenceException($"{nameof(timingPoint.MusicPosition)} was null");
 
             if (timingPoint.MusicPosition < ActualMusicPositionStartForWindow
-                || timingPoint.MusicPosition >= ActualMusicPositionStartForWindow + 1 + (2 * Settings.Instance.MusicPositionMargin))
+                || timingPoint.MusicPosition >= ActualMusicPositionEndForWindow)
             {
                 continue;
             }

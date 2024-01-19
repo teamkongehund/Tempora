@@ -38,7 +38,12 @@ public partial class Context : Node
         Signals.Instance.MouseLeftReleased += OnMouseLeftReleased;
     }
 
-    public void OnTimingPointHolding(object? sender, EventArgs e) => HeldTimingPoint = ((Signals.TimingPointArgument)e).TimingPoint;
+    private void OnTimingPointHolding(object? sender, EventArgs e)
+    {
+        if (e is not Signals.ObjectArgument<TimingPoint> timingPointArgument)
+            throw new Exception($"{nameof(e)} was not of type {nameof(Signals.ObjectArgument<TimingPoint>)}");
+        HeldTimingPoint = timingPointArgument.Value;
+    }
 
-    public void OnMouseLeftReleased(object? sender, EventArgs e) => HeldTimingPoint = null;
+    private void OnMouseLeftReleased(object? sender, EventArgs e) => HeldTimingPoint = null;
 }

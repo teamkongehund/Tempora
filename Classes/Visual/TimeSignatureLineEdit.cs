@@ -1,15 +1,17 @@
+using System;
 using Godot;
+using OsuTimer.Classes.Utility;
 
 namespace OsuTimer.Classes.Visual;
 
 public partial class TimeSignatureLineEdit : LineEdit
 {
-    public event EventHandler TimeSignatureSubmitted;
+    public event EventHandler TimeSignatureSubmitted = null!;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() => TextSubmitted += OnTextSubmitted;
 
-    public void OnTextSubmitted(string text)
+    private void OnTextSubmitted(string text)
     {
         string[] textSplit = text.Split("/", 2);
 
@@ -28,7 +30,6 @@ public partial class TimeSignatureLineEdit : LineEdit
         int[] timeSignature = [upper, lower];
 
         ReleaseFocus();
-        //EmitSignal(nameof(TimeSignatureSubmitted), timeSignature);
-        TimeSignatureSubmitted?.Invoke(this, timeSignature);
+        TimeSignatureSubmitted?.Invoke(this, new Signals.ObjectArgument<int[]>(timeSignature));
     }
 }

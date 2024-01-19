@@ -7,15 +7,12 @@ namespace OsuTimer.Classes.Visual;
 
 public partial class AudioVisualsContainer : VBoxContainer
 {
-    public event EventHandler AttemptToAddTimingPoint = null!;
     //[Export] public int NumberOfBlocks = 10;
 
     /// <summary>
     ///     Forward childrens' signals to Main
     /// </summary>
-    /// <param name="playbackTime"></param>
-    [Signal]
-    public delegate void SeekPlaybackTimeEventHandler(float playbackTime);
+    public event EventHandler SeekPlaybackTime = null!;
 
     [Export]
     private PackedScene packedAudioBlock = null!;
@@ -128,7 +125,27 @@ public partial class AudioVisualsContainer : VBoxContainer
         }
     }
 
-    public void OnSeekPlaybackTime(object? sender, EventArgs e) => EmitSignal(nameof(SeekPlaybackTime), ((Signals.FloatArgument)e).Value);
+    private void OnSeekPlaybackTime(object? sender, EventArgs e)
+    {
+        if (e is not Signals.ObjectArgument<float> floatArgument)
+            throw new Exception($"{nameof(e)} was not of type {nameof(Signals.ObjectArgument<float>)}");
+        float playbackTime = floatArgument.Value;
+        SeekPlaybackTime?.Invoke(this, new Signals.ObjectArgument<float>(playbackTime));
+    }
 
-    public void OnAttemptToAddTimingPoint(float playbackTime) => AttemptToAddTimingPoint?.Invoke(this, new Signals.FloatArgument(playbackTime));
+    private void OnAttemptToAddTimingPoint(object? sender, EventArgs e)
+    {
+        if (e is not Signals.ObjectArgument<float> floatArgument)
+            throw new Exception($"{nameof(e)} was not of type {nameof(Signals.ObjectArgument<float>)}");
+        float time = floatArgument.Value;
+
+        Timing.Instance.AddTimingPoint(time, out TimingPoint? timingPoint);
+        if (timingPoint == null)
+            return;
+        if (timingPoint.MusicPosition == null)
+            throw new NullReferenceException($"{nameof(timingPoint.MusicPosition)} was null");
+        Context.Instance.HeldTimingPoint = timingPoint;
+        float musicPosition = (float)timingPoint.MusicPosition;
+        Timing.SnapTimingPoint(timingPoint, musicPosition);
+    }
 }

@@ -18,7 +18,7 @@ public partial class VolumeSlider : VScrollBar
         Value = Math.Abs(1 - invertedValue);
     }
 
-    public void OnValueChanged(double value)
+    private void OnValueChanged(double value)
     {
         double invertedValue = Math.Abs(1 - value);
         AudioServer.SetBusVolumeDb(

@@ -18,19 +18,26 @@ public partial class Signals : Node
     public event EventHandler TimingChanged = null!;
     public event EventHandler TimingPointHolding = null!;
 
-    public class TimingPointArgument(TimingPoint timingPoint) : EventArgs
-    {
-        private TimingPoint timingPoint = timingPoint;
-        public TimingPoint TimingPoint
-        {
-            get => timingPoint;
-        }
-    }
+
 
     public class FloatArgument(float value) : EventArgs
     {
         private float value = value;
         public float Value
+        {
+            get => value;
+        }
+    }
+
+    /// <summary>
+    /// Simple <see cref="EventArgs"/> class which contains a single <see cref="ObjectArgument{T}.Value"/> property which can be accessed by the event subscriber.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="value"></param>
+    public class ObjectArgument<T>(T value) : EventArgs
+    {
+        private T value = value;
+        public T Value
         {
             get => value;
         }

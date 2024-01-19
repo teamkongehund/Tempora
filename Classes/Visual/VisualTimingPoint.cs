@@ -38,7 +38,7 @@ public partial class VisualTimingPoint : Node2D
         TimingPoint.Changed += OnTimingPointChanged;
     }
 
-    public void OnTimingPointChanged(object? sender, EventArgs e)
+    private void OnTimingPointChanged(object? sender, EventArgs e)
     {
         if (sender is not TimingPoint timingPoint)
             return;
@@ -50,8 +50,6 @@ public partial class VisualTimingPoint : Node2D
         NumberLabel.Text = Timing.Instance.TimingPoints.IndexOf(timingPoint).ToString();
         BpmLabel.Text = timingPoint.Bpm.ToString("0.00");
     }
-
-    public override void _ExitTree() => TimingPoint.Changed -= OnTimingPointChanged; // Necessary due to Godot bug
 
     public override void _Input(InputEvent @event)
     {
@@ -66,7 +64,7 @@ public partial class VisualTimingPoint : Node2D
             {
                 //GD.Print($"Clicked on TimingPoint with BPM {TimingPoint.Bpm} & Time signature {TimingPoint.TimeSignature[0]}/{TimingPoint.TimeSignature[1]}");
 
-                Signals.Instance.EmitEvent(Signals.Events.TimingPointHolding, new Signals.TimingPointArgument(TimingPoint));
+                Signals.Instance.EmitEvent(Signals.Events.TimingPointHolding, new Signals.ObjectArgument<TimingPoint>(TimingPoint));
             }
             else if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased())
             {
@@ -114,7 +112,7 @@ public partial class VisualTimingPoint : Node2D
         if (Time.GetTicksMsec() - SystemTimeWhenCreated > 500)
             TimingPoint.Delete();
         else
-            Signals.Instance.EmitEvent(Signals.Events.TimingPointHolding, new Signals.TimingPointArgument(TimingPoint));
+            Signals.Instance.EmitEvent(Signals.Events.TimingPointHolding, new Signals.ObjectArgument<TimingPoint>(TimingPoint));
 
         Viewport viewport = GetViewport();
         viewport.SetInputAsHandled();

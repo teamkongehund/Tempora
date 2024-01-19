@@ -32,17 +32,23 @@ public partial class AudioBlock : Control
     {
         Signals.Instance.TimingChanged += OnTimingChanged;
 
-        timeSignatureLineEdit.Connect("TimeSignatureSubmitted", new Callable(this, "OnTimingSignatureSubmitted"));
+        timeSignatureLineEdit.TimeSignatureSubmitted += OnTimingSignatureSubmitted;
     }
 
-    public void OnTimingChanged(object? sender, EventArgs e)
+    private void OnTimingChanged(object? sender, EventArgs e)
     {
         if (!Visible)
             return;
         UpdateLabels();
     }
 
-    public void OnTimingSignatureSubmitted(int[] timeSignature) => Timing.Instance.UpdateTimeSignature(timeSignature, NominalMusicPositionStartForWindow);
+    private void OnTimingSignatureSubmitted(object? sender, EventArgs e)
+    {
+        if (e is not Signals.ObjectArgument<int[]> intArrayArgument)
+            throw new Exception($"{nameof(e)} was not of type {nameof(Signals.ObjectArgument<int[]>)}");
+        int[] timeSignature = intArrayArgument.Value;
+        Timing.Instance.UpdateTimeSignature(timeSignature, NominalMusicPositionStartForWindow);
+    }
 
     public void UpdateLabels()
     {
