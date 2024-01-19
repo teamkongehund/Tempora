@@ -17,47 +17,6 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 
     #region Time Signature
     private int[] timeSignature = [4, 4];
-    //private TimingPoint nextTimingPoint;
-
-    //private TimingPoint previousTimingPoint;
-
-    //public TimingPoint PreviousTimingPoint {
-    //    //get => previousTimingPoint;
-    //    get
-    //    {
-    //        // Timing.Instance.GetPreviousTimingPoint(this) != previousTimingPoint
-    //        if (previousTimingPoint != null)
-    //        {
-
-    //        }
-    //        return previousTimingPoint;
-    //    }
-    //    set {
-    //        if (previousTimingPoint == value) return;
-    //        previousTimingPoint = value;
-    //        if (previousTimingPoint != null) previousTimingPoint.NextTimingPoint = this;
-    //        MeasuresPerSecond_Update();
-    //    }
-    //}
-
-    //public TimingPoint NextTimingPoint {
-    //    //get => nextTimingPoint;
-    //    get
-    //    {
-    //        // Timing.Instance.GetNextTimingPoint(this) != nextTimingPoint
-    //        if (nextTimingPoint != null)
-    //        {
-
-    //        }
-    //        return nextTimingPoint;
-    //    }
-    //    set {
-    //        if (nextTimingPoint == value) return;
-    //        nextTimingPoint = value;
-    //        if (nextTimingPoint != null) nextTimingPoint.PreviousTimingPoint = this;
-    //        MeasuresPerSecond_Update();
-    //    }
-    //}
 
     /// <summary>
     /// Time Signature. Affects how <see cref="MeasuresPerSecond"/> and <see cref="TimeSignature"/> correlate
@@ -81,15 +40,13 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
             timeSignature = value;
 
             AreThereUncommunicatedChanges = true;
-            RequestTimingToUpdateMPS();
+            RequestUpdateMPS();
         }
     }
     #endregion
 
     #region Time
     private float time;
-    public float NewTime;
-    public bool IsNewTimeValid = false;
 
     /// <summary>
     /// The timestamp in the audio which this <see cref="TimingPoint"/> is attached to. 
@@ -97,7 +54,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
     public float Time
     {
         get => time;
-        set
+        private set
         {
             if (time == value)
             {
@@ -108,29 +65,32 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
                 }
                 return;
             }
-            //if (PreviousTimingPoint != null && PreviousTimingPoint.Time >= value) return;
-            //if (NextTimingPoint != null && NextTimingPoint.Time <= value) return;
 
-            if (IsNewTimeValid)
-            {
-                time = value;
-                IsNewTimeValid = false;
-                AreThereUncommunicatedChanges = true;
-                RequestTimingToUpdateMPS();
-                return;
-            }
-
-            NewTime = value;
-
-            AttemptChangeTime?.Invoke(this, EventArgs.Empty); // Received by Timing class
+            time = value;
+            AreThereUncommunicatedChanges = true;
+            RequestUpdateMPS();
+            return;
         }
     }
+
+    public void Time_Set(float value, Timing timing)
+    {
+        TimingPoint? previousTimingPoint = timing.GetPreviousTimingPoint(this);
+        TimingPoint? nextTimingPoint = timing.GetNextTimingPoint(this);
+
+        // validity checks
+        if (previousTimingPoint != null && previousTimingPoint.Time >= value)
+            return;
+        if (nextTimingPoint != null && nextTimingPoint.Time <= value)
+            return;
+
+        Time = value;
+    }
+
     #endregion
 
     #region MusicPosition
     private float? musicPosition;
-    public float? NewMusicPosition;
-    public bool IsNewMusicPositionValid = false;
     /// <summary>
     /// The <see cref="TimingPoint"/>'s position on the musical timeline. 
     /// The value is defined in terms of measures (integer part) from the musical timeline origin.
@@ -141,7 +101,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
     public float? MusicPosition
     {
         get => musicPosition;
-        set
+        private set
         {
             if (musicPosition == value)
             {
@@ -152,22 +112,30 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
                 }
                 return;
             }
-            //if (PreviousTimingPoint != null && PreviousTimingPoint.MusicPosition >= value) return;
-            //if (NextTimingPoint != null && NextTimingPoint.MusicPosition <= value) return;
 
-            if (IsNewMusicPositionValid)
-            {
-                musicPosition = value;
-                IsNewMusicPositionValid = false;
-                AreThereUncommunicatedChanges = true;
-                // Update MPS for this timing point and the previous ones
-                RequestTimingToUpdateMPS();
-            }
+            musicPosition = value;
+            AreThereUncommunicatedChanges = true;
 
-            NewMusicPosition = value;
-
-            AttemptChangeMusicPosition?.Invoke(this, EventArgs.Empty);
+            RequestUpdateMPS();
         }
+    }
+
+    public void MusicPosition_Set(float value, Timing timing)
+    {
+        TimingPoint? previousTimingPoint = timing.GetPreviousTimingPoint(this);
+        TimingPoint? nextTimingPoint = timing.GetNextTimingPoint(this);
+
+        // validity checks
+        if (previousTimingPoint != null && previousTimingPoint.MusicPosition >= value)
+        {
+            return;
+        }
+        if (nextTimingPoint != null && nextTimingPoint.MusicPosition <= value)
+        {
+            return;
+        }
+
+        MusicPosition = value;
     }
     #endregion
 
@@ -177,7 +145,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
     /// Musical measures per second. 
     /// Directly correlated with <see cref="Bpm"/> and <see cref="TimeSignature"/>
     /// via the formulas <see cref="BpmToMps(float)"/> and <see cref="MpsToBpm(float)"/>.
-    /// Cannot be changed directly, as it is a calculated property via <see cref="UpdateMeasuresPerSecond(Timing)"/>
+    /// Cannot be changed directly, as it is a calculated property via <see cref="MeasuresPerSecond_Set(Timing)"/>
     /// </summary>
     public float MeasuresPerSecond
     {
@@ -193,17 +161,17 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
                 }
                 return;
             }
-            {
-                measuresPerSecond = value;
-                AreThereUncommunicatedChanges = true;
-                Bpm = MpsToBpm(value);
-            }
+
+            measuresPerSecond = value;
+            AreThereUncommunicatedChanges = true;
+            Bpm = MpsToBpm(value);
         }
     }
     /// <summary>
-    /// Sends a request to have its <see cref="MeasuresPerSecond"/>updated. Handled by <see cref="Timing"/>.
+    /// Sends a request to have both this point and the previous point's <see cref="MeasuresPerSecond"/>updated. 
+    /// Handled by <see cref="Timing"/>.
     /// </summary>
-    public void RequestTimingToUpdateMPS()
+    public void RequestUpdateMPS()
     {
         if (MusicPosition == null)
             return;
@@ -214,7 +182,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
     /// ensures that the value can only by set according to <see cref="Timing"/>
     /// </summary>
     /// <param name="timing"></param>
-    public void UpdateMeasuresPerSecond(Timing timing)
+    public void MeasuresPerSecond_Set(Timing timing)
     {
         TimingPoint? previousTimingPoint = timing.GetPreviousTimingPoint(this);
         TimingPoint? nextTimingPoint = timing.GetNextTimingPoint(this);
@@ -222,27 +190,27 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
         if (MusicPosition == null)
             throw new NullReferenceException(nameof(MusicPosition));
 
-        if (previousTimingPoint?.MusicPosition != null)
-        {
-            previousTimingPoint.MeasuresPerSecond =
-                ((float)MusicPosition - (float)previousTimingPoint.MusicPosition)
-                / (Time - previousTimingPoint.Time);
-            MeasuresPerSecond = previousTimingPoint.MeasuresPerSecond;
-        }
-
         if (nextTimingPoint?.MusicPosition != null)
         {
             MeasuresPerSecond =
                 ((float)nextTimingPoint.MusicPosition - (float)MusicPosition)
                 / (nextTimingPoint.Time - Time);
         }
+        else if (previousTimingPoint?.MusicPosition != null)
+        {
+            MeasuresPerSecond =
+                ((float)MusicPosition - (float)previousTimingPoint.MusicPosition)
+                / (Time - previousTimingPoint.Time);
+        }
+        else
+        {
+            return; // Make no changes
+        }
     }
     #endregion
 
     #region Bpm
     private float bpm;
-    public float NewBpm;
-    public bool IsNewBpmValid = false;
     /// <summary>
     /// Beats per minute. Directly correlated with <see cref="MeasuresPerSecond"/> and <see cref="TimeSignature"/>
     /// via the formulas <see cref="BpmToMps(float)"/> and <see cref="MpsToBpm(float)"/>.
@@ -253,10 +221,10 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
         get
         {
             if (bpm == 0)
-                Bpm = MpsToBpm(MeasuresPerSecond);
+                bpm = MpsToBpm(MeasuresPerSecond);
             return bpm;
         }
-        set
+        private set
         {
             if (bpm == value)
             {
@@ -267,20 +235,27 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
                 }
                 return;
             }
-            else if (IsNewBpmValid)
-            {
-                bpm = value;
-                IsNewBpmValid = false;
-                AreThereUncommunicatedChanges = true;
-                MeasuresPerSecond = BpmToMps(bpm);
-                return;
-            }
 
-            NewBpm = value;
-
-            AttemptChangeBpm?.Invoke(this, EventArgs.Empty); // Received by Timing class
+            bpm = value;
+            AreThereUncommunicatedChanges = true;
+            MeasuresPerSecond = BpmToMps(bpm);
+            return;
         }
     } 
+
+    /// <summary>
+    /// Sets the <see cref="Bpm"/> if the value is valid according to supplied timing
+    /// </summary>
+    public void Bpm_Set(float bpm, Timing timing)
+    {
+        TimingPoint? nextTimingPoint = timing.GetNextTimingPoint(this);
+
+        // validity check
+        if (nextTimingPoint != null)
+            return;
+
+        Bpm = bpm;
+    }
     #endregion
 
     #endregion
@@ -342,14 +317,15 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
     }
     #endregion
     #region Change and Deletion Events
-    public event EventHandler AttemptChangeTime = null!;
-    public event EventHandler AttemptChangeMusicPosition = null!;
     public event EventHandler MPSUpdateRequested = null!;
-    public event EventHandler AttemptChangeBpm = null!;
 
     private bool AreThereUncommunicatedChanges = false;
     public event EventHandler Changed = null!;
-    public void EmitChangedEvent() => Changed?.Invoke(this, EventArgs.Empty);
+    public void EmitChangedEvent()
+    {
+        if (!IsInstantiating)
+            Changed?.Invoke(this, EventArgs.Empty);
+    }
 
     public event EventHandler AttemptDelete = null!;
     /// <summary>

@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://bk0ofb078cvgm"]
+[gd_scene load_steps=20 format=3 uid="uid://bk0ofb078cvgm"]
 
 [ext_resource type="Script" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
 [ext_resource type="AudioStream" uid="uid://clutjafa1rf7f" path="res://Audio/UMO.mp3" id="2_klkb2"]
@@ -17,6 +17,7 @@
 [ext_resource type="Script" path="res://Classes/Visual/ExportButton.cs" id="10_y304k"]
 [ext_resource type="Script" path="res://Classes/Visual/OffsetScrollBar.cs" id="10_yfm4l"]
 [ext_resource type="Script" path="res://Classes/Visual/OverlapScrollBar.cs" id="13_wubaw"]
+[ext_resource type="Script" path="res://Classes/Visual/VersionLabel.cs" id="16_j6b0h"]
 [ext_resource type="PackedScene" uid="uid://bac4n7j15cns7" path="res://Classes/Visual/AudioBlock.tscn" id="16_mlqa0"]
 
 [node name="Main" type="Control" node_paths=PackedStringArray("audioPlayer", "audioVisualsContainer", "metronome", "blockScrollBar")]
@@ -181,14 +182,19 @@ theme_override_font_sizes/font_size = 12
 text = "Open .osz"
 script = ExtResource("10_y304k")
 
-[node name="VolumeSlidersHBox" type="HBoxContainer" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.6
+
+[node name="VolumeSlidersHBox" type="HBoxContainer" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 1.6
 theme_override_constants/separation = 7
 
-[node name="VolumeSliderMaster" type="VScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/VolumeSlidersHBox"]
+[node name="VolumeSliderMaster" type="VScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/VBoxContainer/VolumeSlidersHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 max_value = 1.0
@@ -198,7 +204,7 @@ script = ExtResource("6_w0n8n")
 BusName = "Master"
 metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/VolumeSlidersHBox/VolumeSliderMaster"]
+[node name="Label" type="Label" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/VBoxContainer/VolumeSlidersHBox/VolumeSliderMaster"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -217,7 +223,7 @@ text = "Master"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="VolumeSliderMusic" type="VScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/VolumeSlidersHBox"]
+[node name="VolumeSliderMusic" type="VScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/VBoxContainer/VolumeSlidersHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 max_value = 1.0
@@ -227,7 +233,7 @@ script = ExtResource("6_w0n8n")
 BusName = "Music"
 metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/VolumeSlidersHBox/VolumeSliderMusic"]
+[node name="Label" type="Label" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/VBoxContainer/VolumeSlidersHBox/VolumeSliderMusic"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -246,7 +252,7 @@ text = "Music"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="VolumeSliderMetronome" type="VScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/VolumeSlidersHBox"]
+[node name="VolumeSliderMetronome" type="VScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/VBoxContainer/VolumeSlidersHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 max_value = 1.0
@@ -256,7 +262,7 @@ script = ExtResource("6_w0n8n")
 BusName = "Metronome"
 metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/VolumeSlidersHBox/VolumeSliderMetronome"]
+[node name="Label" type="Label" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/VBoxContainer/VolumeSlidersHBox/VolumeSliderMetronome"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -275,9 +281,9 @@ text = "Metronome"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="LeftHandMenuVBox" type="VBoxContainer" parent="HSplitContainer/LeftHandMenuMarginContainer"]
-visible = false
+[node name="VersionLabel" type="Label" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/VBoxContainer"]
 layout_mode = 2
+script = ExtResource("16_j6b0h")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="HSplitContainer"]
 layout_mode = 2

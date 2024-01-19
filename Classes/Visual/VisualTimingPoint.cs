@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using GD = OsuTimer.Classes.Utility.GD;
 using OsuTimer.Classes.Utility;
 
 namespace OsuTimer.Classes.Visual;
@@ -87,7 +88,7 @@ public partial class VisualTimingPoint : Node2D
                 else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Alt))
                     newBpm = previousBpm - 0.1f;
 
-                TimingPoint.Bpm = newBpm;
+                TimingPoint.Bpm_Set(newBpm, Timing.Instance);
             }
             else if (mouseEvent.ButtonIndex == MouseButton.WheelUp && mouseEvent.Pressed && Input.IsKeyPressed(Key.Ctrl) && hasMouseInside)
             {
@@ -99,7 +100,7 @@ public partial class VisualTimingPoint : Node2D
                 else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Alt))
                     newBpm = previousBpm + 0.1f;
 
-                TimingPoint.Bpm = newBpm;
+                TimingPoint.Bpm_Set(newBpm, Timing.Instance);
             }
         }
     }

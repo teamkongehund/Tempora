@@ -146,6 +146,6 @@ public partial class AudioVisualsContainer : VBoxContainer
             throw new NullReferenceException($"{nameof(timingPoint.MusicPosition)} was null");
         Context.Instance.HeldTimingPoint = timingPoint;
         float musicPosition = (float)timingPoint.MusicPosition;
-        Timing.SnapTimingPoint(timingPoint, musicPosition);
+        Timing.Instance.SnapTimingPoint(timingPoint, musicPosition);
     }
 }

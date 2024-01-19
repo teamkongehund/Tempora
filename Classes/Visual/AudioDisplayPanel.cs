@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using Godot;
-using GD = Godot.GD;
+using GD = OsuTimer.Classes.Utility.GD;
 using OsuTimer.Classes.Utility;
 
 namespace OsuTimer.Classes.Visual;
@@ -160,11 +160,11 @@ public partial class AudioDisplayPanel : Control
                     {
                         float xMovement = mouseMotion.Relative.X;
                         float secondsDifference = xMovement * 0.0002f;
-                        Context.Instance.HeldTimingPoint.Time -= secondsDifference;
+                        Context.Instance.HeldTimingPoint.Time_Set(Context.Instance.HeldTimingPoint.Time - secondsDifference, Timing.Instance);
                     }
                     else if (Context.Instance.HeldTimingPoint != null)
                     {
-                        Timing.SnapTimingPoint(Context.Instance.HeldTimingPoint, musicPosition);
+                        Timing.Instance.SnapTimingPoint(Context.Instance.HeldTimingPoint, musicPosition);
                     }
 
                     // PreviewLine
