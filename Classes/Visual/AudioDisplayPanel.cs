@@ -144,10 +144,37 @@ public partial class AudioDisplayPanel : Control
                     SeekPlaybackTime?.Invoke(this, new Signals.ObjectArgument<float>(time));
                     break;
                 }
+            case InputEventMouseButton { ButtonIndex: MouseButton.WheelUp, Pressed: true } mouseEvent:
+                {
+                    if (Input.IsKeyPressed(Key.Ctrl))
+                    {
+                        Vector2 mousePos = mouseEvent.Position;
+                        float musicPosition = XPositionToMusicPosition(mousePos.X);
+                        float secondsDifference = 0.002f;
+                        TimingPoint? operatingTimingPoint = Timing.Instance.GetOperatingTimingPoint_ByMusicPosition(musicPosition);
+                        if (operatingTimingPoint == null)
+                            return;
+                        operatingTimingPoint.Time_Set(operatingTimingPoint.Time + secondsDifference, Timing.Instance);
+                    }
+                    break;
+                }
+            case InputEventMouseButton { ButtonIndex: MouseButton.WheelDown, Pressed: true } mouseEvent:
+                {
+                    if (Input.IsKeyPressed(Key.Ctrl))
+                    {
+                        Vector2 mousePos = mouseEvent.Position;
+                        float musicPosition = XPositionToMusicPosition(mousePos.X);
+                        float secondsDifference = -0.002f;
+                        TimingPoint? operatingTimingPoint = Timing.Instance.GetOperatingTimingPoint_ByMusicPosition(musicPosition);
+                        if (operatingTimingPoint == null)
+                            return;
+                        operatingTimingPoint.Time_Set(operatingTimingPoint.Time + secondsDifference, Timing.Instance);
+                    }
+                    break;
+                }
             case InputEventMouseMotion mouseMotion:
                 {
                     Vector2 mousePos = mouseMotion.Position;
-                    //GD.Print(mousePos.ToString());
                     float musicPosition = XPositionToMusicPosition(mousePos.X);
                     if (Input.IsKeyPressed(Key.Shift))
                     {
