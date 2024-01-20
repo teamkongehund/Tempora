@@ -93,7 +93,7 @@ public partial class ProjectFileManager : Node
             if (timingPoint?.MusicPosition == null)
                 continue;
             string timingPointLine = "";
-            timingPointLine += timingPoint.Time.ToString(CultureInfo.InvariantCulture);
+            timingPointLine += timingPoint.Offset.ToString(CultureInfo.InvariantCulture);
             timingPointLine += ";";
             timingPointLine += ((float)timingPoint.MusicPosition).ToString(CultureInfo.InvariantCulture);
             timingPointLine += ";";

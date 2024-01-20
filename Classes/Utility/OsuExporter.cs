@@ -94,7 +94,7 @@ SliderTickRate:1
     public static string TimingPointToText(TimingPoint timingPoint)
     {
         // offsetMS,MSPerBeat,beatsInMeasure,sampleSet,sampleIndex,volume,uninherited,effects
-        string offsetMs = ((int)(timingPoint.Time * 1000) + ExportOffsetMs).ToString();
+        string offsetMs = ((int)(timingPoint.Offset * 1000) + ExportOffsetMs).ToString();
         string msPerBeat = (timingPoint.BeatLengthSec * 1000).ToString(CultureInfo.InvariantCulture);
         string beatsInMeasure = timingPoint.TimeSignature[0].ToString();
         return $"{offsetMs},{msPerBeat},{beatsInMeasure},2,0,80,1,0\n";

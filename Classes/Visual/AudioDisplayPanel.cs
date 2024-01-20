@@ -154,7 +154,7 @@ public partial class AudioDisplayPanel : Control
                         TimingPoint? operatingTimingPoint = Timing.Instance.GetOperatingTimingPoint_ByMusicPosition(musicPosition);
                         if (operatingTimingPoint == null)
                             return;
-                        operatingTimingPoint.Time_Set(operatingTimingPoint.Time + secondsDifference, Timing.Instance);
+                        operatingTimingPoint.Offset_Set(operatingTimingPoint.Offset + secondsDifference, Timing.Instance);
                     }
                     break;
                 }
@@ -168,7 +168,7 @@ public partial class AudioDisplayPanel : Control
                         TimingPoint? operatingTimingPoint = Timing.Instance.GetOperatingTimingPoint_ByMusicPosition(musicPosition);
                         if (operatingTimingPoint == null)
                             return;
-                        operatingTimingPoint.Time_Set(operatingTimingPoint.Time + secondsDifference, Timing.Instance);
+                        operatingTimingPoint.Offset_Set(operatingTimingPoint.Offset + secondsDifference, Timing.Instance);
                     }
                     break;
                 }
@@ -187,7 +187,7 @@ public partial class AudioDisplayPanel : Control
                     {
                         float xMovement = mouseMotion.Relative.X;
                         float secondsDifference = xMovement * 0.0002f;
-                        Context.Instance.HeldTimingPoint.Time_Set(Context.Instance.HeldTimingPoint.Time - secondsDifference, Timing.Instance);
+                        Context.Instance.HeldTimingPoint.Offset_Set(Context.Instance.HeldTimingPoint.Offset - secondsDifference, Timing.Instance);
                     }
                     else if (Context.Instance.HeldTimingPoint != null)
                     {
@@ -313,11 +313,11 @@ public partial class AudioDisplayPanel : Control
 
             float waveSegmentStartTime = i == FirstTimingPointIndex
                 ? timeWhereWindowBegins
-                : timingPoint.Time;
+                : timingPoint.Offset;
 
             float waveSegmentEndTime = i == LastTimingPointIndex
                 ? timeWhereWindowEnds
-                : Timing.Instance.TimingPoints[i + 1].Time;
+                : Timing.Instance.TimingPoints[i + 1].Offset;
 
             //GD.Print($"Timing Points {FirstTimingPointIndex} - {LastTimingPointIndex}: Time {waveSegmentStartTime} - {waveSegmentEndTime}");
 

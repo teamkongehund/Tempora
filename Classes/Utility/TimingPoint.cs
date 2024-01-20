@@ -4,8 +4,8 @@ using Godot;
 namespace OsuTimer.Classes.Utility;
 
 /// <summary>
-/// A data class which asserts that a specific point in time (<see cref="Time"/>)
-/// should be attached to a musical timeline in the position (<see cref="MusicPosition"/>).
+/// A data class which asserts that a specific point in time (<see cref="Offset"/>)
+/// should be attached to a musical timeline at (<see cref="MusicPosition"/>).
 /// The Bpm (<see cref="Bpm"/>) is calculated via the subsequent <see cref="TimingPoint"/> 
 /// in <see cref="Timing.TimingPoints"/> if the subsequent point exists.
 /// </summary>
@@ -43,42 +43,42 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
     #endregion
 
     #region Time
-    private float time;
+    private float offset;
 
     /// <summary>
     /// The timestamp in the audio which this <see cref="TimingPoint"/> is attached to. 
     /// </summary>
-    public float Time
+    public float Offset
     {
-        get => time;
+        get => offset;
         private set
         {
-            if (time == value)
+            if (offset == value)
             {
                 if (AreThereUncommunicatedChanges)
                     EmitChangedEvent();
                 return;
             }
 
-            time = value;
+            offset = value;
             AreThereUncommunicatedChanges = true;
             RequestUpdateMPS();
             return;
         }
     }
 
-    public void Time_Set(float value, Timing timing)
+    public void Offset_Set(float value, Timing timing)
     {
         TimingPoint? previousTimingPoint = timing.GetPreviousTimingPoint(this);
         TimingPoint? nextTimingPoint = timing.GetNextTimingPoint(this);
 
         // validity checks
-        if (previousTimingPoint != null && previousTimingPoint.Time >= value)
+        if (previousTimingPoint != null && previousTimingPoint.Offset >= value)
             return;
-        if (nextTimingPoint != null && nextTimingPoint.Time <= value)
+        if (nextTimingPoint != null && nextTimingPoint.Offset <= value)
             return;
 
-        Time = value;
+        Offset = value;
     }
 
     #endregion
@@ -182,13 +182,13 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
         {
             MeasuresPerSecond =
                 ((float)nextTimingPoint.MusicPosition - (float)MusicPosition)
-                / (nextTimingPoint.Time - Time);
+                / (nextTimingPoint.Offset - Offset);
         }
         else if (previousTimingPoint?.MusicPosition != null)
         {
             MeasuresPerSecond =
                 ((float)MusicPosition - (float)previousTimingPoint.MusicPosition)
-                / (Time - previousTimingPoint.Time);
+                / (Offset - previousTimingPoint.Offset);
         }
         else if (AreThereUncommunicatedChanges)
         {
@@ -248,27 +248,27 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
     #region Constructors
     public TimingPoint(float time, int[] timeSignature)
     {
-        this.time = time;
+        this.offset = time;
         this.timeSignature = timeSignature;
     }
 
     public TimingPoint(float time, float musicPosition, float measuresPerSecond)
     {
-        this.time = time;
+        this.offset = time;
         this.musicPosition = musicPosition;
         this.measuresPerSecond = measuresPerSecond;
     }
 
     public TimingPoint(float time, float musicPosition, int[] timeSignature)
     {
-        this.time = time;
+        this.offset = time;
         this.musicPosition = musicPosition;
         this.timeSignature = timeSignature;
     }
 
     public TimingPoint(float time, float musicPosition, int[] timeSignature, float measuresPerSecond)
     {
-        this.time = time;
+        this.offset = time;
         this.musicPosition = musicPosition;
         this.timeSignature = timeSignature;
         this.measuresPerSecond = measuresPerSecond;
@@ -285,7 +285,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
     /// <param name="bpm"></param>
     private TimingPoint(float time, float? musicPosition, int[] timeSignature, float measuresPerSecond, float bpm)
     {
-        this.time = time;
+        this.offset = time;
         this.musicPosition = musicPosition;
         this.timeSignature = timeSignature;
         this.measuresPerSecond = measuresPerSecond;
@@ -293,11 +293,11 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
     }
     #endregion
     #region Interface Methods
-    public int CompareTo(TimingPoint? other) => Time.CompareTo(other?.Time);
+    public int CompareTo(TimingPoint? other) => Offset.CompareTo(other?.Offset);
 
     public object Clone()
     {
-        var timingPoint = new TimingPoint(Time, MusicPosition, TimeSignature, MeasuresPerSecond, Bpm);
+        var timingPoint = new TimingPoint(Offset, MusicPosition, TimeSignature, MeasuresPerSecond, Bpm);
 
         return timingPoint;
     }

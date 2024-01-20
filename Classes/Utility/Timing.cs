@@ -326,8 +326,8 @@ public partial class Timing : Node
         if (validTimingPoints == null)
             return null;
 
-        int operatingTimingPointIndex = validTimingPoints.FindLastIndex(point => point.Time <= time);
-        TimingPoint? operatingTimingPoint = operatingTimingPointIndex == -1 ? TimingPoints.Find(point => point.Time > time) : validTimingPoints[operatingTimingPointIndex];
+        int operatingTimingPointIndex = validTimingPoints.FindLastIndex(point => point.Offset <= time);
+        TimingPoint? operatingTimingPoint = operatingTimingPointIndex == -1 ? TimingPoints.Find(point => point.Offset > time) : validTimingPoints[operatingTimingPointIndex];
 
         return operatingTimingPoint;
     }
@@ -355,7 +355,7 @@ public partial class Timing : Node
     {
         return timingPointIndex1 < 0 || timingPointIndex2 < 0 || timingPointIndex1 > TimingPoints.Count || timingPointIndex2 > TimingPoints.Count
             ? null
-            : TimingPoints[timingPointIndex2].Time - TimingPoints[timingPointIndex1].Time;
+            : TimingPoints[timingPointIndex2].Offset - TimingPoints[timingPointIndex1].Offset;
     }
 
     public float MusicPositionToTime(float musicPosition)
@@ -366,7 +366,7 @@ public partial class Timing : Node
         if (timingPoint.MusicPosition == null)
             throw new NullReferenceException($"Operating TimingPoint does not have a non-null {nameof(TimingPoint.MusicPosition)}");
 
-        float time = (float)(timingPoint.Time + ((musicPosition - timingPoint.MusicPosition) / timingPoint.MeasuresPerSecond));
+        float time = (float)(timingPoint.Offset + ((musicPosition - timingPoint.MusicPosition) / timingPoint.MeasuresPerSecond));
 
         return time;
     }
@@ -381,7 +381,7 @@ public partial class Timing : Node
             return time * 0.5f; // default 120 bpm from musicposition origin
         }
         else 
-            return (float)(((time - operatingTimingPoint.Time) * operatingTimingPoint.MeasuresPerSecond) + operatingTimingPoint.MusicPosition);
+            return (float)(((time - operatingTimingPoint.Offset) * operatingTimingPoint.MeasuresPerSecond) + operatingTimingPoint.MusicPosition);
     }
 
     public int[] GetTimeSignature(float musicPosition)
