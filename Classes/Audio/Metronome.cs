@@ -54,9 +54,9 @@ public partial class Metronome : Node
         float beatPosition = Timing.Instance.GetBeatPosition(musicPosition);
         if (previousMusicPosition < beatPosition && musicPosition >= beatPosition)
         {
-            if (beatPosition % 1 == 0)
+            if (beatPosition % 1 == 0 && click1.GetPlaybackPosition() <= 0.01f)
                 click1.Play();
-            else
+            else if (click1.GetPlaybackPosition() <= 0.01f)
                 click2.Play();
         }
 

@@ -305,10 +305,11 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="BlockScrollBar" type="VScrollBar" parent="HSplitContainer/HSplitContainer/BlockScrollBarMarginContainer"]
+[node name="BlockScrollBar" type="VScrollBar" parent="HSplitContainer/HSplitContainer/BlockScrollBarMarginContainer" node_paths=PackedStringArray("audioVisualsContainer")]
 layout_mode = 2
 size_flags_horizontal = 1
 script = ExtResource("5_aqu3i")
+audioVisualsContainer = NodePath("../../AudioVisualsMarginContainer/AudioVisualsContainer")
 
 [node name="VersionLabel" type="Label" parent="."]
 layout_mode = 1

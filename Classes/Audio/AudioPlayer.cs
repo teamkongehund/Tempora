@@ -90,7 +90,7 @@ public partial class AudioPlayer : AudioStreamPlayer
     public double GetPlaybackTime()
     {
         return Playing
-            ? GetPlaybackPosition() + AudioServer.GetTimeSinceLastMix()
+            ? GetPlaybackPosition() + AudioServer.GetTimeSinceLastMix() * PitchScale
             : PauseTime;
     }
 
