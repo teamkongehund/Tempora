@@ -31,10 +31,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
             if (timeSignature == value)
             {
                 if (AreThereUncommunicatedChanges)
-                {
                     EmitChangedEvent();
-                    AreThereUncommunicatedChanges = false;
-                }
                 return;
             }
             timeSignature = value;
@@ -59,10 +56,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
             if (time == value)
             {
                 if (AreThereUncommunicatedChanges)
-                {
                     EmitChangedEvent();
-                    AreThereUncommunicatedChanges = false;
-                }
                 return;
             }
 
@@ -106,10 +100,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
             if (musicPosition == value)
             {
                 if (AreThereUncommunicatedChanges)
-                {
                     EmitChangedEvent();
-                    AreThereUncommunicatedChanges = false;
-                }
                 return;
             }
 
@@ -155,10 +146,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
             if (measuresPerSecond == value)
             {
                 if (AreThereUncommunicatedChanges)
-                {
                     EmitChangedEvent();
-                    AreThereUncommunicatedChanges = false;
-                }
                 return;
             }
 
@@ -202,8 +190,9 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
                 ((float)MusicPosition - (float)previousTimingPoint.MusicPosition)
                 / (Time - previousTimingPoint.Time);
         }
-        else
+        else if (AreThereUncommunicatedChanges)
         {
+            EmitChangedEvent();
             return; // Make no changes
         }
     }
@@ -229,10 +218,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
             if (bpm == value)
             {
                 if (AreThereUncommunicatedChanges)
-                {
                     EmitChangedEvent();
-                    AreThereUncommunicatedChanges = false;
-                }
                 return;
             }
 
@@ -324,7 +310,10 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
     public void EmitChangedEvent()
     {
         if (!IsInstantiating)
+        {
             Changed?.Invoke(this, EventArgs.Empty);
+            AreThereUncommunicatedChanges = false;
+        }
     }
 
     public event EventHandler AttemptDelete = null!;
