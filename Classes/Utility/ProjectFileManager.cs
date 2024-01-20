@@ -43,6 +43,9 @@ public partial class ProjectFileManager : Node
         string file = GetProjectAsString(mp3Path);
         FileHandler.SaveMP3(mp3Path, (AudioStreamMP3)Project.Instance.AudioFile.Stream);
         FileHandler.SaveText(filePath, file);
+
+        Project.Instance.ProjectPath = filePath;
+        Project.Instance.NotificationMessage = $"Saved to {filePath}";
     }
 
     public static string GetProjectAsString() => GetProjectAsString(Project.Instance.AudioFile.Path);
@@ -213,6 +216,7 @@ public partial class ProjectFileManager : Node
         if (string.IsNullOrEmpty(projectFile))
             return;
         LoadProjectFromFile(projectFile);
+        Project.Instance.ProjectPath = filePath;
     }
 
     private enum ParseMode

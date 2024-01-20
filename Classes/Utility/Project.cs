@@ -1,3 +1,4 @@
+using System;
 using Godot;
 using OsuTimer.Classes.Audio;
 
@@ -11,6 +12,20 @@ public partial class Project : Node
 
     private Settings settings = null!;
 
+    public string ProjectPath = null!;
+
+    public event EventHandler NotificationMessageChanged = null!;
+    private string notificationMessage = null!;
+    public string NotificationMessage
+    {
+        get => notificationMessage;
+        set
+        {
+            notificationMessage = value;
+            NotificationMessageChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
     public static Project Instance { get => instance; set => instance = value; }
 
     public AudioFile AudioFile
@@ -22,9 +37,23 @@ public partial class Project : Node
                 return;
             audioFile = value;
             Signals.Instance.EmitEvent(Signals.Events.AudioFileChanged);
+            Project.Instance.ProjectPath = null!;
         }
     }
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() => Instance = this;
+
+    public override void _Input(InputEvent inputEvent)
+    {
+        switch (inputEvent)
+        {
+            case InputEventKey keyEvent:
+                {
+                    if (keyEvent.Keycode == Key.S && keyEvent.Pressed && Input.IsKeyPressed(Key.Ctrl))
+                        ProjectFileManager.SaveProjectAs(ProjectPath);
+                    break;
+                }
+        }
+    }
 }

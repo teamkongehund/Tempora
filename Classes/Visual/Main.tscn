@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://bk0ofb078cvgm"]
+[gd_scene load_steps=21 format=3 uid="uid://bk0ofb078cvgm"]
 
 [ext_resource type="Script" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
 [ext_resource type="AudioStream" uid="uid://clutjafa1rf7f" path="res://Audio/UMO.mp3" id="2_klkb2"]
@@ -19,6 +19,7 @@
 [ext_resource type="Script" path="res://Classes/Visual/OverlapScrollBar.cs" id="13_wubaw"]
 [ext_resource type="Script" path="res://Classes/Visual/VersionLabel.cs" id="16_j6b0h"]
 [ext_resource type="PackedScene" uid="uid://bac4n7j15cns7" path="res://Classes/Visual/AudioBlock.tscn" id="16_mlqa0"]
+[ext_resource type="Script" path="res://Classes/Visual/MessageLabel.cs" id="20_c3wmk"]
 
 [node name="Main" type="Control" node_paths=PackedStringArray("audioPlayer", "audioVisualsContainer", "metronome", "blockScrollBar")]
 layout_mode = 3
@@ -327,3 +328,28 @@ theme_override_font_sizes/font_size = 9
 horizontal_alignment = 2
 vertical_alignment = 2
 script = ExtResource("16_j6b0h")
+
+[node name="MessageLabel" type="Label" parent="." node_paths=PackedStringArray("timer")]
+z_index = 1000
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -21.0
+offset_right = 20.0
+offset_bottom = 21.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 30
+script = ExtResource("20_c3wmk")
+timer = NodePath("Timer")
+
+[node name="Timer" type="Timer" parent="MessageLabel"]
+wait_time = 2.5
+one_shot = true

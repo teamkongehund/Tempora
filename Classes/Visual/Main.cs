@@ -75,9 +75,6 @@ public partial class Main : Control
                 }
             case InputEventMouseButton mouseEvent:
                 {
-                    //GD.Print("Main registered Input mouse event");
-                    //GrabFocus();
-                    //ReleaseFocus();
                     if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased())
                     {
                         // Ensure a mouse release is always captured.
