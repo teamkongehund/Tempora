@@ -278,18 +278,14 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
     /// <summary>
     /// Constructor used only for cloning
     /// </summary>
-    /// <param name="time"></param>
-    /// <param name="musicPosition"></param>
-    /// <param name="timeSignature"></param>
-    /// <param name="measuresPerSecond"></param>
-    /// <param name="bpm"></param>
-    private TimingPoint(float time, float? musicPosition, int[] timeSignature, float measuresPerSecond, float bpm)
+    private TimingPoint(float time, float? musicPosition, int[] timeSignature, float measuresPerSecond, float bpm, bool isInstantiating)
     {
         this.offset = time;
         this.musicPosition = musicPosition;
         this.timeSignature = timeSignature;
         this.measuresPerSecond = measuresPerSecond;
         this.bpm = bpm;
+        this.IsInstantiating = isInstantiating;
     }
     #endregion
     #region Interface Methods
@@ -297,7 +293,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 
     public object Clone()
     {
-        var timingPoint = new TimingPoint(Offset, MusicPosition, TimeSignature, MeasuresPerSecond, Bpm);
+        var timingPoint = new TimingPoint(Offset, MusicPosition, TimeSignature, MeasuresPerSecond, Bpm, IsInstantiating);
 
         return timingPoint;
     }

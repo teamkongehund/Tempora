@@ -23,5 +23,7 @@ public partial class ClearAllButton : Button
         Timing.Instance.TimeSignaturePoints.Clear();
         Signals.Instance.EmitEvent(Signals.Events.TimingChanged);;
         ReleaseFocus();
+
+        ActionsHandler.Instance.AddTimingMemento();
     }
 }

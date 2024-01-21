@@ -46,6 +46,7 @@ public partial class Timing : Node , IMementoOriginator
             if (timingPoints == value)
                 return;
             timingPoints = value;
+            ReSubscribe();
             Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
         }
     }
@@ -75,6 +76,14 @@ public partial class Timing : Node , IMementoOriginator
         timingPoint.AttemptDelete += OnTimingPointDeleteAttempt;
         timingPoint.MPSUpdateRequested += OnTimingPointRequestingToUpdateMPS;
         timingPoint.Changed += OnTimingPointChanged;
+    }
+
+    private void ReSubscribe()
+    {
+        foreach (TimingPoint timingPoint in timingPoints)
+        {
+            SubscribeToEvents(timingPoint);
+        }
     }
 
     private void OnTimingPointChanged(object? sender, EventArgs e)
@@ -107,6 +116,11 @@ public partial class Timing : Node , IMementoOriginator
 
     #region Add/Delete TimingPoint
 
+    /// <summary>
+    /// Add a timing point. Primary constructor for loading timing points with a file.
+    /// </summary>
+    /// <param name="musicPosition"></param>
+    /// <param name="time"></param>
     public void AddTimingPoint(float musicPosition, float time)
     {
         var timingPoint = new TimingPoint(time, musicPosition, GetTimeSignature(musicPosition));
@@ -191,6 +205,8 @@ public partial class Timing : Node , IMementoOriginator
         previousTimingPoint?.MeasuresPerSecond_Set(this);
 
         Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
+
+        ActionsHandler.Instance.AddTimingMemento();
     }
 
     #endregion

@@ -29,6 +29,7 @@ Timing="*res://Classes/Utility/Timing.tscn"
 Settings="*res://Classes/Utility/Settings.tscn"
 Context="*res://Classes/Utility/Context.tscn"
 ProjectFileManager="*res://Classes/Utility/ProjectFileManager.tscn"
+ActionsHandler="*res://Classes/Utility/ActionsHandler.cs"
 
 [display]
 

@@ -6,6 +6,8 @@ namespace OsuTimer.Classes.Utility;
 
 public partial class ActionsHandler : Node
 {
+    public static ActionsHandler Instance = null!;
+
     private List<IMemento> mementoList = [];
 
     private int? mementoIndex = null;
@@ -13,6 +15,7 @@ public partial class ActionsHandler : Node
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+        Instance = this;
 	}
 
     public override void _Input(InputEvent inputEvent)
@@ -38,7 +41,7 @@ public partial class ActionsHandler : Node
             case InputEventKey { Keycode: Key.L, Pressed: true } keyEvent:
                 {
                     AddTimingMemento();
-                    Project.Instance.NotificationMessage = $"State saved with mementoIndex = {mementoIndex}.";
+                    Project.Instance.NotificationMessage = $"State saved with mementoIndex = {mementoIndex} / {mementoList.Count - 1}.";
                     break;
                 }
         }
@@ -49,7 +52,7 @@ public partial class ActionsHandler : Node
 
     }
 
-    private void AddTimingMemento()
+    public void AddTimingMemento()
     {
         IMemento memento = Timing.Instance.GetMemento();
         AddMemento(memento);
@@ -67,7 +70,8 @@ public partial class ActionsHandler : Node
 
     private void DeleteMementosAfterIndex(int index)
     {
-        mementoList.RemoveRange(index + 1, mementoList.Count);
+        //Project.Instance.NotificationMessage = $"Deleting all mementos after index {index}";
+        mementoList.RemoveRange(index, mementoList.Count - index);
     }
 
     private void Undo()
@@ -75,7 +79,7 @@ public partial class ActionsHandler : Node
         switch (mementoIndex)
         {
             case null:
-                mementoIndex = mementoList.Count - 1;
+                mementoIndex = mementoList.Count - 2 >= 0 ? mementoList.Count - 2 : 0;
                 break;
             case > 0:
                 mementoIndex--;
@@ -85,9 +89,11 @@ public partial class ActionsHandler : Node
             default:
                 throw new Exception($"Memento index could not be handled");
         }
-        Project.Instance.NotificationMessage = $"Undo: mementoIndex = {mementoIndex}";
+        //Project.Instance.NotificationMessage = $"Undo: mementoIndex = {mementoIndex ?? (mementoList.Count - 1)} / {mementoList.Count - 1}";
 
         IMemento memento = mementoList[(int)mementoIndex];
+        if (memento == null)
+            throw new NullReferenceException($"{nameof(memento)}");
 
         Timing.Instance.RestoreMemento(memento);
     }
@@ -98,16 +104,16 @@ public partial class ActionsHandler : Node
         {
             case null:
                 return;
-            case var expression when (mementoIndex < (mementoList.Count - 2)):
+            case var expression when (mementoIndex < (mementoList.Count - 1)):
                 mementoIndex++;
                 break;
-            case var expression when (mementoIndex == mementoList.Count - 2):
+            case var expression when (mementoIndex == mementoList.Count - 1):
                 mementoIndex = null;
                 return;
             default:
                 throw new Exception($"Memento index could not be handled");
         }
-        Project.Instance.NotificationMessage = $"Redo: mementoIndex = {mementoIndex}";
+        //Project.Instance.NotificationMessage = $"Redo: mementoIndex = {mementoIndex} / {mementoList.Count-1}";
 
         IMemento memento = mementoList[(int)mementoIndex];
 

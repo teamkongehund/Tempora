@@ -61,6 +61,8 @@ public partial class Main : Control
         UpdatePlayHeads();
         blockScrollBar.UpdateRange();
         audioVisualsContainer.UpdateBlocksScroll();
+
+        ActionsHandler.Instance.AddTimingMemento();
     }
 
     public override void _Input(InputEvent inputEvent)
