@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://dgiyftqx2v7fb"]
+[gd_scene load_steps=2 format=3 uid="uid://b4x6i8hh1c304"]
 
 [ext_resource type="Script" path="res://Classes/Visual/LabeledScrollbar.cs" id="1_em0mv"]
 

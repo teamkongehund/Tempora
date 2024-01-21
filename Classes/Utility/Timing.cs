@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Godot;
 
 namespace OsuTimer.Classes.Utility;
@@ -9,7 +8,7 @@ namespace OsuTimer.Classes.Utility;
 /// <summary>
 ///     Data class controlling how the tempo of the song varies with time.
 /// </summary>
-public partial class Timing : Node
+public partial class Timing : Node , IMementoOriginator
 {
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() => Instance = this;
@@ -459,23 +458,10 @@ public partial class Timing : Node
     /// <returns></returns>
     public static Timing CopyAndAddExtraPoints(Timing timing)
     {
-
-        //var newTiming = new Timing
-        //{
-        //    TimingPoints = timing.TimingPoints.ToList(),
-        //    TimeSignaturePoints = timing.TimeSignaturePoints.ToList()
-        //};
-
-        //var newTiming = new Timing
-        //{
-        //    TimingPoints = new List<TimingPoint>(timing.timingPoints),
-        //    TimeSignaturePoints = new List<TimeSignaturePoint>(timing.TimeSignaturePoints),
-        //};
-
         var newTiming = new Timing
         {
-            TimingPoints = CloneList<TimingPoint>(timing.timingPoints),
-            TimeSignaturePoints = CloneList<TimeSignaturePoint>(timing.TimeSignaturePoints)
+            TimingPoints = CloneUtility.CloneList<TimingPoint>(timing.timingPoints),
+            TimeSignaturePoints = CloneUtility.CloneList<TimeSignaturePoint>(timing.TimeSignaturePoints)
         };
 
         // Add extra downbeat timing points
@@ -540,17 +526,31 @@ public partial class Timing : Node
         return newTiming;
     }
 
-    private static List<T> CloneList<T>(List<T> originalList) where T : ICloneable
+    #endregion
+
+    #region Memento
+    public IMemento GetMemento()
     {
-        List<T> clonedList = [];
+        return new TimingMemento(this);
+    }
 
-        foreach (T item in originalList)
-        {
-            var clonedItem = (T)item.Clone();
-            clonedList.Add(clonedItem);
-        }
+    public void RestoreMemento(IMemento memento)
+    {
+        ArgumentNullException.ThrowIfNull(memento);
 
-        return clonedList;
+        if (memento is not TimingMemento timingMemento)
+            throw new ArgumentException($"{nameof(memento)} was not of type {nameof(TimingMemento)}");
+
+        TimingPoints = timingMemento.clonedTimingPoints;
+        TimeSignaturePoints = timingMemento.clonedTimeSignaturePoints;
+    }
+
+    private class TimingMemento(Timing originator) : IMemento
+    {
+        public readonly List<TimingPoint> clonedTimingPoints = CloneUtility.CloneList(originator.timingPoints);
+        public readonly List<TimeSignaturePoint> clonedTimeSignaturePoints = CloneUtility.CloneList(originator.timeSignaturePoints);
+
+        public IMementoOriginator GetOriginator() => originator;
     } 
     #endregion
 }
