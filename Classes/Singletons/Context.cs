@@ -11,6 +11,7 @@ public partial class Context : Node
     private static Context instance = null!;
 
     private float? heldTimingPoint_PreviousMusicPosition = null!;
+    private float? heldTimingPoint_PreviousOffset = null!;
     private TimingPoint? heldTimingPoint = null!;
     public TimingPoint? HeldTimingPoint
     {
@@ -23,7 +24,8 @@ public partial class Context : Node
             {
                 bool doesTimingPointStillExist = heldTimingPoint != null;
                 bool hasMusicPositionChanged = heldTimingPoint?.MusicPosition != heldTimingPoint_PreviousMusicPosition;
-                if (hasMusicPositionChanged && doesTimingPointStillExist)
+                bool hasOffsetChanged = heldTimingPoint?.Offset != heldTimingPoint_PreviousOffset;
+                if ((hasMusicPositionChanged || hasOffsetChanged) && doesTimingPointStillExist)
                 {
                     ActionsHandler.Instance.AddTimingMemento();
                 }
