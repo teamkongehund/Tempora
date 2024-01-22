@@ -107,103 +107,80 @@ public partial class AudioDisplayPanel : Control
 
     public override void _GuiInput(InputEvent @event)
     {
-        switch (@event)
+        if (@event is not InputEventMouse mouseEvent)
         {
-            case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } mouseEvent:
-                {
-                    float x = mouseEvent.Position.X;
-                    float musicPosition = XPositionToMusicPosition(x);
-                    Timing.Instance.MusicPositionToTime(musicPosition);
-
-                    if (Input.IsKeyPressed(Key.Alt))
-                    {
-                        Context.Instance.IsSelectedMusicPositionMoving = true;
-                        Context.Instance.SelectedMusicPosition = XPositionToMusicPosition(x);
-                    }
-                    else
-                    {
-                        x = mouseEvent.Position.X;
-                        musicPosition = XPositionToMusicPosition(x);
-                        if (Input.IsKeyPressed(Key.Shift))
-                        {
-                            musicPosition = Timing.SnapMusicPosition(musicPosition);
-                        }
-                        float time = Timing.Instance.MusicPositionToTime(musicPosition);
-                        AttemptToAddTimingPoint?.Invoke(this, new Signals.ObjectArgument<float>(time));
-                        GetViewport().SetInputAsHandled();
-                    }
-
-                    break;
-                }
-            case InputEventMouseButton { ButtonIndex: MouseButton.Right, Pressed: true } mouseEvent:
-                {
-                    float x = mouseEvent.Position.X;
-                    float musicPosition = XPositionToMusicPosition(x);
-                    float time = Timing.Instance.MusicPositionToTime(musicPosition);
-                    SeekPlaybackTime?.Invoke(this, new Signals.ObjectArgument<float>(time));
-                    break;
-                }
-            case InputEventMouseButton { ButtonIndex: MouseButton.WheelUp, Pressed: true } mouseEvent:
-                {
-                    if (Input.IsKeyPressed(Key.Ctrl))
-                    {
-                        Vector2 mousePos = mouseEvent.Position;
-                        float musicPosition = XPositionToMusicPosition(mousePos.X);
-                        float secondsDifference = 0.002f;
-                        TimingPoint? operatingTimingPoint = Timing.Instance.GetOperatingTimingPoint_ByMusicPosition(musicPosition);
-                        if (operatingTimingPoint == null)
-                            return;
-                        operatingTimingPoint.Offset_Set(operatingTimingPoint.Offset + secondsDifference, Timing.Instance);
-                    }
-                    break;
-                }
-            case InputEventMouseButton { ButtonIndex: MouseButton.WheelDown, Pressed: true } mouseEvent:
-                {
-                    if (Input.IsKeyPressed(Key.Ctrl))
-                    {
-                        Vector2 mousePos = mouseEvent.Position;
-                        float musicPosition = XPositionToMusicPosition(mousePos.X);
-                        float secondsDifference = -0.002f;
-                        TimingPoint? operatingTimingPoint = Timing.Instance.GetOperatingTimingPoint_ByMusicPosition(musicPosition);
-                        if (operatingTimingPoint == null)
-                            return;
-                        operatingTimingPoint.Offset_Set(operatingTimingPoint.Offset + secondsDifference, Timing.Instance);
-                    }
-                    break;
-                }
-            case InputEventMouseMotion mouseMotion:
-                {
-                    Vector2 mousePos = mouseMotion.Position;
-                    float musicPosition = XPositionToMusicPosition(mousePos.X);
-                    if (Input.IsKeyPressed(Key.Shift))
-                    {
-                        musicPosition = Timing.SnapMusicPosition(musicPosition);
-                    }
-                    //float mouseRelativeMusicPosition = XPositionToRelativeMusicPosition(mousePos.X);
-
-                    // HeldTimingPoint
-                    if (Input.IsKeyPressed(Key.Ctrl) && Context.Instance.HeldTimingPoint != null)
-                    {
-                        float xMovement = mouseMotion.Relative.X;
-                        float secondsDifference = xMovement * 0.0002f;
-                        Context.Instance.HeldTimingPoint.Offset_Set(Context.Instance.HeldTimingPoint.Offset - secondsDifference, Timing.Instance);
-                    }
-                    else if (Context.Instance.HeldTimingPoint != null)
-                    {
-                        Timing.Instance.SnapTimingPoint(Context.Instance.HeldTimingPoint, musicPosition);
-                    }
-
-                    // PreviewLine
-                    UpdatePreviewLinePosition();
-
-                    // SelectedPosition
-                    if (!Context.Instance.IsSelectedMusicPositionMoving)
-                        return;
-                    Context.Instance.SelectedMusicPosition = XPositionToMusicPosition(mousePos.X);
-                    break;
-                }
+            //GD.Print("AudioDisplayPanel._GuiInput(): Input was not a mouse event");
+            return;
         }
+
+        //GD.Print($"Node handling this mouse input: {this}");
+
+        Vector2 mousePos = mouseEvent.Position;
+        float musicPosition = GetMouseMusicPosition(mouseEvent);
+        float time = Timing.Instance.MusicPositionToTime(musicPosition);
+
+        TimingPoint? operatingTimingPoint = Timing.Instance.GetOperatingTimingPoint_ByMusicPosition(musicPosition);
+        float offsetPerWheelScroll = 0.002f;
+
+        switch (mouseEvent)
+        {
+            case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } mouseButtonEvent:
+                AttemptToAddTimingPoint?.Invoke(this, new Signals.ObjectArgument<float>(time));
+                break;
+
+            case InputEventMouseButton { ButtonIndex: MouseButton.Right, Pressed: true } mouseButtonEvent:
+                SeekPlaybackTime?.Invoke(this, new Signals.ObjectArgument<float>(time));
+                break;
+
+            case InputEventMouseButton { ButtonIndex: MouseButton.WheelUp, Pressed: true } mouseButtonEvent when Input.IsKeyPressed(Key.Ctrl):
+                operatingTimingPoint?.Offset_Set(operatingTimingPoint.Offset + offsetPerWheelScroll, Timing.Instance);
+                break;
+
+            case InputEventMouseButton { ButtonIndex: MouseButton.WheelDown, Pressed: true } mouseButtonEvent when Input.IsKeyPressed(Key.Ctrl):
+                operatingTimingPoint?.Offset_Set(operatingTimingPoint.Offset - offsetPerWheelScroll, Timing.Instance);
+                break;
+
+            case InputEventMouseMotion mouseMotion:
+                UpdatePreviewLinePosition();
+
+                if (Context.Instance.HeldTimingPoint == null)
+                    return;
+
+                if (Input.IsKeyPressed(Key.Ctrl))
+                {
+                    float xMovement = mouseMotion.Relative.X;
+                    float secondsDifference = xMovement * 0.0002f;
+                    Context.Instance.HeldTimingPoint.Offset_Set(Context.Instance.HeldTimingPoint.Offset - secondsDifference, Timing.Instance);
+                    return;
+                }
+
+                Timing.Instance.SnapTimingPoint(Context.Instance.HeldTimingPoint, musicPosition);
+
+                break;
+
+            default:
+                return;
+        }
+
+        GetViewport().SetInputAsHandled();
     }
+
+    /// <summary>
+    /// Gets the raw or snapped mouse music position
+    /// </summary>
+    /// <param name="mouseEvent"></param>
+    /// <returns></returns>
+    private float GetMouseMusicPosition(InputEventMouse mouseEvent)
+    {
+        Vector2 mousePos = mouseEvent.Position;
+        float musicPosition = XPositionToMusicPosition(mousePos.X);
+        if (Input.IsKeyPressed(Key.Shift))
+            musicPosition = Timing.SnapMusicPosition(musicPosition);
+
+        return musicPosition;
+    }
+
+
 
     public override void _Input(InputEvent @event)
     {

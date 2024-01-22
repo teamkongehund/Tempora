@@ -36,6 +36,8 @@ public partial class VisualTimingPoint : Node2D
         SystemTimeWhenCreated = Time.GetTicksMsec();
 
         TimingPoint.Changed += OnTimingPointChanged;
+
+        VisibilityChanged += OnVisibilityChanged;
     }
 
     private void OnTimingPointChanged(object? sender, EventArgs e)
@@ -43,6 +45,12 @@ public partial class VisualTimingPoint : Node2D
         if (sender is not TimingPoint timingPoint)
             return;
         UpdateLabels(timingPoint);
+    }
+
+    private void OnVisibilityChanged()
+    {
+        if (Visible)
+            SystemTimeWhenCreated = Time.GetTicksMsec();
     }
 
     public void UpdateLabels(TimingPoint timingPoint)
@@ -58,51 +66,66 @@ public partial class VisualTimingPoint : Node2D
         Vector2 mousePosition = GetLocalMousePosition();
         Rect2 rectangle = collisionShape2D.Shape.GetRect();
         bool hasMouseInside = rectangle.HasPoint(mousePosition);
-        if (@event is InputEventMouseButton mouseEvent)
+
+        if (@event is not InputEventMouseButton mouseEvent)
+            return;
+        if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased())
         {
-            if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed && hasMouseInside)
-            {
-                //GD.Print($"Clicked on TimingPoint with BPM {TimingPoint.Bpm} & Time signature {TimingPoint.TimeSignature[0]}/{TimingPoint.TimeSignature[1]}");
-
-                Signals.Instance.EmitEvent(Signals.Events.TimingPointHolding, new Signals.ObjectArgument<TimingPoint>(TimingPoint));
-            }
-            else if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased())
-            {
-                Signals.Instance.EmitEvent(Signals.Events.MouseLeftReleased);
-                return;
-            }
-
-            if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick && hasMouseInside && !Input.IsKeyPressed(Key.Alt))
-            {
-                DeleteTimingPoint();
-            }
-
-            if (mouseEvent.ButtonIndex == MouseButton.WheelDown && mouseEvent.Pressed && Input.IsKeyPressed(Key.Ctrl) && hasMouseInside)
-            {
-                // Decrease BPM by 1 (snapping to integers) - only for last timing point.
-                float previousBpm = TimingPoint.Bpm;
-                float newBpm = (int)previousBpm - 1;
-                if (Input.IsKeyPressed(Key.Shift) && !Input.IsKeyPressed(Key.Alt))
-                    newBpm = (int)previousBpm - 5;
-                else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Alt))
-                    newBpm = previousBpm - 0.1f;
-
-                TimingPoint.Bpm_Set(newBpm, Timing.Instance);
-            }
-            else if (mouseEvent.ButtonIndex == MouseButton.WheelUp && mouseEvent.Pressed && Input.IsKeyPressed(Key.Ctrl) && hasMouseInside)
-            {
-                // Decrease BPM by 1 (snapping to integers) - only for last timing point.
-                float previousBpm = TimingPoint.Bpm;
-                float newBpm = (int)previousBpm + 1;
-                if (Input.IsKeyPressed(Key.Shift) && !Input.IsKeyPressed(Key.Alt))
-                    newBpm = (int)previousBpm + 5;
-                else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Alt))
-                    newBpm = previousBpm + 0.1f;
-
-                TimingPoint.Bpm_Set(newBpm, Timing.Instance);
-            }
+            Signals.Instance.EmitEvent(Signals.Events.MouseLeftReleased);
+            return;
         }
+        if (!hasMouseInside)
+            return;
+
+        if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick && !Input.IsKeyPressed(Key.Alt))
+            DeleteTimingPoint();
+        else if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed)
+            Signals.Instance.EmitEvent(Signals.Events.TimingPointHolding, new Signals.ObjectArgument<TimingPoint>(TimingPoint));
+        else if (mouseEvent.ButtonIndex == MouseButton.WheelDown && mouseEvent.Pressed && Input.IsKeyPressed(Key.Ctrl))
+        {
+            // Decrease BPM by 1 (snapping to integers) - only for last timing point.
+            float previousBpm = TimingPoint.Bpm;
+            float newBpm = (int)previousBpm - 1;
+            if (Input.IsKeyPressed(Key.Shift) && !Input.IsKeyPressed(Key.Alt))
+                newBpm = (int)previousBpm - 5;
+            else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Alt))
+                newBpm = previousBpm - 0.1f;
+
+            TimingPoint.Bpm_Set(newBpm, Timing.Instance);
+        }
+        else if (mouseEvent.ButtonIndex == MouseButton.WheelUp && mouseEvent.Pressed && Input.IsKeyPressed(Key.Ctrl))
+        {
+            // Increase BPM by 1 (snapping to integers) - only for last timing point.
+            float previousBpm = TimingPoint.Bpm;
+            float newBpm = (int)previousBpm + 1;
+            if (Input.IsKeyPressed(Key.Shift) && !Input.IsKeyPressed(Key.Alt))
+                newBpm = (int)previousBpm + 5;
+            else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Alt))
+                newBpm = previousBpm + 0.1f;
+
+            TimingPoint.Bpm_Set(newBpm, Timing.Instance);
+        }
+        else
+            return;
+
+        GetViewport().SetInputAsHandled();
     }
+
+    //private void IncrementTimingPointBpm(InputEventMouseButton mouseEvent)
+    //{
+    //    if (!mouseEvent.Pressed || )
+    //        return;
+    //    int direction = mouseEvent.ButtonIndex == MouseButton.WheelUp
+
+    //    float previousBpm = TimingPoint.Bpm;
+    //    float newBpm = (int)previousBpm - 1;
+    //    if (Input.IsKeyPressed(Key.Shift) && !Input.IsKeyPressed(Key.Alt))
+    //        newBpm = (int)previousBpm - 5;
+    //    else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Alt))
+    //        newBpm = previousBpm - 0.1f;
+
+    //    TimingPoint.Bpm_Set(newBpm, Timing.Instance);
+    //}
 
     private void DeleteTimingPoint()
     {
