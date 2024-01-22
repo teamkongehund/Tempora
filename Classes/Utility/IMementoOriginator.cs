@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OsuTimer.Classes.Utility;
+namespace Tempora.Classes.Utility;
 public interface IMementoOriginator
 {
     public void RestoreMemento(IMemento memento);

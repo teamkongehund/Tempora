@@ -1,9 +1,9 @@
 using System;
 using System.Reflection.Metadata;
 using Godot;
-using OsuTimer.Classes.Utility;
+using Tempora.Classes.Utility;
 
-namespace OsuTimer.Classes.Visual;
+namespace Tempora.Classes.Visual;
 
 public partial class AudioBlock : Control
 {

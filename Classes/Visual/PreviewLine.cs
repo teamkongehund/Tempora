@@ -1,6 +1,6 @@
 using Godot;
 
-namespace OsuTimer.Classes.Visual;
+namespace Tempora.Classes.Visual;
 
 public partial class PreviewLine : Line2D
 {

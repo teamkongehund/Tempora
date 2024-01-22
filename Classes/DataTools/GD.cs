@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Text;
 using Godot;
 
-namespace OsuTimer.Classes.Utility;
+namespace Tempora.Classes.Utility;
 
 /// <summary>
 ///     Godot's global functions.

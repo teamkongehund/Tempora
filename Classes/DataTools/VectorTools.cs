@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-namespace OsuTimer.Classes.Utility;
+namespace Tempora.Classes.Utility;
 
 public partial class VectorTools : Node
 {

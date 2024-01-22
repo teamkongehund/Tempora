@@ -1,7 +1,7 @@
 using Godot;
-using OsuTimer.Classes.Audio;
+using Tempora.Classes.Audio;
 
-namespace OsuTimer.Classes.Visual;
+namespace Tempora.Classes.Visual;
 
 public partial class PlaybackRateScrollBar : LabeledScrollbar
 {

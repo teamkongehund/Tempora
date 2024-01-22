@@ -84,10 +84,11 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 5
 
-[node name="GridScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/SettingsSlidersVBox" instance=ExtResource("10_4hwef")]
+[node name="GridScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/SettingsSlidersVBox" node_paths=PackedStringArray("audioPlayer") instance=ExtResource("10_4hwef")]
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("7_i2h88")
+audioPlayer = NodePath("../../../../../../AudioPlayer")
 title = "Grid"
 minValue = 1.0
 maxValue = 8.0
@@ -96,7 +97,7 @@ maxValue = 8.0
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("8_6jrsb")
-audioPlayer = NodePath("")
+audioPlayer = NodePath("../../../../../../AudioPlayer")
 title = "Playback"
 minValue = 0.1
 maxValue = 1.0
@@ -137,7 +138,7 @@ theme_override_font_sizes/font_size = 12
 text = "Clear All
 "
 script = ExtResource("9_7o3s6")
-confirmationDialog = NodePath("")
+confirmationDialog = NodePath("ConfirmationDialog")
 
 [node name="ConfirmationDialog" type="ConfirmationDialog" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsVBox/ClearAllButton"]
 title = "Delete all timing points?"
@@ -308,7 +309,7 @@ theme_override_constants/margin_bottom = 10
 layout_mode = 2
 size_flags_horizontal = 1
 script = ExtResource("5_aqu3i")
-audioVisualsContainer = NodePath("")
+audioVisualsContainer = NodePath("../../AudioVisualsMarginContainer/AudioVisualsContainer")
 
 [node name="VersionLabel" type="Label" parent="."]
 layout_mode = 1

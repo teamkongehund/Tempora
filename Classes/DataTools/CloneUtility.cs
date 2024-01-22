@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OsuTimer.Classes.Utility;
+namespace Tempora.Classes.Utility;
 public static class CloneUtility
 {
     public static List<T> CloneList<T>(List<T> originalList) where T : ICloneable

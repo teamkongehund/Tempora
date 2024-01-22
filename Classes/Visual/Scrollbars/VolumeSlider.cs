@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-namespace OsuTimer.Classes.Visual;
+namespace Tempora.Classes.Visual;
 
 public partial class VolumeSlider : VScrollBar
 {

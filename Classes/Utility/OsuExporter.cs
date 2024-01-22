@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Godot;
-using OsuTimer.Classes.Audio;
+using Tempora.Classes.Audio;
 
-namespace OsuTimer.Classes.Utility;
+namespace Tempora.Classes.Utility;
 
 public partial class OsuExporter : Node
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 
-namespace OsuTimer.Classes.Utility;
+namespace Tempora.Classes.Utility;
 
 /// <summary>
 ///     Data class controlling how the tempo of the song varies with time.

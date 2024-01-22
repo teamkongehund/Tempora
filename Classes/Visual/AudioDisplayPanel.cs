@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
 using Godot;
-using GD = OsuTimer.Classes.Utility.GD;
-using OsuTimer.Classes.Utility;
+using GD = Tempora.Classes.Utility.GD;
+using Tempora.Classes.Utility;
 
-namespace OsuTimer.Classes.Visual;
+namespace Tempora.Classes.Visual;
 
 /// <summary>
 ///     Parent class for window containing waveform(s), playhead and timing grid

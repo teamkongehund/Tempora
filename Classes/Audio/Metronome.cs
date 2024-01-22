@@ -1,7 +1,7 @@
 using Godot;
-using OsuTimer.Classes.Utility;
+using Tempora.Classes.Utility;
 
-namespace OsuTimer.Classes.Audio;
+namespace Tempora.Classes.Audio;
 
 public partial class Metronome : Node
 {

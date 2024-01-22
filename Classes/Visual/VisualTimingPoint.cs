@@ -1,9 +1,9 @@
 using System;
 using Godot;
-using GD = OsuTimer.Classes.Utility.GD;
-using OsuTimer.Classes.Utility;
+using GD = Tempora.Classes.Utility.GD;
+using Tempora.Classes.Utility;
 
-namespace OsuTimer.Classes.Visual;
+namespace Tempora.Classes.Visual;
 
 public partial class VisualTimingPoint : Node2D
 {

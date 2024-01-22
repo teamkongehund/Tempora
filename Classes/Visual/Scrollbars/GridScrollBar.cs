@@ -1,8 +1,8 @@
 using Godot;
-using OsuTimer.Classes.Audio;
-using OsuTimer.Classes.Utility;
+using Tempora.Classes.Audio;
+using Tempora.Classes.Utility;
 
-namespace OsuTimer.Classes.Visual;
+namespace Tempora.Classes.Visual;
 
 public partial class GridScrollBar : LabeledScrollbar
 {

@@ -1,6 +1,6 @@
-using OsuTimer.Classes.Utility;
+using Tempora.Classes.Utility;
 
-namespace OsuTimer.Classes.Visual;
+namespace Tempora.Classes.Visual;
 
 public partial class OffsetScrollBar : LabeledScrollbar
 {

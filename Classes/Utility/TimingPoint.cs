@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-namespace OsuTimer.Classes.Utility;
+namespace Tempora.Classes.Utility;
 
 /// <summary>
 /// A data class which asserts that a specific point in time (<see cref="Offset"/>)

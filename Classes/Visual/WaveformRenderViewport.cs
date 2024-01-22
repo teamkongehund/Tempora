@@ -1,8 +1,8 @@
 using Godot;
-using OsuTimer.Classes.Audio;
-using GD = OsuTimer.Classes.Utility.GD;
+using Tempora.Classes.Audio;
+using GD = Tempora.Classes.Utility.GD;
 
-namespace OsuTimer.Classes.Visual;
+namespace Tempora.Classes.Visual;
 
 public partial class WaveformRenderViewport : SubViewport
 {

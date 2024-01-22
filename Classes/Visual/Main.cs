@@ -1,12 +1,12 @@
 using System;
 using System.Linq;
 using Godot;
-using OsuTimer.Classes.Audio;
-using OsuTimer.Classes.Utility;
+using Tempora.Classes.Audio;
+using Tempora.Classes.Utility;
 
 // Tempora
 
-namespace OsuTimer.Classes.Visual;
+namespace Tempora.Classes.Visual;
 
 public partial class Main : Control
 {

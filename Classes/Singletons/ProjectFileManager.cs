@@ -2,9 +2,9 @@ using System;
 using System.Globalization;
 using System.IO;
 using Godot;
-using OsuTimer.Classes.Audio;
+using Tempora.Classes.Audio;
 
-namespace OsuTimer.Classes.Utility;
+namespace Tempora.Classes.Utility;
 
 /// <summary>
 ///     Handles saving and loading of project files

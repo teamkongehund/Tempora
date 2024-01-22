@@ -1,10 +1,10 @@
 using System.Linq;
 using Godot;
-using OsuTimer.Classes.Audio;
-using OsuTimer.Classes.Utility;
-using GD = OsuTimer.Classes.Utility.GD;
+using Tempora.Classes.Audio;
+using Tempora.Classes.Utility;
+using GD = Tempora.Classes.Utility.GD;
 
-namespace OsuTimer.Classes.Visual;
+namespace Tempora.Classes.Visual;
 
 /// <summary>
 ///     Waveform visual representation of audio segment with constant time-distance relation.

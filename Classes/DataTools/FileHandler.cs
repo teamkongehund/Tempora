@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Godot;
 
 // Autoload class to load and save files.
-namespace OsuTimer.Classes.Utility;
+namespace Tempora.Classes.Utility;
 
 public partial class FileHandler : Node
 {

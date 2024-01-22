@@ -3,7 +3,7 @@ using SysCol = System.Collections.Generic;
 using Godot;
 using Godot.Collections;
 
-namespace OsuTimer.Classes.Utility;
+namespace Tempora.Classes.Utility;
 
 /// <summary>
 ///     Singleton class that sends signals to keep everything updated when properties change.

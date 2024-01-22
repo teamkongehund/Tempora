@@ -1,8 +1,8 @@
 using Godot;
-using OsuTimer.Classes.Audio;
-using GD = OsuTimer.Classes.Utility.GD;
+using Tempora.Classes.Audio;
+using GD = Tempora.Classes.Utility.GD;
 
-namespace OsuTimer.Classes.Visual;
+namespace Tempora.Classes.Visual;
 
 public partial class Waveform : Node2D
 {
@@ -189,7 +189,7 @@ public partial class Waveform : Node2D
     private int[] audioDataRange = [0, 0];
 
     /// <summary>
-    ///     Indices for the first and last audio sample to use from <see cref="OsuTimer.Classes.Audio.AudioFile.AudioData" />
+    ///     Indices for the first and last audio sample to use from <see cref="Tempora.Classes.Audio.AudioFile.AudioData" />
     /// </summary>
     public int[] AudioDataRange
     {

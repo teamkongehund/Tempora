@@ -3,7 +3,7 @@ using System.IO;
 using Godot;
 using NAudio.Wave;
 
-namespace OsuTimer.Classes.Utility;
+namespace Tempora.Classes.Utility;
 
 public partial class AudioDataHandler : Node
 {

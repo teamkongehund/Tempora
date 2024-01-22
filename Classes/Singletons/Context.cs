@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-namespace OsuTimer.Classes.Utility;
+namespace Tempora.Classes.Utility;
 
 /// <summary>
 ///     Manages user context, such as object selection

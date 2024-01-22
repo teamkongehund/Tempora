@@ -1,8 +1,8 @@
 using Godot;
-using OsuTimer.Classes.Utility;
+using Tempora.Classes.Utility;
 using System;
 
-namespace OsuTimer.Classes.Visual;
+namespace Tempora.Classes.Visual;
 
 public partial class MessageLabel : Label
 {

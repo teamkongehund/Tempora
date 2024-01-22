@@ -1,8 +1,8 @@
 using System;
 using Godot;
-using OsuTimer.Classes.Utility;
+using Tempora.Classes.Utility;
 
-namespace OsuTimer.Classes.Audio;
+namespace Tempora.Classes.Audio;
 
 public partial class AudioPlayer : AudioStreamPlayer
 {
@@ -34,7 +34,7 @@ public partial class AudioPlayer : AudioStreamPlayer
         }
     }
 
-    private void OnSelectedPositionChanged(object? sender, EventArgs e)
+    private void OnSelectedPositionChanged(object? _sender, EventArgs e)
     {
         float time = Timing.Instance.MusicPositionToTime(Context.Instance.SelectedMusicPosition);
         PauseTime = time >= 0 ? (double)time : 0;

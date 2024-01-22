@@ -1,9 +1,9 @@
 using System.Drawing;
 using Godot;
-using OsuTimer.Classes.Utility;
+using Tempora.Classes.Utility;
 using Color = Godot.Color;
 
-namespace OsuTimer.Classes.Visual;
+namespace Tempora.Classes.Visual;
 
 public partial class GridLine : Line2D
 {
