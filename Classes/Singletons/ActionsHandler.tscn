@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ol46j43vltbj"]
 
-[ext_resource type="Script" path="res://Classes/Utility/ActionsHandler.cs" id="1_ut1lg"]
+[ext_resource type="Script" path="res://Classes/Singletons/ActionsHandler.cs" id="1_ut1lg"]
 
 [node name="ActionsHandler" type="Node"]
 script = ExtResource("1_ut1lg")

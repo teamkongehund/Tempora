@@ -5,18 +5,18 @@
 [ext_resource type="PackedScene" uid="uid://djvimmuyfu0pu" path="res://Classes/Audio/AudioPlayer.tscn" id="2_nrfju"]
 [ext_resource type="Script" path="res://Classes/Visual/AudioVisualsContainer.cs" id="3_bj8ok"]
 [ext_resource type="PackedScene" uid="uid://bnbif04ymgk1h" path="res://Classes/Audio/Metronome.tscn" id="4_n2ir2"]
-[ext_resource type="Script" path="res://Classes/Visual/BlockScrollBar.cs" id="5_aqu3i"]
-[ext_resource type="Script" path="res://Classes/Visual/VolumeSlider.cs" id="6_w0n8n"]
-[ext_resource type="Script" path="res://Classes/Visual/GridScrollBar.cs" id="7_i2h88"]
-[ext_resource type="Script" path="res://Classes/Visual/SaveButton.cs" id="7_vit6a"]
-[ext_resource type="Script" path="res://Classes/Visual/PlaybackRateScrollBar.cs" id="8_6jrsb"]
-[ext_resource type="Script" path="res://Classes/Visual/LoadButton.cs" id="8_kgjts"]
-[ext_resource type="Script" path="res://Classes/Visual/ClearAllButton.cs" id="9_7o3s6"]
-[ext_resource type="Script" path="res://Classes/Visual/BlockAmountScrollBar.cs" id="9_22ufa"]
-[ext_resource type="PackedScene" uid="uid://b4x6i8hh1c304" path="res://Classes/Visual/LabeledScrollbar.tscn" id="10_4hwef"]
-[ext_resource type="Script" path="res://Classes/Visual/ExportButton.cs" id="10_y304k"]
-[ext_resource type="Script" path="res://Classes/Visual/OffsetScrollBar.cs" id="10_yfm4l"]
-[ext_resource type="Script" path="res://Classes/Visual/OverlapScrollBar.cs" id="13_wubaw"]
+[ext_resource type="Script" path="res://Classes/Visual/Scrollbars/BlockScrollBar.cs" id="5_aqu3i"]
+[ext_resource type="Script" path="res://Classes/Visual/Scrollbars/VolumeSlider.cs" id="6_w0n8n"]
+[ext_resource type="Script" path="res://Classes/Visual/Scrollbars/GridScrollBar.cs" id="7_i2h88"]
+[ext_resource type="Script" path="res://Classes/Visual/Buttons/SaveButton.cs" id="7_vit6a"]
+[ext_resource type="Script" path="res://Classes/Visual/Scrollbars/PlaybackRateScrollBar.cs" id="8_6jrsb"]
+[ext_resource type="Script" path="res://Classes/Visual/Buttons/LoadButton.cs" id="8_kgjts"]
+[ext_resource type="Script" path="res://Classes/Visual/Buttons/ClearAllButton.cs" id="9_7o3s6"]
+[ext_resource type="Script" path="res://Classes/Visual/Scrollbars/BlockAmountScrollBar.cs" id="9_22ufa"]
+[ext_resource type="PackedScene" uid="uid://b4x6i8hh1c304" path="res://Classes/Visual/Scrollbars/LabeledScrollbar.tscn" id="10_4hwef"]
+[ext_resource type="Script" path="res://Classes/Visual/Buttons/ExportButton.cs" id="10_y304k"]
+[ext_resource type="Script" path="res://Classes/Visual/Scrollbars/OffsetScrollBar.cs" id="10_yfm4l"]
+[ext_resource type="Script" path="res://Classes/Visual/Scrollbars/OverlapScrollBar.cs" id="13_wubaw"]
 [ext_resource type="Script" path="res://Classes/Visual/VersionLabel.cs" id="16_j6b0h"]
 [ext_resource type="PackedScene" uid="uid://bac4n7j15cns7" path="res://Classes/Visual/AudioBlock.tscn" id="16_mlqa0"]
 [ext_resource type="Script" path="res://Classes/Visual/MessageLabel.cs" id="20_c3wmk"]
@@ -96,7 +96,7 @@ maxValue = 8.0
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("8_6jrsb")
-audioPlayer = NodePath("../../../../../../AudioPlayer")
+audioPlayer = NodePath("")
 title = "Playback"
 minValue = 0.1
 maxValue = 1.0
@@ -137,7 +137,7 @@ theme_override_font_sizes/font_size = 12
 text = "Clear All
 "
 script = ExtResource("9_7o3s6")
-confirmationDialog = NodePath("ConfirmationDialog")
+confirmationDialog = NodePath("")
 
 [node name="ConfirmationDialog" type="ConfirmationDialog" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsVBox/ClearAllButton"]
 title = "Delete all timing points?"
@@ -308,7 +308,7 @@ theme_override_constants/margin_bottom = 10
 layout_mode = 2
 size_flags_horizontal = 1
 script = ExtResource("5_aqu3i")
-audioVisualsContainer = NodePath("../../AudioVisualsMarginContainer/AudioVisualsContainer")
+audioVisualsContainer = NodePath("")
 
 [node name="VersionLabel" type="Label" parent="."]
 layout_mode = 1
