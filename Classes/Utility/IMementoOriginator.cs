@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Tempora.Classes.Utility;
+﻿namespace Tempora.Classes.Utility;
 public interface IMementoOriginator
 {
     public void RestoreMemento(IMemento memento);

@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using Tempora.Classes.DataTools;
+using GD = Tempora.Classes.DataTools.GD;
 
 namespace Tempora.Classes.Utility;
 
 /// <summary>
 ///     Data class controlling how the tempo of the song varies with time.
 /// </summary>
-public partial class Timing : Node , IMementoOriginator
+public partial class Timing : Node, IMementoOriginator
 {
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() => Instance = this;
@@ -33,7 +35,7 @@ public partial class Timing : Node , IMementoOriginator
 
     //public AudioFile AudioFile;
 
-    private static Timing instance = null!; 
+    private static Timing instance = null!;
     #endregion
     #region Timing-related Properties
     private List<TimingPoint> timingPoints = [];
@@ -63,7 +65,7 @@ public partial class Timing : Node , IMementoOriginator
             timeSignaturePoints = value;
             Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
         }
-    } 
+    }
     #endregion
     #endregion
     #region Timing modification
@@ -108,7 +110,7 @@ public partial class Timing : Node , IMementoOriginator
             throw new NullReferenceException($"Request to update {nameof(timingPoint.MeasuresPerSecond)} failed because {nameof(timingPoint.MusicPosition)} is null");
 
         timingPoint.MeasuresPerSecond_Set(this);
-        if (!timingPoint.IsInstantiating) 
+        if (!timingPoint.IsInstantiating)
             GetPreviousTimingPoint(timingPoint)?.MeasuresPerSecond_Set(this);
     }
 
@@ -177,7 +179,7 @@ public partial class Timing : Node , IMementoOriginator
 
         if (timingPoint.MusicPosition == null
             || previousTimingPoint?.MusicPosition == timingPoint.MusicPosition
-            || nextTimingPoint?.MusicPosition == timingPoint.MusicPosition 
+            || nextTimingPoint?.MusicPosition == timingPoint.MusicPosition
             || (previousTimingPoint?.MusicPosition is float previousMusicPosition && Mathf.Abs(previousMusicPosition - (float)timingPoint.MusicPosition) < 0.015f) // Too close to previous timing point
             || (nextTimingPoint?.MusicPosition is float nextMusicPosition && Mathf.Abs(nextMusicPosition - (float)timingPoint.MusicPosition) < 0.015f) // Too close to next timing point
            )
@@ -363,7 +365,7 @@ public partial class Timing : Node , IMementoOriginator
         if (i == -1)
             GD.Print("Timing point is not present in the list of timing points");
         return i + 1 >= timingPoints.Count ? null : timingPoints[i + 1];
-    } 
+    }
     #endregion
     #region Time
     public float? GetTimeDifference(int timingPointIndex1, int timingPointIndex2)
@@ -395,7 +397,7 @@ public partial class Timing : Node , IMementoOriginator
         {
             return time * 0.5f; // default 120 bpm from musicposition origin
         }
-        else 
+        else
             return (float)(((time - operatingTimingPoint.Offset) * operatingTimingPoint.MeasuresPerSecond) + operatingTimingPoint.MusicPosition);
     }
 
@@ -452,7 +454,7 @@ public partial class Timing : Node , IMementoOriginator
 
         float position = index * timeSignature[1] / (float)(timeSignature[0] * gridDivisor);
         return position;
-    } 
+    }
 
     public int GetLastMeasure()
     {
@@ -557,8 +559,8 @@ public partial class Timing : Node , IMementoOriginator
         if (memento is not TimingMemento timingMemento)
             throw new ArgumentException($"{nameof(memento)} was not of type {nameof(TimingMemento)}");
 
-        TimingPoints = timingMemento.clonedTimingPoints;
-        TimeSignaturePoints = timingMemento.clonedTimeSignaturePoints;
+        TimingPoints = CloneUtility.CloneList<TimingPoint>(timingMemento.clonedTimingPoints);
+        TimeSignaturePoints = CloneUtility.CloneList<TimeSignaturePoint>(timingMemento.clonedTimeSignaturePoints);
     }
 
     private class TimingMemento(Timing originator) : IMemento
@@ -567,6 +569,6 @@ public partial class Timing : Node , IMementoOriginator
         public readonly List<TimeSignaturePoint> clonedTimeSignaturePoints = CloneUtility.CloneList(originator.timeSignaturePoints);
 
         public IMementoOriginator GetOriginator() => originator;
-    } 
+    }
     #endregion
 }

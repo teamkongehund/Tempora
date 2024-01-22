@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Text;
 using Godot;
 
-namespace Tempora.Classes.Utility;
+namespace Tempora.Classes.DataTools;
 
 /// <summary>
 ///     Godot's global functions.
@@ -19,7 +19,7 @@ public static class GD
     /// </summary>
     /// <param name="bytes">Byte array that will be decoded to a <see cref="Variant" />.</param>
     /// <returns>The decoded <see cref="Variant" />.</returns>
-    public static Variant BytesToVar(Span<byte> bytes) => GD.BytesToVar(bytes);
+    public static Variant BytesToVar(Span<byte> bytes) => BytesToVar(bytes);
 
     /// <summary>
     ///     Decodes a byte array back to a <see cref="Variant" /> value. Decoding objects is allowed.
@@ -29,7 +29,7 @@ public static class GD
     /// </summary>
     /// <param name="bytes">Byte array that will be decoded to a <see cref="Variant" />.</param>
     /// <returns>The decoded <see cref="Variant" />.</returns>
-    public static Variant BytesToVarWithObjects(Span<byte> bytes) => GD.BytesToVarWithObjects(bytes);
+    public static Variant BytesToVarWithObjects(Span<byte> bytes) => BytesToVarWithObjects(bytes);
 
     /// <summary>
     ///     Converts <paramref name="what" /> to <paramref name="type" /> in the best way possible.
@@ -46,7 +46,7 @@ public static class GD
     /// </code>
     /// </example>
     /// <returns>The <c>Variant</c> converted to the given <paramref name="type" />.</returns>
-    public static Variant Convert(Variant what, Variant.Type type) => GD.Convert(what, type);
+    public static Variant Convert(Variant what, Variant.Type type) => Convert(what, type);
 
     /// <summary>
     ///     Returns the integer hash of the passed <paramref name="var" />.
@@ -58,7 +58,7 @@ public static class GD
     /// </example>
     /// <param name="var">Variable that will be hashed.</param>
     /// <returns>Hash of the variable passed.</returns>
-    public static int Hash(Variant var) => GD.Hash(var);
+    public static int Hash(Variant var) => Hash(var);
 
     /// <summary>
     ///     Loads a resource from the filesystem located at <paramref name="path" />.
@@ -80,7 +80,7 @@ public static class GD
     /// </example>
     /// <param name="path">Path of the <see cref="Resource" /> to load.</param>
     /// <returns>The loaded <see cref="Resource" />.</returns>
-    public static Resource Load(string path) => GD.Load(path);
+    public static Resource Load(string path) => Load(path);
 
     /// <summary>
     ///     Loads a resource from the filesystem located at <paramref name="path" />.
@@ -102,7 +102,7 @@ public static class GD
     /// </example>
     /// <param name="path">Path of the <see cref="Resource" /> to load.</param>
     /// <typeparam name="T">The type to cast to. Should be a descendant of <see cref="Resource" />.</typeparam>
-    public static T Load<T>(string path) where T : class => GD.Load<T>(path);
+    public static T Load<T>(string path) where T : class => Load<T>(path);
 
     private static string AppendPrintParams(object[] parameters)
     {
@@ -182,7 +182,7 @@ public static class GD
     public static void PrintRich(string what)
     {
         Debugger.Log(2, "inf", "Info: " + what + "\r\n");
-        GD.PrintRich(what);
+        PrintRich(what);
     }
 
     /// <summary>
@@ -217,7 +217,7 @@ public static class GD
     public static void PrintErr(string what)
     {
         Debugger.Log(0, "err", "Error: " + what + "\r\n");
-        GD.PrintErr(what);
+        PrintErr(what);
     }
 
     /// <summary>
@@ -239,7 +239,7 @@ public static class GD
     public static void PrintRaw(string what)
     {
         Debugger.Log(2, "inf", what);
-        GD.PrintRaw(what);
+        PrintRaw(what);
     }
 
     /// <summary>
@@ -270,7 +270,7 @@ public static class GD
     {
         string message = AppendPrintParams(' ', what);
         PrintErr(message);
-        GD.PrintS(what);
+        PrintS(what);
     }
 
     /// <summary>
@@ -286,7 +286,7 @@ public static class GD
     {
         string message = AppendPrintParams('\t', what);
         PrintErr(message);
-        GD.PrintT(what);
+        PrintT(what);
     }
 
     /// <summary>
@@ -302,7 +302,7 @@ public static class GD
     public static void PushError(string message)
     {
         Debugger.Log(0, "err", "Error: " + message);
-        GD.PushError(message);
+        PushError(message);
     }
 
     /// <summary>
@@ -329,7 +329,7 @@ public static class GD
     public static void PushWarning(string message)
     {
         Debugger.Log(1, "wrn", "Warning: " + message + "\r\n");
-        GD.PushWarning(message);
+        PushWarning(message);
     }
 
     /// <summary>
@@ -352,7 +352,7 @@ public static class GD
     /// </code>
     /// </example>
     /// <returns>A random <see langword="float" /> number.</returns>
-    public static float Randf() => GD.Randf();
+    public static float Randf() => Randf();
 
     /// <summary>
     ///     Returns a normally-distributed pseudo-random floating point value
@@ -361,7 +361,7 @@ public static class GD
     ///     This is also called Gaussian distribution.
     /// </summary>
     /// <returns>A random normally-distributed <see langword="float" /> number.</returns>
-    public static double Randfn(double mean, double deviation) => GD.Randfn(mean, deviation);
+    public static double Randfn(double mean, double deviation) => Randfn(mean, deviation);
 
     /// <summary>
     ///     Returns a random unsigned 32-bit integer.
@@ -377,7 +377,7 @@ public static class GD
     /// </code>
     /// </example>
     /// <returns>A random <see langword="uint" /> number.</returns>
-    public static uint Randi() => GD.Randi();
+    public static uint Randi() => Randi();
 
     /// <summary>
     ///     Randomizes the seed (or the internal state) of the random number generator.
@@ -386,7 +386,7 @@ public static class GD
     ///     If you need to fix the seed to have consistent, reproducible results,
     ///     use <see cref="Seed(ulong)" /> to initialize the random number generator.
     /// </summary>
-    public static void Randomize() => GD.Randomize();
+    public static void Randomize() => Randomize();
 
     /// <summary>
     ///     Returns a random floating point value between <paramref name="from" />
@@ -399,7 +399,7 @@ public static class GD
     /// </code>
     /// </example>
     /// <returns>A random <see langword="double" /> number inside the given range.</returns>
-    public static double RandRange(double from, double to) => GD.RandRange(from, to);
+    public static double RandRange(double from, double to) => RandRange(from, to);
 
     /// <summary>
     ///     Returns a random signed 32-bit integer between <paramref name="from" />
@@ -413,7 +413,7 @@ public static class GD
     /// </code>
     /// </example>
     /// <returns>A random <see langword="int" /> number inside the given range.</returns>
-    public static int RandRange(int from, int to) => GD.RandRange(from, to);
+    public static int RandRange(int from, int to) => RandRange(from, to);
 
     /// <summary>
     ///     Given a <paramref name="seed" />, returns a randomized <see langword="uint" />
@@ -432,7 +432,7 @@ public static class GD
     ///     If a different seed is used, its value will be modified.
     /// </param>
     /// <returns>A random <see langword="uint" /> number.</returns>
-    public static uint RandFromSeed(ref ulong seed) => GD.RandFromSeed(ref seed);
+    public static uint RandFromSeed(ref ulong seed) => RandFromSeed(ref seed);
 
     /// <summary>
     ///     Returns a <see cref="IEnumerable{T}" /> that iterates from
@@ -440,7 +440,7 @@ public static class GD
     ///     in steps of <c>1</c>.
     /// </summary>
     /// <param name="end">The last index.</param>
-    public static IEnumerable<int> Range(int end) => GD.Range(end);
+    public static IEnumerable<int> Range(int end) => Range(end);
 
     /// <summary>
     ///     Returns a <see cref="IEnumerable{T}" /> that iterates from
@@ -449,7 +449,7 @@ public static class GD
     /// </summary>
     /// <param name="start">The first index.</param>
     /// <param name="end">The last index.</param>
-    public static IEnumerable<int> Range(int start, int end) => GD.Range(start, end);
+    public static IEnumerable<int> Range(int start, int end) => Range(start, end);
 
     /// <summary>
     ///     Returns a <see cref="IEnumerable{T}" /> that iterates from
@@ -463,7 +463,7 @@ public static class GD
     /// <param name="start">The first index.</param>
     /// <param name="end">The last index.</param>
     /// <param name="step">The amount by which to increment the index on each iteration.</param>
-    public static IEnumerable<int> Range(int start, int end, int step) => GD.Range(start, end, step);
+    public static IEnumerable<int> Range(int start, int end, int step) => Range(start, end, step);
 
     /// <summary>
     ///     Sets seed for the random number generator to <paramref name="seed" />.
@@ -481,7 +481,7 @@ public static class GD
     /// </code>
     /// </example>
     /// <param name="seed">Seed that will be used.</param>
-    public static void Seed(ulong seed) => GD.Seed(seed);
+    public static void Seed(ulong seed) => Seed(seed);
 
     /// <summary>
     ///     Converts a formatted string that was returned by <see cref="VarToStr(Variant)" />
@@ -496,7 +496,7 @@ public static class GD
     /// </example>
     /// <param name="str">String that will be converted to Variant.</param>
     /// <returns>The decoded <c>Variant</c>.</returns>
-    public static Variant StrToVar(string str) => GD.StrToVar(str);
+    public static Variant StrToVar(string str) => StrToVar(str);
 
     /// <summary>
     ///     Encodes a <see cref="Variant" /> value to a byte array, without encoding objects.
@@ -505,7 +505,7 @@ public static class GD
     /// </summary>
     /// <param name="var"><see cref="Variant" /> that will be encoded.</param>
     /// <returns>The <see cref="Variant" /> encoded as an array of bytes.</returns>
-    public static byte[] VarToBytes(Variant var) => GD.VarToBytes(var);
+    public static byte[] VarToBytes(Variant var) => VarToBytes(var);
 
     /// <summary>
     ///     Encodes a <see cref="Variant" />. Encoding objects is allowed (and can potentially
@@ -513,7 +513,7 @@ public static class GD
     /// </summary>
     /// <param name="var"><see cref="Variant" /> that will be encoded.</param>
     /// <returns>The <see cref="Variant" /> encoded as an array of bytes.</returns>
-    public static byte[] VarToBytesWithObjects(Variant var) => GD.VarToBytesWithObjects(var);
+    public static byte[] VarToBytesWithObjects(Variant var) => VarToBytesWithObjects(var);
 
     /// <summary>
     ///     Converts a <see cref="Variant" /> <paramref name="var" /> to a formatted string that
@@ -532,11 +532,11 @@ public static class GD
     /// </example>
     /// <param name="var">Variant that will be converted to string.</param>
     /// <returns>The <see cref="Variant" /> encoded as a string.</returns>
-    public static string VarToStr(Variant var) => GD.VarToStr(var);
+    public static string VarToStr(Variant var) => VarToStr(var);
 
     /// <summary>
     ///     Get the <see cref="Variant.Type" /> that corresponds for the given <see cref="Type" />.
     /// </summary>
     /// <returns>The <see cref="Variant.Type" /> for the given <paramref name="type" />.</returns>
-    public static Variant.Type TypeToVariantType(Type type) => GD.TypeToVariantType(type);
+    public static Variant.Type TypeToVariantType(Type type) => TypeToVariantType(type);
 }

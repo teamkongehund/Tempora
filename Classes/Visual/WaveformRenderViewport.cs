@@ -1,6 +1,6 @@
 using Godot;
 using Tempora.Classes.Audio;
-using GD = Tempora.Classes.Utility.GD;
+using GD = Tempora.Classes.DataTools.GD;
 
 namespace Tempora.Classes.Visual;
 

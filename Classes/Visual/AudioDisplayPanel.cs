@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Godot;
-using GD = Tempora.Classes.Utility.GD;
 using Tempora.Classes.Utility;
 
 namespace Tempora.Classes.Visual;

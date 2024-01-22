@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Tempora.Classes.Utility;
+namespace Tempora.Classes.DataTools;
 public static class CloneUtility
 {
     public static List<T> CloneList<T>(List<T> originalList) where T : ICloneable

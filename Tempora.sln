@@ -1,12 +1,20 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tempora", "Tempora.csproj", "{42B3D019-4A5B-4C3C-83F2-2A658C89AC2E}"
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34511.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tempora", "Tempora.csproj", "{42B3D019-4A5B-4C3C-83F2-2A658C89AC2E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{4DBC677F-F4DC-4995-B470-72051E77CC74}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-	Debug|Any CPU = Debug|Any CPU
-	ExportDebug|Any CPU = ExportDebug|Any CPU
-	ExportRelease|Any CPU = ExportRelease|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		ExportDebug|Any CPU = ExportDebug|Any CPU
+		ExportRelease|Any CPU = ExportRelease|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{42B3D019-4A5B-4C3C-83F2-2A658C89AC2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -15,5 +23,8 @@ Global
 		{42B3D019-4A5B-4C3C-83F2-2A658C89AC2E}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
 		{42B3D019-4A5B-4C3C-83F2-2A658C89AC2E}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
 		{42B3D019-4A5B-4C3C-83F2-2A658C89AC2E}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

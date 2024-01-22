@@ -227,7 +227,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
             MeasuresPerSecond = BpmToMps(bpm);
             return;
         }
-    } 
+    }
 
     /// <summary>
     /// Sets the <see cref="Bpm"/> if the value is valid according to supplied timing
@@ -323,6 +323,6 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 
     private float MpsToBpm(float mps) => mps * 60 * (TimeSignature[0] * 4f / TimeSignature[1]);
 
-    public float BeatLengthSec => 1 / (Bpm / 60); 
+    public float BeatLengthSec => 1 / (Bpm / 60);
     #endregion
 }

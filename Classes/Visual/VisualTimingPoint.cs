@@ -1,6 +1,5 @@
 using System;
 using Godot;
-using GD = Tempora.Classes.Utility.GD;
 using Tempora.Classes.Utility;
 
 namespace Tempora.Classes.Visual;
@@ -107,13 +106,17 @@ public partial class VisualTimingPoint : Node2D
 
     private void DeleteTimingPoint()
     {
-        Context.Instance.HeldTimingPoint = null;
-
-        // Prevent accidental deletion un inadvertent double-double-clicking
-        if (Time.GetTicksMsec() - SystemTimeWhenCreated > 500)
-            TimingPoint.Delete();
-        else
+        // Prevent accidental deletion un inadvertent double-double-clicking. Instead treated as holding the timing point
+        if (Time.GetTicksMsec() - SystemTimeWhenCreated <= 500)
+        {
             Signals.Instance.EmitEvent(Signals.Events.TimingPointHolding, new Signals.ObjectArgument<TimingPoint>(TimingPoint));
+            return;
+        }
+        else
+        {
+            TimingPoint.Delete();
+            //Context.Instance.HeldTimingPoint = null;
+        }
 
         Viewport viewport = GetViewport();
         viewport.SetInputAsHandled();

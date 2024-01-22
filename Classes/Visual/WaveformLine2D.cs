@@ -2,7 +2,7 @@ using System.Linq;
 using Godot;
 using Tempora.Classes.Audio;
 using Tempora.Classes.Utility;
-using GD = Tempora.Classes.Utility.GD;
+using GD = Tempora.Classes.DataTools.GD;
 
 namespace Tempora.Classes.Visual;
 

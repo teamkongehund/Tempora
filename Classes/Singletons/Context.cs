@@ -10,7 +10,29 @@ public partial class Context : Node
 {
     private static Context instance = null!;
 
-    public TimingPoint? HeldTimingPoint = null!;
+    private float? heldTimingPoint_PreviousMusicPosition = null!;
+    private TimingPoint? heldTimingPoint = null!;
+    public TimingPoint? HeldTimingPoint
+    {
+        get => heldTimingPoint;
+        set
+        {
+            if (heldTimingPoint == value)
+                return;
+            if (value == null)
+            {
+                bool doesTimingPointStillExist = heldTimingPoint != null;
+                bool hasMusicPositionChanged = heldTimingPoint?.MusicPosition != heldTimingPoint_PreviousMusicPosition;
+                if (hasMusicPositionChanged && doesTimingPointStillExist)
+                {
+                    ActionsHandler.Instance.AddTimingMemento();
+                }
+                heldTimingPoint_PreviousMusicPosition = null;
+            }
+            heldTimingPoint = value;
+            heldTimingPoint_PreviousMusicPosition = value?.MusicPosition;
+        }
+    }
 
     public bool IsSelectedMusicPositionMoving = false;
 

@@ -4,6 +4,9 @@ root = true
 # C# files
 [*.cs]
 
+# Attempt to fix IDE0130 not showing
+dotnet_diagnostic.IDE0130.severity = error
+
 #### Core EditorConfig Options ####
 
 # Indentation and spacing
