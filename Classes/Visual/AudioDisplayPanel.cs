@@ -410,7 +410,7 @@ public partial class AudioDisplayPanel : Control
         foreach (Node? child in GridFolder.GetChildren())
             child.QueueFree();
 
-        int divisor = Settings.Instance.Divisor;
+        int divisor = Settings.Instance.GridDivisor;
         int[] timeSignature = Timing.Instance.GetTimeSignature(NominalMusicPositionStartForWindow - 1);
 
         int measureOffset = -1;

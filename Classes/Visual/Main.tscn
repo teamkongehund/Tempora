@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://bk0ofb078cvgm"]
+[gd_scene load_steps=22 format=3 uid="uid://bk0ofb078cvgm"]
 
 [ext_resource type="Script" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
 [ext_resource type="AudioStream" uid="uid://clutjafa1rf7f" path="res://Audio/UMO.mp3" id="2_klkb2"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://bnbif04ymgk1h" path="res://Classes/Audio/Metronome.tscn" id="4_n2ir2"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/BlockScrollBar.cs" id="5_aqu3i"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/VolumeSlider.cs" id="6_w0n8n"]
+[ext_resource type="Script" path="res://Classes/Visual/MetronomeFollowsGridCheckButton.cs" id="7_1opje"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/GridScrollBar.cs" id="7_i2h88"]
 [ext_resource type="Script" path="res://Classes/Visual/Buttons/SaveButton.cs" id="7_vit6a"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/PlaybackRateScrollBar.cs" id="8_6jrsb"]
@@ -92,6 +93,12 @@ audioPlayer = NodePath("../../../../../../AudioPlayer")
 title = "Grid"
 minValue = 1.0
 maxValue = 8.0
+
+[node name="MetronomeFollowsGridCheckButton" type="CheckButton" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/SettingsSlidersVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Follow"
+script = ExtResource("7_1opje")
 
 [node name="PlaybackRateScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/SettingsSlidersVBox" node_paths=PackedStringArray("audioPlayer") instance=ExtResource("10_4hwef")]
 layout_mode = 2

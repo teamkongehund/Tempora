@@ -58,7 +58,7 @@ public partial class Settings : Node
     /// <summary>
     ///     Musical grid divisor - can be thought of as 1/Divisor - i.e. a value of 4 means "display quarter notes"
     /// </summary>
-    public int Divisor
+    public int GridDivisor
     {
         get => divisor;
         set
@@ -116,6 +116,8 @@ public partial class Settings : Node
     public static Settings Instance { get => instance; set => instance = value; }
 
     private static readonly string[] separator = ["\r\n", "\r", "\n"];
+
+    public bool MetronomeFollowsGrid = false;
 
     public static int DivisorToSlider(int divisor) => SliderToDivisorDict.FirstOrDefault(x => x.Value == divisor).Key;
 

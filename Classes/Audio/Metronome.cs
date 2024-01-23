@@ -47,14 +47,21 @@ public partial class Metronome : Node
         }
     }
 
+    private float GetTriggerPosition(float musicPosition)
+    {
+        return Settings.Instance.MetronomeFollowsGrid
+            ? Timing.Instance.GetOperatingGridPosition(musicPosition)
+            : Timing.Instance.GetOperatingBeatPosition(musicPosition);
+    }
+
     public void Click(float musicPosition)
     {
         if (!On)
             return;
-        float beatPosition = Timing.Instance.GetBeatPosition(musicPosition);
-        if (previousMusicPosition < beatPosition && musicPosition >= beatPosition)
+        float triggerPosition = GetTriggerPosition(musicPosition);
+        if (previousMusicPosition < triggerPosition && musicPosition >= triggerPosition)
         {
-            if (beatPosition % 1 == 0 && click1.GetPlaybackPosition() <= 0.01f)
+            if (triggerPosition % 1 == 0 && click1.GetPlaybackPosition() <= 0.01f)
                 click1.Play();
             else if (click1.GetPlaybackPosition() <= 0.01f)
                 click2.Play();

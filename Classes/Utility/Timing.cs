@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Godot;
 using Tempora.Classes.DataTools;
 using GD = Tempora.Classes.DataTools.GD;
@@ -216,7 +217,7 @@ public partial class Timing : Node, IMementoOriginator
     #region Modify TimingPoint values
 
     /// <summary>
-    ///     Snap a <see cref="TimingPoint" /> to the grid using <see cref="Settings.Divisor" /> and
+    ///     Snap a <see cref="TimingPoint" /> to the grid using <see cref="Settings.GridDivisor" /> and
     ///     <see cref="Settings.SnapToGridEnabled" />
     /// </summary>
     /// <param name="timingPoint"></param>
@@ -235,7 +236,7 @@ public partial class Timing : Node, IMementoOriginator
         if (!Settings.Instance.SnapToGridEnabled)
             return musicPosition;
 
-        int divisor = Settings.Instance.Divisor;
+        int divisor = Settings.Instance.GridDivisor;
         //float divisionLength = 1f / divisor;
         float divisionLength = GetRelativeNotePosition(Instance.GetTimeSignature(musicPosition), divisor, 1);
 
@@ -427,7 +428,7 @@ public partial class Timing : Node, IMementoOriginator
     /// </summary>
     /// <param name="musicPosition"></param>
     /// <returns></returns>
-    public float GetBeatPosition(float musicPosition)
+    public float GetOperatingBeatPosition(float musicPosition)
     {
         float beatLength = GetBeatLength(musicPosition);
         int downbeatPosition = (musicPosition >= 0) ? (int)musicPosition : (int)musicPosition - 1;
@@ -437,6 +438,35 @@ public partial class Timing : Node, IMementoOriginator
         int beatsFromDownbeat = (int)(relativePosition / beatLength);
         float position = (beatsFromDownbeat * beatLength) + downbeatPosition;
         return position;
+    }
+
+    public float GetOperatingGridPosition(float musicPosition)
+    {
+        TimingPoint? operatingTimingPoint = GetOperatingTimingPoint_ByMusicPosition(musicPosition);
+        if (operatingTimingPoint == null)
+            throw new NullReferenceException("This doesn't work unless there's a timing point yet. Fix me so it works always.");
+
+        int[] timeSignature = operatingTimingPoint.TimeSignature;
+        int gridDivisor = Settings.Instance.GridDivisor;
+
+        int nextMeasure = (int)(musicPosition + 1);
+        float previousAbsolutePosition = GetRelativeNotePosition(timeSignature, gridDivisor, 0) + (int)musicPosition;
+        for (int index = 0; index < 30; index++)
+        {
+            float relativePosition = GetRelativeNotePosition(timeSignature, gridDivisor, index);
+            float absolutePosition = (int)musicPosition + relativePosition;
+
+            if (absolutePosition > musicPosition)
+                return previousAbsolutePosition;
+
+            if (absolutePosition >= nextMeasure)
+                throw new Exception("No operating grid position found");
+
+
+            previousAbsolutePosition = absolutePosition;
+        }
+
+        return 0;
     }
 
     public static float GetRelativeNotePosition(int[] timeSignature, int gridDivisor, int index)
@@ -517,7 +547,7 @@ public partial class Timing : Node, IMementoOriginator
                 break;
 
             float beatLengthMP = timing.GetBeatLength((float)timingPoint.MusicPosition);
-            float beatPosition = timing.GetBeatPosition((float)timingPoint.MusicPosition);
+            float beatPosition = timing.GetOperatingBeatPosition((float)timingPoint.MusicPosition);
             //float? nextPointPosition = timingPoint?.NextTimingPoint?.MusicPosition;
             TimingPoint? nextTimingPoint = Timing.Instance.GetNextTimingPoint(timingPoint);
             float? nextPointPosition = nextTimingPoint?.MusicPosition;
