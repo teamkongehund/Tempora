@@ -30,9 +30,14 @@ public partial class Context : Node
                     ActionsHandler.Instance.AddTimingMemento();
                 }
                 heldTimingPoint_PreviousMusicPosition = null;
+                heldTimingPoint_PreviousOffset = null;
+                heldTimingPoint = value;
+                Signals.Instance.EmitEvent(Signals.Events.TimingChanged); // Updates visuals to ensure no waveform sections are darkened.
+                return;
             }
             heldTimingPoint = value;
             heldTimingPoint_PreviousMusicPosition = value?.MusicPosition;
+            heldTimingPoint_PreviousOffset = value?.Offset;
         }
     }
 

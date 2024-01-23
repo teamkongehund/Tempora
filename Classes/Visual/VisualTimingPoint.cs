@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using Godot;
+using GD = Tempora.Classes.DataTools.GD;
 using Tempora.Classes.Utility;
 
 namespace Tempora.Classes.Visual;
@@ -24,7 +26,7 @@ public partial class VisualTimingPoint : Node2D
     private Color defaultColor = new Color("ff990096");
     private Color red = new Color("ff000096");
 
-    private ulong SystemTimeWhenCreated;
+    //private ulong SystemTimeWhenCreated;
 
     private TimingPoint timingPoint = null!;
     public TimingPoint TimingPoint
@@ -58,11 +60,11 @@ public partial class VisualTimingPoint : Node2D
         numberLabel.Text = Timing.Instance.TimingPoints.IndexOf(TimingPoint).ToString();
         bpmLabel.Text = TimingPoint.Bpm.ToString("0.00");
 
-        SystemTimeWhenCreated = Time.GetTicksMsec();
+        //SystemTimeWhenCreated = Time.GetTicksMsec();
 
         SubscribeToTimingPointEvents();
 
-        VisibilityChanged += OnVisibilityChanged;
+        //VisibilityChanged += OnVisibilityChanged;
 
         Signals.Instance.MusicPositionChangeRejected += OnMusicPositionChangeRejected;
 
@@ -78,11 +80,12 @@ public partial class VisualTimingPoint : Node2D
         UpdateLabels(timingPoint);
     }
 
-    private void OnVisibilityChanged()
-    {
-        if (Visible)
-            SystemTimeWhenCreated = Time.GetTicksMsec();
-    }
+    //private void OnVisibilityChanged()
+    //{
+    //    //GD.Print("VisibilityChanged");
+    //    if (Visible)
+    //        SystemTimeWhenCreated = Time.GetTicksMsec();
+    //}
 
     public void UpdateLabels(TimingPoint timingPoint)
     {
@@ -107,6 +110,12 @@ public partial class VisualTimingPoint : Node2D
         }
         if (!hasMouseInside)
             return;
+
+        if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed == true)
+        {
+            GD.Print("Left click received");
+            GD.Print($"mouseEvent.DoubleClick = {mouseEvent.DoubleClick}");
+        }
 
         if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick && !Input.IsKeyPressed(Key.Alt))
             DeleteTimingPoint();
@@ -144,14 +153,18 @@ public partial class VisualTimingPoint : Node2D
 
     private void DeleteTimingPoint()
     {
+        GD.Print("DeleteTimingPoint() started");
+
         // Prevent accidental deletion un inadvertent double-double-clicking. Instead treated as holding the timing point
-        if (Time.GetTicksMsec() - SystemTimeWhenCreated <= 500)
+        if (Time.GetTicksMsec() - TimingPoint.SystemTimeWhenCreated <= 500)
         {
+            GD.Print("Nah, we're actually holding the timing point");
             Signals.Instance.EmitEvent(Signals.Events.TimingPointHolding, new Signals.ObjectArgument<TimingPoint>(TimingPoint));
             return;
         }
         else
         {
+            GD.Print("Now calling TimingPoint.Delete()");
             TimingPoint.Delete();
             //Context.Instance.HeldTimingPoint = null;
         }

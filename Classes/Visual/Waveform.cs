@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 using Tempora.Classes.Audio;
 using GD = Tempora.Classes.DataTools.GD;
@@ -58,9 +59,7 @@ public partial class Waveform : Node2D
             }
         }
 
-        var white = new Color(1f, 1f, 1f);
-
-        DrawMultiline(multilinePoints, white, 1f);
+        DrawMultiline(multilinePoints, Color, 1f);
         //DrawPolyline(multilinePoints, white, 1f);
 
         // Testing saving waveform result as texture or image to use elsewhere
@@ -227,6 +226,21 @@ public partial class Waveform : Node2D
             QueueRedraw();
         }
     }
+
+    public static readonly Color defaultColor = new(1f, 1f, 1f);
+    public static readonly Color darkenedColor = new(0.5f, 0.5f, 0.5f);
+    //public enum WaveformColors
+    //{
+    //    Default,
+    //    Darkened
+    //}
+    //public Dictionary<WaveformColors, Color> WaveformColorsDict = new()
+    //{
+    //    { WaveformColors.Default, defaultColor },
+    //    { WaveformColors.Darkened, darkenedColor },
+    //};
+    public Color Color = defaultColor;
+
 
     #endregion
 

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Godot;
+using GodotPlugins.Game;
 using Tempora.Classes.Utility;
 
 namespace Tempora.Classes.Visual;
@@ -180,8 +181,6 @@ public partial class AudioDisplayPanel : Control
         return musicPosition;
     }
 
-
-
     public override void _Input(InputEvent @event)
     {
         switch (@event)
@@ -281,6 +280,9 @@ public partial class AudioDisplayPanel : Control
 
         UpdateTimingPointsIndices();
 
+        TimingPoint? heldTimingPoint = Context.Instance.HeldTimingPoint;
+
+
         // Create each waveform segment
         for (int i = FirstTimingPointIndex; i <= LastTimingPointIndex; i++)
         {
@@ -303,9 +305,19 @@ public partial class AudioDisplayPanel : Control
             float length = Size.X * (musicPositionEnd - musicPositionStart) / (1f + (2 * margin));
             float xPosition = Size.X * (musicPositionStart - ActualMusicPositionStartForWindow) / (1f + (2 * margin));
 
+            bool canHeldTimingPointBeInSegment = (heldTimingPoint == null)
+                || (
+                    Timing.Instance.CanTimingPointMusicPositionBeThis(heldTimingPoint, musicPositionStart, out var _) 
+                    || Timing.Instance.CanTimingPointMusicPositionBeThis(heldTimingPoint, musicPositionEnd, out var _)
+                );
+
+            //if (!canHeldTimingPointBeInSegment)
+            //    GD.Print("This segment should be dark");
+
             var waveform = new Waveform(Project.Instance.AudioFile, length, Size.Y, [waveSegmentStartTime, waveSegmentEndTime])
             {
-                Position = new Vector2(xPosition, Size.Y / 2)
+                Position = new Vector2(xPosition, Size.Y / 2),
+                Color = (canHeldTimingPointBeInSegment ? Waveform.defaultColor : Waveform.darkenedColor)
             };
 
             //GD.Print($"timeWhereWindowBegins = {timeWhereWindowBegins} , musicPositionStart = {musicPositionStart}");
@@ -320,6 +332,43 @@ public partial class AudioDisplayPanel : Control
             // Experimentation with offscreen viewports in order to render waveform as a separate image to be manipulated
 
         }
+    }
+
+    private void AddWaveformSegment(float waveSegmentStartTime, float waveSegmentEndTime)
+    {
+        TimingPoint timingPoint = Timing.Instance.TimingPoints[i];
+
+        float musicPositionStart = Timing.Instance.TimeToMusicPosition(waveSegmentStartTime);
+        float musicPositionEnd = Timing.Instance.TimeToMusicPosition(waveSegmentEndTime);
+
+        float length = Size.X * (musicPositionEnd - musicPositionStart) / (1f + (2 * margin));
+        float xPosition = Size.X * (musicPositionStart - ActualMusicPositionStartForWindow) / (1f + (2 * margin));
+
+        bool canHeldTimingPointBeInSegment = (heldTimingPoint == null)
+            || (
+                Timing.Instance.CanTimingPointMusicPositionBeThis(heldTimingPoint, musicPositionStart, out var _)
+                || Timing.Instance.CanTimingPointMusicPositionBeThis(heldTimingPoint, musicPositionEnd, out var _)
+            );
+
+        //if (!canHeldTimingPointBeInSegment)
+        //    GD.Print("This segment should be dark");
+
+        var waveform = new Waveform(Project.Instance.AudioFile, length, Size.Y, [waveSegmentStartTime, waveSegmentEndTime])
+        {
+            Position = new Vector2(xPosition, Size.Y / 2),
+            Color = (canHeldTimingPointBeInSegment ? Waveform.defaultColor : Waveform.darkenedColor)
+        };
+
+        //GD.Print($"timeWhereWindowBegins = {timeWhereWindowBegins} , musicPositionStart = {musicPositionStart}");
+
+        // Randomize color, so it's easy to see what's happening
+        //Random random = new Random();
+        //waveform.DefaultColor = new Color((float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble(), 1);
+
+        // Note: this one also takes some processing
+        waveformSegments.AddChild(waveform);
+
+        // Experimentation with offscreen viewports in order to render waveform as a separate image to be manipulated
     }
 
     /// <summary>

@@ -306,6 +306,27 @@ public partial class Timing : Node, IMementoOriginator
         Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
     }
 
+    public bool CanTimingPointMusicPositionBeThis(TimingPoint? timingPoint, float musicPosition, out TimingPoint? rejectingTimingPoint)
+    {
+        TimingPoint? previousTimingPoint = GetPreviousTimingPoint(timingPoint);
+        TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
+
+        // validity checks
+        if (previousTimingPoint != null && previousTimingPoint.MusicPosition >= musicPosition)
+        {
+            rejectingTimingPoint = previousTimingPoint;
+            return false;
+        }
+        if (nextTimingPoint != null && nextTimingPoint.MusicPosition <= musicPosition)
+        {
+            rejectingTimingPoint = nextTimingPoint;
+            return false;
+        }
+
+        rejectingTimingPoint = null;
+        return true;
+    }
+
     //private void UpdateMeasuresPerSecond(TimingPoint timingPoint) => timingPoint.MeasuresPerSecond_Set(this);
     #endregion
 
@@ -350,8 +371,11 @@ public partial class Timing : Node, IMementoOriginator
         return operatingTimingPoint;
     }
 
-    public TimingPoint? GetPreviousTimingPoint(TimingPoint timingPoint)
+    public TimingPoint? GetPreviousTimingPoint(TimingPoint? timingPoint)
     {
+        if (timingPoint == null)
+            return null;
+
         int i = timingPoints.IndexOf(timingPoint);
 
         if (i == -1)
@@ -359,8 +383,11 @@ public partial class Timing : Node, IMementoOriginator
         return i - 1 < 0 ? null : timingPoints[i - 1];
     }
 
-    public TimingPoint? GetNextTimingPoint(TimingPoint timingPoint)
+    public TimingPoint? GetNextTimingPoint(TimingPoint? timingPoint)
     {
+        if (timingPoint == null) 
+            return null;
+
         int i = timingPoints.IndexOf(timingPoint);
 
         if (i == -1)
@@ -442,10 +469,9 @@ public partial class Timing : Node, IMementoOriginator
 
     public float GetOperatingGridPosition(float musicPosition)
     {
-        TimingPoint? operatingTimingPoint = GetOperatingTimingPoint_ByMusicPosition(musicPosition);
-        if (operatingTimingPoint == null)
-            throw new NullReferenceException("This doesn't work unless there's a timing point yet. Fix me so it works always.");
-
+        TimingPoint? operatingTimingPoint = 
+            GetOperatingTimingPoint_ByMusicPosition(musicPosition) 
+            ?? throw new NullReferenceException("This doesn't work unless there's a timing point yet. Fix me so it works always.");
         int[] timeSignature = operatingTimingPoint.TimeSignature;
         int gridDivisor = Settings.Instance.GridDivisor;
 

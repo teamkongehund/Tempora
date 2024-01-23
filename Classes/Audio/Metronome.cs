@@ -47,7 +47,7 @@ public partial class Metronome : Node
         }
     }
 
-    private float GetTriggerPosition(float musicPosition)
+    private static float GetTriggerPosition(float musicPosition)
     {
         return Settings.Instance.MetronomeFollowsGrid
             ? Timing.Instance.GetOperatingGridPosition(musicPosition)

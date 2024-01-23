@@ -15,6 +15,8 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 
     public bool IsInstantiating = true;
 
+    public ulong SystemTimeWhenCreated;
+
     #region Time Signature
     private int[] timeSignature = [4, 4];
 
@@ -113,24 +115,13 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 
     public void MusicPosition_Set(float value, Timing timing)
     {
-        TimingPoint? previousTimingPoint = timing.GetPreviousTimingPoint(this);
-        TimingPoint? nextTimingPoint = timing.GetNextTimingPoint(this);
+        bool isValid = timing.CanTimingPointMusicPositionBeThis(this, value, out TimingPoint? rejectingTimingPoint);
 
-        // validity checks
-        if (previousTimingPoint != null && previousTimingPoint.MusicPosition >= value)
-        {
-            //GD.Print($"Previous point rejected change");
-            Signals.Instance.EmitEvent(Signals.Events.MusicPositionChangeRejected, new Signals.ObjectArgument<TimingPoint>(previousTimingPoint));
-            return;
-        }
-        if (nextTimingPoint != null && nextTimingPoint.MusicPosition <= value)
-        {
-            //GD.Print($"Next point rejected change");
-            Signals.Instance.EmitEvent(Signals.Events.MusicPositionChangeRejected, new Signals.ObjectArgument<TimingPoint>(nextTimingPoint));
-            return;
-        }
+        if (rejectingTimingPoint != null)
+            Signals.Instance.EmitEvent(Signals.Events.MusicPositionChangeRejected, new Signals.ObjectArgument<TimingPoint>(rejectingTimingPoint));
 
-        MusicPosition = value;
+        if (isValid)
+            MusicPosition = value;
     }
     #endregion
 
@@ -254,6 +245,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
     {
         this.offset = time;
         this.timeSignature = timeSignature;
+        SystemTimeWhenCreated = Time.GetTicksMsec();
     }
 
     public TimingPoint(float time, float musicPosition, float measuresPerSecond)
@@ -261,6 +253,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
         this.offset = time;
         this.musicPosition = musicPosition;
         this.measuresPerSecond = measuresPerSecond;
+        SystemTimeWhenCreated = Time.GetTicksMsec();
     }
 
     public TimingPoint(float time, float musicPosition, int[] timeSignature)
@@ -268,6 +261,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
         this.offset = time;
         this.musicPosition = musicPosition;
         this.timeSignature = timeSignature;
+        SystemTimeWhenCreated = Time.GetTicksMsec();
     }
 
     public TimingPoint(float time, float musicPosition, int[] timeSignature, float measuresPerSecond)
@@ -277,6 +271,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
         this.timeSignature = timeSignature;
         this.measuresPerSecond = measuresPerSecond;
         bpm = MpsToBpm(measuresPerSecond);
+        SystemTimeWhenCreated = Time.GetTicksMsec();
     }
 
     /// <summary>
@@ -290,6 +285,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
         this.measuresPerSecond = measuresPerSecond;
         this.bpm = bpm;
         this.IsInstantiating = isInstantiating;
+        SystemTimeWhenCreated = Time.GetTicksMsec();
     }
     #endregion
     #region Interface Methods

@@ -68,7 +68,7 @@ public partial class ActionsHandler : Node
 
         if (mementoIndex < (mementoList.Count - 1))
         {
-            GD.Print($"AddMemento: mementoIndex is not the last in the list : Deleting mementos after {mementoIndex}");
+            //GD.Print($"AddMemento: mementoIndex is not the last in the list : Deleting mementos after {mementoIndex}");
             DeleteMementosAfterIndex((int)mementoIndex);
         }
         mementoList.Add(memento);
@@ -86,7 +86,7 @@ public partial class ActionsHandler : Node
 
     private void Undo()
     {
-        GD.Print($"Undoing... Memento count: {mementoList.Count}. Current Memento index: {mementoIndex}");
+        //GD.Print($"Undoing... Memento count: {mementoList.Count}. Current Memento index: {mementoIndex}");
         switch (mementoIndex)
         {
             //case var expression when (mementoIndex == (mementoList.Count - 1)):
