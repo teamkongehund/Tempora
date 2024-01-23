@@ -28,11 +28,10 @@ public partial class AudioVisualsContainer : VBoxContainer
         get => nominalMusicPositionStartForTopBlock;
         set
         {
-            if (value != nominalMusicPositionStartForTopBlock)
-            {
-                nominalMusicPositionStartForTopBlock = value;
-                UpdateBlocksScroll();
-            }
+            if (value == nominalMusicPositionStartForTopBlock)
+                return;
+            nominalMusicPositionStartForTopBlock = value;
+            UpdateBlocksScroll();
         }
     }
 

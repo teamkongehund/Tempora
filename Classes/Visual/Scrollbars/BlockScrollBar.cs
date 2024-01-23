@@ -9,6 +9,8 @@ public partial class BlockScrollBar : VScrollBar
     [Export]
     AudioVisualsContainer audioVisualsContainer = null!;
 
+    bool isRangeChanging = false;
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -18,12 +20,20 @@ public partial class BlockScrollBar : VScrollBar
 
     private void OnTimingChanged(object? sender, EventArgs e)
     {
-        if (Value != MaxValue) // Prevents inadvertent scrolling
-            UpdateRange();
+        UpdateRange();
+        Value = audioVisualsContainer.NominalMusicPositionStartForTopBlock;
     }
 
-    private void OnValueChanged(double value)
+    private void OnValueChanged(double value) => UpdateTopMeasure(value);
+
+    private void UpdateTopMeasure(double value)
     {
+        if (isRangeChanging)
+        {
+            isRangeChanging = false;
+            return; // If not in place, inadvertent scrolling occurs due to MinValue or MaxValue changing Value.
+        }
+
         audioVisualsContainer.NominalMusicPositionStartForTopBlock = (int)value;
     }
 
@@ -31,7 +41,17 @@ public partial class BlockScrollBar : VScrollBar
     {
         int firstMeasure = (int)Timing.Instance.TimeToMusicPosition(0);
         int lastMeasure = Timing.Instance.GetLastMeasure() - (Settings.Instance.NumberOfBlocks - 1);
-        MinValue = firstMeasure;
-        MaxValue = lastMeasure;
+        if (MinValue != firstMeasure)
+        {
+            isRangeChanging = true;
+            MinValue = firstMeasure;
+        }
+        if (MaxValue != lastMeasure)
+        {
+            isRangeChanging = true;
+            MaxValue = lastMeasure;
+        }
+
+        //GD.Print($"UpdateRange() result: Range: {MinValue}...{MaxValue} with Value = {Value}");
     }
 }
