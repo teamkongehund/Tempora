@@ -92,7 +92,7 @@ public partial class AudioDisplayPanel : Control
         UpdateSelectedPositionScaling();
         UpdateSelectedPositionLine();
 
-        CreateEmptyTimingPoints(8);
+        CreateEmptyVisualTimingPoints(8);
 
         Resized += OnResized;
         Signals.Instance.SettingsChanged += OnSettingsChanged;
@@ -141,24 +141,29 @@ public partial class AudioDisplayPanel : Control
                 operatingTimingPoint?.Offset_Set(operatingTimingPoint.Offset - offsetPerWheelScroll, Timing.Instance);
                 break;
 
-            case InputEventMouseMotion mouseMotion:
-                UpdatePreviewLinePosition();
+            //case InputEventMouseMotion mouseMotion:
+            //    if (!mouseIsInside)
+            //        return; // Godot won't seem to let other Nodes handle the event if the mouse has been held down while moving from this Control to another
+                
+            //    GD.Print($"Node handling mouse motion: {this}");
 
-                if (Context.Instance.HeldTimingPoint == null)
-                    return;
+            //    UpdatePreviewLinePosition();
 
-                if (Input.IsKeyPressed(Key.Ctrl))
-                {
-                    float xMovement = mouseMotion.Relative.X;
-                    float secondsPerPixel = 0.0002f;
-                    float secondsDifference = xMovement * secondsPerPixel;
-                    Context.Instance.HeldTimingPoint.Offset_Set(Context.Instance.HeldTimingPoint.Offset - secondsDifference, Timing.Instance);
-                    return;
-                }
+            //    if (Context.Instance.HeldTimingPoint == null)
+            //        return;
 
-                Timing.Instance.SnapTimingPoint(Context.Instance.HeldTimingPoint, musicPosition);
+            //    if (Input.IsKeyPressed(Key.Ctrl))
+            //    {
+            //        float xMovement = mouseMotion.Relative.X;
+            //        float secondsPerPixel = 0.0002f;
+            //        float secondsDifference = xMovement * secondsPerPixel;
+            //        Context.Instance.HeldTimingPoint.Offset_Set(Context.Instance.HeldTimingPoint.Offset - secondsDifference, Timing.Instance);
+            //        return;
+            //    }
 
-                break;
+            //    Timing.Instance.SnapTimingPoint(Context.Instance.HeldTimingPoint, musicPosition);
+
+            //    break;
 
             default:
                 return;
@@ -205,6 +210,42 @@ public partial class AudioDisplayPanel : Control
                     UpdatePreviewLinePosition();
                     break;
                 }
+            case InputEventMouseMotion mouseMotion:
+                // Godot's _GuiInput won't seem to let other Nodes handle the event if the mouse has been held down while moving from this Control to another
+                // Therefore mouse input is handled in _Input
+                if (!mouseIsInside)
+                    return; 
+
+                Vector2 globalPosition = GetGlobalRect().Position;
+                GD.Print(globalPosition);
+
+                Vector2 mousePos = mouseMotion.Position - globalPosition;
+                GD.Print("mousePos" + mousePos);
+
+                float musicPosition = GetMouseMusicPosition(mouseMotion);
+
+                //GD.Print($"Node handling mouse motion: {this}");
+
+                UpdatePreviewLinePosition();
+
+                if (Context.Instance.HeldTimingPoint == null)
+                    return;
+
+                if (Input.IsKeyPressed(Key.Ctrl))
+                {
+                    float xMovement = mouseMotion.Relative.X;
+                    float secondsPerPixel = 0.0002f;
+                    float secondsDifference = xMovement * secondsPerPixel;
+                    Context.Instance.HeldTimingPoint.Offset_Set(Context.Instance.HeldTimingPoint.Offset - secondsDifference, Timing.Instance);
+                    return;
+                }
+
+                Timing.Instance.SnapTimingPoint(Context.Instance.HeldTimingPoint, musicPosition);
+
+                GetViewport().SetInputAsHandled();
+
+                break;
+
         }
     }
 
@@ -260,25 +301,6 @@ public partial class AudioDisplayPanel : Control
         float timeWherePanelStarts = Timing.Instance.MusicPositionToTime(ActualMusicPositionStartForPanel);
         float timeWherePanelEnds = Timing.Instance.MusicPositionToTime(ActualMusicPositionEndForPanel);
 
-        //if (Timing.Instance.TimingPoints.Count == 0)
-        //{
-        //    float startTime = timeWherePanelStarts;
-        //    float endTime = timeWherePanelEnds;
-
-        //    var waveform = new Waveform(Project.Instance.AudioFile, Size.X, Size.Y, [startTime, endTime])
-        //    {
-        //        Position = new Vector2(0, Size.Y / 2)
-        //    };
-
-        //    waveformSegments.AddChild(waveform);
-
-        //    //GD.Print($"There were no timing points... Using MusicPositionStart {MusicPositionStartForWindow} to set start and end times.");
-
-        //    return;
-        //}
-
-        //UpdateTimingPointsIndices();
-
         TimingPoint? previousTimingPoint = Timing.Instance.GetOperatingTimingPoint_ByMusicPosition(ActualMusicPositionStartForPanel);
 
         // If the real first one exactly coincides with the start, it's ignored, which doesn't matter
@@ -291,7 +313,7 @@ public partial class AudioDisplayPanel : Control
         if (firstTimingPointInPanel == null)
             return;
 
-        // Create a waveform segment for each timingpoint that is visible in this display panel
+        // Create a waveform segment startin on each timingpoint that is visible in this display panel
         int firstPointIndex = Timing.Instance.TimingPoints.IndexOf(firstTimingPointInPanel);
         for (int i = firstPointIndex; Timing.Instance.TimingPoints[i]?.MusicPosition < ActualMusicPositionEndForPanel; i++)
         {
@@ -346,7 +368,7 @@ public partial class AudioDisplayPanel : Control
     ///     These are then modified whenever the visuals need to change, instead of re-instantiating them.
     ///     This is significantly faster than creating them anew each time.
     /// </summary>
-    public void CreateEmptyTimingPoints(int amount)
+    public void CreateEmptyVisualTimingPoints(int amount)
     {
         foreach (Node? child in VisualTimingPointFolder.GetChildren())
         {
