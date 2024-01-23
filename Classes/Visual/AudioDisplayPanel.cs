@@ -55,15 +55,15 @@ public partial class AudioDisplayPanel : Control
         }
     }
 
-    public float ActualMusicPositionStartForWindow
+    public float ActualMusicPositionStartForPanel
     {
         get => NominalMusicPositionStartForWindow - Settings.Instance.MusicPositionMargin - Settings.Instance.MusicPositionOffset;
         private set { }
     }
 
-    public float ActualMusicPositionEndForWindow
+    public float ActualMusicPositionEndForPanel
     {
-        get => ActualMusicPositionStartForWindow + 1 + (2 * Settings.Instance.MusicPositionMargin);
+        get => ActualMusicPositionStartForPanel + 1 + (2 * Settings.Instance.MusicPositionMargin);
         private set { }
     }
 
@@ -150,7 +150,8 @@ public partial class AudioDisplayPanel : Control
                 if (Input.IsKeyPressed(Key.Ctrl))
                 {
                     float xMovement = mouseMotion.Relative.X;
-                    float secondsDifference = xMovement * 0.0002f;
+                    float secondsPerPixel = 0.0002f;
+                    float secondsDifference = xMovement * secondsPerPixel;
                     Context.Instance.HeldTimingPoint.Offset_Set(Context.Instance.HeldTimingPoint.Offset - secondsDifference, Timing.Instance);
                     return;
                 }
@@ -256,93 +257,74 @@ public partial class AudioDisplayPanel : Control
 
         float margin = Settings.Instance.MusicPositionMargin;
 
-        float timeWhereWindowBegins = Timing.Instance.MusicPositionToTime(ActualMusicPositionStartForWindow);
-        float timeWhereWindowEnds = Timing.Instance.MusicPositionToTime(ActualMusicPositionEndForWindow);
+        float timeWherePanelStarts = Timing.Instance.MusicPositionToTime(ActualMusicPositionStartForPanel);
+        float timeWherePanelEnds = Timing.Instance.MusicPositionToTime(ActualMusicPositionEndForPanel);
 
-        if (Timing.Instance.TimingPoints.Count == 0)
-        {
-            float startTime = timeWhereWindowBegins;
-            float endTime = timeWhereWindowEnds;
+        //if (Timing.Instance.TimingPoints.Count == 0)
+        //{
+        //    float startTime = timeWherePanelStarts;
+        //    float endTime = timeWherePanelEnds;
 
-            var waveform = new Waveform(Project.Instance.AudioFile, Size.X, Size.Y, [startTime, endTime])
-            {
-                Position = new Vector2(0, Size.Y / 2)
-            };
+        //    var waveform = new Waveform(Project.Instance.AudioFile, Size.X, Size.Y, [startTime, endTime])
+        //    {
+        //        Position = new Vector2(0, Size.Y / 2)
+        //    };
 
-            waveformSegments.AddChild(waveform);
+        //    waveformSegments.AddChild(waveform);
 
-            //GD.Print($"There were no timing points... Using MusicPositionStart {MusicPositionStartForWindow} to set start and end times.");
+        //    //GD.Print($"There were no timing points... Using MusicPositionStart {MusicPositionStartForWindow} to set start and end times.");
 
+        //    return;
+        //}
+
+        //UpdateTimingPointsIndices();
+
+        TimingPoint? previousTimingPoint = Timing.Instance.GetOperatingTimingPoint_ByMusicPosition(ActualMusicPositionStartForPanel);
+
+        // If the real first one exactly coincides with the start, it's ignored, which doesn't matter
+        TimingPoint? firstTimingPointInPanel = Timing.Instance.GetNextTimingPoint(previousTimingPoint); 
+        firstTimingPointInPanel = firstTimingPointInPanel?.MusicPosition > ActualMusicPositionEndForPanel ? null : firstTimingPointInPanel;
+
+        // Create first waveform segment
+        AddWaveformSegment(timeWherePanelStarts, firstTimingPointInPanel?.Offset ?? timeWherePanelEnds);
+
+        if (firstTimingPointInPanel == null)
             return;
-        }
 
-        //GD.Print($"Window {MusicPositionStart}: timeWhereWindowBeginds = {timeWhereWindowBegins} , timeWhereWindowEnds = {timeWhereWindowEnds}");
-
-        UpdateTimingPointsIndices();
-
-        TimingPoint? heldTimingPoint = Context.Instance.HeldTimingPoint;
-
-
-        // Create each waveform segment
-        for (int i = FirstTimingPointIndex; i <= LastTimingPointIndex; i++)
+        // Create a waveform segment for each timingpoint that is visible in this display panel
+        int firstPointIndex = Timing.Instance.TimingPoints.IndexOf(firstTimingPointInPanel);
+        for (int i = firstPointIndex; Timing.Instance.TimingPoints[i]?.MusicPosition < ActualMusicPositionEndForPanel; i++)
         {
-            //GD.Print($"Now rendering waveform for index {i}");
             TimingPoint timingPoint = Timing.Instance.TimingPoints[i];
 
-            float waveSegmentStartTime = i == FirstTimingPointIndex
-                ? timeWhereWindowBegins
-                : timingPoint.Offset;
+            bool isNextPointOutOfRange = (i + 1 >= Timing.Instance.TimingPoints.Count);
+            bool isNextPointOutsideOfPanel = isNextPointOutOfRange 
+                ? true 
+                : (Timing.Instance.TimingPoints[i + 1].MusicPosition > ActualMusicPositionEndForPanel);
 
-            float waveSegmentEndTime = i == LastTimingPointIndex
-                ? timeWhereWindowEnds
-                : Timing.Instance.TimingPoints[i + 1].Offset;
+            float waveSegmentStartTime = Timing.Instance.TimingPoints[i].Offset;
+            float waveSegmentEndTime = isNextPointOutsideOfPanel ? timeWherePanelEnds : Timing.Instance.TimingPoints[i + 1].Offset;
 
-            //GD.Print($"Timing Points {FirstTimingPointIndex} - {LastTimingPointIndex}: Time {waveSegmentStartTime} - {waveSegmentEndTime}");
+            AddWaveformSegment(waveSegmentStartTime, waveSegmentEndTime);
 
-            float musicPositionStart = Timing.Instance.TimeToMusicPosition(waveSegmentStartTime);
-            float musicPositionEnd = Timing.Instance.TimeToMusicPosition(waveSegmentEndTime);
-
-            float length = Size.X * (musicPositionEnd - musicPositionStart) / (1f + (2 * margin));
-            float xPosition = Size.X * (musicPositionStart - ActualMusicPositionStartForWindow) / (1f + (2 * margin));
-
-            bool canHeldTimingPointBeInSegment = (heldTimingPoint == null)
-                || (
-                    Timing.Instance.CanTimingPointMusicPositionBeThis(heldTimingPoint, musicPositionStart, out var _) 
-                    || Timing.Instance.CanTimingPointMusicPositionBeThis(heldTimingPoint, musicPositionEnd, out var _)
-                );
-
-            //if (!canHeldTimingPointBeInSegment)
-            //    GD.Print("This segment should be dark");
-
-            var waveform = new Waveform(Project.Instance.AudioFile, length, Size.Y, [waveSegmentStartTime, waveSegmentEndTime])
-            {
-                Position = new Vector2(xPosition, Size.Y / 2),
-                Color = (canHeldTimingPointBeInSegment ? Waveform.defaultColor : Waveform.darkenedColor)
-            };
-
-            //GD.Print($"timeWhereWindowBegins = {timeWhereWindowBegins} , musicPositionStart = {musicPositionStart}");
-
-            // Randomize color, so it's easy to see what's happening
-            //Random random = new Random();
-            //waveform.DefaultColor = new Color((float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble(), 1);
-
-            // Note: this one also takes some processing
-            waveformSegments.AddChild(waveform);
-
-            // Experimentation with offscreen viewports in order to render waveform as a separate image to be manipulated
-
+            if (isNextPointOutOfRange)
+                return;
         }
     }
 
     private void AddWaveformSegment(float waveSegmentStartTime, float waveSegmentEndTime)
     {
-        TimingPoint timingPoint = Timing.Instance.TimingPoints[i];
-
         float musicPositionStart = Timing.Instance.TimeToMusicPosition(waveSegmentStartTime);
         float musicPositionEnd = Timing.Instance.TimeToMusicPosition(waveSegmentEndTime);
 
-        float length = Size.X * (musicPositionEnd - musicPositionStart) / (1f + (2 * margin));
-        float xPosition = Size.X * (musicPositionStart - ActualMusicPositionStartForWindow) / (1f + (2 * margin));
+        float margin = Settings.Instance.MusicPositionMargin;
+        TimingPoint? heldTimingPoint = Context.Instance.HeldTimingPoint;
+
+        float panelLengthInMeasures = (1f + (2 * margin));
+        float length = Size.X * (musicPositionEnd - musicPositionStart) / panelLengthInMeasures;
+
+        float relativePositionStart = (musicPositionStart - ActualMusicPositionStartForPanel);
+        float xPosition = Size.X * relativePositionStart / panelLengthInMeasures;
 
         bool canHeldTimingPointBeInSegment = (heldTimingPoint == null)
             || (
@@ -350,25 +332,13 @@ public partial class AudioDisplayPanel : Control
                 || Timing.Instance.CanTimingPointMusicPositionBeThis(heldTimingPoint, musicPositionEnd, out var _)
             );
 
-        //if (!canHeldTimingPointBeInSegment)
-        //    GD.Print("This segment should be dark");
-
         var waveform = new Waveform(Project.Instance.AudioFile, length, Size.Y, [waveSegmentStartTime, waveSegmentEndTime])
         {
             Position = new Vector2(xPosition, Size.Y / 2),
             Color = (canHeldTimingPointBeInSegment ? Waveform.defaultColor : Waveform.darkenedColor)
         };
 
-        //GD.Print($"timeWhereWindowBegins = {timeWhereWindowBegins} , musicPositionStart = {musicPositionStart}");
-
-        // Randomize color, so it's easy to see what's happening
-        //Random random = new Random();
-        //waveform.DefaultColor = new Color((float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble(), 1);
-
-        // Note: this one also takes some processing
         waveformSegments.AddChild(waveform);
-
-        // Experimentation with offscreen viewports in order to render waveform as a separate image to be manipulated
     }
 
     /// <summary>
@@ -423,8 +393,8 @@ public partial class AudioDisplayPanel : Control
             if (timingPoint.MusicPosition == null)
                 throw new NullReferenceException($"{nameof(timingPoint.MusicPosition)} was null");
 
-            if (timingPoint.MusicPosition < ActualMusicPositionStartForWindow
-                || timingPoint.MusicPosition >= ActualMusicPositionEndForWindow)
+            if (timingPoint.MusicPosition < ActualMusicPositionStartForPanel
+                || timingPoint.MusicPosition >= ActualMusicPositionEndForPanel)
             {
                 continue;
             }
@@ -489,9 +459,9 @@ public partial class AudioDisplayPanel : Control
                 continue;
             }
 
-            if (musicPosition < ActualMusicPositionStartForWindow)
+            if (musicPosition < ActualMusicPositionStartForPanel)
                 continue;
-            if (musicPosition > ActualMusicPositionStartForWindow + 1 + (2 * Settings.Instance.MusicPositionMargin))
+            if (musicPosition > ActualMusicPositionStartForPanel + 1 + (2 * Settings.Instance.MusicPositionMargin))
                 break;
 
             timeSignature = Timing.Instance.GetTimeSignature(musicPosition);
@@ -606,11 +576,11 @@ public partial class AudioDisplayPanel : Control
 
         float margin = Settings.Instance.MusicPositionMargin;
 
-        int firstIndex = Timing.Instance.TimingPoints.FindLastIndex(point => point.MusicPosition <= ActualMusicPositionStartForWindow);
+        int firstIndex = Timing.Instance.TimingPoints.FindLastIndex(point => point.MusicPosition <= ActualMusicPositionStartForPanel);
         // If there's only TimingPoints AFTER MusicPositionStart
         if (firstIndex == -1)
-            firstIndex = Timing.Instance.TimingPoints.FindIndex(point => point.MusicPosition > ActualMusicPositionStartForWindow);
-        int lastIndex = Timing.Instance.TimingPoints.FindLastIndex(point => point.MusicPosition < ActualMusicPositionStartForWindow + 1 + (2 * margin));
+            firstIndex = Timing.Instance.TimingPoints.FindIndex(point => point.MusicPosition > ActualMusicPositionStartForPanel);
+        int lastIndex = Timing.Instance.TimingPoints.FindLastIndex(point => point.MusicPosition < ActualMusicPositionStartForPanel + 1 + (2 * margin));
         if (lastIndex == -1)
             lastIndex = firstIndex;
 
