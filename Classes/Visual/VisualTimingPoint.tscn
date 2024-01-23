@@ -5,14 +5,27 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rj6no"]
 size = Vector2(128, 128)
 
-[node name="VisualTimingPoint" type="Node2D"]
+[node name="VisualTimingPoint" type="Node2D" node_paths=PackedStringArray("area2D", "bpmLabel", "collisionShape2D", "numberLabel", "colorRect", "flashTimer")]
 script = ExtResource("1_es6qk")
+area2D = NodePath("Area2D")
+bpmLabel = NodePath("BPMLabel")
+collisionShape2D = NodePath("Area2D/CollisionShape2D")
+numberLabel = NodePath("NumberLabel")
+colorRect = NodePath("ColorRect")
+flashTimer = NodePath("FlashTimer")
 
 [node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
 offset_left = -64.0
 offset_top = -64.0
 offset_right = 64.0
 offset_bottom = 64.0
+grow_horizontal = 2
+grow_vertical = 2
 rotation = 0.785398
 pivot_offset = Vector2(64, 64)
 mouse_filter = 2
@@ -57,3 +70,7 @@ theme_override_constants/outline_size = 30
 theme_override_font_sizes/font_size = 70
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="FlashTimer" type="Timer" parent="."]
+wait_time = 0.33
+one_shot = true

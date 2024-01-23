@@ -214,7 +214,7 @@ public partial class AudioDisplayPanel : Control
             return;
         UpdateTimingPointsIndices();
         CreateWaveforms();
-        RenderTimingPoints();
+        RenderVisualTimingPoints();
         CreateGridLines();
     }
 
@@ -357,7 +357,7 @@ public partial class AudioDisplayPanel : Control
         VisualTimingPointFolder.AddChild(visualTimingPoint);
     }
 
-    public void RenderTimingPoints()
+    public void RenderVisualTimingPoints()
     {
         Godot.Collections.Array<Node> children = VisualTimingPointFolder.GetChildren();
         int childrenAmount = children.Count;
@@ -486,7 +486,7 @@ public partial class AudioDisplayPanel : Control
         UpdatePreviewLinePosition();
         UpdateSelectedPositionScaling();
         CreateWaveforms(); // takes 2-5 ms on 30 blocks  loaded
-        RenderTimingPoints(); // takes 2-3 ms on 30 blocks loaded
+        RenderVisualTimingPoints(); // takes 2-3 ms on 30 blocks loaded
         CreateGridLines();
 
         // This works fine

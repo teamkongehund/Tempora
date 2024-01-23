@@ -119,10 +119,14 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
         // validity checks
         if (previousTimingPoint != null && previousTimingPoint.MusicPosition >= value)
         {
+            //GD.Print($"Previous point rejected change");
+            Signals.Instance.EmitEvent(Signals.Events.MusicPositionChangeRejected, new Signals.ObjectArgument<TimingPoint>(previousTimingPoint));
             return;
         }
         if (nextTimingPoint != null && nextTimingPoint.MusicPosition <= value)
         {
+            //GD.Print($"Next point rejected change");
+            Signals.Instance.EmitEvent(Signals.Events.MusicPositionChangeRejected, new Signals.ObjectArgument<TimingPoint>(nextTimingPoint));
             return;
         }
 
@@ -302,6 +306,9 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
     public event EventHandler MPSUpdateRequested = null!;
 
     private bool AreThereUncommunicatedChanges = false;
+
+    //public event EventHandler MusicPositionChangeRejected = null!;
+
     public event EventHandler Changed = null!;
     public void EmitChangedEvent()
     {

@@ -6,14 +6,44 @@ namespace Tempora.Classes.Visual;
 
 public partial class VisualTimingPoint : Node2D
 {
+    [Export]
     private Area2D area2D = null!;
-    public Label BpmLabel = null!;
+    [Export]
+    private Label bpmLabel = null!;
+    [Export]
     private CollisionShape2D collisionShape2D = null!;
+    [Export]
+    private Label numberLabel = null!;
+    [Export]
+    private ColorRect colorRect = null!;
+    [Export]
+    private Timer flashTimer = null!;
 
-    public Label NumberLabel = null!;
+    private Vector2 defaultSize = new Vector2(128, 128);
+    private Vector2 LargerSize => defaultSize * 1.5f;
+    private Color defaultColor = new Color("ff990096");
+    private Color red = new Color("ff000096");
 
     private ulong SystemTimeWhenCreated;
-    public TimingPoint TimingPoint = null!;
+
+    private TimingPoint timingPoint = null!;
+    public TimingPoint TimingPoint
+    {
+        get => timingPoint;
+        set
+        {
+            if (timingPoint == value)
+                return;
+            timingPoint = value;
+            SubscribeToTimingPointEvents();
+        }
+    }
+
+    private void SubscribeToTimingPointEvents()
+    {
+        TimingPoint.Changed += OnTimingPointChanged;
+        //TimingPoint.MusicPositionChangeRejected += OnMusicPositionChangeRejected;
+    }
 
     public VisualTimingPoint(TimingPoint timingPoint)
     {
@@ -25,19 +55,20 @@ public partial class VisualTimingPoint : Node2D
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        area2D = GetNode<Area2D>("Area2D");
-        collisionShape2D = area2D.GetNode<CollisionShape2D>("CollisionShape2D");
-        NumberLabel = GetNode<Label>("NumberLabel");
-        BpmLabel = GetNode<Label>("BPMLabel");
-
-        NumberLabel.Text = Timing.Instance.TimingPoints.IndexOf(TimingPoint).ToString();
-        BpmLabel.Text = TimingPoint.Bpm.ToString("0.00");
+        numberLabel.Text = Timing.Instance.TimingPoints.IndexOf(TimingPoint).ToString();
+        bpmLabel.Text = TimingPoint.Bpm.ToString("0.00");
 
         SystemTimeWhenCreated = Time.GetTicksMsec();
 
-        TimingPoint.Changed += OnTimingPointChanged;
+        SubscribeToTimingPointEvents();
 
         VisibilityChanged += OnVisibilityChanged;
+
+        Signals.Instance.MusicPositionChangeRejected += OnMusicPositionChangeRejected;
+
+        flashTimer.Timeout += OnFlashTimerTimeout;
+        defaultColor = colorRect.Color;
+        defaultSize = colorRect.Size;
     }
 
     private void OnTimingPointChanged(object? sender, EventArgs e)
@@ -55,8 +86,8 @@ public partial class VisualTimingPoint : Node2D
 
     public void UpdateLabels(TimingPoint timingPoint)
     {
-        NumberLabel.Text = Timing.Instance.TimingPoints.IndexOf(timingPoint).ToString();
-        BpmLabel.Text = timingPoint.Bpm.ToString("0.00");
+        numberLabel.Text = Timing.Instance.TimingPoints.IndexOf(timingPoint).ToString();
+        bpmLabel.Text = timingPoint.Bpm.ToString("0.00");
     }
 
     public override void _Input(InputEvent @event)
@@ -111,22 +142,6 @@ public partial class VisualTimingPoint : Node2D
         GetViewport().SetInputAsHandled();
     }
 
-    //private void IncrementTimingPointBpm(InputEventMouseButton mouseEvent)
-    //{
-    //    if (!mouseEvent.Pressed || )
-    //        return;
-    //    int direction = mouseEvent.ButtonIndex == MouseButton.WheelUp
-
-    //    float previousBpm = TimingPoint.Bpm;
-    //    float newBpm = (int)previousBpm - 1;
-    //    if (Input.IsKeyPressed(Key.Shift) && !Input.IsKeyPressed(Key.Alt))
-    //        newBpm = (int)previousBpm - 5;
-    //    else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Alt))
-    //        newBpm = previousBpm - 0.1f;
-
-    //    TimingPoint.Bpm_Set(newBpm, Timing.Instance);
-    //}
-
     private void DeleteTimingPoint()
     {
         // Prevent accidental deletion un inadvertent double-double-clicking. Instead treated as holding the timing point
@@ -144,5 +159,46 @@ public partial class VisualTimingPoint : Node2D
         Viewport viewport = GetViewport();
         viewport.SetInputAsHandled();
         return;
+    }
+
+    private void OnFlashTimerTimeout()
+    {
+        if (colorRect.Color != defaultColor)
+        {
+            RevertFlash();
+            flashTimer.Start(); // period of default color
+        }
+    }
+
+    private void RevertFlash()
+    {
+        colorRect.Color = defaultColor;
+        SetColorRectSize(defaultSize);
+    }
+
+    private void SetColorRectSize(Vector2 size)
+    {
+        colorRect.Size = size;
+        colorRect.Position = -size / 2;
+        colorRect.PivotOffset = size / 2;
+    }
+
+    private void OnMusicPositionChangeRejected(object? sender, EventArgs e)
+    {
+        if (e is not Signals.ObjectArgument<TimingPoint> timingPointArgument)
+            return;
+        if (timingPointArgument.Value != TimingPoint)
+            return;
+        FlashRed();
+    }
+
+    private void FlashRed()
+    {
+        //GD.Print($"VisualTimingPoint with {TimingPoint.MusicPosition}: Flashing Red!");
+        if (!flashTimer.IsStopped())
+            return;
+        colorRect.Color = red;
+        SetColorRectSize(LargerSize);
+        flashTimer.Start();
     }
 }
