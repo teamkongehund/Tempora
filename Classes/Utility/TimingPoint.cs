@@ -15,7 +15,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 
     public bool IsInstantiating = true;
 
-    public ulong SystemTimeWhenCreated;
+    public ulong SystemTimeWhenCreatedMsec;
 
     #region Time Signature
     private int[] timeSignature = [4, 4];
@@ -245,7 +245,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
     {
         this.offset = time;
         this.timeSignature = timeSignature;
-        SystemTimeWhenCreated = Time.GetTicksMsec();
+        SystemTimeWhenCreatedMsec = Time.GetTicksMsec();
     }
 
     public TimingPoint(float time, float musicPosition, float measuresPerSecond)
@@ -253,7 +253,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
         this.offset = time;
         this.musicPosition = musicPosition;
         this.measuresPerSecond = measuresPerSecond;
-        SystemTimeWhenCreated = Time.GetTicksMsec();
+        SystemTimeWhenCreatedMsec = Time.GetTicksMsec();
     }
 
     public TimingPoint(float time, float musicPosition, int[] timeSignature)
@@ -261,7 +261,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
         this.offset = time;
         this.musicPosition = musicPosition;
         this.timeSignature = timeSignature;
-        SystemTimeWhenCreated = Time.GetTicksMsec();
+        SystemTimeWhenCreatedMsec = Time.GetTicksMsec();
     }
 
     public TimingPoint(float time, float musicPosition, int[] timeSignature, float measuresPerSecond)
@@ -271,7 +271,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
         this.timeSignature = timeSignature;
         this.measuresPerSecond = measuresPerSecond;
         bpm = MpsToBpm(measuresPerSecond);
-        SystemTimeWhenCreated = Time.GetTicksMsec();
+        SystemTimeWhenCreatedMsec = Time.GetTicksMsec();
     }
 
     /// <summary>
@@ -285,7 +285,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
         this.measuresPerSecond = measuresPerSecond;
         this.bpm = bpm;
         this.IsInstantiating = isInstantiating;
-        SystemTimeWhenCreated = Time.GetTicksMsec();
+        SystemTimeWhenCreatedMsec = Time.GetTicksMsec();
     }
     #endregion
     #region Interface Methods

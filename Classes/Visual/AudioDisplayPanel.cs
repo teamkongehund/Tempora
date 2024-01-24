@@ -345,7 +345,8 @@ public partial class AudioDisplayPanel : Control
             || (
                 Timing.Instance.CanTimingPointMusicPositionBeThis(heldTimingPoint, musicPositionStart, out var _)
                 || Timing.Instance.CanTimingPointMusicPositionBeThis(heldTimingPoint, musicPositionEnd, out var _)
-            );
+                )
+            || (Time.GetTicksMsec() - heldTimingPoint.SystemTimeWhenCreatedMsec) < 30; ;
 
         var waveform = new Waveform(Project.Instance.AudioFile, length, Size.Y, [waveSegmentStartTime, waveSegmentEndTime])
         {

@@ -156,7 +156,7 @@ public partial class VisualTimingPoint : Node2D
         GD.Print("DeleteTimingPoint() started");
 
         // Prevent accidental deletion un inadvertent double-double-clicking. Instead treated as holding the timing point
-        if (Time.GetTicksMsec() - TimingPoint.SystemTimeWhenCreated <= 500)
+        if (Time.GetTicksMsec() - TimingPoint.SystemTimeWhenCreatedMsec <= 500)
         {
             GD.Print("Nah, we're actually holding the timing point");
             Signals.Instance.EmitEvent(Signals.Events.TimingPointHolding, new Signals.ObjectArgument<TimingPoint>(TimingPoint));
