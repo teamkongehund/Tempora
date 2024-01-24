@@ -85,15 +85,14 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 5
 
-[node name="GridScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/SettingsSlidersVBox" instance=ExtResource("10_4hwef")]
+[node name="GridScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/SettingsSlidersVBox" node_paths=PackedStringArray("audioPlayer") instance=ExtResource("10_4hwef")]
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("7_i2h88")
+audioPlayer = NodePath("")
 title = "Grid"
-maxValue = 8.0
 minValue = 1.0
-audioPlayer = Object(AudioStreamPlayer,"_import_path":NodePath(""),"unique_name_in_owner":false,"process_mode":0,"process_priority":0,"process_physics_priority":0,"process_thread_group":0,"editor_description":"","stream":null,"volume_db":0.0,"pitch_scale":1.0,"autoplay":false,"stream_paused":false,"mix_target":0,"max_polyphony":1,"bus":&"Music","script":Resource("res://Classes/Audio/AudioPlayer.cs"))
-
+maxValue = 8.0
 
 [node name="MetronomeFollowsGridCheckButton" type="CheckButton" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/SettingsSlidersVBox"]
 layout_mode = 2
@@ -101,16 +100,15 @@ theme_override_font_sizes/font_size = 12
 text = "Follow"
 script = ExtResource("7_1opje")
 
-[node name="PlaybackRateScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/SettingsSlidersVBox" instance=ExtResource("10_4hwef")]
+[node name="PlaybackRateScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/SettingsSlidersVBox" node_paths=PackedStringArray("audioPlayer") instance=ExtResource("10_4hwef")]
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("8_6jrsb")
+audioPlayer = NodePath("../../../../../../AudioPlayer")
 title = "Playback"
+minValue = 0.1
 maxValue = 1.0
 step = 0.01
-minValue = 0.1
-audioPlayer = Object(AudioStreamPlayer,"_import_path":NodePath(""),"unique_name_in_owner":false,"process_mode":0,"process_priority":0,"process_physics_priority":0,"process_thread_group":0,"editor_description":"","stream":null,"volume_db":0.0,"pitch_scale":1.0,"autoplay":false,"stream_paused":false,"mix_target":0,"max_polyphony":1,"bus":&"Music","script":Resource("res://Classes/Audio/AudioPlayer.cs"))
-
 
 [node name="BlockAmountScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/SettingsSlidersVBox" instance=ExtResource("10_4hwef")]
 layout_mode = 2
@@ -139,7 +137,7 @@ step = 0.01
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="ClearAllButton" type="Button" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsVBox"]
+[node name="ClearAllButton" type="Button" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsVBox" node_paths=PackedStringArray("confirmationDialog")]
 layout_mode = 2
 size_flags_vertical = 3
 focus_mode = 0
@@ -147,8 +145,7 @@ theme_override_font_sizes/font_size = 12
 text = "Clear All
 "
 script = ExtResource("9_7o3s6")
-confirmationDialog = Object(ConfirmationDialog,"_import_path":NodePath(""),"unique_name_in_owner":false,"process_mode":0,"process_priority":0,"process_physics_priority":0,"process_thread_group":0,"editor_description":"","disable_3d":false,"use_xr":false,"own_world_3d":false,"world_3d":null,"transparent_bg":false,"handle_input_locally":true,"snap_2d_transforms_to_pixel":false,"snap_2d_vertices_to_pixel":false,"msaa_2d":0,"msaa_3d":0,"screen_space_aa":0,"use_taa":false,"use_debanding":false,"use_occlusion_culling":false,"mesh_lod_threshold":1.0,"debug_draw":0,"use_hdr_2d":false,"scaling_3d_mode":0,"scaling_3d_scale":1.0,"texture_mipmap_bias":0.0,"fsr_sharpness":0.2,"vrs_mode":0,"vrs_texture":null,"canvas_item_default_texture_filter":1,"canvas_item_default_texture_repeat":0,"audio_listener_enable_2d":false,"audio_listener_enable_3d":false,"physics_object_picking":false,"physics_object_picking_sort":false,"gui_disable_input":false,"gui_snap_controls_to_pixels":true,"gui_embed_subwindows":false,"sdf_oversize":1,"sdf_scale":1,"positional_shadow_atlas_size":2048,"positional_shadow_atlas_16_bits":true,"positional_shadow_atlas_quad_0":2,"positional_shadow_atlas_quad_1":2,"positional_shadow_atlas_quad_2":3,"positional_shadow_atlas_quad_3":4,"canvas_cull_mask":4294967295,"mode":0,"title":"Delete all timing points?","initial_position":1,"size":Vector2i(295, 80),"mouse_passthrough_polygon":PackedVector2Array(),"visible":false,"wrap_controls":true,"transient":true,"exclusive":true,"unresizable":false,"borderless":false,"always_on_top":false,"transparent":false,"unfocusable":false,"popup_window":false,"extend_to_title":false,"mouse_passthrough":false,"min_size":Vector2i(200, 70),"max_size":Vector2i(32768, 32768),"keep_title_visible":true,"content_scale_size":Vector2i(0, 0),"content_scale_mode":0,"content_scale_aspect":0,"content_scale_stretch":0,"content_scale_factor":1.0,"auto_translate":true,"theme":null,"theme_type_variation":&"","ok_button_text":"OK","dialog_text":"","dialog_hide_on_ok":true,"dialog_close_on_escape":true,"dialog_autowrap":false,"cancel_button_text":"Cancel","script":null)
-
+confirmationDialog = NodePath("ConfirmationDialog")
 
 [node name="ConfirmationDialog" type="ConfirmationDialog" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/ButtonsVBox/ClearAllButton"]
 title = "Delete all timing points?"
@@ -315,12 +312,11 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="BlockScrollBar" type="VScrollBar" parent="HSplitContainer/HSplitContainer/BlockScrollBarMarginContainer"]
+[node name="BlockScrollBar" type="VScrollBar" parent="HSplitContainer/HSplitContainer/BlockScrollBarMarginContainer" node_paths=PackedStringArray("audioVisualsContainer")]
 layout_mode = 2
 size_flags_horizontal = 1
 script = ExtResource("5_aqu3i")
-audioVisualsContainer = Object(VBoxContainer,"_import_path":NodePath(""),"unique_name_in_owner":false,"process_mode":0,"process_priority":0,"process_physics_priority":0,"process_thread_group":0,"editor_description":"","visible":true,"modulate":Color(1, 1, 1, 1),"self_modulate":Color(1, 1, 1, 1),"show_behind_parent":false,"top_level":false,"clip_children":0,"light_mask":1,"visibility_layer":1,"z_index":0,"z_as_relative":true,"y_sort_enabled":false,"texture_filter":0,"texture_repeat":0,"material":null,"use_parent_material":false,"clip_contents":false,"custom_minimum_size":Vector2(0, 0),"layout_direction":0,"layout_mode":2,"size_flags_horizontal":1,"size_flags_vertical":1,"size_flags_stretch_ratio":1.0,"auto_translate":true,"localize_numeral_system":true,"tooltip_text":"","focus_neighbor_left":NodePath(""),"focus_neighbor_top":NodePath(""),"focus_neighbor_right":NodePath(""),"focus_neighbor_bottom":NodePath(""),"focus_next":NodePath(""),"focus_previous":NodePath(""),"focus_mode":0,"mouse_filter":1,"mouse_force_pass_scroll_events":true,"mouse_default_cursor_shape":0,"shortcut_context":null,"theme":null,"theme_type_variation":&"","alignment":0,"script":ExtResource("3_bj8ok"),"packedAudioBlock":ExtResource("16_mlqa0"))
-
+audioVisualsContainer = NodePath("../../AudioVisualsMarginContainer/AudioVisualsContainer")
 
 [node name="VersionLabel" type="Label" parent="."]
 layout_mode = 1

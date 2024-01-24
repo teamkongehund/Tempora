@@ -117,7 +117,7 @@ public partial class AudioDisplayPanel : Control
         //GD.Print($"Node handling this mouse input: {this}");
 
         Vector2 mousePos = mouseEvent.Position;
-        float musicPosition = GetMouseMusicPosition(mouseEvent);
+        float musicPosition = GetMouseMusicPosition(mousePos);
         float time = Timing.Instance.MusicPositionToTime(musicPosition);
 
         TimingPoint? operatingTimingPoint = Timing.Instance.GetOperatingTimingPoint_ByMusicPosition(musicPosition);
@@ -177,10 +177,9 @@ public partial class AudioDisplayPanel : Control
     /// </summary>
     /// <param name="mouseEvent"></param>
     /// <returns></returns>
-    private float GetMouseMusicPosition(InputEventMouse mouseEvent)
+    private float GetMouseMusicPosition(Vector2 mousePositionInLocalCoords)
     {
-        Vector2 mousePos = mouseEvent.Position;
-        float musicPosition = XPositionToMusicPosition(mousePos.X);
+        float musicPosition = XPositionToMusicPosition(mousePositionInLocalCoords.X);
         if (Input.IsKeyPressed(Key.Shift))
             musicPosition = Timing.SnapMusicPosition(musicPosition);
 
@@ -217,14 +216,8 @@ public partial class AudioDisplayPanel : Control
                     return; 
 
                 Vector2 globalPosition = GetGlobalRect().Position;
-                GD.Print(globalPosition);
-
                 Vector2 mousePos = mouseMotion.Position - globalPosition;
-                GD.Print("mousePos" + mousePos);
-
-                float musicPosition = GetMouseMusicPosition(mouseMotion);
-
-                //GD.Print($"Node handling mouse motion: {this}");
+                float musicPosition = GetMouseMusicPosition(mousePos);
 
                 UpdatePreviewLinePosition();
 
