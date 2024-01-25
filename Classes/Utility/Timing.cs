@@ -31,6 +31,7 @@ public partial class Timing : Node, IMementoOriginator
         }
     }
 
+    private bool IsBatchOperatingInProgress = false;
 
     public static Timing Instance { get => instance; set => instance = value; }
 
@@ -107,6 +108,8 @@ public partial class Timing : Node, IMementoOriginator
     }
     private void OnTimingPointRequestingToUpdateMPS(object? sender, EventArgs e)
     {
+        if (IsBatchOperatingInProgress)
+            return; // defer update till after the operation is complete.
         if (sender is not TimingPoint timingPoint)
             throw new Exception("Sender wasn't a TimingPoint.");
         if (timingPoint.MusicPosition == null)
@@ -310,18 +313,24 @@ public partial class Timing : Node, IMementoOriginator
     }
 
     /// <summary>
-    /// Takes all TimingPoints after the measure of the time signature point change and alter their music positions such that the number of beats to them is kept the same.
-    /// Requires this method to be run before the timing itself is changed, otherwise some of the methods used to get i.e. beats may be wrong.
+    /// Takes all TimingPoints after the measure of the time signature change 
+    /// and alter their music positions such that the number of beats to them is kept the same.
     /// </summary>
     /// <param name="timeSignaturePoint"></param>
+    /// <param name="oldTiming">Timing instance before the change occured</param>
     /// <exception cref="NullReferenceException"></exception>
-    private void ShiftTimingPointsUponTimeSignatureChange(TimeSignaturePoint timeSignaturePoint)
+    private void ShiftTimingPointsUponTimeSignatureChange(Timing oldTiming, TimeSignaturePoint timeSignaturePoint)
     {
         ArgumentNullException.ThrowIfNull(timeSignaturePoint);
         TimingPoint? operatingTimingPoint = GetOperatingTimingPoint_ByMusicPosition(timeSignaturePoint.MusicPosition);
+        if (operatingTimingPoint == null)
+            throw new NullReferenceException(nameof(operatingTimingPoint));
+
         int opIndex = TimingPoints.IndexOf(operatingTimingPoint);
         if (opIndex == -1)
             return;
+
+        IsBatchOperatingInProgress = true;
 
         var newMusicPositions = new List<float>();
 
@@ -334,13 +343,32 @@ public partial class Timing : Node, IMementoOriginator
             if (TimingPoints[i].MusicPosition <= timeSignaturePoint.MusicPosition)
                 return;
 
-            // Get current number of beats to timing Point with previous timing
+            if (timingPoint.MusicPosition == null)
+                continue; 
 
+            // Get current number of beats to timing Point with previous timing
+            float beatsFromTheMeasureChangingToTimingPoint 
+                = GetBeatsBetweenMusicPositions(timeSignaturePoint.MusicPosition, (float)timingPoint.MusicPosition);
+
+            // TODO: Write from here
         }
 
+        UpdateAllTimingPointsMPS();
+        IsBatchOperatingInProgress = false;
     }
 
-    public bool CanTimingPointMusicPositionBeThis(TimingPoint? timingPoint, float musicPosition, out TimingPoint? rejectingTimingPoint)
+    /// <summary>
+    /// Used after a batch operation since the normal method to update them was blocked by <see cref="IsBatchOperatingInProgress"/>
+    /// </summary>
+    private void UpdateAllTimingPointsMPS()
+    {
+        foreach (TimingPoint timingPoint in TimingPoints)
+        {
+            timingPoint.MeasuresPerSecond_Set(this);
+        }
+    }
+
+    public bool CanTimingPointGoHere(TimingPoint? timingPoint, float musicPosition, out TimingPoint? rejectingTimingPoint)
     {
         TimingPoint? previousTimingPoint = GetPreviousTimingPoint(timingPoint);
         TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
@@ -478,7 +506,7 @@ public partial class Timing : Node, IMementoOriginator
     /// </summary>
     /// <param name="musicPosition"></param>
     /// <returns></returns>
-    public float GetBeatLength(float musicPosition)
+    public float GetDistancePerBeat(float musicPosition)
     {
         int[] timeSignature = GetTimeSignature(musicPosition);
         return timeSignature[1] / 4f / timeSignature[0];
@@ -491,7 +519,7 @@ public partial class Timing : Node, IMementoOriginator
     /// <returns></returns>
     public float GetOperatingBeatPosition(float musicPosition)
     {
-        float beatLength = GetBeatLength(musicPosition);
+        float beatLength = GetDistancePerBeat(musicPosition);
         int downbeatPosition = (musicPosition >= 0) ? (int)musicPosition : (int)musicPosition - 1;
         float relativePosition = (musicPosition >= 0)
             ? musicPosition % 1
@@ -579,10 +607,10 @@ public partial class Timing : Node, IMementoOriginator
         // Go through every measure between them and add up the number of beats
         for (int measure = (int)musicPositionFrom; measure <= (int)(musicPositionTo + 1); measure++)
         {
-            float beatLength = timing.GetBeatLength(measure);
+            float distancePerBeat = timing.GetDistancePerBeat(measure);
             float nextPosition = (musicPositionTo < measure + 1) ? musicPositionTo : (measure + 1);
             float distanceToNextPosition = nextPosition - currentMusicPosition;
-            float beatsToNextPosition = distanceToNextPosition / beatLength;
+            float beatsToNextPosition = distanceToNextPosition / distancePerBeat;
             sum += beatsToNextPosition;
 
             if (nextPosition == musicPositionTo)
@@ -599,10 +627,31 @@ public partial class Timing : Node, IMementoOriginator
         return GetMusicPositionAfterAddingBeats(this, musicPosition, numberOfBeats);
     }
 
-    private static float GetMusicPositionAfterAddingBeats(Timing timing, float musicPosition, float numberOfBeats)
+    private static float GetMusicPositionAfterAddingBeats(Timing timing, float musicPositionFrom, float numberOfBeats)
     {
-        //WIP
-        return 0;
+        int lastMeasure = timing.GetLastMeasure();
+
+        float currentMusicPosition = musicPositionFrom;
+        float beatsLeftToAdd = numberOfBeats;
+
+        for (int measure = (int)musicPositionFrom; measure <= lastMeasure; measure++)
+        {
+            float distancePerBeat = timing.GetDistancePerBeat(measure);
+            int nextMeasure = (measure + 1);
+            float distanceToNextMeasure = nextMeasure - currentMusicPosition;
+            float beatsToNextPosition = distanceToNextMeasure / distancePerBeat;
+
+            if (beatsLeftToAdd <= beatsToNextPosition)
+            {
+                currentMusicPosition += beatsLeftToAdd * distancePerBeat;
+                break;
+            }
+
+            beatsLeftToAdd -= beatsToNextPosition;
+            currentMusicPosition += 1;
+        }
+
+        return currentMusicPosition;
     }
 
     #endregion
@@ -656,7 +705,7 @@ public partial class Timing : Node, IMementoOriginator
             if (timingPoint.MusicPosition == null)
                 break;
 
-            float beatLengthMP = timing.GetBeatLength((float)timingPoint.MusicPosition);
+            float beatLengthMP = timing.GetDistancePerBeat((float)timingPoint.MusicPosition);
             float beatPosition = timing.GetOperatingBeatPosition((float)timingPoint.MusicPosition);
             //float? nextPointPosition = timingPoint?.NextTimingPoint?.MusicPosition;
             TimingPoint? nextTimingPoint = Timing.Instance.GetNextTimingPoint(timingPoint);

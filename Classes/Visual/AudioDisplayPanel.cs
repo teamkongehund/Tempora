@@ -343,8 +343,8 @@ public partial class AudioDisplayPanel : Control
 
         bool canHeldTimingPointBeInSegment = (heldTimingPoint == null)
             || (
-                Timing.Instance.CanTimingPointMusicPositionBeThis(heldTimingPoint, musicPositionStart, out var _)
-                || Timing.Instance.CanTimingPointMusicPositionBeThis(heldTimingPoint, musicPositionEnd, out var _)
+                Timing.Instance.CanTimingPointGoHere(heldTimingPoint, musicPositionStart, out var _)
+                || Timing.Instance.CanTimingPointGoHere(heldTimingPoint, musicPositionEnd, out var _)
                 )
             || (Time.GetTicksMsec() - heldTimingPoint.SystemTimeWhenCreatedMsec) < 30; ;
 
