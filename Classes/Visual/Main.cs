@@ -3,6 +3,7 @@ using System.Linq;
 using Godot;
 using Tempora.Classes.Audio;
 using Tempora.Classes.Utility;
+using Tempora.Classes.TimingClasses;
 
 // Tempora
 

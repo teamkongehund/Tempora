@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Godot;
 using Tempora.Classes.Utility;
+using Tempora.Classes.TimingClasses;
 
 namespace Tempora.Classes.Visual;
 
@@ -33,12 +34,6 @@ public partial class AudioVisualsContainer : VBoxContainer
             nominalMusicPositionStartForTopBlock = value;
             UpdateBlocksScroll();
         }
-    }
-
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-    {
-
     }
 
     public override void _GuiInput(InputEvent @event)

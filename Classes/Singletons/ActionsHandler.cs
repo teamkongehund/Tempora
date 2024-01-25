@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Godot;
 using GD = Tempora.Classes.DataTools.GD;
+using Tempora.Classes.TimingClasses;
 
 namespace Tempora.Classes.Utility;
 

@@ -25,7 +25,7 @@ buses/default_bus_layout="res://Classes/Audio/default_bus_layout.tres"
 
 Signals="*res://Classes/Singletons/Signals.tscn"
 Project="*res://Classes/Singletons/Project.tscn"
-Timing="*res://Classes/Utility/Timing.tscn"
+Timing="*res://Classes/TimingClasses/Timing.tscn"
 Settings="*res://Classes/Singletons/Settings.tscn"
 Context="*res://Classes/Singletons/Context.tscn"
 ProjectFileManager="*res://Classes/Singletons/ProjectFileManager.tscn"

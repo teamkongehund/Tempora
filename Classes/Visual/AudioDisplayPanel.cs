@@ -3,6 +3,7 @@ using System.Linq;
 using Godot;
 using GodotPlugins.Game;
 using Tempora.Classes.Utility;
+using Tempora.Classes.TimingClasses;
 
 namespace Tempora.Classes.Visual;
 
@@ -313,9 +314,8 @@ public partial class AudioDisplayPanel : Control
             TimingPoint timingPoint = Timing.Instance.TimingPoints[i];
 
             bool isNextPointOutOfRange = (i + 1 >= Timing.Instance.TimingPoints.Count);
-            bool isNextPointOutsideOfPanel = isNextPointOutOfRange 
-                ? true 
-                : (Timing.Instance.TimingPoints[i + 1].MusicPosition > ActualMusicPositionEndForPanel);
+            bool isNextPointOutsideOfPanel = isNextPointOutOfRange
+                || (Timing.Instance.TimingPoints[i + 1].MusicPosition > ActualMusicPositionEndForPanel);
 
             float waveSegmentStartTime = Timing.Instance.TimingPoints[i].Offset;
             float waveSegmentEndTime = isNextPointOutsideOfPanel ? timeWherePanelEnds : Timing.Instance.TimingPoints[i + 1].Offset;

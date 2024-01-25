@@ -1,5 +1,5 @@
 using Godot;
-using Tempora.Classes.Utility;
+using Tempora.Classes.TimingClasses;
 using Color = Godot.Color;
 
 namespace Tempora.Classes.Visual;

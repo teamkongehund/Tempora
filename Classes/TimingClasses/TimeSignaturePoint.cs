@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-namespace Tempora.Classes.Utility;
+namespace Tempora.Classes.TimingClasses;
 
 public partial class TimeSignaturePoint(int[] timeSignature, int musicPosition) : Node, IComparable<TimeSignaturePoint>, ICloneable
 {

@@ -1,7 +1,8 @@
 using System;
 using Godot;
+using Tempora.Classes.Utility;
 
-namespace Tempora.Classes.Utility;
+namespace Tempora.Classes.TimingClasses;
 
 /// <summary>
 /// A data class which asserts that a specific point in time (<see cref="Offset"/>)

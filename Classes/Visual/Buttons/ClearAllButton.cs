@@ -1,5 +1,6 @@
 using Godot;
 using Tempora.Classes.Utility;
+using Tempora.Classes.TimingClasses;
 
 namespace Tempora.Classes.Visual;
 
