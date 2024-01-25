@@ -85,11 +85,10 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 5
 
-[node name="GridScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/SettingsSlidersVBox" node_paths=PackedStringArray("audioPlayer") instance=ExtResource("10_4hwef")]
+[node name="GridScrollBar" parent="HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/SettingsSlidersVBox" instance=ExtResource("10_4hwef")]
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("7_i2h88")
-audioPlayer = NodePath("")
 title = "Grid"
 minValue = 1.0
 maxValue = 8.0

@@ -72,6 +72,8 @@ public partial class Timing : Node, IMementoOriginator
     #region Timing modification
 
     #region Event connections and responses
+    public event EventHandler TimeSignaturesChanged = null!;
+
     private void SubscribeToEvents(TimingPoint timingPoint)
     {
         if (timingPoint == null)
@@ -262,14 +264,14 @@ public partial class Timing : Node, IMementoOriginator
 
         TimeSignaturePoint timeSignaturePoint;
 
-        if (foundTsPointIndex == -1)
+        if (foundTsPointIndex == -1) // None found at same position
         {
             timeSignaturePoint = new TimeSignaturePoint(timeSignature, musicPosition);
             TimeSignaturePoints.Add(timeSignaturePoint);
             TimeSignaturePoints.Sort();
             foundTsPointIndex = TimeSignaturePoints.FindIndex(point => point.MusicPosition == musicPosition);
         }
-        else
+        else // Update found point at position
         {
             timeSignaturePoint = TimeSignaturePoints[foundTsPointIndex];
             timeSignaturePoint.TimeSignature = timeSignature;
@@ -303,7 +305,39 @@ public partial class Timing : Node, IMementoOriginator
             TimingPoints[i].TimeSignature = timeSignature;
         }
 
+        TimeSignaturesChanged?.Invoke(this, new Signals.ObjectArgument<TimeSignaturePoint>(timeSignaturePoint));
         Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
+    }
+
+    /// <summary>
+    /// Takes all TimingPoints after the measure of the time signature point change and alter their music positions such that the number of beats to them is kept the same.
+    /// Requires this method to be run before the timing itself is changed, otherwise some of the methods used to get i.e. beats may be wrong.
+    /// </summary>
+    /// <param name="timeSignaturePoint"></param>
+    /// <exception cref="NullReferenceException"></exception>
+    private void ShiftTimingPointsUponTimeSignatureChange(TimeSignaturePoint timeSignaturePoint)
+    {
+        ArgumentNullException.ThrowIfNull(timeSignaturePoint);
+        TimingPoint? operatingTimingPoint = GetOperatingTimingPoint_ByMusicPosition(timeSignaturePoint.MusicPosition);
+        int opIndex = TimingPoints.IndexOf(operatingTimingPoint);
+        if (opIndex == -1)
+            return;
+
+        var newMusicPositions = new List<float>();
+
+        for (int i = opIndex; opIndex < TimingPoints.Count; i++)
+        {
+            TimingPoint? timingPoint = TimingPoints[i];
+            if (timingPoint == null)
+                throw new NullReferenceException(nameof(timingPoint));
+
+            if (TimingPoints[i].MusicPosition <= timeSignaturePoint.MusicPosition)
+                return;
+
+            // Get current number of beats to timing Point with previous timing
+
+        }
+
     }
 
     public bool CanTimingPointMusicPositionBeThis(TimingPoint? timingPoint, float musicPosition, out TimingPoint? rejectingTimingPoint)
@@ -519,6 +553,56 @@ public partial class Timing : Node, IMementoOriginator
         float lengthInSeconds = Project.Instance.AudioFile.SampleIndexToSeconds(Project.Instance.AudioFile.AudioData.Length - 1);
         float lastMeasure = TimeToMusicPosition(lengthInSeconds);
         return (int)lastMeasure;
+    }
+
+    private float GetBeatsBetweenMusicPositions(float musicPositionFrom, float musicPositionTo)
+    {
+        return GetBeatsBetweenMusicPositions(this, musicPositionFrom, musicPositionTo);
+    }
+
+    /// <summary>
+    /// Static version to make the method safer to use while the timing is being changed. 
+    /// I.e. clone the timing first and parse it as <see cref="timing"/> to use the method without worrying that the timing has changed meanwhile.
+    /// </summary>
+    /// <returns></returns>
+    private static float GetBeatsBetweenMusicPositions(Timing timing, float musicPositionFrom, float musicPositionTo)
+    {
+        if (musicPositionFrom < musicPositionTo)
+        {
+            float tempValue = musicPositionFrom;
+            musicPositionFrom = musicPositionTo;
+            musicPositionTo = tempValue;
+        }
+
+        float sum = 0;
+        float currentMusicPosition = musicPositionFrom;
+        // Go through every measure between them and add up the number of beats
+        for (int measure = (int)musicPositionFrom; measure <= (int)(musicPositionTo + 1); measure++)
+        {
+            float beatLength = timing.GetBeatLength(measure);
+            float nextPosition = (musicPositionTo < measure + 1) ? musicPositionTo : (measure + 1);
+            float distanceToNextPosition = nextPosition - currentMusicPosition;
+            float beatsToNextPosition = distanceToNextPosition / beatLength;
+            sum += beatsToNextPosition;
+
+            if (nextPosition == musicPositionTo)
+                continue;
+
+            currentMusicPosition = nextPosition;
+        }
+
+        return sum;
+    }
+
+    private float GetMusicPositionAfterAddingBeats(float musicPosition, float numberOfBeats)
+    {
+        return GetMusicPositionAfterAddingBeats(this, musicPosition, numberOfBeats);
+    }
+
+    private static float GetMusicPositionAfterAddingBeats(Timing timing, float musicPosition, float numberOfBeats)
+    {
+        //WIP
+        return 0;
     }
 
     #endregion
