@@ -95,6 +95,8 @@ public partial class Timing : Node, IMementoOriginator
 
         int foundTsPointIndex = TimeSignaturePoints.FindIndex(point => point.MusicPosition == musicPosition);
 
+        Timing oldTiming = CopyTiming(this);
+
         TimeSignaturePoint timeSignaturePoint;
 
         if (foundTsPointIndex == -1) // None found at same position
@@ -138,7 +140,8 @@ public partial class Timing : Node, IMementoOriginator
             TimingPoints[i].TimeSignature = timeSignature;
         }
 
-        TimeSignaturesChanged?.Invoke(this, new Signals.ObjectArgument<TimeSignaturePoint>(timeSignaturePoint));
+        //ShiftTimingPointsUponTimeSignatureChange(oldTiming, timeSignaturePoint);
+
         Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
     }
 
@@ -164,6 +167,8 @@ public partial class Timing : Node, IMementoOriginator
 
         var newMusicPositions = new List<float>();
 
+        Timing emptyTiming = new Timing(); // Used to avoid timing point rejcting changes
+
         for (int i = opIndex; opIndex < TimingPoints.Count; i++)
         {
             TimingPoint? timingPoint = TimingPoints[i];
@@ -178,9 +183,12 @@ public partial class Timing : Node, IMementoOriginator
 
             // Get current number of beats to timing Point with previous timing
             float beatsFromTheMeasureChangingToTimingPoint 
-                = GetBeatsBetweenMusicPositions(timeSignaturePoint.MusicPosition, (float)timingPoint.MusicPosition);
+                = GetBeatsBetweenMusicPositions(oldTiming, timeSignaturePoint.MusicPosition, (float)timingPoint.MusicPosition);
 
-            // TODO: Write from here
+            // Get new music position for this timing point
+            float newMusicPosition = GetMusicPositionAfterAddingBeats(oldTiming, (float)timingPoint.MusicPosition, beatsFromTheMeasureChangingToTimingPoint);
+
+            timingPoint.MusicPosition_Set(newMusicPosition, emptyTiming);
         }
 
         UpdateAllTimingPointsMPS();

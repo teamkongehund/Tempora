@@ -4,8 +4,6 @@ using Tempora.Classes.Utility;
 namespace Tempora.Classes.TimingClasses;
 public partial class Timing
 {
-    public event EventHandler TimeSignaturesChanged = null!;
-
     private void SubscribeToEvents(TimingPoint timingPoint)
     {
         if (timingPoint == null)

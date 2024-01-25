@@ -8,23 +8,21 @@ public partial class Timing
 {
     public static Timing CopyAndAddExtraPoints(Timing timing)
     {
-        var newTiming = new Timing
-        {
-            TimingPoints = CloneUtility.CloneList<TimingPoint>(timing.timingPoints),
-            TimeSignaturePoints = CloneUtility.CloneList<TimeSignaturePoint>(timing.TimeSignaturePoints)
-        };
+        var newTiming = CopyTiming(timing);
+        AddExtraPointsOnDownbeats(timing, newTiming);
+        AddExtraPointsOnQuarterNotes(timing, newTiming);
+        return newTiming;
+    }
 
-        // Add extra downbeat timing points
+    private static void AddExtraPointsOnDownbeats(Timing oldTiming, Timing newTiming)
+    {
         var downbeatPositions = new List<int>();
-        foreach (TimingPoint timingPoint in timing.TimingPoints)
+        foreach (TimingPoint timingPoint in oldTiming.TimingPoints)
         {
             if (timingPoint?.MusicPosition == null)
                 break;
-            //if (timingPoint.NextTimingPoint == null) break;
             if (timingPoint.MusicPosition % 1 == 0)
                 continue; // downbeat point on next is unnecessary
-            //if (timingPoint.NextTimingPoint != null && (int)(timingPoint?.NextTimingPoint.MusicPosition) == (int)timingPoint.MusicPosition) continue; // next timing point is in same measure
-            //if (timingPoint.NextTimingPoint != null && timingPoint.NextTimingPoint.MusicPosition == (int)timingPoint.MusicPosition + 1) continue; // downbeat point on next measure already exists
             TimingPoint? nextTimingPoint = Timing.Instance.GetNextTimingPoint(timingPoint);
             if (nextTimingPoint?.MusicPosition != null && (int)nextTimingPoint.MusicPosition == (int)timingPoint.MusicPosition)
                 continue; // next timing point is in same measure
@@ -37,28 +35,26 @@ public partial class Timing
             float time = newTiming.MusicPositionToTime(downbeat);
             newTiming.AddTimingPoint(downbeat, time);
         }
+    }
 
+    private static void AddExtraPointsOnQuarterNotes(Timing oldTiming, Timing newTiming)
+    {
         // Add extra quarter-note timing points
         var quaterNotePositions = new List<float>();
         foreach (TimingPoint timingPoint in newTiming.TimingPoints)
         {
             if (timingPoint == null)
                 break;
-            //if (timingPoint.NextTimingPoint == null) break;
             if (timingPoint.MusicPosition == null)
                 break;
 
-            float beatLengthMP = timing.GetDistancePerBeat((float)timingPoint.MusicPosition);
-            float beatPosition = timing.GetOperatingBeatPosition((float)timingPoint.MusicPosition);
-            //float? nextPointPosition = timingPoint?.NextTimingPoint?.MusicPosition;
+            float beatLengthMP = oldTiming.GetDistancePerBeat((float)timingPoint.MusicPosition);
+            float beatPosition = oldTiming.GetOperatingBeatPosition((float)timingPoint.MusicPosition);
             TimingPoint? nextTimingPoint = Timing.Instance.GetNextTimingPoint(timingPoint);
             float? nextPointPosition = nextTimingPoint?.MusicPosition;
 
             if (timingPoint.MusicPosition % beatLengthMP == 0)
                 continue; // is on quarter-note 
-            //if (timingPoint.NextTimingPoint != null 
-            //    && nextPointPosition <= beatPosition + beatLengthMP) 
-            //    continue; // next timing point is on or before next quarter-note
             if (nextTimingPoint != null
                 && nextPointPosition <= beatPosition + beatLengthMP)
             {
@@ -72,6 +68,15 @@ public partial class Timing
             float time = newTiming.MusicPositionToTime(quarterNote);
             newTiming.AddTimingPoint(quarterNote, time);
         }
+    }
+
+    public static Timing CopyTiming(Timing timing)
+    {
+        var newTiming = new Timing
+        {
+            TimingPoints = CloneUtility.CloneList<TimingPoint>(timing.timingPoints),
+            TimeSignaturePoints = CloneUtility.CloneList<TimeSignaturePoint>(timing.TimeSignaturePoints)
+        };
 
         return newTiming;
     }
