@@ -38,7 +38,7 @@ ArtistUnicode:
 Creator:
 Version:
 Source:
-Tags: tempora
+Tags: tempora_timer
 BeatmapID:0
 BeatmapSetID:-1
 
