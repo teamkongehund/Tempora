@@ -1,34 +1,68 @@
+using Godot;
+using NAudio.SoundFont;
 using System;
 using System.Linq;
-using Godot;
 using Tempora.Classes.Audio;
 using Tempora.Classes.Utility;
 
-namespace Tempora.Classes.Visual;
-
-public partial class LoadButton : Button
+public partial class FileMenu : PopupMenu
 {
     [Export]
-    AudioPlayer audioPlayer = null!;
-    
+    private FileDialog saveFileDialog = null!;
+
     [Export]
     private FileDialog loadFileDialog = null!;
 
+    [Export]
+    private AudioPlayer audioPlayer = null!;
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
-    {
-        Pressed += OnPressed;
-        loadFileDialog.FileSelected += OnFileSelected;
+	{
+        IdPressed += OnIdPressed;
+        saveFileDialog.FileSelected += OnSaveFilePathSelected;
+        loadFileDialog.FileSelected += OnLoadFilePathSelected;
     }
 
-    private void OnPressed()
+    private void OnIdPressed(long id)
+    {
+        switch (id)
+        {
+            case 0:
+                LoadFileDialogPopup();
+                break;
+            case 1:
+                SaveFileDialogPopup();
+                break;
+            case 3:
+                OsuExporter.ExportOsz();
+                break;
+        }
+    }
+
+    #region Save File
+    private void SaveFileDialogPopup()
+    {
+        saveFileDialog.CurrentDir = Settings.Instance.ProjectFilesDirectory;
+        saveFileDialog.Popup();
+    }
+    private void OnSaveFilePathSelected(string selectedPath)
+    {
+        ProjectFileManager.SaveProjectAs(selectedPath);
+
+        string dir = FileHandler.GetDirectory(selectedPath);
+        Settings.Instance.ProjectFilesDirectory = dir;
+    }
+    #endregion
+
+    #region Load File
+    private void LoadFileDialogPopup()
     {
         loadFileDialog.CurrentDir = Settings.Instance.ProjectFilesDirectory;
         loadFileDialog.Popup();
     }
-    //private void OnFileSelected(string selectedPath) => FileHandler.CopyFile(PathToCopyFrom, selectedPath);
 
-    private void OnFileSelected(string selectedPath)
+    private void OnLoadFilePathSelected(string selectedPath)
     {
         string extension = FileHandler.GetExtension(selectedPath);
 
@@ -58,5 +92,8 @@ public partial class LoadButton : Button
 
         string dir = FileHandler.GetDirectory(selectedPath);
         Settings.Instance.ProjectFilesDirectory = dir;
-    }
+    } 
+    #endregion
+
+
 }

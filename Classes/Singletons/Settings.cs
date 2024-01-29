@@ -119,6 +119,8 @@ public partial class Settings : Node
 
     public bool MetronomeFollowsGrid = false;
 
+    public bool PreserveBpmOnTimeSignatureChanges = true;
+
     public static int DivisorToSlider(int divisor) => SliderToDivisorDict.FirstOrDefault(x => x.Value == divisor).Key;
 
     // Called when the node enters the scene tree for the first time.

@@ -29,6 +29,8 @@ public partial class Timing
             if (!IsInstantiating)
                 Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
         }
+
+        ActionsHandler.Instance.AddTimingMemento();
     }
 
     /// <summary>
@@ -45,6 +47,8 @@ public partial class Timing
 
         if (!IsInstantiating)
             Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
+
+        ActionsHandler.Instance.AddTimingMemento();
     }
 
     /// <summary>
@@ -79,6 +83,8 @@ public partial class Timing
         }
 
         timingPoint.IsInstantiating = false;
+
+        ActionsHandler.Instance.AddTimingMemento();
 
         Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
     }

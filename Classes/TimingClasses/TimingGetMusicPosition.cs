@@ -180,7 +180,7 @@ public partial class Timing
             }
 
             beatsLeftToAdd -= beatsToNextPosition;
-            currentMusicPosition = isAdding ? currentMusicPosition + 1 : currentMusicPosition - 1;
+            currentMusicPosition += distanceToNextMeasure;
 
             iteration++;
             if (iteration > 10000)

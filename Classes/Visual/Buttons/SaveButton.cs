@@ -5,23 +5,20 @@ namespace Tempora.Classes.Visual;
 
 public partial class SaveButton : Button
 {
-    private FileDialog fileDialog = null!;
+    [Export]
+    private FileDialog saveFileDialog = null!;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        fileDialog = GetNode<FileDialog>("FileDialog");
-
-        //ProjectFileManager.Instance.SaveProjectAs("user://savedProject.txt")
-
         Pressed += OnPressed;
-        fileDialog.FileSelected += OnFileSelected;
+        saveFileDialog.FileSelected += OnFileSelected;
     }
 
     private void OnPressed()
     {
-        fileDialog.CurrentDir = Settings.Instance.ProjectFilesDirectory;
-        fileDialog.Popup();
+        saveFileDialog.CurrentDir = Settings.Instance.ProjectFilesDirectory;
+        saveFileDialog.Popup();
     }
     //private void OnFileSelected(string selectedPath) => FileHandler.CopyFile(PathToCopyFrom, selectedPath);
 
