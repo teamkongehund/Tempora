@@ -123,13 +123,13 @@ public partial class Timing
     /// <returns></returns>
     private static float GetBeatsBetweenMusicPositions(Timing timing, float musicPositionFrom, float musicPositionTo)
     {
-        if (musicPositionFrom < musicPositionTo)
+        if (musicPositionFrom > musicPositionTo)
             (musicPositionTo, musicPositionFrom) = (musicPositionFrom, musicPositionTo);
 
         float sum = 0;
         float currentMusicPosition = musicPositionFrom;
         // Go through every measure between them and add up the number of beats
-        for (int measure = (int)musicPositionFrom; measure <= (int)(musicPositionTo + 1); measure++)
+        for (int measure = (int)musicPositionFrom; measure < (int)(musicPositionTo + 1); measure++)
         {
             float distancePerBeat = timing.GetDistancePerBeat(measure);
             float nextPosition = (musicPositionTo < measure + 1) ? musicPositionTo : (measure + 1);
@@ -138,7 +138,7 @@ public partial class Timing
             sum += beatsToNextPosition;
 
             if (nextPosition == musicPositionTo)
-                continue;
+                break;
 
             currentMusicPosition = nextPosition;
         }
@@ -151,28 +151,40 @@ public partial class Timing
         return GetMusicPositionAfterAddingBeats(this, musicPosition, numberOfBeats);
     }
 
-    private static float GetMusicPositionAfterAddingBeats(Timing timing, float musicPositionFrom, float numberOfBeats)
+    private static float GetMusicPositionAfterAddingBeats(Timing timing, float musicPositionFrom, float numberOfBeatsToAdd)
     {
+        if (numberOfBeatsToAdd == 0)
+            return musicPositionFrom;
+
         int lastMeasure = timing.GetLastMeasure();
 
         float currentMusicPosition = musicPositionFrom;
-        float beatsLeftToAdd = numberOfBeats;
+        float beatsLeftToAdd = numberOfBeatsToAdd;
 
-        for (int measure = (int)musicPositionFrom; measure <= lastMeasure; measure++)
+        bool isAdding = numberOfBeatsToAdd > 0;
+
+        int measure = (int) musicPositionFrom;
+        int iteration = 0;
+
+        while (isAdding ? beatsLeftToAdd > 0 : beatsLeftToAdd < 0) 
         {
             float distancePerBeat = timing.GetDistancePerBeat(measure);
-            int nextMeasure = (measure + 1);
+            int nextMeasure = (measure = isAdding ? measure + 1 : measure - 1);
             float distanceToNextMeasure = nextMeasure - currentMusicPosition;
             float beatsToNextPosition = distanceToNextMeasure / distancePerBeat;
 
-            if (beatsLeftToAdd <= beatsToNextPosition)
+            if (Math.Abs(beatsLeftToAdd) <= Math.Abs(beatsToNextPosition))
             {
                 currentMusicPosition += beatsLeftToAdd * distancePerBeat;
                 break;
             }
 
             beatsLeftToAdd -= beatsToNextPosition;
-            currentMusicPosition += 1;
+            currentMusicPosition = isAdding ? currentMusicPosition + 1 : currentMusicPosition - 1;
+
+            iteration++;
+            if (iteration > 10000)
+                throw new OverflowException("Too many iterations!");
         }
 
         return currentMusicPosition;

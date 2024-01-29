@@ -22,10 +22,10 @@ public partial class VisualTimingPoint : Node2D
     [Export]
     private Timer flashTimer = null!;
 
-    private Vector2 defaultSize = new Vector2(128, 128);
+    private Vector2 defaultSize = new(128, 128);
     private Vector2 LargerSize => defaultSize * 1.5f;
-    private Color defaultColor = new Color("ff990096");
-    private Color red = new Color("ff000096");
+    private Color defaultColor = new("ff990096");
+    private Color red = new("ff000096");
 
     //private ulong SystemTimeWhenCreated;
 
@@ -37,16 +37,19 @@ public partial class VisualTimingPoint : Node2D
         {
             if (timingPoint == value)
                 return;
+            if (timingPoint != null)
+                timingPoint.Changed -= OnTimingPointChanged;
             timingPoint = value;
-            SubscribeToTimingPointEvents();
+            TimingPoint.Changed += OnTimingPointChanged;
+            //SubscribeToTimingPointEvents();
         }
     }
 
-    private void SubscribeToTimingPointEvents()
-    {
-        TimingPoint.Changed += OnTimingPointChanged;
-        //TimingPoint.MusicPositionChangeRejected += OnMusicPositionChangeRejected;
-    }
+    //private void SubscribeToTimingPointEvents()
+    //{
+    //    TimingPoint.Changed += OnTimingPointChanged;
+    //    //TimingPoint.MusicPositionChangeRejected += OnMusicPositionChangeRejected;
+    //}
 
     public VisualTimingPoint(TimingPoint timingPoint)
     {
@@ -63,7 +66,7 @@ public partial class VisualTimingPoint : Node2D
 
         //SystemTimeWhenCreated = Time.GetTicksMsec();
 
-        SubscribeToTimingPointEvents();
+        //SubscribeToTimingPointEvents();
 
         //VisibilityChanged += OnVisibilityChanged;
 

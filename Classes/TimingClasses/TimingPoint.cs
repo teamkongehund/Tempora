@@ -114,7 +114,12 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
         }
     }
 
-    public void MusicPosition_Set(float value, Timing timing)
+    /// <summary>
+    /// Attempt to set <see cref="TimingPoint.MusicPosition"/>.
+    /// <param name="value">The value to set</param>
+    /// <param name="timing">If any <see cref="TimingPoint"/>s from this timing instance conflict with the new Music Position, the change is rejected</param>
+    /// <returns>Whether the operation was successful.</returns>
+    public bool MusicPosition_Set(float value, Timing timing)
     {
         bool isValid = timing.CanTimingPointGoHere(this, value, out TimingPoint? rejectingTimingPoint);
 
@@ -123,6 +128,8 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 
         if (isValid)
             MusicPosition = value;
+
+        return isValid;
     }
     #endregion
 

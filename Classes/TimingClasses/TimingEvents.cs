@@ -47,5 +47,8 @@ public partial class Timing
         timingPoint.MeasuresPerSecond_Set(this);
         if (!timingPoint.IsInstantiating)
             GetPreviousTimingPoint(timingPoint)?.MeasuresPerSecond_Set(this);
+        TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
+        if (!timingPoint.IsInstantiating && nextTimingPoint == TimingPoints[^1])
+            nextTimingPoint?.MeasuresPerSecond_Set(this);
     }
 }

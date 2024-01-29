@@ -14,7 +14,18 @@ namespace Tempora.Classes.TimingClasses;
 public partial class Timing : Node, IMementoOriginator
 {
     // Called when the node enters the scene tree for the first time.
-    public override void _Ready() => Instance = this;
+    public override void _Ready()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            Name = "The Timing Singleton";
+        }
+        else
+        {
+            throw new Exception("A new Timing instance tried to enter the Godot scene tree despite a Timing singleton already exisiting");
+        }
+    }
 
     #region Properties & Signals
 
@@ -140,7 +151,7 @@ public partial class Timing : Node, IMementoOriginator
             TimingPoints[i].TimeSignature = timeSignature;
         }
 
-        //ShiftTimingPointsUponTimeSignatureChange(oldTiming, timeSignaturePoint);
+        ShiftTimingPointsUponTimeSignatureChange(oldTiming, timeSignaturePoint);
 
         Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
     }
@@ -152,6 +163,46 @@ public partial class Timing : Node, IMementoOriginator
     /// <param name="timeSignaturePoint"></param>
     /// <param name="oldTiming">Timing instance before the change occured</param>
     /// <exception cref="NullReferenceException"></exception>
+    //private void ShiftTimingPointsUponTimeSignatureChange(Timing oldTiming, TimeSignaturePoint timeSignaturePoint)
+    //{
+    //    ArgumentNullException.ThrowIfNull(timeSignaturePoint);
+    //    TimingPoint? operatingTimingPoint = GetOperatingTimingPoint_ByMusicPosition(timeSignaturePoint.MusicPosition);
+    //    if (operatingTimingPoint == null)
+    //        throw new NullReferenceException(nameof(operatingTimingPoint));
+
+    //    int opIndex = TimingPoints.IndexOf(operatingTimingPoint);
+    //    if (opIndex == -1)
+    //        return;
+
+    //    IsBatchOperatingInProgress = true;
+
+    //    var newMusicPositions = new List<float>();
+
+    //    Timing emptyTiming = new Timing(); // Used to avoid timing points rejecting changes
+
+    //    for (int i = opIndex; i < TimingPoints.Count; i++)
+    //    {
+    //        TimingPoint? timingPoint = TimingPoints[i];
+    //        if (timingPoint?.MusicPosition == null)
+    //            throw new NullReferenceException(nameof(timingPoint));
+
+    //        if (timingPoint.MusicPosition <= timeSignaturePoint.MusicPosition)
+    //            continue;
+
+    //        // Get current number of beats to timing Point with previous timing
+    //        float beatsFromTheMeasureChangingToTimingPoint
+    //            = GetBeatsBetweenMusicPositions(oldTiming, timeSignaturePoint.MusicPosition, (float)timingPoint.MusicPosition);
+
+    //        // Get new music position for this timing point
+    //        float newMusicPosition = GetMusicPositionAfterAddingBeats(oldTiming, (float)timingPoint.MusicPosition, beatsFromTheMeasureChangingToTimingPoint);
+
+    //        timingPoint.MusicPosition_Set(newMusicPosition, emptyTiming);
+    //    }
+
+    //    UpdateAllTimingPointsMPS();
+    //    IsBatchOperatingInProgress = false;
+    //}
+
     private void ShiftTimingPointsUponTimeSignatureChange(Timing oldTiming, TimeSignaturePoint timeSignaturePoint)
     {
         ArgumentNullException.ThrowIfNull(timeSignaturePoint);
@@ -163,36 +214,74 @@ public partial class Timing : Node, IMementoOriginator
         if (opIndex == -1)
             return;
 
-        IsBatchOperatingInProgress = true;
-
-        var newMusicPositions = new List<float>();
-
-        Timing emptyTiming = new Timing(); // Used to avoid timing point rejcting changes
-
-        for (int i = opIndex; opIndex < TimingPoints.Count; i++)
+        float getNewMusicPosition(TimingPoint? timingPoint)
         {
-            TimingPoint? timingPoint = TimingPoints[i];
-            if (timingPoint == null)
+            if (timingPoint?.MusicPosition == null)
                 throw new NullReferenceException(nameof(timingPoint));
 
-            if (TimingPoints[i].MusicPosition <= timeSignaturePoint.MusicPosition)
-                return;
-
-            if (timingPoint.MusicPosition == null)
-                continue; 
-
-            // Get current number of beats to timing Point with previous timing
-            float beatsFromTheMeasureChangingToTimingPoint 
+            // Get number of beats from time signature change to timingPoint's old musicPosition using previous timing
+            // This should be kept constant
+            float beatDifference_OldTiming
                 = GetBeatsBetweenMusicPositions(oldTiming, timeSignaturePoint.MusicPosition, (float)timingPoint.MusicPosition);
 
-            // Get new music position for this timing point
-            float newMusicPosition = GetMusicPositionAfterAddingBeats(oldTiming, (float)timingPoint.MusicPosition, beatsFromTheMeasureChangingToTimingPoint);
+            float beatDifference_NewTiming
+                = GetBeatsBetweenMusicPositions(this, timeSignaturePoint.MusicPosition, (float)timingPoint.MusicPosition);
 
-            timingPoint.MusicPosition_Set(newMusicPosition, emptyTiming);
+            float beatsToAdd = beatDifference_OldTiming - beatDifference_NewTiming;
+
+            // Get new music position for this timing point
+            float newMusicPosition = GetMusicPositionAfterAddingBeats(this, (float)timingPoint.MusicPosition, beatsToAdd);
+
+            return newMusicPosition;
         }
 
-        UpdateAllTimingPointsMPS();
-        IsBatchOperatingInProgress = false;
+        BatchChangeMusicPosition(opIndex, TimingPoints.Count - 1, getNewMusicPosition);
+    }
+
+    /// <summary>
+    /// Delegate that defines what a new music position should be for a timing point.
+    /// <param name="timingPoint"></param>
+    /// <returns></returns>
+    private delegate float GetNewMusicPositionDelegate(TimingPoint? timingPoint);
+
+    /// <summary>
+    /// Changes the music positions of all <see cref="TimingPoint"/>s from <see cref="TimingPoints"/>[lowerIndex] to and including <see cref="TimingPoints"/>[higherIndex].
+    /// </summary>
+    /// <param name="getNewMusicPosition">Delegate method used to calculate the new music position</param>
+    /// <exception cref="NullReferenceException"></exception>
+    private void BatchChangeMusicPosition(int lowerIndex, int higherIndex, GetNewMusicPositionDelegate getNewMusicPosition)
+    {
+        if (lowerIndex > higherIndex)
+            (lowerIndex, higherIndex) = (higherIndex, lowerIndex);
+
+        if (higherIndex >= TimingPoints.Count)
+            higherIndex = TimingPoints.Count - 1;
+
+        if (lowerIndex < 0)
+            lowerIndex = 0;
+
+        bool willMusicPositionsIncrease = true;
+        if (higherIndex >= lowerIndex + 1)
+            willMusicPositionsIncrease = getNewMusicPosition(TimingPoints[lowerIndex + 1]) > TimingPoints[lowerIndex + 1].MusicPosition;
+
+        // If the change decreases the music position, iterate forwards (less likely to trigger rejections).
+        // Vice versa for increases
+        int startIndex = willMusicPositionsIncrease ? higherIndex : lowerIndex;
+        for (int i = startIndex
+            ; willMusicPositionsIncrease ? i >= lowerIndex : i <= higherIndex
+            ; i = willMusicPositionsIncrease ? i-1 : i+1)
+        {
+            TimingPoint? timingPoint = TimingPoints[i];
+            if (timingPoint?.MusicPosition == null)
+                throw new NullReferenceException(nameof(timingPoint));
+
+            bool isMusicPositionValid = timingPoint.MusicPosition_Set(getNewMusicPosition(timingPoint), this);
+            if (!isMusicPositionValid)
+            {
+                GD.Print("Music Position change failed. Stopping batch operation.");
+                break;
+            }
+        }
     }
 
     /// <summary>
