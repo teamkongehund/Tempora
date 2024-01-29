@@ -3,7 +3,7 @@ using Tempora.Classes.Audio;
 
 namespace Tempora.Classes.Visual;
 
-public partial class PlaybackRateScrollBar : LabeledScrollbar
+public partial class PlaybackRateScrollBar : LabeledScrollbarHorizontal
 {
     [Export] private AudioPlayer audioPlayer = null!;
 

@@ -2,7 +2,7 @@ using Tempora.Classes.Utility;
 
 namespace Tempora.Classes.Visual;
 
-public partial class BlockAmountScrollBar : LabeledScrollbar
+public partial class BlockAmountScrollBar : LabeledScrollbarHorizontal
 {
     protected override void UpdateValueLabel() => valueLabel.Text = ((int)hScrollBar.Value).ToString();
 

@@ -3,7 +3,7 @@ using Godot;
 
 namespace Tempora.Classes.Visual;
 
-public partial class VolumeSlider : VScrollBar
+public partial class VolumeSlider : HScrollBar
 {
     private int busIndex;
     [Export] public string BusName = null!;
@@ -15,14 +15,23 @@ public partial class VolumeSlider : VScrollBar
         ValueChanged += OnValueChanged;
 
         float invertedValue = Mathf.DbToLinear(AudioServer.GetBusVolumeDb(busIndex));
-        Value = Math.Abs(1 - invertedValue);
+        //Value = Math.Abs(1 - invertedValue);
+
+        Value = invertedValue;
     }
+
+    //private void OnValueChanged(double value)
+    //{
+    //    double invertedValue = Math.Abs(1 - value);
+    //    AudioServer.SetBusVolumeDb(
+    //        busIndex,
+    //        Mathf.LinearToDb((float)invertedValue));
+    //}
 
     private void OnValueChanged(double value)
     {
-        double invertedValue = Math.Abs(1 - value);
         AudioServer.SetBusVolumeDb(
             busIndex,
-            Mathf.LinearToDb((float)invertedValue));
+            Mathf.LinearToDb((float)value));
     }
 }

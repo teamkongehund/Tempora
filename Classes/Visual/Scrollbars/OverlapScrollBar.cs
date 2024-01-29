@@ -2,7 +2,7 @@ using Tempora.Classes.Utility;
 
 namespace Tempora.Classes.Visual;
 
-public partial class OverlapScrollBar : LabeledScrollbar
+public partial class OverlapScrollBar : LabeledScrollbarHorizontal
 {
     protected override void UpdateValueLabel() => valueLabel.Text = (hScrollBar.Value * 100).ToString("0") + " %";
 

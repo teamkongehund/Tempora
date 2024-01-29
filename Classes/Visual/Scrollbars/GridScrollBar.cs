@@ -4,7 +4,7 @@ using Tempora.Classes.Utility;
 
 namespace Tempora.Classes.Visual;
 
-public partial class GridScrollBar : LabeledScrollbar
+public partial class GridScrollBar : LabeledScrollbarHorizontal
 {
     [Export] private AudioPlayer audioPlayer = null!;
 

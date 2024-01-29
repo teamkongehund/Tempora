@@ -11,9 +11,9 @@
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/VolumeSlider.cs" id="6_w0n8n"]
 [ext_resource type="Script" path="res://Classes/Visual/OptionsMenu.cs" id="7_1c6ke"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/GridScrollBar.cs" id="7_i2h88"]
+[ext_resource type="PackedScene" uid="uid://dlxwsp2735blf" path="res://Classes/Visual/Scrollbars/LabeledScrollbarHorizontal.tscn" id="8_6ej7c"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/PlaybackRateScrollBar.cs" id="8_6jrsb"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/BlockAmountScrollBar.cs" id="9_22ufa"]
-[ext_resource type="PackedScene" uid="uid://b4x6i8hh1c304" path="res://Classes/Visual/Scrollbars/LabeledScrollbar.tscn" id="10_4hwef"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/OffsetScrollBar.cs" id="10_yfm4l"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/OverlapScrollBar.cs" id="13_wubaw"]
 [ext_resource type="Script" path="res://Classes/Visual/VersionLabel.cs" id="16_j6b0h"]
@@ -62,6 +62,7 @@ grow_vertical = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
+theme_override_constants/separation = 30
 
 [node name="MenuBar" type="MenuBar" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
@@ -103,166 +104,135 @@ item_1/checkable = 1
 item_1/id = 1
 script = ExtResource("7_1c6ke")
 
-[node name="HSplitContainer" type="HSplitContainer" parent="VBoxContainer"]
-z_index = 1
+[node name="SettingsHBox" type="HBoxContainer" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
-size_flags_vertical = 3
+theme_override_constants/separation = 20
 
-[node name="LeftHandMenuMarginContainer" type="MarginContainer" parent="VBoxContainer/HSplitContainer"]
+[node name="GridScrollBar" parent="VBoxContainer/HBoxContainer/SettingsHBox" node_paths=PackedStringArray("audioPlayer") instance=ExtResource("8_6ej7c")]
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 0.05
-mouse_filter = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 0
-theme_override_constants/margin_bottom = 10
-
-[node name="VSplitContainer" type="VSplitContainer" parent="VBoxContainer/HSplitContainer/LeftHandMenuMarginContainer"]
-layout_mode = 2
-
-[node name="VSplitContainer" type="VSplitContainer" parent="VBoxContainer/HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="SettingsSlidersVBox" type="VBoxContainer" parent="VBoxContainer/HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_constants/separation = 5
-
-[node name="GridScrollBar" parent="VBoxContainer/HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/SettingsSlidersVBox" instance=ExtResource("10_4hwef")]
-layout_mode = 2
-size_flags_vertical = 3
 script = ExtResource("7_i2h88")
+audioPlayer = NodePath("../../../../AudioPlayer")
 title = "Grid"
 minValue = 1.0
 maxValue = 8.0
+step = 1.0
 
-[node name="PlaybackRateScrollBar" parent="VBoxContainer/HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/SettingsSlidersVBox" node_paths=PackedStringArray("audioPlayer") instance=ExtResource("10_4hwef")]
+[node name="PlaybackRateScrollBar2" parent="VBoxContainer/HBoxContainer/SettingsHBox" node_paths=PackedStringArray("audioPlayer") instance=ExtResource("8_6ej7c")]
 layout_mode = 2
-size_flags_vertical = 3
 script = ExtResource("8_6jrsb")
-audioPlayer = NodePath("../../../../../../../AudioPlayer")
+audioPlayer = NodePath("../../../../AudioPlayer")
 title = "Playback"
 minValue = 0.1
-maxValue = 1.0
-step = 0.01
 
-[node name="BlockAmountScrollBar" parent="VBoxContainer/HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/SettingsSlidersVBox" instance=ExtResource("10_4hwef")]
+[node name="BlockAmountScrollBar2" parent="VBoxContainer/HBoxContainer/SettingsHBox" instance=ExtResource("8_6ej7c")]
 layout_mode = 2
-size_flags_vertical = 3
 script = ExtResource("9_22ufa")
-title = "Blocks"
+title = "Rows"
 minValue = 1.0
+maxValue = 25.0
+step = 1.0
 
-[node name="OffsetScrollBar" parent="VBoxContainer/HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/SettingsSlidersVBox" instance=ExtResource("10_4hwef")]
+[node name="OffsetScrollBar2" parent="VBoxContainer/HBoxContainer/SettingsHBox" instance=ExtResource("8_6ej7c")]
 layout_mode = 2
-size_flags_vertical = 3
 script = ExtResource("10_yfm4l")
 title = "Offset"
 maxValue = 0.5
 step = 0.025
 
-[node name="OverlapScrollBar" parent="VBoxContainer/HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VSplitContainer/SettingsSlidersVBox" instance=ExtResource("10_4hwef")]
+[node name="OverlapScrollBar2" parent="VBoxContainer/HBoxContainer/SettingsHBox" instance=ExtResource("8_6ej7c")]
 layout_mode = 2
-size_flags_vertical = 3
 script = ExtResource("13_wubaw")
 title = "Overlap"
 maxValue = 0.25
-step = 0.01
 
-[node name="VolumeSlidersHBox" type="HBoxContainer" parent="VBoxContainer/HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer"]
-custom_minimum_size = Vector2(0, 150)
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_constants/separation = 7
-
-[node name="VolumeSliderMaster" type="VScrollBar" parent="VBoxContainer/HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VolumeSlidersHBox"]
+[node name="VolumeSlidersHBox" type="HBoxContainer" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-max_value = 1.0
-step = 0.001
-value = 1.0
-script = ExtResource("6_w0n8n")
-BusName = "Master"
-metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="VBoxContainer/HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VolumeSlidersHBox/VolumeSliderMaster"]
+[node name="VolumeSliderMusic" type="HScrollBar" parent="VBoxContainer/HBoxContainer/VolumeSlidersHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+max_value = 1.0
+script = ExtResource("6_w0n8n")
+BusName = "Music"
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/VolumeSlidersHBox/VolumeSliderMusic"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -9.5
-offset_top = 30.5
-offset_right = 53.5
-offset_bottom = 50.5
+offset_left = -20.5
+offset_top = -8.5
+offset_right = 20.5
+offset_bottom = 8.5
 grow_horizontal = 2
 grow_vertical = 2
-rotation = -1.5708
+theme_override_font_sizes/font_size = 12
+text = "Music
+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VolumeSliderMetronome" type="HScrollBar" parent="VBoxContainer/HBoxContainer/VolumeSlidersHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+max_value = 1.0
+script = ExtResource("6_w0n8n")
+BusName = "Metronome"
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/VolumeSlidersHBox/VolumeSliderMetronome"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.5
+offset_top = -8.5
+offset_right = 20.5
+offset_bottom = 8.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 12
+text = "Metronome
+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VolumeSliderMaster" type="HScrollBar" parent="VBoxContainer/HBoxContainer/VolumeSlidersHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+max_value = 1.0
+script = ExtResource("6_w0n8n")
+BusName = "Master"
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/VolumeSlidersHBox/VolumeSliderMaster"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.5
+offset_top = -8.5
+offset_right = 20.5
+offset_bottom = 8.5
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_font_sizes/font_size = 12
 text = "Master"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="VolumeSliderMusic" type="VScrollBar" parent="VBoxContainer/HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VolumeSlidersHBox"]
+[node name="HSplitContainer" type="HSplitContainer" parent="VBoxContainer"]
+z_index = 1
 layout_mode = 2
-size_flags_horizontal = 3
-max_value = 1.0
-step = 0.001
-value = 1.0
-script = ExtResource("6_w0n8n")
-BusName = "Music"
-metadata/_edit_group_ = true
-
-[node name="Label" type="Label" parent="VBoxContainer/HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VolumeSlidersHBox/VolumeSliderMusic"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -9.5
-offset_top = 30.5
-offset_right = 53.5
-offset_bottom = 50.5
-grow_horizontal = 2
-grow_vertical = 2
-rotation = -1.5708
-theme_override_font_sizes/font_size = 12
-text = "Music"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="VolumeSliderMetronome" type="VScrollBar" parent="VBoxContainer/HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VolumeSlidersHBox"]
-layout_mode = 2
-size_flags_horizontal = 3
-max_value = 1.0
-step = 0.001
-value = 1.0
-script = ExtResource("6_w0n8n")
-BusName = "Metronome"
-metadata/_edit_group_ = true
-
-[node name="Label" type="Label" parent="VBoxContainer/HSplitContainer/LeftHandMenuMarginContainer/VSplitContainer/VolumeSlidersHBox/VolumeSliderMetronome"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -10.5
-offset_top = 35.5
-offset_right = 58.5
-offset_bottom = 56.5
-grow_horizontal = 2
-grow_vertical = 2
-rotation = -1.5708
-theme_override_font_sizes/font_size = 12
-text = "Metronome"
-horizontal_alignment = 1
-vertical_alignment = 1
+size_flags_vertical = 3
 
 [node name="HSplitContainer" type="HSplitContainer" parent="VBoxContainer/HSplitContainer"]
 layout_mode = 2
@@ -274,7 +244,7 @@ custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
-theme_override_constants/margin_left = 0
+theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 0
 theme_override_constants/margin_bottom = 20
