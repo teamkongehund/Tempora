@@ -34,7 +34,7 @@ public partial class FileMenu : PopupMenu
             case 1:
                 SaveFileDialogPopup();
                 break;
-            case 3:
+            case 2:
                 OsuExporter.ExportOsz();
                 break;
         }
