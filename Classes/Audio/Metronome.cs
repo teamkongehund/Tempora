@@ -61,7 +61,7 @@ public partial class Metronome : Node
     private float triggerPosition;
     private float triggerTime;
 
-    public void FillBuffer(int maxBuffer = 4096)
+    private void FillBuffer(int maxBuffer = 4096)
     {
         if (playback is null) return;
         int framesAvailable = playback.GetFramesAvailable();
