@@ -32,14 +32,14 @@ script = ExtResource("1_n5xe1")
 defaultMP3 = ExtResource("2_klkb2")
 audioPlayer = NodePath("AudioPlayer")
 audioVisualsContainer = NodePath("VSplitContainer/HSplitContainer/HSplitContainer/AudioVisualsMarginContainer/AudioVisualsContainer")
-metronome = NodePath("Metronome")
+metronome = NodePath("AudioPlayer/Metronome")
 blockScrollBar = NodePath("VSplitContainer/HSplitContainer/HSplitContainer/BlockScrollBarMarginContainer/BlockScrollBar")
 metadata/_edit_lock_ = true
 
 [node name="AudioPlayer" parent="." instance=ExtResource("2_nrfju")]
 bus = &"Music"
 
-[node name="Metronome" parent="." instance=ExtResource("4_n2ir2")]
+[node name="Metronome" parent="AudioPlayer" instance=ExtResource("4_n2ir2")]
 
 [node name="ColorRect" type="ColorRect" parent="."]
 layout_mode = 1

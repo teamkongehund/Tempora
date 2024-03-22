@@ -106,7 +106,6 @@ public partial class Main : Control
         if (audioPlayer.Playing)
         {
             UpdatePlayHeads();
-            UpdateMetronome();
         }
     }
 
@@ -146,13 +145,6 @@ public partial class Main : Control
             audioDisplayPanel.Playhead.Position = new Vector2(x, 0.0f);
             audioDisplayPanel.Playhead.Visible = x >= 0 && x <= audioDisplayPanel.Size.X && audioPlayer.Playing;
         }
-    }
-
-    public void UpdateMetronome()
-    {
-        double playbackTime = audioPlayer.GetPlaybackTime();
-        float musicPosition = Timing.Instance.TimeToMusicPosition((float)playbackTime);
-        metronome.Click(musicPosition);
     }
 
     private void OnSeekPlaybackTime(object? sender, EventArgs e)

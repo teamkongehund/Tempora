@@ -10,6 +10,17 @@ public partial class AudioPlayer : AudioStreamPlayer
 
     //new public float VolumeDb; // Hides actual volume from other API's, so they can't mess with volume while fading.
 
+    public event Action<double>? Seeked;
+    public event Action? Played;
+    public event Action? Paused;
+    public event Action<float>? PitchScaleChanged;
+
+    public void SetPitchScale(float pitchScale)
+    {
+        PitchScale = pitchScale;
+        PitchScaleChanged?.Invoke(pitchScale);
+    }
+
     public double PlaybackTime
     {
         get => GetPlaybackTime();
@@ -43,15 +54,20 @@ public partial class AudioPlayer : AudioStreamPlayer
 
     private void OnAudioFileChanged(object? sender, EventArgs e) => LoadMp3();
 
-    public void Pause() =>
+    public void Pause()
+    {
         //PausePosition = GetPlaybackTime();
         Stop();
+        Paused?.Invoke();
+    }
 
     public double PauseTime;
     public void Resume()
     {
         Play();
         Seek((float)PauseTime);
+        Seeked?.Invoke(PauseTime);
+        Played?.Invoke();
     }
 
     public void PlayPause()
@@ -69,6 +85,8 @@ public partial class AudioPlayer : AudioStreamPlayer
         if (playbackTime < 0)
             playbackTime = 0;
         Seek(playbackTime);
+        Seeked?.Invoke(playbackTime);
+        Played?.Invoke();
     }
 
     private bool isTurnedDown = false;

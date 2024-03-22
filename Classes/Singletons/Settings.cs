@@ -117,7 +117,20 @@ public partial class Settings : Node
 
     private static readonly string[] separator = ["\r\n", "\r", "\n"];
 
-    public bool MetronomeFollowsGrid = false;
+
+    private bool metronomeFollowsGrid;
+
+    public bool MetronomeFollowsGrid
+    {
+        get => metronomeFollowsGrid;
+        set
+        {
+            if (metronomeFollowsGrid == value)
+                return;
+            metronomeFollowsGrid = value;
+            Signals.Instance.EmitEvent(Signals.Events.SettingsChanged);
+        }
+    }
 
     public bool PreserveBpmOnTimeSignatureChanges = true;
 

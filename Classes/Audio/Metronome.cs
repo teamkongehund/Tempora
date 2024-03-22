@@ -1,48 +1,183 @@
+using System;
+using System.IO;
 using Godot;
+using NAudio.Wave;
 using Tempora.Classes.Utility;
 using Tempora.Classes.TimingClasses;
+using FileAccess = Godot.FileAccess;
 
 namespace Tempora.Classes.Audio;
 
 public partial class Metronome : Node
 {
-    private AudioStreamPlayer click1 = null!;
-    private AudioStreamPlayer click2 = null!;
-
-    public bool On = true;
-    private float? previousMusicPosition;
-    private double previousPlaybackTime;
+    private AudioPlayer? audioPlayer;
 
     private float previousVolumeDb;
-    private bool isMuted = false;
+    private bool isMuted;
+
+    private AudioStreamPlayer audioStreamPlayer = null!;
+    private AudioStreamGenerator audioStreamGenerator = null!;
+    private AudioStreamGeneratorPlayback? playback; // Will hold the AudioStreamGeneratorPlayback.
+    private float bufferLength = 1f; // Maximum frame time until it becomes unable to keep the buffer filled
+    private float sampleHz = 44100;
+
+    private bool lastMetronomeFollowsGrid;
+    private int lastGridDivisor;
+
+    private Vector2[] click1Cache = null!;
+    private Vector2[] click2Cache = null!;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        click1 = GetNode<AudioStreamPlayer>("Click1");
-        click2 = GetNode<AudioStreamPlayer>("Click2");
+        click1Cache = CacheWavFile("res://Audio/Click1.wav");
+        click2Cache = CacheWavFile("res://Audio/Click2.wav");
+
+        audioPlayer = GetParentOrNull<AudioPlayer>();
+
+        audioStreamGenerator = new AudioStreamGenerator { BufferLength = bufferLength, MixRate = sampleHz };
+        audioStreamPlayer = new AudioStreamPlayer
+        {
+            Stream = audioStreamGenerator,
+            Bus = "Metronome",
+        };
+        AddChild(audioStreamPlayer);
+
+        if (audioPlayer is null) return;
+
+        audioPlayer.Played += StartPlayback;
+        audioPlayer.Seeked += SeekPlayback;
+        audioPlayer.Paused += StopPlayback;
+        audioPlayer.PitchScaleChanged += OnPitchScaleChanged;
+
+        Signals.Instance.SettingsChanged += OnSettingsChanged;
+        lastMetronomeFollowsGrid = Settings.Instance.MetronomeFollowsGrid;
+        lastGridDivisor = Settings.Instance.GridDivisor;
+    }
+
+    private ulong currentFrame;
+    private int clickFrames;
+    private bool primaryClick;
+    private float triggerPosition;
+    private float triggerTime;
+
+    public void FillBuffer(int maxBuffer = 4096)
+    {
+        if (playback is null) return;
+        int framesAvailable = playback.GetFramesAvailable();
+        var buffer = new Vector2[Mathf.Min(framesAvailable, maxBuffer)];
+        int bufferIndex = 0;
+
+        for (int i = 0; i < framesAvailable; i++)
+        {
+            float currentTime = currentFrame / sampleHz;
+
+            if (currentTime > triggerTime)
+            {
+                clickFrames = triggerPosition % 1 == 0 ? click1Cache.Length : click2Cache.Length;
+                primaryClick = triggerPosition % 1 == 0;
+                UpdateTriggerTime(currentTime);
+            }
+
+            if (clickFrames > 0)
+            {
+                buffer[bufferIndex] = primaryClick ? click1Cache[^clickFrames] : click2Cache[^clickFrames];
+                clickFrames--;
+            }
+            else
+            {
+                buffer[bufferIndex] = Vector2.Zero;
+            }
+
+            currentFrame++;
+            bufferIndex++;
+
+            if (bufferIndex >= buffer.Length)
+            {
+                playback.PushBuffer(buffer);
+                bufferIndex = 0;
+            }
+        }
+
+        if (bufferIndex > 0)
+            playback.PushBuffer(buffer[..bufferIndex]);
+    }
+
+    private void UpdateTriggerTime(float currentTime)
+    {
+        float musicPosition = Timing.Instance.TimeToMusicPosition(currentTime);
+        triggerPosition = GetTriggerPosition(musicPosition);
+        triggerTime = Timing.Instance.MusicPositionToTime(triggerPosition);
+    }
+
+    private void OnPitchScaleChanged(float value)
+    {
+        audioStreamPlayer.PitchScale = value;
+    }
+
+    private void StartPlayback()
+    {
+        if (playback is not null) return;
+        audioStreamPlayer.Play();
+        playback = (AudioStreamGeneratorPlayback)audioStreamPlayer.GetStreamPlayback();
+        FillBuffer();
+    }
+
+    private void SeekPlayback(double time)
+    {
+        currentFrame = (ulong)(time * sampleHz);
+        UpdateTriggerTime((float)time);
+        if (playback is null) return;
+        StopPlayback();
+        StartPlayback();
+    }
+
+    private void RefillBuffer()
+    {
+        if (playback is null) return;
+        SeekPlayback(audioPlayer!.PlaybackTime);
+    }
+
+    private void StopPlayback()
+    {
+        audioStreamPlayer.Stop();
+        playback = null;
+    }
+
+    public override void _Process(double delta)
+    {
+        FillBuffer();
+    }
+
+    private void OnSettingsChanged(object? sender, EventArgs e)
+    {
+        if (Settings.Instance.MetronomeFollowsGrid != lastMetronomeFollowsGrid)
+        {
+            lastMetronomeFollowsGrid = Settings.Instance.MetronomeFollowsGrid;
+            RefillBuffer();
+        }
+        if (Settings.Instance.GridDivisor != lastGridDivisor)
+        {
+            lastGridDivisor = Settings.Instance.GridDivisor;
+            RefillBuffer();
+        }
     }
 
     public override void _Input(InputEvent @event)
     {
         if (@event is InputEventKey keyEvent)
         {
-            if (keyEvent.Keycode == Key.A && keyEvent.Pressed && !isMuted)
+            if (keyEvent is { Keycode: Key.A, Pressed: true } && !isMuted)
             {
                 // Mute metronome
-                previousVolumeDb = click1.VolumeDb;
-
-                click1.VolumeDb = -60;
-                click2.VolumeDb = -60;
-
+                previousVolumeDb = audioStreamPlayer.VolumeDb;
+                audioStreamPlayer.VolumeDb = -60;
                 isMuted = true;
             }
-            else if (keyEvent.Keycode == Key.A && !keyEvent.Pressed && isMuted)
+            else if (keyEvent is { Keycode: Key.A, Pressed: false } && isMuted)
             {
                 // Restore metronome volume to previous
-                click1.VolumeDb = previousVolumeDb;
-                click2.VolumeDb = previousVolumeDb;
-
+                audioStreamPlayer.VolumeDb = previousVolumeDb;
                 isMuted = false;
             }
         }
@@ -51,23 +186,22 @@ public partial class Metronome : Node
     private static float GetTriggerPosition(float musicPosition)
     {
         return Settings.Instance.MetronomeFollowsGrid
-            ? Timing.Instance.GetOperatingGridPosition(musicPosition)
-            : Timing.Instance.GetOperatingBeatPosition(musicPosition);
+            ? Timing.Instance.GetNextOperatingGridPosition(musicPosition)
+            : Timing.Instance.GetNextOperatingBeatPosition(musicPosition);
     }
 
-    public void Click(float musicPosition)
+    private static Vector2[] CacheWavFile(string path)
     {
-        if (!On)
-            return;
-        float triggerPosition = GetTriggerPosition(musicPosition);
-        if (previousMusicPosition < triggerPosition && musicPosition >= triggerPosition)
+        using FileAccess? file = FileAccess.Open(path, FileAccess.ModeFlags.Read);
+        using var fileStream = new MemoryStream(file.GetBuffer((long)file.GetLength()));
+        using var waveReader = new WaveFileReader(fileStream);
+        var cache = new Vector2[waveReader.SampleCount];
+        for (int i = 0; i < waveReader.SampleCount; i++)
         {
-            if (triggerPosition % 1 == 0 && click1.GetPlaybackPosition() <= 0.01f)
-                click1.Play();
-            else if (click1.GetPlaybackPosition() <= 0.01f)
-                click2.Play();
+            float[]? sample = waveReader.ReadNextSampleFrame();
+            cache[i] = new Vector2(sample[0], sample[1]);
         }
 
-        previousMusicPosition = musicPosition;
+        return cache;
     }
 }

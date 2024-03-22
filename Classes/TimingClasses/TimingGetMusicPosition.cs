@@ -55,6 +55,23 @@ public partial class Timing
         return position;
     }
 
+    /// <summary>
+    ///     Returns the music position of the beat at or right after the given music position.
+    /// </summary>
+    /// <param name="musicPosition"></param>
+    /// <returns></returns>
+    public float GetNextOperatingBeatPosition(float musicPosition)
+    {
+        float beatLength = GetDistancePerBeat(musicPosition);
+        int downbeatPosition = (musicPosition >= 0) ? (int)musicPosition : (int)musicPosition - 1;
+        float relativePosition = (musicPosition >= 0)
+            ? musicPosition % 1
+            : 1 + (musicPosition % 1);
+        int beatsFromDownbeat = (int)MathF.Ceiling(relativePosition / beatLength);
+        float position = (beatsFromDownbeat * beatLength) + downbeatPosition;
+        return position;
+    }
+
     public float GetOperatingGridPosition(float musicPosition)
     {
         //TimingPoint? operatingTimingPoint = 
@@ -80,6 +97,32 @@ public partial class Timing
 
 
             previousAbsolutePosition = absolutePosition;
+        }
+
+        return 0;
+    }
+
+    public float GetNextOperatingGridPosition(float musicPosition)
+    {
+        //TimingPoint? operatingTimingPoint =
+        //    GetOperatingTimingPoint_ByMusicPosition(musicPosition)
+        //    ?? throw new NullReferenceException("This doesn't work unless there's a timing point yet. Fix me so it works always.");
+        //int[] timeSignature = operatingTimingPoint.TimeSignature;
+
+        int[] timeSignature = GetTimeSignature(musicPosition);
+        int gridDivisor = Settings.Instance.GridDivisor;
+
+        int nextMeasure = (int)(musicPosition + 1);
+        for (int index = 0; index < 30; index++)
+        {
+            float relativePosition = GetRelativeNotePosition(timeSignature, gridDivisor, index);
+            float absolutePosition = (int)musicPosition + relativePosition;
+
+            if (absolutePosition > musicPosition)
+                return absolutePosition;
+
+            if (absolutePosition >= nextMeasure)
+                throw new Exception("No operating grid position found");
         }
 
         return 0;
