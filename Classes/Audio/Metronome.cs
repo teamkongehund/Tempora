@@ -17,9 +17,12 @@ public partial class Metronome : Node
 
     private AudioStreamPlayer audioStreamPlayer = null!;
     private AudioStreamGenerator audioStreamGenerator = null!;
-    private AudioStreamGeneratorPlayback? playback; // Will hold the AudioStreamGeneratorPlayback.
+    /// <summary>
+    /// Will hold the AudioStreamGeneratorPlayback. Object gets a new instance whenever music playback is stopped and started.
+    /// </summary>
+    private AudioStreamGeneratorPlayback? playback;
     private float bufferLength = 1f; // Maximum frame time until it becomes unable to keep the buffer filled
-    private float sampleHz = 44100;
+    private float musicSampleRate = 44100; // Hz
 
     private bool lastMetronomeFollowsGrid;
     private int lastGridDivisor;
@@ -35,7 +38,7 @@ public partial class Metronome : Node
 
         musicPlayer = GetParentOrNull<MusicPlayer>();
 
-        audioStreamGenerator = new AudioStreamGenerator { BufferLength = bufferLength, MixRate = sampleHz };
+        audioStreamGenerator = new AudioStreamGenerator { BufferLength = bufferLength, MixRate = musicSampleRate };
         audioStreamPlayer = new AudioStreamPlayer
         {
             Stream = audioStreamGenerator,
@@ -44,6 +47,9 @@ public partial class Metronome : Node
         AddChild(audioStreamPlayer);
 
         if (musicPlayer is null) return;
+
+        musicSampleRate = Project.Instance.AudioFile.SampleRate;
+        Signals.Instance.AudioFileChanged += OnAudioFileChanged;
 
         musicPlayer.Played += StartPlayback;
         musicPlayer.Seeked += SeekPlayback;
@@ -70,7 +76,7 @@ public partial class Metronome : Node
 
         for (int i = 0; i < framesAvailable; i++)
         {
-            float currentTime = currentMusicFrame / sampleHz;
+            float currentTime = currentMusicFrame / musicSampleRate;
 
             if (currentTime > triggerTime)
             {
@@ -125,7 +131,7 @@ public partial class Metronome : Node
 
     private void SeekPlayback(double time)
     {
-        currentMusicFrame = (ulong)(time * sampleHz);
+        currentMusicFrame = (ulong)(time * musicSampleRate);
         UpdateTriggerTime((float)time);
         if (playback is null) return;
         StopPlayback();
@@ -189,6 +195,8 @@ public partial class Metronome : Node
             ? Timing.Instance.GetNextOperatingGridPosition(musicPosition)
             : Timing.Instance.GetNextOperatingBeatPosition(musicPosition);
     }
+
+    private void OnAudioFileChanged(object? sender, EventArgs e) => musicSampleRate = Project.Instance.AudioFile.SampleRate;
 
     private static Vector2[] CacheWavFile(string path)
     {
