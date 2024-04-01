@@ -5,7 +5,7 @@ using Tempora.Classes.TimingClasses;
 
 namespace Tempora.Classes.Audio;
 
-public partial class AudioPlayer : AudioStreamPlayer
+public partial class MusicPlayer : AudioStreamPlayer
 {
 
     //new public float VolumeDb; // Hides actual volume from other API's, so they can't mess with volume while fading.

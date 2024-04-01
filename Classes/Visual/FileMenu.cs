@@ -14,7 +14,7 @@ public partial class FileMenu : PopupMenu
     private FileDialog loadFileDialog = null!;
 
     [Export]
-    private AudioPlayer audioPlayer = null!;
+    private MusicPlayer audioPlayer = null!;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()

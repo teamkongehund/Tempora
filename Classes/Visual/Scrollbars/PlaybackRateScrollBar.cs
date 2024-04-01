@@ -5,7 +5,7 @@ namespace Tempora.Classes.Visual;
 
 public partial class PlaybackRateScrollBar : LabeledScrollbarHorizontal
 {
-    [Export] private AudioPlayer audioPlayer = null!;
+    [Export] private MusicPlayer audioPlayer = null!;
 
     protected override void UpdateValueLabel() => valueLabel.Text = (hScrollBar.Value * 100).ToString("0") + " %";
 

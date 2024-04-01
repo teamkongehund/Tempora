@@ -9,22 +9,23 @@ namespace Tempora.Classes.Visual;
 public partial class LoadButton : Button
 {
     [Export]
-    AudioPlayer audioPlayer = null!;
-    
-    [Export]
-    private FileDialog loadFileDialog = null!;
+    MusicPlayer audioPlayer = null!;
+
+    private FileDialog fileDialog = null!;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        fileDialog = GetNode<FileDialog>("FileDialog");
+
         Pressed += OnPressed;
-        loadFileDialog.FileSelected += OnFileSelected;
+        fileDialog.FileSelected += OnFileSelected;
     }
 
     private void OnPressed()
     {
-        loadFileDialog.CurrentDir = Settings.Instance.ProjectFilesDirectory;
-        loadFileDialog.Popup();
+        fileDialog.CurrentDir = Settings.Instance.ProjectFilesDirectory;
+        fileDialog.Popup();
     }
     //private void OnFileSelected(string selectedPath) => FileHandler.CopyFile(PathToCopyFrom, selectedPath);
 

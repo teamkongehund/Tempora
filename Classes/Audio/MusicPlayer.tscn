@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://djvimmuyfu0pu"]
+
+[ext_resource type="Script" path="res://Classes/Audio/MusicPlayer.cs" id="1_g7kbg"]
+
+[node name="MusicPlayer" type="AudioStreamPlayer"]
+script = ExtResource("1_g7kbg")

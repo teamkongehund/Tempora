@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://djvimmuyfu0pu"]
-
-[ext_resource type="Script" path="res://Classes/Audio/AudioPlayer.cs" id="1_fs4io"]
-
-[node name="AudioPlayer" type="AudioStreamPlayer"]
-script = ExtResource("1_fs4io")

@@ -16,7 +16,7 @@ public partial class Main : Control
     [Export]
     private AudioStreamMP3 defaultMP3 = null!;
     [Export]
-    private AudioPlayer audioPlayer = null!;
+    private MusicPlayer audioPlayer = null!;
     [Export]
     private AudioVisualsContainer audioVisualsContainer = null!;
     [Export]

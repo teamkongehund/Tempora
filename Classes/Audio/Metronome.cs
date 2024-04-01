@@ -10,7 +10,7 @@ namespace Tempora.Classes.Audio;
 
 public partial class Metronome : Node
 {
-    private AudioPlayer? audioPlayer;
+    private MusicPlayer? musicPlayer;
 
     private float previousVolumeDb;
     private bool isMuted;
@@ -33,7 +33,7 @@ public partial class Metronome : Node
         click1Cache = CacheWavFile("res://Audio/Click1.wav");
         click2Cache = CacheWavFile("res://Audio/Click2.wav");
 
-        audioPlayer = GetParentOrNull<AudioPlayer>();
+        musicPlayer = GetParentOrNull<MusicPlayer>();
 
         audioStreamGenerator = new AudioStreamGenerator { BufferLength = bufferLength, MixRate = sampleHz };
         audioStreamPlayer = new AudioStreamPlayer
@@ -43,21 +43,21 @@ public partial class Metronome : Node
         };
         AddChild(audioStreamPlayer);
 
-        if (audioPlayer is null) return;
+        if (musicPlayer is null) return;
 
-        audioPlayer.Played += StartPlayback;
-        audioPlayer.Seeked += SeekPlayback;
-        audioPlayer.Paused += StopPlayback;
-        audioPlayer.PitchScaleChanged += OnPitchScaleChanged;
+        musicPlayer.Played += StartPlayback;
+        musicPlayer.Seeked += SeekPlayback;
+        musicPlayer.Paused += StopPlayback;
+        musicPlayer.PitchScaleChanged += OnPitchScaleChanged;
 
         Signals.Instance.SettingsChanged += OnSettingsChanged;
         lastMetronomeFollowsGrid = Settings.Instance.MetronomeFollowsGrid;
         lastGridDivisor = Settings.Instance.GridDivisor;
     }
 
-    private ulong currentFrame;
-    private int clickFrames;
-    private bool primaryClick;
+    private ulong currentMusicFrame;
+    private int numClickFramesLeftToAdd;
+    private bool isPrimaryClick;
     private float triggerPosition;
     private float triggerTime;
 
@@ -70,26 +70,26 @@ public partial class Metronome : Node
 
         for (int i = 0; i < framesAvailable; i++)
         {
-            float currentTime = currentFrame / sampleHz;
+            float currentTime = currentMusicFrame / sampleHz;
 
             if (currentTime > triggerTime)
             {
-                clickFrames = triggerPosition % 1 == 0 ? click1Cache.Length : click2Cache.Length;
-                primaryClick = triggerPosition % 1 == 0;
+                numClickFramesLeftToAdd = triggerPosition % 1 == 0 ? click1Cache.Length : click2Cache.Length;
+                isPrimaryClick = triggerPosition % 1 == 0;
                 UpdateTriggerTime(currentTime);
             }
 
-            if (clickFrames > 0)
+            if (numClickFramesLeftToAdd > 0)
             {
-                buffer[bufferIndex] = primaryClick ? click1Cache[^clickFrames] : click2Cache[^clickFrames];
-                clickFrames--;
+                buffer[bufferIndex] = isPrimaryClick ? click1Cache[^numClickFramesLeftToAdd] : click2Cache[^numClickFramesLeftToAdd];
+                numClickFramesLeftToAdd--;
             }
             else
             {
                 buffer[bufferIndex] = Vector2.Zero;
             }
 
-            currentFrame++;
+            currentMusicFrame++;
             bufferIndex++;
 
             if (bufferIndex >= buffer.Length)
@@ -125,7 +125,7 @@ public partial class Metronome : Node
 
     private void SeekPlayback(double time)
     {
-        currentFrame = (ulong)(time * sampleHz);
+        currentMusicFrame = (ulong)(time * sampleHz);
         UpdateTriggerTime((float)time);
         if (playback is null) return;
         StopPlayback();
@@ -135,7 +135,7 @@ public partial class Metronome : Node
     private void RefillBuffer()
     {
         if (playback is null) return;
-        SeekPlayback(audioPlayer!.PlaybackTime);
+        SeekPlayback(musicPlayer!.PlaybackTime);
     }
 
     private void StopPlayback()
