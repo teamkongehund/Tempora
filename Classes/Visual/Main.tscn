@@ -39,7 +39,12 @@ metadata/_edit_lock_ = true
 [node name="MusicPlayer" parent="." instance=ExtResource("2_nrfju")]
 bus = &"Music"
 
-[node name="Metronome" parent="MusicPlayer" instance=ExtResource("4_n2ir2")]
+[node name="Metronome" parent="MusicPlayer" node_paths=PackedStringArray("resyncTimer") instance=ExtResource("4_n2ir2")]
+resyncTimer = NodePath("ResyncTimer")
+
+[node name="ResyncTimer" type="Timer" parent="MusicPlayer/Metronome"]
+wait_time = 2.0
+autostart = true
 
 [node name="ColorRect" type="ColorRect" parent="."]
 layout_mode = 1
