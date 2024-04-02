@@ -34,7 +34,6 @@ public partial class Settings : Node
 
     private int numberOfBlocks = 10;
 
-    private string projectFilesDirectory = "";
 
     private string settingsPath = "user://settings.txt";
 
@@ -45,12 +44,24 @@ public partial class Settings : Node
     /// </summary>
     public bool SnapToGridEnabled = true;
 
+    private string projectFilesDirectory = "";
     public string ProjectFilesDirectory
     {
         get => projectFilesDirectory;
         set
         {
             projectFilesDirectory = value;
+            SaveSettings();
+        }
+    }
+
+    private string oszFilesDirectory = "";
+    public string OszFilesDirectory
+    {
+        get => oszFilesDirectory;
+        set
+        {
+            oszFilesDirectory = value;
             SaveSettings();
         }
     }
@@ -170,6 +181,9 @@ public partial class Settings : Node
                 case "ProjectFilesDirectory":
                     ProjectFilesDirectory = lineSplit[1];
                     break;
+                case "OszFilesDirectory":
+                    OszFilesDirectory = lineSplit[1];
+                    break;
             }
         }
     }
@@ -178,6 +192,7 @@ public partial class Settings : Node
     {
         string settingsFile = "";
         settingsFile += "ProjectFilesDirectory" + ";" + ProjectFilesDirectory + "\n";
+        settingsFile += "OszFilesDirectory" + ";" + OszFilesDirectory + "\n";
         FileHandler.SaveText(settingsPath, settingsFile);
     }
 }

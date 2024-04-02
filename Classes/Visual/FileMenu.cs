@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using Tempora.Classes.Audio;
 using Tempora.Classes.Utility;
+using Tempora.Classes.TimingClasses;
 
 public partial class FileMenu : PopupMenu
 {
@@ -15,6 +16,14 @@ public partial class FileMenu : PopupMenu
 
     [Export]
     private MusicPlayer audioPlayer = null!;
+
+    private enum SaveConfig
+    {
+        project,
+        osz
+    }
+
+    private SaveConfig latestSaveConfig = SaveConfig.project;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -32,26 +41,47 @@ public partial class FileMenu : PopupMenu
                 LoadFileDialogPopup();
                 break;
             case 1:
-                SaveFileDialogPopup();
+                SaveFileDialogPopup(SaveConfig.project);
                 break;
             case 2:
-                OsuExporter.ExportOsz();
+                OsuExporter.ExportAndOpenOsz();
+                break;
+            case 3:
+                OsuExporter.ExportAndOpenOsz();
                 break;
         }
     }
 
     #region Save File
-    private void SaveFileDialogPopup()
+    private void SaveFileDialogPopup(SaveConfig config)
     {
-        saveFileDialog.CurrentDir = Settings.Instance.ProjectFilesDirectory;
+        switch (config)
+        {
+            case SaveConfig.project:
+                saveFileDialog.CurrentDir = Settings.Instance.ProjectFilesDirectory;
+                break;
+            case SaveConfig.osz:
+                saveFileDialog.CurrentDir = Settings.Instance.OszFilesDirectory;
+                break;
+        }
+        latestSaveConfig = config;
         saveFileDialog.Popup();
     }
     private void OnSaveFilePathSelected(string selectedPath)
     {
-        ProjectFileManager.SaveProjectAs(selectedPath);
-
-        string dir = FileHandler.GetDirectory(selectedPath);
-        Settings.Instance.ProjectFilesDirectory = dir;
+        switch (latestSaveConfig)
+        {
+            case SaveConfig.project:
+                ProjectFileManager.SaveProjectAs(selectedPath);
+                string dir = FileHandler.GetDirectory(selectedPath);
+                Settings.Instance.ProjectFilesDirectory = dir;
+                break;
+            case SaveConfig.osz:
+                OsuExporter.SaveOsz(selectedPath);
+                dir = FileHandler.GetDirectory(selectedPath);
+                Settings.Instance.OszFilesDirectory = dir;
+                break;
+        }
     }
     #endregion
 

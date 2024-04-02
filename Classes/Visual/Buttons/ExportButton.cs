@@ -10,7 +10,7 @@ public partial class ExportButton : Button
 
     private void OnPressed()
     {
-        OsuExporter.ExportOsz();
+        OsuExporter.ExportAndOpenOsz();
         ReleaseFocus();
     }
 }

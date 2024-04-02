@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using Godot;
 using Tempora.Classes.Audio;
 using Tempora.Classes.TimingClasses;
@@ -101,6 +102,15 @@ SliderTickRate:1
         return $"{offsetMs},{msPerBeat},{beatsInMeasure},2,0,80,1,0\n";
     }
 
+    public static void SaveOsz(string oszPath)
+    {
+        Path.ChangeExtension(oszPath, "osz");
+
+        string dotOsu = GetDotOsu(Timing.Instance);
+
+        SaveOsz(oszPath, dotOsu, Project.Instance.AudioFile);
+    }
+
     public static void SaveOsz(string oszPath, string dotOsuString, AudioFile audioFile)
     {
         using var zipPacker = new ZipPacker();
@@ -125,7 +135,7 @@ SliderTickRate:1
 
     public static void SaveOsu(string osuPath, string dotOsuString) => FileHandler.SaveText(osuPath, dotOsuString);
 
-    public static void ExportOsz()
+    public static void ExportAndOpenOsz()
     {
         var random = new Random();
         int rand = random.Next();
@@ -135,7 +145,18 @@ SliderTickRate:1
 
         // Open with system:
         string globalPath = ProjectSettings.GlobalizePath(path);
-        if (FileAccess.FileExists(globalPath))
+        if (Godot.FileAccess.FileExists(globalPath))
+            OS.ShellOpen(globalPath);
+    }
+
+    public static void ExportOszAsAndOpenDirectory(string path)
+    {
+        SaveOsz(path);
+
+        // Open directory with system:
+        string globalPath = ProjectSettings.GlobalizePath(path);
+        globalPath = FileHandler.GetDirectory(globalPath);
+        if (Godot.FileAccess.FileExists(globalPath))
             OS.ShellOpen(globalPath);
     }
 }
