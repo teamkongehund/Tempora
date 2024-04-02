@@ -4,8 +4,11 @@
 [ext_resource type="AudioStream" uid="uid://tb5dvcqxowxq" path="res://Audio/Click1.wav" id="2_cf8ap"]
 [ext_resource type="AudioStream" uid="uid://bygfuelf7cfxs" path="res://Audio/Click2.wav" id="3_d3d45"]
 
-[node name="Metronome" type="Node"]
+[node name="Metronome" type="Node" node_paths=PackedStringArray("click1", "click2", "updateTimer")]
 script = ExtResource("1_w6ueg")
+click1 = NodePath("Click1")
+click2 = NodePath("Click2")
+updateTimer = NodePath("UpdateTimer")
 
 [node name="Click1" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("2_cf8ap")
@@ -14,3 +17,7 @@ bus = &"Metronome"
 [node name="Click2" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3_d3d45")
 bus = &"Metronome"
+
+[node name="UpdateTimer" type="Timer" parent="."]
+wait_time = 0.001
+autostart = true

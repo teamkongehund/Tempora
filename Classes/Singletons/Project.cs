@@ -6,9 +6,28 @@ namespace Tempora.Classes.Utility;
 
 public partial class Project : Node
 {
+    [Export]
+    private AudioStreamMP3 defaultMP3 = null!;
+
     private static Project instance = null!;
 
-    private AudioFile audioFile = null!;
+    private SongFile songFile = null!;
+    public SongFile SongFile
+    {
+        get => (SongFile)SongPlayer.AudioFile;
+        set
+        {
+            if (songFile == value)
+                return;
+            songFile = value;
+            SongPlayer.AudioFile = songFile;
+            //Signals.Instance.EmitEvent(Signals.Events.AudioFileChanged);
+            Project.Instance.ProjectPath = null!;
+        }
+    }
+
+    [Export]
+    public AudioPlayer SongPlayer = null!;
 
     private Settings settings = null!;
 
@@ -28,21 +47,14 @@ public partial class Project : Node
 
     public static Project Instance { get => instance; set => instance = value; }
 
-    public AudioFile AudioFile
-    {
-        get => audioFile;
-        set
-        {
-            if (audioFile == value)
-                return;
-            audioFile = value;
-            Signals.Instance.EmitEvent(Signals.Events.AudioFileChanged);
-            Project.Instance.ProjectPath = null!;
-        }
-    }
+
 
     // Called when the node enters the scene tree for the first time.
-    public override void _Ready() => Instance = this;
+    public override void _Ready()
+    {
+        Instance = this;
+        SongFile = new SongFile(defaultMP3);
+    }
 
     public override void _Input(InputEvent inputEvent)
     {

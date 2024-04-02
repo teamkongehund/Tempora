@@ -1,21 +1,22 @@
 using System;
-using System.Linq;
+using System.IO;
+using System.Reflection.PortableExecutable;
 using Godot;
+using NAudio.Utils;
+using NAudio.Lame;
+using NAudio.Wave;
+
 using Tempora.Classes.Utility;
 
 namespace Tempora.Classes.Audio;
 
 public partial class AudioFile : Node
 {
-    private float[] _audioData = null!;
-    public float[] AudioData
+    protected float[] _audioData = null!;
+    public virtual float[] AudioData
     {
         get => _audioData;
-        set
-        {
-            _audioData = value;
-            CalculatePer10s();
-        }
+        set => _audioData = value;
     }
 
     public float[] AudioDataPer10Max = null!;
@@ -28,7 +29,18 @@ public partial class AudioFile : Node
 
     public string Path = null!;
 
-    public AudioStream Stream = null!;
+    public event EventHandler StreamChanged = null!;
+
+    private AudioStream stream = null!;
+    public AudioStream Stream
+    {
+        get => stream;
+        set
+        {
+            stream = value;
+            StreamChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
 
     /// <summary>
     ///     Amount of seconds to offset any sample indices. Band-aid fix to compensate the discrepancy between audio playback
@@ -37,6 +49,11 @@ public partial class AudioFile : Node
     public float SampleIndexOffsetInSeconds = 0.025f;
 
     public int SampleRate;
+
+    public AudioFile()
+    {
+
+    }
 
     public AudioFile(string path)
     {
@@ -69,6 +86,18 @@ public partial class AudioFile : Node
         AudioData = audioData;
         SampleRate = sampleRate;
         Stream = audioStreamMP3;
+        Channels = channels;
+    }
+
+    public AudioFile(AudioStreamWav audioStreamWav)
+    {
+        byte[] audioFileBytes = audioStreamWav.Data;
+
+        float[] audioData = AudioDataHandler.WavToAudioFloat(audioFileBytes, out int sampleRate, out int channels);
+
+        AudioData = audioData;
+        SampleRate = sampleRate;
+        Stream = audioStreamWav;
         Channels = channels;
     }
 
@@ -111,21 +140,91 @@ public partial class AudioFile : Node
     /// <returns></returns>
     public float GetAudioLength() => SampleIndexToSeconds(AudioData.Length - 1);
 
-    public void CalculatePer10s()
+    public static AudioFile PrependSilence(AudioFile oldAudioFile, float secondsToAdd)
     {
-        int smallLength = (int)(AudioData.Length / 10f);
-        bool isDataLengthDivisibleBy10 = AudioData.Length % 10 == 0;
-        int length = isDataLengthDivisibleBy10 ? smallLength : smallLength + 1;
+        int samplesToAdd = oldAudioFile.SecondsToSampleIndex(secondsToAdd);
 
-        AudioDataPer10Min = new float[length];
-        AudioDataPer10Max = new float[length];
+        byte[] newData;
 
-        for (int i = 0; i < length - 1; i++)
+        if (oldAudioFile.Stream is AudioStreamMP3 audioStreamMP3)
         {
-            AudioDataPer10Min[i] = AudioData[(i * 10)..((i * 10) + 10)].Min();
-            AudioDataPer10Max[i] = AudioData[(i * 10)..((i * 10) + 10)].Max();
+            var data = audioStreamMP3.Data;
+
+            using MemoryStream oldMemoryStream = new MemoryStream(data);
+
+            using (var reader = new Mp3FileReader(oldMemoryStream))
+            {
+                // Create a WaveFormat instance based on the input MP3 file
+                var waveFormat = reader.WaveFormat;
+
+                // Create a new MemoryStream to hold the modified audio data
+                using var newMemoryStream = new MemoryStream();
+                // Create a new WaveFileWriter to write the modified audio data
+                using (var writer = new LameMP3FileWriter(newMemoryStream, waveFormat, LAMEPreset.STANDARD))
+                {
+
+                    // Write one second of silence
+                    int numBytesToAdd = (int)(waveFormat.AverageBytesPerSecond * secondsToAdd);
+                    var silence = new byte[numBytesToAdd];
+                    writer.Write(silence, 0, silence.Length);
+
+                    // Copy the original audio data after the silence
+                    //GD.Print($"About to copy. oldMemoryStream.Length: {oldMemoryStream.Length} VS. newMemoryStream.Length: {newMemoryStream.Length}");
+                    reader.CopyTo(writer);
+                    //GD.Print($"Copy done. oldMemoryStream.Length: {oldMemoryStream.Length} VS. newMemoryStream.Length: {newMemoryStream.Length}");
+                }
+
+                newData = newMemoryStream.ToArray();
+            }
+
+            AudioStreamMP3 newAudioStreamMP3 = new AudioStreamMP3()
+            {
+                Data = newData
+            };
+
+            AudioFile newAudioFile = new(newAudioStreamMP3);
+
+            return newAudioFile;
         }
-        AudioDataPer10Min[length - 1] = AudioData[((length - 1) * 10)..^1].Min();
-        AudioDataPer10Max[length - 1] = AudioData[((length - 1) * 10)..^1].Max();
+        else if (oldAudioFile.Stream is AudioStreamWav audioStreamWav)
+        {
+            var data = audioStreamWav.Data;
+
+            using MemoryStream oldMemoryStream = new MemoryStream(data);
+
+            using (var reader = new WaveFileReader(oldMemoryStream))
+            {
+                // Create a WaveFormat instance based on the input MP3 file
+                var waveFormat = reader.WaveFormat;
+
+                // Create a new MemoryStream to hold the modified audio data
+                using var newMemoryStream = new MemoryStream();
+                // Create a new WaveFileWriter to write the modified audio data
+                using (var writer = new WaveFileWriter(new IgnoreDisposeStream(newMemoryStream), new WaveFormat(waveFormat.SampleRate, waveFormat.BitsPerSample, waveFormat.Channels)))
+                {
+                    // Write one second of silence
+                    int numBytesToAdd = (int)(waveFormat.AverageBytesPerSecond * secondsToAdd);
+                    var silence = new byte[numBytesToAdd];
+                    writer.Write(silence, 0, silence.Length);
+
+                    // Copy the original audio data after the silence
+                    reader.CopyTo(writer);
+                }
+
+                newData = newMemoryStream.ToArray();
+            }
+
+            AudioStreamWav newAudioStreamWav = new AudioStreamWav()
+            {
+                Data = newData
+            };
+
+            AudioFile newAudioFile = new(newAudioStreamWav);
+
+            return newAudioFile;
+        }
+
+        GD.Print("AudioFile.PrependSilence : Unable to prepend silence. Returning oldAudioFile");
+        return oldAudioFile;
     }
 }

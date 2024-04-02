@@ -4,6 +4,7 @@ using Godot;
 using GodotPlugins.Game;
 using Tempora.Classes.Utility;
 using Tempora.Classes.TimingClasses;
+using Tempora.Classes.Audio;
 
 namespace Tempora.Classes.Visual;
 
@@ -13,7 +14,7 @@ namespace Tempora.Classes.Visual;
 public partial class AudioDisplayPanel : Control
 {
     #region Properties & Signals
-    public event EventHandler SeekPlaybackTime = null!;
+    //public event EventHandler SeekPlaybackTime = null!;
 
     public event EventHandler AttemptToAddTimingPoint = null!;
 
@@ -33,6 +34,7 @@ public partial class AudioDisplayPanel : Control
     //private Label MeasureLabel;
     //[Export]
     //private TimeSignatureLineEdit TimeSignatureLineEdit;
+    private AudioPlayer audioPlayer = null!;
 
     [Export]
     private PackedScene packedVisualTimingPoint = null!;
@@ -86,6 +88,8 @@ public partial class AudioDisplayPanel : Control
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        audioPlayer = Project.Instance.SongPlayer;
+
         Playhead.ZIndex = 100;
 
         UpdatePlayheadScaling();
@@ -99,7 +103,7 @@ public partial class AudioDisplayPanel : Control
         Signals.Instance.SettingsChanged += OnSettingsChanged;
         Signals.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
         Signals.Instance.Scrolled += OnScrolled;
-        Signals.Instance.AudioFileChanged += OnAudioFileChanged;
+        audioPlayer.AudioFile.StreamChanged += OnAudioFileChanged;
 
         MouseEntered += OnMouseEntered;
         MouseExited += OnMouseExited;
@@ -127,11 +131,12 @@ public partial class AudioDisplayPanel : Control
         switch (mouseEvent)
         {
             case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } mouseButtonEvent:
-                AttemptToAddTimingPoint?.Invoke(this, new Signals.ObjectArgument<float>(time));
+                //AttemptToAddTimingPoint?.Invoke(this, new Signals.ObjectArgument<float>(time));
+                Project.Instance.SongFile = (SongFile)(AudioFile.PrependSilence(audioPlayer.AudioFile, 10f) ?? audioPlayer.AudioFile);
                 break;
 
             case InputEventMouseButton { ButtonIndex: MouseButton.Right, Pressed: true } mouseButtonEvent:
-                SeekPlaybackTime?.Invoke(this, new Signals.ObjectArgument<float>(time));
+                audioPlayer.SeekPlay(time);
                 break;
 
             case InputEventMouseButton { ButtonIndex: MouseButton.WheelUp, Pressed: true } mouseButtonEvent when Input.IsKeyPressed(Key.Ctrl):
@@ -348,7 +353,7 @@ public partial class AudioDisplayPanel : Control
                 )
             || (Time.GetTicksMsec() - heldTimingPoint.SystemTimeWhenCreatedMsec) < 30; ;
 
-        var waveform = new Waveform(Project.Instance.AudioFile, length, Size.Y, [waveSegmentStartTime, waveSegmentEndTime])
+        var waveform = new Waveform(Project.Instance.SongFile, length, Size.Y, [waveSegmentStartTime, waveSegmentEndTime])
         {
             Position = new Vector2(xPosition, Size.Y / 2),
             Color = (canHeldTimingPointBeInSegment ? Waveform.defaultColor : Waveform.darkenedColor)

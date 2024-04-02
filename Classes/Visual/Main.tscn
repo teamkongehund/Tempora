@@ -1,7 +1,6 @@
-[gd_scene load_steps=20 format=3 uid="uid://bk0ofb078cvgm"]
+[gd_scene load_steps=19 format=3 uid="uid://bk0ofb078cvgm"]
 
 [ext_resource type="Script" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
-[ext_resource type="AudioStream" uid="uid://clutjafa1rf7f" path="res://Audio/UMO.mp3" id="2_klkb2"]
 [ext_resource type="PackedScene" uid="uid://djvimmuyfu0pu" path="res://Classes/Audio/AudioPlayer.tscn" id="2_nrfju"]
 [ext_resource type="Script" path="res://Classes/Visual/AudioVisualsContainer.cs" id="3_bj8ok"]
 [ext_resource type="PackedScene" uid="uid://bnbif04ymgk1h" path="res://Classes/Audio/Metronome.tscn" id="4_n2ir2"]
@@ -20,7 +19,7 @@
 [ext_resource type="PackedScene" uid="uid://bac4n7j15cns7" path="res://Classes/Visual/AudioBlock.tscn" id="16_mlqa0"]
 [ext_resource type="Script" path="res://Classes/Visual/MessageLabel.cs" id="20_c3wmk"]
 
-[node name="Main" type="Control" node_paths=PackedStringArray("audioPlayer", "audioVisualsContainer", "metronome", "blockScrollBar")]
+[node name="Main" type="Control" node_paths=PackedStringArray("audioVisualsContainer", "blockScrollBar")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -29,14 +28,11 @@ grow_horizontal = 2
 grow_vertical = 2
 focus_mode = 2
 script = ExtResource("1_n5xe1")
-defaultMP3 = ExtResource("2_klkb2")
-audioPlayer = NodePath("AudioPlayer")
 audioVisualsContainer = NodePath("VSplitContainer/HSplitContainer/HSplitContainer/AudioVisualsMarginContainer/AudioVisualsContainer")
-metronome = NodePath("Metronome")
 blockScrollBar = NodePath("VSplitContainer/HSplitContainer/HSplitContainer/BlockScrollBarMarginContainer/BlockScrollBar")
 metadata/_edit_lock_ = true
 
-[node name="AudioPlayer" parent="." instance=ExtResource("2_nrfju")]
+[node name="SongPlayer" parent="." instance=ExtResource("2_nrfju")]
 bus = &"Music"
 
 [node name="Metronome" parent="." instance=ExtResource("4_n2ir2")]
@@ -68,7 +64,7 @@ theme_override_constants/separation = 30
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 
-[node name="File" type="PopupMenu" parent="VSplitContainer/TopMenuHBox/MenuBar" node_paths=PackedStringArray("saveFileDialog", "loadFileDialog", "audioPlayer")]
+[node name="File" type="PopupMenu" parent="VSplitContainer/TopMenuHBox/MenuBar" node_paths=PackedStringArray("saveFileDialog", "loadFileDialog")]
 title = "File"
 theme_override_font_sizes/font_size = 12
 item_count = 3
@@ -81,7 +77,6 @@ item_2/id = 2
 script = ExtResource("5_kcxfp")
 saveFileDialog = NodePath("../../../../SaveFileDialog")
 loadFileDialog = NodePath("../../../../LoadFileDialog")
-audioPlayer = NodePath("../../../../AudioPlayer")
 
 [node name="Edit" type="PopupMenu" parent="VSplitContainer/TopMenuHBox/MenuBar" node_paths=PackedStringArray("clearAllConfirmationDialog")]
 title = "Edit"
@@ -108,19 +103,17 @@ script = ExtResource("7_1c6ke")
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="GridScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox" node_paths=PackedStringArray("audioPlayer") instance=ExtResource("8_6ej7c")]
+[node name="GridScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox" instance=ExtResource("8_6ej7c")]
 layout_mode = 2
 script = ExtResource("7_i2h88")
-audioPlayer = NodePath("../../../../AudioPlayer")
 title = "Grid"
 minValue = 1.0
 maxValue = 8.0
 step = 1.0
 
-[node name="PlaybackRateScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox" node_paths=PackedStringArray("audioPlayer") instance=ExtResource("8_6ej7c")]
+[node name="PlaybackRateScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox" instance=ExtResource("8_6ej7c")]
 layout_mode = 2
 script = ExtResource("8_6jrsb")
-audioPlayer = NodePath("../../../../AudioPlayer")
 title = "Playback"
 minValue = 0.1
 
@@ -129,7 +122,7 @@ layout_mode = 2
 script = ExtResource("9_22ufa")
 title = "Rows"
 minValue = 1.0
-maxValue = 25.0
+maxValue = 30.0
 step = 1.0
 
 [node name="OffsetScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox" instance=ExtResource("8_6ej7c")]

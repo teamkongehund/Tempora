@@ -5,6 +5,8 @@ using System.Linq;
 using Tempora.Classes.Audio;
 using Tempora.Classes.Utility;
 
+namespace Tempora.Classes.Visual;
+
 public partial class FileMenu : PopupMenu
 {
     [Export]
@@ -13,12 +15,12 @@ public partial class FileMenu : PopupMenu
     [Export]
     private FileDialog loadFileDialog = null!;
 
-    [Export]
     private AudioPlayer audioPlayer = null!;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{
+        audioPlayer = Project.Instance.SongPlayer;
         IdPressed += OnIdPressed;
         saveFileDialog.FileSelected += OnSaveFilePathSelected;
         loadFileDialog.FileSelected += OnLoadFilePathSelected;
@@ -81,9 +83,9 @@ public partial class FileMenu : PopupMenu
         switch (extension)
         {
             case var value when value == mp3Extension:
-                var audioFile = new AudioFile(selectedPath);
-                Project.Instance.AudioFile = audioFile;
-                audioPlayer.LoadMp3();
+                var songFile = new SongFile(selectedPath);
+                Project.Instance.SongFile = songFile;
+                audioPlayer.LoadStream();
                 break;
             case var value when value == projectFileExtension:
                 ProjectFileManager.Instance.LoadProjectFromFilePath(selectedPath);

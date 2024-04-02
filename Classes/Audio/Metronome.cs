@@ -6,8 +6,13 @@ namespace Tempora.Classes.Audio;
 
 public partial class Metronome : Node
 {
+    [Export]
     private AudioStreamPlayer click1 = null!;
+    [Export]
     private AudioStreamPlayer click2 = null!;
+    [Export]
+    private Timer updateTimer = null!;
+    private AudioPlayer audioPlayer = null!;
 
     public bool On = true;
     private float? previousMusicPosition;
@@ -19,8 +24,13 @@ public partial class Metronome : Node
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        click1 = GetNode<AudioStreamPlayer>("Click1");
-        click2 = GetNode<AudioStreamPlayer>("Click2");
+        audioPlayer = Project.Instance.SongPlayer;
+        updateTimer.Timeout += UpdateMetronome;
+    }
+
+    public override void _Process(double delta)
+    {
+        
     }
 
     public override void _Input(InputEvent @event)
@@ -46,6 +56,17 @@ public partial class Metronome : Node
                 isMuted = false;
             }
         }
+    }
+
+    public void UpdateMetronome()
+    {
+        if (isMuted || !audioPlayer.Playing)
+            return;
+
+        double playbackTime = audioPlayer.GetPlaybackTime();
+        float musicPosition = Timing.Instance.TimeToMusicPosition((float)playbackTime);
+        //click1.Play();
+        Click(musicPosition);
     }
 
     private static float GetTriggerPosition(float musicPosition)

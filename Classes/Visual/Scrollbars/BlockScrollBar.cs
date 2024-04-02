@@ -41,7 +41,7 @@ public partial class BlockScrollBar : VScrollBar
     public void UpdateRange()
     {
         int firstMeasure = (int)Timing.Instance.TimeToMusicPosition(0);
-        int lastMeasure = Timing.Instance.GetLastMeasure() - (Settings.Instance.NumberOfBlocks - 1);
+        int lastMeasure = Timing.Instance.GetLastMeasure() - (Settings.Instance.NumberOfRows - 1);
         if (MinValue != firstMeasure)
         {
             isRangeChanging = true;

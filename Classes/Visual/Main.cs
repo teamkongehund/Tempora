@@ -13,14 +13,13 @@ public partial class Main : Control
 {
     //[Export]
     //private string audioPath = "res://Audio/UMO.mp3";
-    [Export]
-    private AudioStreamMP3 defaultMP3 = null!;
-    [Export]
+    //[Export]
+    //private AudioStreamMP3 defaultMP3 = null!;
     private AudioPlayer audioPlayer = null!;
     [Export]
     private AudioVisualsContainer audioVisualsContainer = null!;
-    [Export]
-    private Metronome metronome = null!;
+    //[Export]
+    //private Metronome metronome = null!;
     [Export]
     private BlockScrollBar blockScrollBar = null!;
     [Export]
@@ -45,17 +44,18 @@ public partial class Main : Control
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        audioPlayer = Project.Instance.SongPlayer;
         projectFileManager = ProjectFileManager.Instance;
 
         // This works in Debug if we use i.e. audioPath = "res://Audio/UMO.mp3",
         // but won't work in production, as resources are converted to different file formats.
         //Project.Instance.AudioFile = new AudioFile(audioPath);
 
-        Project.Instance.AudioFile = new AudioFile(defaultMP3);
+        //Project.Instance.SongFile = new SongFile(defaultMP3);
 
         Signals.Instance.Scrolled += OnScrolled;
         Signals.Instance.SettingsChanged += OnSettingsChanged;
-        audioVisualsContainer.SeekPlaybackTime += OnSeekPlaybackTime;
+        //audioVisualsContainer.SeekPlaybackTime += OnSeekPlaybackTime;
         GetTree().Root.FilesDropped += OnFilesDropped;
 
         audioVisualsContainer.CreateBlocks();
@@ -106,7 +106,7 @@ public partial class Main : Control
         if (audioPlayer.Playing)
         {
             UpdatePlayHeads();
-            UpdateMetronome();
+            //UpdateMetronome();
         }
     }
 
@@ -118,9 +118,9 @@ public partial class Main : Control
             return;
         string path = filePaths[0];
 
-        var audioFile = new AudioFile(path);
-        Project.Instance.AudioFile = audioFile;
-        audioPlayer.LoadMp3();
+        var songFile = new SongFile(path);
+        Project.Instance.SongFile = songFile;
+        audioPlayer.LoadStream();
     }
 
     public void PlayPause()
@@ -148,18 +148,18 @@ public partial class Main : Control
         }
     }
 
-    public void UpdateMetronome()
-    {
-        double playbackTime = audioPlayer.GetPlaybackTime();
-        float musicPosition = Timing.Instance.TimeToMusicPosition((float)playbackTime);
-        metronome.Click(musicPosition);
-    }
+    //public void UpdateMetronome()
+    //{
+    //    double playbackTime = audioPlayer.GetPlaybackTime();
+    //    float musicPosition = Timing.Instance.TimeToMusicPosition((float)playbackTime);
+    //    metronome.Click(musicPosition);
+    //}
 
-    private void OnSeekPlaybackTime(object? sender, EventArgs e)
-    {
-        if (e is not Signals.ObjectArgument<float> floatArgument)
-            throw new Exception($"{nameof(e)} was not of type {nameof(Signals.ObjectArgument<float>)}");
-        float playbackTime = floatArgument.Value;
-        audioPlayer.SeekPlay(playbackTime);
-    }
+    //private void OnSeekPlaybackTime(object? sender, EventArgs e)
+    //{
+    //    if (e is not Signals.ObjectArgument<float> floatArgument)
+    //        throw new Exception($"{nameof(e)} was not of type {nameof(Signals.ObjectArgument<float>)}");
+    //    float playbackTime = floatArgument.Value;
+    //    audioPlayer.SeekPlay(playbackTime);
+    //}
 }

@@ -42,14 +42,14 @@ public partial class ProjectFileManager : Node
         string mp3Path = $"{filePathWithoutExtension}.mp3";
 
         string file = GetProjectAsString(mp3Path);
-        FileHandler.SaveMP3(mp3Path, (AudioStreamMP3)Project.Instance.AudioFile.Stream);
+        FileHandler.SaveMP3(mp3Path, (AudioStreamMP3)Project.Instance.SongFile.Stream);
         FileHandler.SaveText(filePath, file);
 
         Project.Instance.ProjectPath = filePath;
         Project.Instance.NotificationMessage = $"Saved to {filePath}";
     }
 
-    public static string GetProjectAsString() => GetProjectAsString(Project.Instance.AudioFile.Path);
+    public static string GetProjectAsString() => GetProjectAsString(Project.Instance.SongFile.Path);
 
     public static string GetProjectAsString(string audioPath)
     {
@@ -206,7 +206,7 @@ public partial class ProjectFileManager : Node
             }
         }
 
-        Project.Instance.AudioFile = new AudioFile(audioPath);
+        Project.Instance.SongFile = new SongFile(audioPath);
         Timing.Instance.IsInstantiating = false;
         Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
     }

@@ -23,16 +23,12 @@ public partial class Settings : Node
 
     private int divisor = 4;
 
-    /// <summary>
-    ///     Should not be changed during runtime!
-    /// </summary>
-    public int MaxNumberOfBlocks = 30;
+    public readonly int MaxNumberOfRows = 60;
 
     private float musicPositionMargin;
 
     private float musicPositionOffset = 0.125f;
 
-    private int numberOfBlocks = 10;
 
     private string projectFilesDirectory = "";
 
@@ -70,17 +66,18 @@ public partial class Settings : Node
         }
     }
 
+    private int numberOfRows = 10;
     /// <summary>
     ///     Number of waveform blocks to display
     /// </summary>
-    public int NumberOfBlocks
+    public int NumberOfRows
     {
-        get => numberOfBlocks;
+        get => numberOfRows;
         set
         {
-            if (numberOfBlocks == value)
+            if (numberOfRows == value)
                 return;
-            numberOfBlocks = value;
+            numberOfRows = value;
             //GD.Print($"NumberOfBlocks changed to {numberOfBlocks}");
             Signals.Instance.EmitEvent(Signals.Events.SettingsChanged);
         }

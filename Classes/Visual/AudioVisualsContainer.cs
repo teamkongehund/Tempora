@@ -13,7 +13,7 @@ public partial class AudioVisualsContainer : VBoxContainer
     /// <summary>
     ///     Forward childrens' signals to Main
     /// </summary>
-    public event EventHandler SeekPlaybackTime = null!;
+    //public event EventHandler SeekPlaybackTime = null!;
 
     [Export]
     private PackedScene packedAudioBlock = null!;
@@ -62,7 +62,7 @@ public partial class AudioVisualsContainer : VBoxContainer
         int musicPositionStart = NominalMusicPositionStartForTopBlock;
 
         // Instantiate block scenes and add as children
-        for (int i = 0; i < Settings.Instance.MaxNumberOfBlocks; i++)
+        for (int i = 0; i < Settings.Instance.MaxNumberOfRows; i++)
         {
             if (packedAudioBlock.Instantiate() is not AudioBlock audioBlock)
             {
@@ -81,7 +81,7 @@ public partial class AudioVisualsContainer : VBoxContainer
 
             audioDisplayPanel.Playhead.Visible = false;
 
-            audioDisplayPanel.SeekPlaybackTime += OnSeekPlaybackTime;
+            //audioDisplayPanel.SeekPlaybackTime += OnSeekPlaybackTime;
             audioDisplayPanel.AttemptToAddTimingPoint += OnAttemptToAddTimingPoint;
 
             audioDisplayPanel.IsInstantiating = false;
@@ -97,7 +97,7 @@ public partial class AudioVisualsContainer : VBoxContainer
         for (int i = 0; i < children.Count; i++)
         {
             var waveformWindow = (AudioBlock)children[i];
-            waveformWindow.Visible = i < Settings.Instance.NumberOfBlocks;
+            waveformWindow.Visible = i < Settings.Instance.NumberOfRows;
         }
     }
 
@@ -119,13 +119,13 @@ public partial class AudioVisualsContainer : VBoxContainer
         }
     }
 
-    private void OnSeekPlaybackTime(object? sender, EventArgs e)
-    {
-        if (e is not Signals.ObjectArgument<float> floatArgument)
-            throw new Exception($"{nameof(e)} was not of type {nameof(Signals.ObjectArgument<float>)}");
-        float playbackTime = floatArgument.Value;
-        SeekPlaybackTime?.Invoke(this, new Signals.ObjectArgument<float>(playbackTime));
-    }
+    //private void OnSeekPlaybackTime(object? sender, EventArgs e)
+    //{
+    //    if (e is not Signals.ObjectArgument<float> floatArgument)
+    //        throw new Exception($"{nameof(e)} was not of type {nameof(Signals.ObjectArgument<float>)}");
+    //    float playbackTime = floatArgument.Value;
+    //    SeekPlaybackTime?.Invoke(this, new Signals.ObjectArgument<float>(playbackTime));
+    //}
 
     private void OnAttemptToAddTimingPoint(object? sender, EventArgs e)
     {

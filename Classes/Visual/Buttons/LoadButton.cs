@@ -8,8 +8,7 @@ namespace Tempora.Classes.Visual;
 
 public partial class LoadButton : Button
 {
-    [Export]
-    AudioPlayer audioPlayer = null!;
+    private AudioPlayer audioPlayer = null!;
     
     [Export]
     private FileDialog loadFileDialog = null!;
@@ -17,6 +16,7 @@ public partial class LoadButton : Button
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        audioPlayer = Project.Instance.SongPlayer;
         Pressed += OnPressed;
         loadFileDialog.FileSelected += OnFileSelected;
     }
@@ -47,9 +47,9 @@ public partial class LoadButton : Button
         switch (extension)
         {
             case var value when value == mp3Extension:
-                var audioFile = new AudioFile(selectedPath);
-                Project.Instance.AudioFile = audioFile;
-                audioPlayer.LoadMp3();
+                var songFile = new SongFile(selectedPath);
+                Project.Instance.SongFile = songFile;
+                audioPlayer.LoadStream();
                 break;
             case var value when value == projectFileExtension:
                 ProjectFileManager.Instance.LoadProjectFromFilePath(selectedPath);

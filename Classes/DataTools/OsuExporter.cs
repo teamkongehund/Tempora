@@ -101,7 +101,7 @@ SliderTickRate:1
         return $"{offsetMs},{msPerBeat},{beatsInMeasure},2,0,80,1,0\n";
     }
 
-    public static void SaveOsz(string oszPath, string dotOsuString, AudioFile audioFile)
+    public static void SaveOsz(string oszPath, string dotOsuString, SongFile songFile)
     {
         using var zipPacker = new ZipPacker();
         Error err = zipPacker.Open(oszPath);
@@ -117,7 +117,7 @@ SliderTickRate:1
 
         zipPacker.StartFile("audio.mp3");
         //zipPacker.WriteFile(FileHandler.GetFileAsBuffer(audioFile.Path));
-        zipPacker.WriteFile(((AudioStreamMP3)audioFile.Stream).Data);
+        zipPacker.WriteFile(((AudioStreamMP3)songFile.Stream).Data);
         zipPacker.CloseFile();
 
         zipPacker.Close();
@@ -131,7 +131,7 @@ SliderTickRate:1
         int rand = random.Next();
         string path = $"user://{rand}.osz";
         string dotOsu = GetDotOsu(Timing.Instance);
-        SaveOsz(path, dotOsu, Project.Instance.AudioFile);
+        SaveOsz(path, dotOsu, Project.Instance.SongFile);
 
         // Open with system:
         string globalPath = ProjectSettings.GlobalizePath(path);

@@ -9,7 +9,7 @@ namespace Tempora.Classes.Utility;
 /// </summary>
 public partial class Signals : Node
 {
-    public event EventHandler AudioFileChanged = null!;
+    //public event EventHandler AudioFileChanged = null!;
     public event EventHandler MouseLeftReleased = null!;
     public event EventHandler Scrolled = null!;
     public event EventHandler SelectedPositionChanged = null!;
@@ -44,7 +44,7 @@ public partial class Signals : Node
 
     public enum Events
     {
-        AudioFileChanged,
+        //AudioFileChanged,
         MouseLeftReleased,
         Scrolled,
         SelectedPositionChanged,
@@ -69,7 +69,7 @@ public partial class Signals : Node
 
         EventsDict = new SysCol.Dictionary<Events, EventHandler>
         {
-            { Events.AudioFileChanged, (s, e) => AudioFileChanged?.Invoke(s, e) },
+            //{ Events.AudioFileChanged, (s, e) => AudioFileChanged?.Invoke(s, e) },
             { Events.MouseLeftReleased, (s, e) => MouseLeftReleased?.Invoke(s, e) },
             { Events.Scrolled, (s, e) => Scrolled?.Invoke(s, e) },
             { Events.SelectedPositionChanged, (s, e) => SelectedPositionChanged?.Invoke(s, e) },

@@ -7,8 +7,23 @@ namespace Tempora.Classes.Audio;
 
 public partial class AudioPlayer : AudioStreamPlayer
 {
+    private AudioFile audioFile = null!;
+    public AudioFile AudioFile
+    {
+        get => audioFile;
+        set
+        {
+            if (audioFile == value)
+                return;
 
-    //new public float VolumeDb; // Hides actual volume from other API's, so they can't mess with volume while fading.
+            if (audioFile != null)
+                audioFile.StreamChanged -= OnAudioFileStreamChanged;
+
+            audioFile = value;
+            LoadStream();
+            audioFile.StreamChanged += OnAudioFileStreamChanged;
+        }
+    }
 
     public double PlaybackTime
     {
@@ -20,7 +35,7 @@ public partial class AudioPlayer : AudioStreamPlayer
     {
         //VolumeDb = base.VolumeDb;
         Signals.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
-        Signals.Instance.AudioFileChanged += OnAudioFileChanged;
+        //Signals.Instance.AudioFileChanged += OnAudioFileChanged;
     }
 
     public override void _Process(double delta)
@@ -41,7 +56,9 @@ public partial class AudioPlayer : AudioStreamPlayer
         PauseTime = time >= 0 ? (double)time : 0;
     }
 
-    private void OnAudioFileChanged(object? sender, EventArgs e) => LoadMp3();
+    //private void OnAudioFileChanged(object? sender, EventArgs e) => LoadStream();
+
+    private void OnAudioFileStreamChanged(object? sender, EventArgs e) => LoadStream();
 
     public void Pause() =>
         //PausePosition = GetPlaybackTime();
@@ -95,10 +112,15 @@ public partial class AudioPlayer : AudioStreamPlayer
             : PauseTime;
     }
 
-    public void LoadMp3()
+    //public void LoadMp3()
+    //{
+    //    Stream = Project.Instance.SongFile.Stream ?? (FileAccess.FileExists(Project.Instance.SongFile.Path)
+    //            ? FileHandler.LoadFileAsAudioStreamMp3(Project.Instance.SongFile.Path)
+    //            : throw new Exception($"Failed to update songPlayer stream - check if {Project.Instance.SongFile.Path} exists."));
+    //}
+
+    public void LoadStream()
     {
-        Stream = Project.Instance.AudioFile.Stream ?? (FileAccess.FileExists(Project.Instance.AudioFile.Path)
-                ? FileHandler.LoadFileAsAudioStreamMp3(Project.Instance.AudioFile.Path)
-                : throw new Exception($"Failed to update songPlayer stream - check if {Project.Instance.AudioFile.Path} exists."));
+        Stream = AudioFile.Stream;
     }
 }

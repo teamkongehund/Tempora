@@ -38,12 +38,12 @@ public partial class LabeledScrollbarHorizontal : HBoxContainer
     protected virtual void OnValueChanged(double value)
     {
         UpdateValueLabel();
-        UpdateValue();
+        UpdateReferenceValue();
     }
 
     protected virtual void UpdateValueLabel() => valueLabel.Text = hScrollBar.Value.ToString("0.00");
 
-    protected virtual void UpdateValue() => GD.Print("No value updated. UpdateValue() must be overridden.");
+    protected virtual void UpdateReferenceValue() => GD.Print("No value updated. UpdateValue() must be overridden.");
 
     protected virtual void SetInitialValue() => hScrollBar.Value = hScrollBar.MinValue;
 
