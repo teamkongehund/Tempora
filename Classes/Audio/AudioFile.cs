@@ -113,7 +113,7 @@ public partial class AudioFile : Node
 
     public void CalculatePer10s()
     {
-        int smallLength = (int)(AudioData.Length / 10f);
+        int smallLength = AudioData.Length / 10;
         bool isDataLengthDivisibleBy10 = AudioData.Length % 10 == 0;
         int length = isDataLengthDivisibleBy10 ? smallLength : smallLength + 1;
 
