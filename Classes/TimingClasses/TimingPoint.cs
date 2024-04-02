@@ -72,6 +72,12 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 
     public void Offset_Set(float value, Timing timing)
     {
+        if (IsInstantiating)
+        {
+            offset = value;
+            return;
+        }
+
         TimingPoint? previousTimingPoint = timing.GetPreviousTimingPoint(this);
         TimingPoint? nextTimingPoint = timing.GetNextTimingPoint(this);
 
@@ -253,6 +259,12 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
     {
         this.offset = time;
         this.timeSignature = timeSignature;
+        SystemTimeWhenCreatedMsec = Time.GetTicksMsec();
+    }
+
+    public TimingPoint(float musicPosition)
+    {
+        this.musicPosition = musicPosition;
         SystemTimeWhenCreatedMsec = Time.GetTicksMsec();
     }
 

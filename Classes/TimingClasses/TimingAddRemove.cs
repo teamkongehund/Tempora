@@ -29,8 +29,38 @@ public partial class Timing
             if (!IsInstantiating)
                 Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
         }
+        //if (index < TimingPoints.Count - 1)
+        //{
+        //    timingPoint.MeasuresPerSecond_Set(this);
+
+        //    if (!IsInstantiating)
+        //        Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
+        //}
 
         ActionsHandler.Instance.AddTimingMemento();
+    }
+
+    /// <summary>
+    /// Add a timing point and decude time and MPS from other Timing Points. Useful for adding extra points on downbeats and quarter notes.
+    /// This method should not be accessible from the GUI.
+    /// </summary>
+    /// <param name="musicPosition"></param>
+    /// <param name="time"></param>
+    public void AddTimingPoint(float musicPosition)
+    {
+        var timingPoint = new TimingPoint(musicPosition);
+        timingPoint.Offset_Set(MusicPositionToTime(musicPosition), this);
+        TimingPoints.Add(timingPoint);
+        SubscribeToEvents(timingPoint);
+        TimingPoints.Sort();
+
+        // This should also update MPS
+        timingPoint.TimeSignature = GetTimeSignature(musicPosition);
+
+        timingPoint.IsInstantiating = false;
+
+        // No timing memento added, as this isn't method shouldn't be executed directly from a user action.
+        //ActionsHandler.Instance.AddTimingMemento();
     }
 
     /// <summary>
