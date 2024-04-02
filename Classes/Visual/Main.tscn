@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
 [ext_resource type="AudioStream" uid="uid://clutjafa1rf7f" path="res://Audio/UMO.mp3" id="2_klkb2"]
-[ext_resource type="PackedScene" uid="uid://djvimmuyfu0pu" path="res://Classes/Audio/MusicPlayer.tscn" id="2_nrfju"]
+[ext_resource type="PackedScene" path="res://Classes/Audio/MusicPlayer.tscn" id="2_nrfju"]
 [ext_resource type="Script" path="res://Classes/Visual/AudioVisualsContainer.cs" id="3_bj8ok"]
 [ext_resource type="PackedScene" uid="uid://bnbif04ymgk1h" path="res://Classes/Audio/Metronome.tscn" id="4_n2ir2"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/BlockScrollBar.cs" id="5_aqu3i"]
@@ -11,7 +11,7 @@
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/VolumeSlider.cs" id="6_w0n8n"]
 [ext_resource type="Script" path="res://Classes/Visual/OptionsMenu.cs" id="7_1c6ke"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/GridScrollBar.cs" id="7_i2h88"]
-[ext_resource type="PackedScene" path="res://Classes/Visual/Scrollbars/LabeledScrollbarHorizontal.tscn" id="8_6ej7c"]
+[ext_resource type="PackedScene" uid="uid://dlxwsp2735blf" path="res://Classes/Visual/Scrollbars/LabeledScrollbarHorizontal.tscn" id="8_6ej7c"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/PlaybackRateScrollBar.cs" id="8_6jrsb"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/BlockAmountScrollBar.cs" id="9_22ufa"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/OffsetScrollBar.cs" id="10_yfm4l"]

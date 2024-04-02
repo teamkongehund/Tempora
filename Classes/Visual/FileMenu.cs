@@ -5,6 +5,7 @@ using System.Linq;
 using Tempora.Classes.Audio;
 using Tempora.Classes.Utility;
 using Tempora.Classes.TimingClasses;
+using System.IO;
 
 public partial class FileMenu : PopupMenu
 {
@@ -47,7 +48,7 @@ public partial class FileMenu : PopupMenu
                 OsuExporter.ExportAndOpenOsz();
                 break;
             case 3:
-                OsuExporter.ExportAndOpenOsz();
+                SaveFileDialogPopup(SaveConfig.osz);
                 break;
         }
     }
@@ -77,7 +78,7 @@ public partial class FileMenu : PopupMenu
                 Settings.Instance.ProjectFilesDirectory = dir;
                 break;
             case SaveConfig.osz:
-                OsuExporter.SaveOsz(selectedPath);
+                OsuExporter.SaveOszAs_AndShowInFileExplorer(selectedPath);
                 dir = FileHandler.GetDirectory(selectedPath);
                 Settings.Instance.OszFilesDirectory = dir;
                 break;

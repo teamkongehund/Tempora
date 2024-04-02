@@ -102,9 +102,10 @@ SliderTickRate:1
         return $"{offsetMs},{msPerBeat},{beatsInMeasure},2,0,80,1,0\n";
     }
 
-    public static void SaveOsz(string oszPath)
+    public static void SaveOsz(string oszPath, out string changedPath)
     {
-        Path.ChangeExtension(oszPath, "osz");
+        oszPath = Path.ChangeExtension(oszPath, ".osz");
+        changedPath = oszPath;
 
         string dotOsu = GetDotOsu(Timing.Instance);
 
@@ -149,14 +150,9 @@ SliderTickRate:1
             OS.ShellOpen(globalPath);
     }
 
-    public static void ExportOszAsAndOpenDirectory(string path)
+    public static void SaveOszAs_AndShowInFileExplorer(string path)
     {
-        SaveOsz(path);
-
-        // Open directory with system:
-        string globalPath = ProjectSettings.GlobalizePath(path);
-        globalPath = FileHandler.GetDirectory(globalPath);
-        if (Godot.FileAccess.FileExists(globalPath))
-            OS.ShellOpen(globalPath);
+        SaveOsz(path, out path);
+        OS.ShellShowInFileManager(path);
     }
 }
