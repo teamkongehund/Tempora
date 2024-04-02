@@ -43,7 +43,7 @@ bus = &"Music"
 resyncTimer = NodePath("ResyncTimer")
 
 [node name="ResyncTimer" type="Timer" parent="MusicPlayer/Metronome"]
-wait_time = 2.0
+wait_time = 5.0
 autostart = true
 
 [node name="ColorRect" type="ColorRect" parent="."]

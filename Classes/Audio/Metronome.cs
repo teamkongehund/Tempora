@@ -36,12 +36,15 @@ public partial class Metronome : Node
     private int lastGridDivisor;
 
     private Vector2[] click1Cache = null!;
+    private int metronomeSampleRate;
     private Vector2[] click2Cache = null!;
 
+    #region Godot
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
         click1Cache = CacheWavFile("res://Audio/Click1.wav");
+        metronomeSampleRate = GetSampleRate("res://Audio/Click1.wav");
         click2Cache = CacheWavFile("res://Audio/Click2.wav");
 
         musicPlayer = GetParentOrNull<MusicPlayer>();
@@ -71,6 +74,32 @@ public partial class Metronome : Node
 
         resyncTimer.Timeout += OnResyncTimerTimeout;
     }
+    public override void _Process(double delta)
+    {
+        //UpdateCurrentMusicFrame(musicPlayer!.PlaybackTime); // Ensures music and metronome don't go out of sync due to accumulating rounding errors.
+        FillBuffer();
+    }
+    public override void _Input(InputEvent @event)
+    {
+        if (@event is InputEventKey keyEvent)
+        {
+            if (keyEvent is { Keycode: Key.A, Pressed: true } && !isMuted)
+            {
+                // Mute metronome
+                previousVolumeDb = audioStreamPlayer.VolumeDb;
+                audioStreamPlayer.VolumeDb = -60;
+                isMuted = true;
+            }
+            else if (keyEvent is { Keycode: Key.A, Pressed: false } && isMuted)
+            {
+                // Restore metronome volume to previous
+                audioStreamPlayer.VolumeDb = previousVolumeDb;
+                isMuted = false;
+            }
+        }
+    } 
+    #endregion
+    #region Buffer
 
     private double currentMusicFrame;
     private int numClickFramesLeftToAdd;
@@ -86,6 +115,8 @@ public partial class Metronome : Node
         int framesAvailable = playback.GetFramesAvailable();
         var buffer = new Vector2[Mathf.Min(framesAvailable, maxBuffer)];
         int bufferIndex = 0;
+
+        float sampleRateRatio = metronomeSampleRate / musicSampleRate;
 
         double initialMusicFrame = currentMusicFrame;
         for (int i = 0; i < framesAvailable; i++)
@@ -109,7 +140,7 @@ public partial class Metronome : Node
                 buffer[bufferIndex] = Vector2.Zero;
             }
 
-            currentMusicFrame = initialMusicFrame + musicPitchScale * i;
+            currentMusicFrame = initialMusicFrame + musicPitchScale * i / sampleRateRatio;
             bufferIndex++;
 
             if (bufferIndex >= buffer.Length)
@@ -122,19 +153,20 @@ public partial class Metronome : Node
         if (bufferIndex > 0)
             playback.PushBuffer(buffer[..bufferIndex]);
     }
+    private void RefillBuffer()
+    {
+        if (playback is null) return;
+        SeekPlayback(musicPlayer!.PlaybackTime);
+    }
 
     private void UpdateTriggerTime(double currentTime)
     {
         float musicPosition = Timing.Instance.TimeToMusicPosition((float)currentTime);
         triggerPosition = GetTriggerPosition(musicPosition);
         triggerTime = Timing.Instance.MusicPositionToTime(triggerPosition);
-    }
+    } 
+    #endregion
 
-    private void OnPitchScaleChanged(float value)
-    {
-        musicPitchScale = value;
-        RefillBuffer();
-    }
 
     private void StartPlayback()
     {
@@ -153,24 +185,20 @@ public partial class Metronome : Node
         StartPlayback();
     }
 
-    private void RefillBuffer()
-    {
-        if (playback is null) return;
-        SeekPlayback(musicPlayer!.PlaybackTime);
-    }
-
     private void StopPlayback()
     {
         audioStreamPlayer.Stop();
         playback = null;
     }
 
-    public override void _Process(double delta)
-    {
-        //UpdateCurrentMusicFrame(musicPlayer!.PlaybackTime); // Ensures music and metronome don't go out of sync due to accumulating rounding errors.
-        FillBuffer();
-    }
 
+
+    #region Events
+    private void OnPitchScaleChanged(float value)
+    {
+        musicPitchScale = value;
+        RefillBuffer();
+    }
     private void OnResyncTimerTimeout() => RefillBuffer();
 
     private void OnSettingsChanged(object? sender, EventArgs e)
@@ -186,26 +214,14 @@ public partial class Metronome : Node
             RefillBuffer();
         }
     }
-
-    public override void _Input(InputEvent @event)
+    private void OnAudioFileChanged(object? sender, EventArgs e)
     {
-        if (@event is InputEventKey keyEvent)
-        {
-            if (keyEvent is { Keycode: Key.A, Pressed: true } && !isMuted)
-            {
-                // Mute metronome
-                previousVolumeDb = audioStreamPlayer.VolumeDb;
-                audioStreamPlayer.VolumeDb = -60;
-                isMuted = true;
-            }
-            else if (keyEvent is { Keycode: Key.A, Pressed: false } && isMuted)
-            {
-                // Restore metronome volume to previous
-                audioStreamPlayer.VolumeDb = previousVolumeDb;
-                isMuted = false;
-            }
-        }
+        musicSampleRate = Project.Instance.AudioFile.SampleRate;
+        //audioStreamGenerator = new AudioStreamGenerator { BufferLength = bufferLength, MixRate = musicSampleRate };
+        //audioStreamGenerator.MixRate = musicSampleRate;
     }
+    #endregion
+
 
     private static float GetTriggerPosition(float musicPosition)
     {
@@ -214,7 +230,6 @@ public partial class Metronome : Node
             : Timing.Instance.GetNextOperatingBeatPosition(musicPosition);
     }
 
-    private void OnAudioFileChanged(object? sender, EventArgs e) => musicSampleRate = Project.Instance.AudioFile.SampleRate;
 
     private static Vector2[] CacheWavFile(string path)
     {
@@ -229,5 +244,14 @@ public partial class Metronome : Node
         }
 
         return cache;
+    }
+
+    private static int GetSampleRate(string path)
+    {
+        using FileAccess? file = FileAccess.Open(path, FileAccess.ModeFlags.Read);
+        using var fileStream = new MemoryStream(file.GetBuffer((long)file.GetLength()));
+        using var waveReader = new WaveFileReader(fileStream);
+
+        return waveReader.WaveFormat.SampleRate;
     }
 }
