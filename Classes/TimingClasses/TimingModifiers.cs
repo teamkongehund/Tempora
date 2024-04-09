@@ -76,7 +76,7 @@ public partial class Timing
             TimingPoints[i].TimeSignature = timeSignature;
         }
 
-        if (TimingPoints.Find(point => point.MusicPosition == musicPosition) == null)
+        if (TimingPoints.Find(point => point.MusicPosition == musicPosition) == null && TimingPoints.Count > 0)
             AddTimingPoint(musicPosition, MusicPositionToTime(musicPosition));
 
         ShiftTimingPointsUponTimeSignatureChange(oldTiming, timeSignaturePoint);

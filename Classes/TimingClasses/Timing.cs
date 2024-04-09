@@ -126,6 +126,9 @@ public partial class Timing : Node, IMementoOriginator
         if (timingPoint.MusicPosition == null)
             throw new NullReferenceException($"Operating TimingPoint does not have a non-null {nameof(TimingPoint.MusicPosition)}");
 
+        if (timingPoint.MeasuresPerSecond <= 0)
+            throw new Exception("Operating timing point has MeasuresPerSecond <= 0");
+
         float time = (float)(timingPoint.Offset + ((musicPosition - timingPoint.MusicPosition) / timingPoint.MeasuresPerSecond));
 
         return time;

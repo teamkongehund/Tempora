@@ -37,7 +37,7 @@ public partial class Timing
         //        Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
         //}
 
-        ActionsHandler.Instance.AddTimingMemento();
+        //ActionsHandler.Instance.AddTimingMemento();
     }
 
     /// <summary>

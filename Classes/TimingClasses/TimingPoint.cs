@@ -186,6 +186,8 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 
         if (MusicPosition == null)
             throw new NullReferenceException(nameof(MusicPosition));
+        if (nextTimingPoint?.MusicPosition == musicPosition || previousTimingPoint?.MusicPosition == musicPosition)
+            throw new Exception("Neighboring Timing Point has same Music Position.");
 
         if (nextTimingPoint?.MusicPosition != null)
         {
