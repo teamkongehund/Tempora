@@ -9,21 +9,22 @@ public partial class Timing
     public static Timing CopyAndAddExtraPoints(Timing timing)
     {
         var newTiming = CopyTiming(timing);
-        AddExtraPointsOnDownbeats(newTiming);
-        AddExtraPointsOnQuarterNotes(newTiming);
+        AddExtraPointsOnDownbeats(newTiming, out newTiming);
+        AddExtraPointsOnQuarterNotes(newTiming, out newTiming);
         return newTiming;
     }
 
-    private static void AddExtraPointsOnDownbeats(Timing timing)
+    private static void AddExtraPointsOnDownbeats(Timing timing, out Timing newTiming)
     {
+        newTiming = timing;
         var downbeatPositions = new List<int>();
-        foreach (TimingPoint timingPoint in timing.TimingPoints)
+        foreach (TimingPoint timingPoint in newTiming.TimingPoints)
         {
             if (timingPoint?.MusicPosition == null)
                 break;
             if (timingPoint.MusicPosition % 1 == 0)
                 continue; // downbeat point on next is unnecessary
-            TimingPoint? nextTimingPoint = Timing.Instance.GetNextTimingPoint(timingPoint);
+            TimingPoint? nextTimingPoint = newTiming.GetNextTimingPoint(timingPoint);
             bool isNextPointInSameMeasure = nextTimingPoint?.MusicPosition != null 
                 && (int)nextTimingPoint.MusicPosition == (int)timingPoint.MusicPosition;
             bool isThereAPointOnNextDownbeat = nextTimingPoint?.MusicPosition != null
@@ -36,27 +37,29 @@ public partial class Timing
         {
             //float time = newTiming.MusicPositionToTime(downbeat);
             //newTiming.AddTimingPoint(downbeat, time);
-            timing.AddTimingPoint(downbeat);
+            newTiming.AddTimingPoint(downbeat);
         }
     }
 
-    private static void AddExtraPointsOnQuarterNotes(Timing timing)
+    private static void AddExtraPointsOnQuarterNotes(Timing timing, out Timing newTiming)
     {
+        newTiming = timing;
         // Add extra quarter-note timing points
         var quaterNotePositions = new List<float>();
-        foreach (TimingPoint timingPoint in timing.TimingPoints)
+        foreach (TimingPoint timingPoint in newTiming.TimingPoints)
         {
             if (timingPoint == null)
                 break;
             if (timingPoint.MusicPosition == null)
                 break;
 
-            float beatLength = timing.GetDistancePerBeat((float)timingPoint.MusicPosition);
-            float beatPosition = timing.GetOperatingBeatPosition((float)timingPoint.MusicPosition);
-            TimingPoint? nextTimingPoint = timing.GetNextTimingPoint(timingPoint);
+            float beatLength = newTiming.GetDistancePerBeat((float)timingPoint.MusicPosition);
+            float beatPosition = newTiming.GetOperatingBeatPosition((float)timingPoint.MusicPosition);
+            TimingPoint? nextTimingPoint = newTiming.GetNextTimingPoint(timingPoint);
             float? nextPointPosition = nextTimingPoint?.MusicPosition;
 
-            bool isOnQuarterNote = timingPoint.MusicPosition % beatLength == 0;
+            float epsilon = 0.00001f;
+            bool isOnQuarterNote = (timingPoint.MusicPosition % beatLength < epsilon || (beatLength - timingPoint.MusicPosition % beatLength) < epsilon);
             bool nextPointIsOnOrBeforeNextQuarterNote = (nextTimingPoint != null
                 && nextPointPosition <= beatPosition + beatLength);
             if (isOnQuarterNote || nextPointIsOnOrBeforeNextQuarterNote)
@@ -68,7 +71,7 @@ public partial class Timing
         {
             //float time = newTiming.MusicPositionToTime(quarterNote);
             //newTiming.AddTimingPoint(quarterNote, time);
-            timing.AddTimingPoint(quarterNote);
+            newTiming.AddTimingPoint(quarterNote);
         }
     }
 
