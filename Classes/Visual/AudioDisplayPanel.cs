@@ -137,10 +137,12 @@ public partial class AudioDisplayPanel : Control
 
             case InputEventMouseButton { ButtonIndex: MouseButton.WheelUp, Pressed: true } mouseButtonEvent when Input.IsKeyPressed(Key.Ctrl):
                 nearestTimingPoint?.Offset_Set(nearestTimingPoint.Offset + offsetPerWheelScroll, Timing.Instance);
+                ActionsHandler.Instance.AddTimingMemento(nearestTimingPoint);
                 break;
 
             case InputEventMouseButton { ButtonIndex: MouseButton.WheelDown, Pressed: true } mouseButtonEvent when Input.IsKeyPressed(Key.Ctrl):
                 nearestTimingPoint?.Offset_Set(nearestTimingPoint.Offset - offsetPerWheelScroll, Timing.Instance);
+                ActionsHandler.Instance.AddTimingMemento(nearestTimingPoint);
                 break;
 
             //case InputEventMouseMotion mouseMotion:

@@ -84,7 +84,7 @@ public partial class Timing
         int i = timingPoints.IndexOf(timingPoint);
 
         if (i == -1)
-            GD.Print($"NextTimingPoint(): Timing point {timingPoint} with index {i} (taken from Timing {this}) is not present in the list of timing points");
+            throw new Exception($"NextTimingPoint(): Timing point {timingPoint} with index {i} (taken from Timing {this}) is not present in the list of timing points");
         return i + 1 >= timingPoints.Count ? null : timingPoints[i + 1];
     }
 }
