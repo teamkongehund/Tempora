@@ -68,7 +68,10 @@ public partial class Timing
             ? musicPosition % 1
             : 1 + (musicPosition % 1);
         int beatsFromDownbeat = (int)MathF.Ceiling(relativePosition / beatLength);
-        float position = (beatsFromDownbeat * beatLength) + downbeatPosition;
+
+        float position = (relativePosition + beatLength) <= 1
+            ? (beatsFromDownbeat * beatLength) + downbeatPosition
+            : downbeatPosition + 1;
         return position;
     }
 
