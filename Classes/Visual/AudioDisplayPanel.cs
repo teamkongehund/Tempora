@@ -121,7 +121,8 @@ public partial class AudioDisplayPanel : Control
         float musicPosition = GetMouseMusicPosition(mousePos);
         float time = Timing.Instance.MusicPositionToTime(musicPosition);
 
-        TimingPoint? operatingTimingPoint = Timing.Instance.GetOperatingTimingPoint_ByMusicPosition(musicPosition);
+        TimingPoint? nearestTimingPoint = Timing.Instance.GetNearestTimingPoint(musicPosition);
+        Context.Instance.LitTimingPoint = nearestTimingPoint;
         float offsetPerWheelScroll = 0.002f;
 
         switch (mouseEvent)
@@ -135,11 +136,11 @@ public partial class AudioDisplayPanel : Control
                 break;
 
             case InputEventMouseButton { ButtonIndex: MouseButton.WheelUp, Pressed: true } mouseButtonEvent when Input.IsKeyPressed(Key.Ctrl):
-                operatingTimingPoint?.Offset_Set(operatingTimingPoint.Offset + offsetPerWheelScroll, Timing.Instance);
+                nearestTimingPoint?.Offset_Set(nearestTimingPoint.Offset + offsetPerWheelScroll, Timing.Instance);
                 break;
 
             case InputEventMouseButton { ButtonIndex: MouseButton.WheelDown, Pressed: true } mouseButtonEvent when Input.IsKeyPressed(Key.Ctrl):
-                operatingTimingPoint?.Offset_Set(operatingTimingPoint.Offset - offsetPerWheelScroll, Timing.Instance);
+                nearestTimingPoint?.Offset_Set(nearestTimingPoint.Offset - offsetPerWheelScroll, Timing.Instance);
                 break;
 
             //case InputEventMouseMotion mouseMotion:

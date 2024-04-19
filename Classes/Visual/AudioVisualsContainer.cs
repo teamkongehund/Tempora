@@ -53,6 +53,16 @@ public partial class AudioVisualsContainer : VBoxContainer
         }
     }
 
+    public override void _Ready()
+    {
+        MouseExited += OnMouseExited;
+    }
+
+    private void OnMouseExited()
+    {
+        Context.Instance.LitTimingPoint = null;
+    }
+
     public void CreateBlocks()
     {
         foreach (Node? child in GetChildren())

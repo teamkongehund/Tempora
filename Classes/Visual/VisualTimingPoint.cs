@@ -22,10 +22,13 @@ public partial class VisualTimingPoint : Node2D
     [Export]
     private Timer flashTimer = null!;
 
-    private Vector2 defaultSize = new(128, 128);
-    private Vector2 LargerSize => defaultSize * 1.5f;
+    private Vector2 defaultColorRectSize = new(128, 128);
+    private Vector2 largerSize => defaultColorRectSize * 1.5f;
+    private Vector2 mediumLargeSize => defaultColorRectSize * 1.3f;
     private Color defaultColor = new("ff990096");
     private Color red = new("ff000096");
+    private Color lightUpColor = new("ff990096");
+    private bool isLit = false;
 
     //private ulong SystemTimeWhenCreated;
 
@@ -71,10 +74,11 @@ public partial class VisualTimingPoint : Node2D
         //VisibilityChanged += OnVisibilityChanged;
 
         Signals.Instance.MusicPositionChangeRejected += OnMusicPositionChangeRejected;
+        Signals.Instance.TimingPointLightUp += OnTimingPointLightUp;
 
         flashTimer.Timeout += OnFlashTimerTimeout;
         defaultColor = colorRect.Color;
-        defaultSize = colorRect.Size;
+        defaultColorRectSize = colorRect.Size;
     }
 
     private void OnTimingPointChanged(object? sender, EventArgs e)
@@ -178,19 +182,11 @@ public partial class VisualTimingPoint : Node2D
         return;
     }
 
-    private void OnFlashTimerTimeout()
-    {
-        if (colorRect.Color != defaultColor)
-        {
-            RevertFlash();
-            flashTimer.Start(); // period of default color
-        }
-    }
 
-    private void RevertFlash()
+    private void UseDefaultLooks()
     {
         colorRect.Color = defaultColor;
-        SetColorRectSize(defaultSize);
+        SetColorRectSize(defaultColorRectSize);
     }
 
     private void SetColorRectSize(Vector2 size)
@@ -198,6 +194,16 @@ public partial class VisualTimingPoint : Node2D
         colorRect.Size = size;
         colorRect.Position = -size / 2;
         colorRect.PivotOffset = size / 2;
+    }
+
+    #region FlashRed
+    private void OnFlashTimerTimeout()
+    {
+        if (colorRect.Color != defaultColor)
+        {
+            UseDefaultLooks();
+            flashTimer.Start(); // period of default color
+        }
     }
 
     private void OnMusicPositionChangeRejected(object? sender, EventArgs e)
@@ -215,7 +221,28 @@ public partial class VisualTimingPoint : Node2D
         if (!flashTimer.IsStopped())
             return;
         colorRect.Color = red;
-        SetColorRectSize(LargerSize);
+        SetColorRectSize(largerSize);
         flashTimer.Start();
+    } 
+    #endregion
+
+    private void OnTimingPointLightUp(object? sender, EventArgs e)
+    {
+        if (e is not Signals.ObjectArgument<TimingPoint> timingPointArgument)
+            return;
+        if (timingPointArgument.Value != TimingPoint)
+        {
+            if (isLit)
+                UseDefaultLooks();
+            return;
+        }
+        LightUp();
+    }
+
+    private void LightUp()
+    {
+        colorRect.Color = lightUpColor;
+        SetColorRectSize(mediumLargeSize);
+        isLit = true;
     }
 }

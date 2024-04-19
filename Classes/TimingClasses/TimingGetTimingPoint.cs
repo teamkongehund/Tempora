@@ -5,6 +5,34 @@ using GD = Tempora.Classes.DataTools.GD;
 namespace Tempora.Classes.TimingClasses;
 public partial class Timing
 {
+    public TimingPoint? GetNearestTimingPoint(float musicPosition)
+    {
+        if (TimingPoints.Count == 0)
+            return null;
+
+        TimingPoint? previousTimingPoint = TimingPoints.FindLast(point => point.MusicPosition <= musicPosition);
+        TimingPoint? nextTimingPoint = TimingPoints.Find(point => point.MusicPosition > musicPosition);
+
+        TimingPoint? timingPoint = null;
+
+        if (previousTimingPoint?.MusicPosition != null && nextTimingPoint == null)
+            return previousTimingPoint;
+        else if (previousTimingPoint == null && nextTimingPoint?.MusicPosition != null)
+            return nextTimingPoint;
+        else if (previousTimingPoint?.MusicPosition != null && nextTimingPoint?.MusicPosition != null)
+        {
+            float distanceToNext = Math.Abs((float)nextTimingPoint.MusicPosition - musicPosition);
+            float distanceToPrevious = Math.Abs((float)previousTimingPoint.MusicPosition - musicPosition);
+            timingPoint = (distanceToPrevious < distanceToNext) ? previousTimingPoint : nextTimingPoint;
+        }
+
+        return timingPoint == null
+            ? throw new NullReferenceException("Timing point does not exist")
+            : timingPoint.MusicPosition == null
+            ? throw new NullReferenceException($"Nearest TimingPoint does not have a non-null {nameof(TimingPoint.MusicPosition)}")
+            : timingPoint;
+    }
+
     public TimingPoint? GetOperatingTimingPoint_ByMusicPosition(float musicPosition)
     {
         if (TimingPoints.Count == 0)

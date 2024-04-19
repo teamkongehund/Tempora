@@ -17,6 +17,7 @@ public partial class Signals : Node
     public event EventHandler TimingChanged = null!;
     public event EventHandler TimingPointHolding = null!;
     public event EventHandler MusicPositionChangeRejected = null!;
+    public event EventHandler TimingPointLightUp = null!;
 
 
     public class FloatArgument(float value) : EventArgs
@@ -51,7 +52,8 @@ public partial class Signals : Node
         SettingsChanged,
         TimingChanged,
         TimingPointHolding,
-        MusicPositionChangeRejected
+        MusicPositionChangeRejected,
+        TimingPointLightUp
     }
 
     private SysCol.Dictionary<Events, EventHandler> EventsDict = null!;
@@ -76,7 +78,8 @@ public partial class Signals : Node
             { Events.SettingsChanged, (s, e) => SettingsChanged?.Invoke(s, e) },
             { Events.TimingChanged, (s, e) => TimingChanged?.Invoke(s, e) },
             { Events.TimingPointHolding, (s, e) => TimingPointHolding?.Invoke(s, e) },
-            { Events.MusicPositionChangeRejected, (s, e) => MusicPositionChangeRejected?.Invoke(s, e) }
+            { Events.MusicPositionChangeRejected, (s, e) => MusicPositionChangeRejected?.Invoke(s, e) },
+            { Events.TimingPointLightUp, (s, e) => TimingPointLightUp?.Invoke(s, e) },
         };
     }
 }

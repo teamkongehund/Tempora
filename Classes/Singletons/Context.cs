@@ -42,6 +42,19 @@ public partial class Context : Node
         }
     }
 
+    TimingPoint? litTimingPoint;
+    public TimingPoint? LitTimingPoint
+    {
+        get => litTimingPoint;
+        set
+        {
+            if (litTimingPoint == value)
+                return;
+            litTimingPoint = value;
+            Signals.Instance.EmitEvent(Signals.Events.TimingPointLightUp, new Signals.ObjectArgument<TimingPoint?>(litTimingPoint));
+        }
+    }
+
     public bool IsSelectedMusicPositionMoving = false;
 
     private float selectedPosition;
