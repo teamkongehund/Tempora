@@ -1,4 +1,5 @@
-﻿using Godot;
+﻿using System;
+using Godot;
 using Tempora.Classes.Utility;
 
 namespace Tempora.Classes.TimingClasses;
@@ -78,7 +79,15 @@ public partial class Timing
         if (!IsInstantiating)
             Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
 
-        ActionsHandler.Instance.AddTimingMemento();
+        int index = TimingPoints.IndexOf(timingPoint);
+
+        if (index >= 1) // Set previous timing point
+        {
+            TimingPoints[index - 1].MeasuresPerSecond_Set(this);
+
+            if (!IsInstantiating)
+                Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
+        }
     }
 
     /// <summary>

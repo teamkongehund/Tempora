@@ -30,28 +30,29 @@ public partial class ProjectFileManager : Node
     public static void SaveProjectAs(string filePath)
     {
         string extension = FileHandler.GetExtension(filePath);
-
         string correctExtension = ProjectFileManager.ProjectFileExtension;
 
-        if (extension != correctExtension)
-            filePath += "." + correctExtension;
+        filePath = Path.ChangeExtension(filePath, correctExtension);
+        string? fileDir = Path.GetDirectoryName(filePath);
+        if (fileDir == null)
+            throw new NullReferenceException(nameof(filePath));
 
-        string filePathWithoutExtension = filePath;
-        filePathWithoutExtension = Path.ChangeExtension(filePathWithoutExtension, null);
+        string fileName = Path.GetFileNameWithoutExtension(filePath);
 
-        string mp3Path = $"{filePathWithoutExtension}.mp3";
+        string mp3PathShort = $"{fileName}.mp3";
+        string mp3PathLong = Path.Combine(fileDir, mp3PathShort);
 
-        string file = GetProjectAsString(mp3Path);
-        FileHandler.SaveMP3(mp3Path, (AudioStreamMP3)Project.Instance.AudioFile.Stream);
+        string file = CreateProjectFileString(mp3PathShort);
+        FileHandler.SaveMP3(mp3PathLong, (AudioStreamMP3)Project.Instance.AudioFile.Stream);
         FileHandler.SaveText(filePath, file);
 
         Project.Instance.ProjectPath = filePath;
         Project.Instance.NotificationMessage = $"Saved to {filePath}";
     }
 
-    public static string GetProjectAsString() => GetProjectAsString(Project.Instance.AudioFile.Path);
+    public static string CreateProjectFileString() => CreateProjectFileString(Project.Instance.AudioFile.Path);
 
-    public static string GetProjectAsString(string audioPath)
+    public static string CreateProjectFileString(string audioPath)
     {
         // TimeSignaturePoint
         // MusicPosition;TimeSignatureUpper;TimeSignatureLower
@@ -110,7 +111,7 @@ public partial class ProjectFileManager : Node
         return timingPointsLines;
     }
 
-    private void LoadProjectFromFile(string projectFile)
+    private void LoadProjectFromFile(string projectFile, string filePath)
     {
         Timing.Instance = new Timing
         {
@@ -119,6 +120,9 @@ public partial class ProjectFileManager : Node
 
         string[] lines = projectFile.Split(separator, StringSplitOptions.None);
         string audioPath = "";
+        string? fileDir = Path.GetDirectoryName(filePath);
+        if (fileDir == null)
+            throw new NullReferenceException("filePath was null");
 
         ParseMode parseMode = ParseMode.None;
 
@@ -146,7 +150,7 @@ public partial class ProjectFileManager : Node
             switch (parseMode)
             {
                 case ParseMode.AudioPath:
-                    audioPath = line;
+                    audioPath = Path.Combine(fileDir, line);
                     continue;
                 case ParseMode.TimeSignaturePoints:
                     if (lineData.Length != 3)
@@ -216,7 +220,7 @@ public partial class ProjectFileManager : Node
         string projectFile = FileHandler.LoadText(filePath);
         if (string.IsNullOrEmpty(projectFile))
             return;
-        LoadProjectFromFile(projectFile);
+        LoadProjectFromFile(projectFile, filePath);
         Project.Instance.ProjectPath = filePath;
     }
 
