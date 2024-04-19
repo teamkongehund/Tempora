@@ -97,6 +97,9 @@ public partial class Timing
     /// <param name="oldTiming">Timing instance before the change occured</param>
     private void ShiftTimingPointsUponTimeSignatureChange(Timing oldTiming, TimeSignaturePoint timeSignaturePoint)
     {
+        if (!Settings.Instance.MoveSubsequentTimingPointsWhenChangingTimeSignature)
+            return;
+
         ArgumentNullException.ThrowIfNull(timeSignaturePoint);
         TimingPoint? operatingTimingPoint = GetOperatingTimingPoint_ByMusicPosition(timeSignaturePoint.MusicPosition);
         if (operatingTimingPoint == null)

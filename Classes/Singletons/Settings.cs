@@ -143,7 +143,7 @@ public partial class Settings : Node
         }
     }
 
-    public bool PreserveBpmOnTimeSignatureChanges = true;
+    public bool MoveSubsequentTimingPointsWhenChangingTimeSignature = true;
 
     public static int DivisorToSlider(int divisor) => SliderToDivisorDict.FirstOrDefault(x => x.Value == divisor).Key;
 

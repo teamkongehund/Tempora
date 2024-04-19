@@ -8,7 +8,7 @@ public partial class OptionsMenu : PopupMenu
 	public override void _Ready()
     {
         IdPressed += OnIdPressed;
-        SetItemChecked(0, Settings.Instance.PreserveBpmOnTimeSignatureChanges);
+        SetItemChecked(0, Settings.Instance.MoveSubsequentTimingPointsWhenChangingTimeSignature);
         SetItemChecked(1, Settings.Instance.MetronomeFollowsGrid);
     }
 
@@ -21,7 +21,7 @@ public partial class OptionsMenu : PopupMenu
         {
             case var expression when (id == id_PreserveBpm):
                 ToggleCheckBox(id_PreserveBpm, out bool newStatus);
-                Settings.Instance.PreserveBpmOnTimeSignatureChanges = newStatus;
+                Settings.Instance.MoveSubsequentTimingPointsWhenChangingTimeSignature = newStatus;
                 break;
             case var expression when (id == id_MetronopmeFollowsGrid):
                 ToggleCheckBox(id_MetronopmeFollowsGrid, out newStatus);
