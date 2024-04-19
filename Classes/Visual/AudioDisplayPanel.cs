@@ -234,7 +234,7 @@ public partial class AudioDisplayPanel : Control
                     return;
                 }
 
-                Timing.Instance.SnapTimingPoint(Context.Instance.HeldTimingPoint, musicPosition);
+                Timing.Instance.SnapTimingPoint(Context.Instance.HeldTimingPoint, musicPosition, out _);
 
                 GetViewport().SetInputAsHandled();
 

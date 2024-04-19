@@ -11,13 +11,16 @@ public partial class Timing
     /// </summary>
     /// <param name="timingPoint"></param>
     /// <param name="musicPosition"></param>
-    public void SnapTimingPoint(TimingPoint timingPoint, float musicPosition)
+    public void SnapTimingPoint(TimingPoint timingPoint, float musicPosition, out bool success)
     {
         if (timingPoint == null)
+        {
+            success = false;
             return;
+        }
 
         float snappedMusicPosition = SnapMusicPosition(musicPosition);
-        timingPoint.MusicPosition_Set(snappedMusicPosition, this);
+        success = timingPoint.MusicPosition_Set(snappedMusicPosition, this);
     }
 
     public void UpdateTimeSignature(int[] timeSignature, int musicPosition)

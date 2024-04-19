@@ -21,7 +21,7 @@ public partial class Settings : Node
         { 8, 16 }
     };
 
-    private int divisor = 4;
+    private int divisor = 1;
 
     /// <summary>
     ///     Should not be changed during runtime!

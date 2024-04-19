@@ -82,7 +82,7 @@ public partial class Timing
     }
 
     /// <summary>
-    ///     Add a <see cref="TimingPoint"/> at a given time. 
+    ///     Add a <see cref="TimingPoint"/> at a given time. Primary GUI method.
     ///     The <see cref="TimingPoint.MusicPosition"/> is defined via the existing timing.
     /// </summary>
     /// <param name="time"></param>
@@ -114,7 +114,7 @@ public partial class Timing
 
         timingPoint.IsInstantiating = false;
 
-        ActionsHandler.Instance.AddTimingMemento();
+        //ActionsHandler.Instance.AddTimingMemento();
 
         Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
     }
