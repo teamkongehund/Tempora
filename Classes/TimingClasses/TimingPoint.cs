@@ -41,6 +41,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 
             AreThereUncommunicatedChanges = true;
             RequestUpdateMPS();
+            Bpm = MpsToBpm(MeasuresPerSecond);
         }
     }
     #endregion
@@ -197,9 +198,12 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
         }
         else if (previousTimingPoint?.MusicPosition != null)
         {
+            float timeSignatureCorrection = ((float)previousTimingPoint.TimeSignature[0] / previousTimingPoint.TimeSignature[1]) / ((float)TimeSignature[0] / TimeSignature[1]);
+
             MeasuresPerSecond =
                 ((float)MusicPosition - (float)previousTimingPoint.MusicPosition)
-                / (Offset - previousTimingPoint.Offset);
+                / (Offset - previousTimingPoint.Offset)
+                * timeSignatureCorrection;
         }
         else if (AreThereUncommunicatedChanges)
         {

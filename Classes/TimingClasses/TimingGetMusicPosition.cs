@@ -249,7 +249,7 @@ public partial class Timing
 
         int divisionIndex = (int)Math.Round(relativePosition / divisionLength);
 
-        float snappedMusicPosition = (int)musicPosition + (divisionIndex * divisionLength);
+        float snappedMusicPosition = (int)musicPosition + Math.Min(divisionIndex * divisionLength, 1);
 
         return snappedMusicPosition;
     }
