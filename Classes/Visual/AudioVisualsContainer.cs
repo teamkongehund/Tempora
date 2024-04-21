@@ -48,12 +48,12 @@ public partial class AudioVisualsContainer : VBoxContainer
             if (mouseEvent.ButtonIndex == MouseButton.WheelDown && mouseEvent.Pressed && !Input.IsKeyPressed(Key.Ctrl))
             {
                 NominalMusicPositionStartForTopBlock += Input.IsKeyPressed(Key.Shift) ? 5 : 1;
-                Signals.Instance.EmitEvent(Signals.Events.Scrolled);
+                GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.Scrolled));
             }
             else if (mouseEvent.ButtonIndex == MouseButton.WheelUp && mouseEvent.Pressed && !Input.IsKeyPressed(Key.Ctrl))
             {
                 NominalMusicPositionStartForTopBlock -= Input.IsKeyPressed(Key.Shift) ? 5 : 1;
-                Signals.Instance.EmitEvent(Signals.Events.Scrolled);
+                GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.Scrolled));
             }
         }
     }
@@ -161,16 +161,16 @@ public partial class AudioVisualsContainer : VBoxContainer
 
     private void OnSeekPlaybackTime(object? sender, EventArgs e)
     {
-        if (e is not Signals.ObjectArgument<float> floatArgument)
-            throw new Exception($"{nameof(e)} was not of type {nameof(Signals.ObjectArgument<float>)}");
+        if (e is not GlobalEvents.ObjectArgument<float> floatArgument)
+            throw new Exception($"{nameof(e)} was not of type {nameof(GlobalEvents.ObjectArgument<float>)}");
         float playbackTime = floatArgument.Value;
-        SeekPlaybackTime?.Invoke(this, new Signals.ObjectArgument<float>(playbackTime));
+        SeekPlaybackTime?.Invoke(this, new GlobalEvents.ObjectArgument<float>(playbackTime));
     }
 
     private void OnAttemptToAddTimingPoint(object? sender, EventArgs e)
     {
-        if (e is not Signals.ObjectArgument<float> floatArgument)
-            throw new Exception($"{nameof(e)} was not of type {nameof(Signals.ObjectArgument<float>)}");
+        if (e is not GlobalEvents.ObjectArgument<float> floatArgument)
+            throw new Exception($"{nameof(e)} was not of type {nameof(GlobalEvents.ObjectArgument<float>)}");
         float time = floatArgument.Value;
 
         Timing.Instance.AddTimingPoint(time, out TimingPoint? timingPoint);
@@ -187,7 +187,7 @@ public partial class AudioVisualsContainer : VBoxContainer
         {
             Context.Instance.HeldTimingPoint = null;
             Timing.Instance.TimingPoints.Remove(timingPoint);
-            Signals.Instance.EmitEvent(Signals.Events.TimingChanged); // Gets rid of VisualTimingPoint
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged)); // Gets rid of VisualTimingPoint
             return;
         }
 

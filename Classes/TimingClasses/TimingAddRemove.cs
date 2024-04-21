@@ -28,7 +28,7 @@ public partial class Timing
             TimingPoints[index - 1].MeasuresPerSecond_Set(this);
 
             if (!IsInstantiating)
-                Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
+                GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
         }
         //if (index < TimingPoints.Count - 1)
         //{
@@ -77,7 +77,7 @@ public partial class Timing
         timingPoint.IsInstantiating = false;
 
         if (!IsInstantiating)
-            Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
 
         int index = TimingPoints.IndexOf(timingPoint);
 
@@ -86,7 +86,7 @@ public partial class Timing
             TimingPoints[index - 1].MeasuresPerSecond_Set(this);
 
             if (!IsInstantiating)
-                Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
+                GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
         }
     }
 
@@ -125,7 +125,7 @@ public partial class Timing
 
         //ActionsHandler.Instance.AddTimingMemento();
 
-        Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
+        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
     }
 
     private void DeleteTimingPoint(TimingPoint timingPoint)
@@ -139,7 +139,7 @@ public partial class Timing
 
         previousTimingPoint?.MeasuresPerSecond_Set(this);
 
-        Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
+        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
 
         ActionsHandler.Instance.AddTimingMemento();
     }

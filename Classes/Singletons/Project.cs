@@ -36,7 +36,7 @@ public partial class Project : Node
             if (audioFile == value)
                 return;
             audioFile = value;
-            Signals.Instance.EmitEvent(Signals.Events.AudioFileChanged);
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.Instance.AudioFileChanged), this, EventArgs.Empty);
             Project.Instance.ProjectPath = null!;
         }
     }

@@ -131,7 +131,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
         bool isValid = timing.CanTimingPointGoHere(this, value, out TimingPoint? rejectingTimingPoint);
 
         if (rejectingTimingPoint != null)
-            Signals.Instance.EmitEvent(Signals.Events.MusicPositionChangeRejected, new Signals.ObjectArgument<TimingPoint>(rejectingTimingPoint));
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.MusicPositionChangeRejected), new GlobalEvents.ObjectArgument<TimingPoint>(rejectingTimingPoint));
 
         if (isValid)
             MusicPosition = value;

@@ -30,7 +30,7 @@ public partial class AudioBlock : Control
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        Signals.Instance.TimingChanged += OnTimingChanged;
+        GlobalEvents.Instance.TimingChanged += OnTimingChanged;
 
         timeSignatureLineEdit.TimeSignatureSubmitted += OnTimingSignatureSubmitted;
     }
@@ -44,8 +44,8 @@ public partial class AudioBlock : Control
 
     private void OnTimingSignatureSubmitted(object? sender, EventArgs e)
     {
-        if (e is not Signals.ObjectArgument<int[]> intArrayArgument)
-            throw new Exception($"{nameof(e)} was not of type {nameof(Signals.ObjectArgument<int[]>)}");
+        if (e is not GlobalEvents.ObjectArgument<int[]> intArrayArgument)
+            throw new Exception($"{nameof(e)} was not of type {nameof(GlobalEvents.ObjectArgument<int[]>)}");
         int[] timeSignature = intArrayArgument.Value;
         Timing.Instance.UpdateTimeSignature(timeSignature, NominalMusicPositionStartForWindow);
     }

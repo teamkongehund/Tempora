@@ -96,15 +96,15 @@ public partial class AudioDisplayPanel : Control
         CreateEmptyVisualTimingPoints(8);
 
         Resized += OnResized;
-        Signals.Instance.SettingsChanged += OnSettingsChanged;
-        Signals.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
-        Signals.Instance.Scrolled += OnScrolled;
-        Signals.Instance.AudioFileChanged += OnAudioFileChanged;
+        GlobalEvents.Instance.SettingsChanged += OnSettingsChanged;
+        GlobalEvents.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
+        GlobalEvents.Instance.Scrolled += OnScrolled;
+        GlobalEvents.Instance.AudioFileChanged += OnAudioFileChanged;
 
         MouseEntered += OnMouseEntered;
         MouseExited += OnMouseExited;
 
-        Signals.Instance.TimingChanged += OnTimingChanged;
+        GlobalEvents.Instance.TimingChanged += OnTimingChanged;
     }
 
     public override void _GuiInput(InputEvent @event)
@@ -128,11 +128,11 @@ public partial class AudioDisplayPanel : Control
         switch (mouseEvent)
         {
             case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } mouseButtonEvent:
-                AttemptToAddTimingPoint?.Invoke(this, new Signals.ObjectArgument<float>(time));
+                AttemptToAddTimingPoint?.Invoke(this, new GlobalEvents.ObjectArgument<float>(time));
                 break;
 
             case InputEventMouseButton { ButtonIndex: MouseButton.Right, Pressed: true } mouseButtonEvent:
-                SeekPlaybackTime?.Invoke(this, new Signals.ObjectArgument<float>(time));
+                SeekPlaybackTime?.Invoke(this, new GlobalEvents.ObjectArgument<float>(time));
                 break;
 
             case InputEventMouseButton { ButtonIndex: MouseButton.WheelUp, Pressed: true } mouseButtonEvent when Input.IsKeyPressed(Key.Ctrl):

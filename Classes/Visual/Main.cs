@@ -53,8 +53,8 @@ public partial class Main : Control
 
         Project.Instance.AudioFile = new AudioFile(defaultMP3);
 
-        Signals.Instance.Scrolled += OnScrolled;
-        Signals.Instance.SettingsChanged += OnSettingsChanged;
+        GlobalEvents.Instance.Scrolled += OnScrolled;
+        GlobalEvents.Instance.SettingsChanged += OnSettingsChanged;
         audioVisualsContainer.SeekPlaybackTime += OnSeekPlaybackTime;
         GetTree().Root.FilesDropped += OnFilesDropped;
 
@@ -74,7 +74,7 @@ public partial class Main : Control
                     if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased())
                     {
                         // Ensure a mouse release is always captured.
-                        Signals.Instance.EmitEvent(Signals.Events.MouseLeftReleased);
+                        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.MouseLeftReleased));
                         Context.Instance.IsSelectedMusicPositionMoving = false;
                     }
 
@@ -113,8 +113,8 @@ public partial class Main : Control
 
     private void OnSeekPlaybackTime(object? sender, EventArgs e)
     {
-        if (e is not Signals.ObjectArgument<float> floatArgument)
-            throw new Exception($"{nameof(e)} was not of type {nameof(Signals.ObjectArgument<float>)}");
+        if (e is not GlobalEvents.ObjectArgument<float> floatArgument)
+            throw new Exception($"{nameof(e)} was not of type {nameof(GlobalEvents.ObjectArgument<float>)}");
         float playbackTime = floatArgument.Value;
         musicPlayer.SeekPlay(playbackTime);
     }

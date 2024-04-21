@@ -61,7 +61,7 @@ public partial class Timing : Node, IMementoOriginator
                 return;
             timingPoints = value;
             ReSubscribe();
-            Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
         }
     }
 
@@ -75,7 +75,7 @@ public partial class Timing : Node, IMementoOriginator
             if (timeSignaturePoints == value)
                 return;
             timeSignaturePoints = value;
-            Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
         }
     }
     

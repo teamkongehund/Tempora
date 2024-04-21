@@ -7,6 +7,7 @@ using Tempora.Classes.Utility;
 using Tempora.Classes.TimingClasses;
 using System.IO;
 
+namespace Tempora.Classes.Visual;
 public partial class FileMenu : PopupMenu
 {
     [Export]

@@ -61,14 +61,14 @@ public partial class Metronome : Node
         musicPitchScale = musicPlayer.PitchScale;
 
         musicSampleRate = Project.Instance.AudioFile?.SampleRate ?? musicSampleRate;
-        Signals.Instance.AudioFileChanged += OnAudioFileChanged;
+        GlobalEvents.Instance.AudioFileChanged += OnAudioFileChanged;
 
         musicPlayer.PlaybackStarted += StartPlayback;
         musicPlayer.Seeked += SeekPlayback;
         musicPlayer.Paused += StopPlayback;
         musicPlayer.PitchScaleChanged += OnPitchScaleChanged;
 
-        Signals.Instance.SettingsChanged += OnSettingsChanged;
+        GlobalEvents.Instance.SettingsChanged += OnSettingsChanged;
         lastMetronomeFollowsGrid = Settings.Instance.MetronomeFollowsGrid;
         lastGridDivisor = Settings.Instance.GridDivisor;
 

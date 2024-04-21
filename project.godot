@@ -23,7 +23,7 @@ buses/default_bus_layout="res://Classes/Audio/default_bus_layout.tres"
 
 [autoload]
 
-Signals="*res://Classes/Singletons/Signals.tscn"
+Signals="*res://Classes/Singletons/GlobalEvents.tscn"
 Project="*res://Classes/Singletons/Project.tscn"
 Timing="*res://Classes/TimingClasses/Timing.tscn"
 Settings="*res://Classes/Singletons/Settings.tscn"

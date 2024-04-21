@@ -30,6 +30,6 @@ public partial class TimeSignatureLineEdit : LineEdit
         int[] timeSignature = [upper, lower];
 
         ReleaseFocus();
-        TimeSignatureSubmitted?.Invoke(this, new Signals.ObjectArgument<int[]>(timeSignature));
+        TimeSignatureSubmitted?.Invoke(this, new GlobalEvents.ObjectArgument<int[]>(timeSignature));
     }
 }

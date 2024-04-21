@@ -23,8 +23,8 @@ public partial class VisualTimingPoint : Node2D
     private Timer flashTimer = null!;
 
     private Vector2 defaultColorRectSize = new(128, 128);
-    private Vector2 largerSize => defaultColorRectSize * 1.5f;
-    private Vector2 mediumLargeSize => defaultColorRectSize * 1.3f;
+    private Vector2 LargerSize => defaultColorRectSize * 1.5f;
+    private Vector2 MediumLargeSize => defaultColorRectSize * 1.3f;
     private Color defaultColor = new("ff990096");
     private Color red = new("ff000096");
     private Color lightUpColor = new("ff990096");
@@ -73,8 +73,8 @@ public partial class VisualTimingPoint : Node2D
 
         //VisibilityChanged += OnVisibilityChanged;
 
-        Signals.Instance.MusicPositionChangeRejected += OnMusicPositionChangeRejected;
-        Signals.Instance.TimingPointLightUp += OnTimingPointLightUp;
+        GlobalEvents.Instance.MusicPositionChangeRejected += OnMusicPositionChangeRejected;
+        GlobalEvents.Instance.TimingPointLightUp += OnTimingPointLightUp;
 
         flashTimer.Timeout += OnFlashTimerTimeout;
         defaultColor = colorRect.Color;
@@ -113,7 +113,8 @@ public partial class VisualTimingPoint : Node2D
             return;
         if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased())
         {
-            Signals.Instance.EmitEvent(Signals.Events.MouseLeftReleased);
+            //Signals.Instance.EmitEvent(Signals.Events.MouseLeftReleased);
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.MouseLeftReleased), this, EventArgs.Empty);
             return;
         }
         if (!hasMouseInside)
@@ -128,7 +129,7 @@ public partial class VisualTimingPoint : Node2D
         if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick && !Input.IsKeyPressed(Key.Alt))
             DeleteTimingPoint();
         else if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed)
-            Signals.Instance.EmitEvent(Signals.Events.TimingPointHolding, new Signals.ObjectArgument<TimingPoint>(TimingPoint));
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointHolding), new GlobalEvents.ObjectArgument<TimingPoint>(TimingPoint));
         else if (mouseEvent.ButtonIndex == MouseButton.WheelDown && mouseEvent.Pressed && Input.IsKeyPressed(Key.Ctrl))
         {
             // Decrease BPM by 1 (snapping to integers) - only for last timing point.
@@ -167,7 +168,7 @@ public partial class VisualTimingPoint : Node2D
         if (Time.GetTicksMsec() - TimingPoint.SystemTimeWhenCreatedMsec <= 500)
         {
             GD.Print("Nah, we're actually holding the timing point");
-            Signals.Instance.EmitEvent(Signals.Events.TimingPointHolding, new Signals.ObjectArgument<TimingPoint>(TimingPoint));
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointHolding), new GlobalEvents.ObjectArgument<TimingPoint>(TimingPoint));
             return;
         }
         else
@@ -208,7 +209,7 @@ public partial class VisualTimingPoint : Node2D
 
     private void OnMusicPositionChangeRejected(object? sender, EventArgs e)
     {
-        if (e is not Signals.ObjectArgument<TimingPoint> timingPointArgument)
+        if (e is not GlobalEvents.ObjectArgument<TimingPoint> timingPointArgument)
             return;
         if (timingPointArgument.Value != TimingPoint)
             return;
@@ -221,14 +222,14 @@ public partial class VisualTimingPoint : Node2D
         if (!flashTimer.IsStopped())
             return;
         colorRect.Color = red;
-        SetColorRectSize(largerSize);
+        SetColorRectSize(LargerSize);
         flashTimer.Start();
     } 
     #endregion
 
     private void OnTimingPointLightUp(object? sender, EventArgs e)
     {
-        if (e is not Signals.ObjectArgument<TimingPoint> timingPointArgument)
+        if (e is not GlobalEvents.ObjectArgument<TimingPoint> timingPointArgument)
             return;
         if (timingPointArgument.Value != TimingPoint)
         {
@@ -242,7 +243,7 @@ public partial class VisualTimingPoint : Node2D
     private void LightUp()
     {
         colorRect.Color = lightUpColor;
-        SetColorRectSize(mediumLargeSize);
+        SetColorRectSize(MediumLargeSize);
         isLit = true;
     }
 }

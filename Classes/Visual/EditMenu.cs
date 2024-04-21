@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using Tempora.Classes.TimingClasses;
 using Tempora.Classes.Utility;
 
+namespace Tempora.Classes.Visual;
+
 public partial class EditMenu : PopupMenu
 {
     [Export]
@@ -33,7 +35,7 @@ public partial class EditMenu : PopupMenu
     {
         Timing.Instance.TimingPoints.Clear();
         Timing.Instance.TimeSignaturePoints.Clear();
-        Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
+        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
 
         ActionsHandler.Instance.AddTimingMemento();
     }

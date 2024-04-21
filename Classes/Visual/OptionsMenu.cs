@@ -2,6 +2,8 @@ using Godot;
 using System;
 using Tempora.Classes.Utility;
 
+namespace Tempora.Classes.Visual;
+
 public partial class OptionsMenu : PopupMenu
 {
 	// Called when the node enters the scene tree for the first time.

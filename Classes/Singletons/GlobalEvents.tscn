@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://ddl3otw1402g3"]
+
+[ext_resource type="Script" path="res://Classes/Singletons/GlobalEvents.cs" id="1_2se6v"]
+
+[node name="GlobalEvents" type="Node"]
+script = ExtResource("1_2se6v")

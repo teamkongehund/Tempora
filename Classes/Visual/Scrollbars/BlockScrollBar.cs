@@ -15,7 +15,7 @@ public partial class BlockScrollBar : VScrollBar
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        Signals.Instance.TimingChanged += OnTimingChanged;
+        GlobalEvents.Instance.TimingChanged += OnTimingChanged;
         ValueChanged += OnValueChanged;
     }
 

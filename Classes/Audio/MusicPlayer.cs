@@ -30,8 +30,9 @@ public partial class MusicPlayer : AudioStreamPlayer
     public override void _Ready()
     {
         //VolumeDb = base.VolumeDb;
-        Signals.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
-        Signals.Instance.AudioFileChanged += OnAudioFileChanged;
+        GlobalEvents.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
+        GlobalEvents.Instance.AudioFileChanged += OnAudioFileChanged;
+        GD.Print(nameof(GlobalEvents.Instance.AudioFileChanged));
     }
 
     public override void _Process(double delta)

@@ -33,10 +33,7 @@ public partial class ProjectFileManager : Node
         string correctExtension = ProjectFileManager.ProjectFileExtension;
 
         filePath = Path.ChangeExtension(filePath, correctExtension);
-        string? fileDir = Path.GetDirectoryName(filePath);
-        if (fileDir == null)
-            throw new NullReferenceException(nameof(filePath));
-
+        string? fileDir = Path.GetDirectoryName(filePath) ?? throw new NullReferenceException(nameof(filePath));
         string fileName = Path.GetFileNameWithoutExtension(filePath);
 
         string mp3PathShort = $"{fileName}.mp3";
@@ -120,10 +117,7 @@ public partial class ProjectFileManager : Node
 
         string[] lines = projectFile.Split(separator, StringSplitOptions.None);
         string audioPath = "";
-        string? fileDir = Path.GetDirectoryName(filePath);
-        if (fileDir == null)
-            throw new NullReferenceException("filePath was null");
-
+        string? fileDir = Path.GetDirectoryName(filePath) ?? throw new NullReferenceException("filePath was null");
         ParseMode parseMode = ParseMode.None;
 
         for (int i = 0; i < lines.Length; i++)
@@ -212,7 +206,7 @@ public partial class ProjectFileManager : Node
 
         Project.Instance.AudioFile = new AudioFile(audioPath);
         Timing.Instance.IsInstantiating = false;
-        Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
+        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
     }
 
     public void LoadProjectFromFilePath(string filePath)

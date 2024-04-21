@@ -86,7 +86,7 @@ public partial class Timing
 
         ActionsHandler.Instance.AddTimingMemento();
 
-        Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
+        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
     }
 
     /// <summary>

@@ -27,7 +27,7 @@ public partial class Timing
             throw new Exception("Sender wasn't a TimingPoint.");
 
         if (!timingPoint.IsInstantiating)
-            Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
     }
     private void OnTimingPointDeleteAttempt(object? sender, EventArgs e)
     {

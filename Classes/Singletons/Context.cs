@@ -33,7 +33,7 @@ public partial class Context : Node
                 heldTimingPoint_PreviousMusicPosition = null;
                 heldTimingPoint_PreviousOffset = null;
                 heldTimingPoint = value;
-                Signals.Instance.EmitEvent(Signals.Events.TimingChanged); // Updates visuals to ensure no waveform sections are darkened.
+                GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.Instance.TimingChanged), this, EventArgs.Empty); // Updates visuals to ensure no waveform sections are darkened.
                 return;
             }
             heldTimingPoint = value;
@@ -51,7 +51,7 @@ public partial class Context : Node
             if (litTimingPoint == value)
                 return;
             litTimingPoint = value;
-            Signals.Instance.EmitEvent(Signals.Events.TimingPointLightUp, new Signals.ObjectArgument<TimingPoint?>(litTimingPoint));
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointLightUp), this, new GlobalEvents.ObjectArgument<TimingPoint?>(litTimingPoint));
         }
     }
 
@@ -67,7 +67,7 @@ public partial class Context : Node
             if (value == selectedPosition)
                 return;
             selectedPosition = value;
-            Signals.Instance.EmitEvent(Signals.Events.SelectedPositionChanged);
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.Instance.SelectedPositionChanged), this, EventArgs.Empty);
         }
     }
 
@@ -77,14 +77,14 @@ public partial class Context : Node
     {
         Instance = this;
 
-        Signals.Instance.TimingPointHolding += OnTimingPointHolding;
-        Signals.Instance.MouseLeftReleased += OnMouseLeftReleased;
+        GlobalEvents.Instance.TimingPointHolding += OnTimingPointHolding;
+        GlobalEvents.Instance.MouseLeftReleased += OnMouseLeftReleased;
     }
 
     private void OnTimingPointHolding(object? sender, EventArgs e)
     {
-        if (e is not Signals.ObjectArgument<TimingPoint> timingPointArgument)
-            throw new Exception($"{nameof(e)} was not of type {nameof(Signals.ObjectArgument<TimingPoint>)}");
+        if (e is not GlobalEvents.ObjectArgument<TimingPoint> timingPointArgument)
+            throw new Exception($"{nameof(e)} was not of type {nameof(GlobalEvents.ObjectArgument<TimingPoint>)}");
         HeldTimingPoint = timingPointArgument.Value;
     }
 
