@@ -61,8 +61,6 @@ public partial class AudioVisualsContainer : VBoxContainer
     public override void _Ready()
     {
         MouseExited += OnMouseExited;
-        Signals.Instance.Scrolled += OnScrolled;
-        musicPlayer.PlaybackStarted += OnMusicPlaybackStarted;
         musicPlayer.Paused += OnMusicPaused;
     }
 
@@ -93,20 +91,7 @@ public partial class AudioVisualsContainer : VBoxContainer
         Context.Instance.LitTimingPoint = null;
     }
 
-    private void OnScrolled(object? sender, EventArgs e)
-    {
-        UpdatePlayHeads();
-    }
-
-    private void OnMusicPlaybackStarted()
-    {
-        UpdatePlayHeads();
-    }
-
-    private void OnMusicPaused()
-    {
-        UpdatePlayHeads();
-    }
+    private void OnMusicPaused() => UpdatePlayHeads();
 
     public void CreateBlocks()
     {
