@@ -11,7 +11,7 @@ public partial class MusicPlayer : AudioStreamPlayer
     //new public float VolumeDb; // Hides actual volume from other API's, so they can't mess with volume while fading.
 
     public event Action<double>? Seeked;
-    public event Action? Played;
+    public event Action? PlaybackStarted;
     public event Action? Paused;
     public event Action<float>? PitchScaleChanged;
 
@@ -46,6 +46,19 @@ public partial class MusicPlayer : AudioStreamPlayer
         }
     }
 
+    public override void _Input(InputEvent inputEvent)
+    {
+        switch (inputEvent)
+        {
+            case InputEventKey keyEvent:
+                {
+                    if (keyEvent.Keycode == Key.Space && keyEvent.Pressed)
+                        PlayPause();
+                    break;
+                }
+        }
+    }
+
     private void OnSelectedPositionChanged(object? _sender, EventArgs e)
     {
         float time = Timing.Instance.MusicPositionToTime(Context.Instance.SelectedMusicPosition);
@@ -67,7 +80,7 @@ public partial class MusicPlayer : AudioStreamPlayer
         Play();
         Seek((float)PauseTime);
         Seeked?.Invoke(PauseTime);
-        Played?.Invoke();
+        PlaybackStarted?.Invoke();
     }
 
     public void PlayPause()
@@ -86,7 +99,7 @@ public partial class MusicPlayer : AudioStreamPlayer
             playbackTime = 0;
         Seek(playbackTime);
         Seeked?.Invoke(playbackTime);
-        Played?.Invoke();
+        PlaybackStarted?.Invoke();
     }
 
     private bool isTurnedDown = false;

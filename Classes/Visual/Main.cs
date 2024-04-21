@@ -16,7 +16,7 @@ public partial class Main : Control
     [Export]
     private AudioStreamMP3 defaultMP3 = null!;
     [Export]
-    private MusicPlayer audioPlayer = null!;
+    private MusicPlayer musicPlayer = null!;
     [Export]
     private AudioVisualsContainer audioVisualsContainer = null!;
     [Export]
@@ -59,7 +59,6 @@ public partial class Main : Control
         GetTree().Root.FilesDropped += OnFilesDropped;
 
         audioVisualsContainer.CreateBlocks();
-        UpdatePlayHeads();
         blockScrollBar.UpdateRange();
         audioVisualsContainer.UpdateBlocksScroll();
 
@@ -70,12 +69,6 @@ public partial class Main : Control
     {
         switch (inputEvent)
         {
-            case InputEventKey keyEvent:
-                {
-                    if (keyEvent.Keycode == Key.Space && keyEvent.Pressed)
-                        PlayPause();
-                    break;
-                }
             case InputEventMouseButton mouseEvent:
                 {
                     if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased())
@@ -100,15 +93,6 @@ public partial class Main : Control
         }
     }
 
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _Process(double delta)
-    {
-        if (audioPlayer.Playing)
-        {
-            UpdatePlayHeads();
-        }
-    }
-
     private void OnSettingsChanged(object? sender, EventArgs e) => audioVisualsContainer.UpdateNumberOfVisibleBlocks();
 
     private void OnFilesDropped(string[] filePaths)
@@ -119,32 +103,12 @@ public partial class Main : Control
 
         var audioFile = new AudioFile(path);
         Project.Instance.AudioFile = audioFile;
-        audioPlayer.LoadMp3();
-    }
-
-    public void PlayPause()
-    {
-        audioPlayer.PlayPause();
-        UpdatePlayHeads();
+        musicPlayer.LoadMp3();
     }
 
     private void OnScrolled(object? sender, EventArgs e)
     {
-        UpdatePlayHeads();
         blockScrollBar.Value = audioVisualsContainer.NominalMusicPositionStartForTopBlock;
-    }
-
-    public void UpdatePlayHeads()
-    {
-        double playbackTime = audioPlayer.GetPlaybackTime();
-        float musicPosition = Timing.Instance.TimeToMusicPosition((float)playbackTime);
-        foreach (AudioBlock audioBlock in audioVisualsContainer.GetChildren().OfType<AudioBlock>())
-        {
-            AudioDisplayPanel audioDisplayPanel = audioBlock.AudioDisplayPanel;
-            float x = audioDisplayPanel.MusicPositionToXPosition(musicPosition);
-            audioDisplayPanel.Playhead.Position = new Vector2(x, 0.0f);
-            audioDisplayPanel.Playhead.Visible = x >= 0 && x <= audioDisplayPanel.Size.X && audioPlayer.Playing;
-        }
     }
 
     private void OnSeekPlaybackTime(object? sender, EventArgs e)
@@ -152,6 +116,6 @@ public partial class Main : Control
         if (e is not Signals.ObjectArgument<float> floatArgument)
             throw new Exception($"{nameof(e)} was not of type {nameof(Signals.ObjectArgument<float>)}");
         float playbackTime = floatArgument.Value;
-        audioPlayer.SeekPlay(playbackTime);
+        musicPlayer.SeekPlay(playbackTime);
     }
 }

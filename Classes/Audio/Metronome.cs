@@ -63,7 +63,7 @@ public partial class Metronome : Node
         musicSampleRate = Project.Instance.AudioFile?.SampleRate ?? musicSampleRate;
         Signals.Instance.AudioFileChanged += OnAudioFileChanged;
 
-        musicPlayer.Played += StartPlayback;
+        musicPlayer.PlaybackStarted += StartPlayback;
         musicPlayer.Seeked += SeekPlayback;
         musicPlayer.Paused += StopPlayback;
         musicPlayer.PitchScaleChanged += OnPitchScaleChanged;
