@@ -84,7 +84,7 @@ public partial class Timing
 
         ShiftTimingPointsUponTimeSignatureChange(oldTiming, timeSignaturePoint);
 
-        ActionsHandler.Instance.AddTimingMemento();
+        MementoHandler.Instance.AddTimingMemento();
 
         GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
     }

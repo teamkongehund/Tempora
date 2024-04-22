@@ -28,7 +28,7 @@ public partial class Context : Node
                 bool hasOffsetChanged = heldTimingPoint?.Offset != heldTimingPoint_PreviousOffset;
                 if ((hasMusicPositionChanged || hasOffsetChanged) && doesTimingPointStillExist)
                 {
-                    ActionsHandler.Instance.AddTimingMemento();
+                    MementoHandler.Instance.AddTimingMemento();
                 }
                 heldTimingPoint_PreviousMusicPosition = null;
                 heldTimingPoint_PreviousOffset = null;

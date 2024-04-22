@@ -37,6 +37,6 @@ public partial class EditMenu : PopupMenu
         Timing.Instance.TimeSignaturePoints.Clear();
         GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
 
-        ActionsHandler.Instance.AddTimingMemento();
+        MementoHandler.Instance.AddTimingMemento();
     }
 }

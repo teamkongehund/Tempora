@@ -25,6 +25,6 @@ public partial class ClearAllButton : Button
         GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged)); ;
         ReleaseFocus();
 
-        ActionsHandler.Instance.AddTimingMemento();
+        MementoHandler.Instance.AddTimingMemento();
     }
 }

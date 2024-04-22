@@ -153,6 +153,8 @@ public partial class VisualTimingPoint : Node2D
                 newBpm = previousBpm + 0.1f;
 
             TimingPoint.Bpm_Set(newBpm, Timing.Instance);
+
+            MementoHandler.Instance.AddTimingMemento(TimingPoint);
         }
         else
             return;

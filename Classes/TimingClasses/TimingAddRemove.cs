@@ -141,7 +141,7 @@ public partial class Timing
 
         GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
 
-        ActionsHandler.Instance.AddTimingMemento();
+        MementoHandler.Instance.AddTimingMemento();
     }
      
 }

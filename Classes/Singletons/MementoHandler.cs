@@ -7,10 +7,10 @@ using System.Reflection;
 
 namespace Tempora.Classes.Utility;
 
-public partial class ActionsHandler : Node
+public partial class MementoHandler : Node
 {
-    private static ActionsHandler instance = null!;
-    public static ActionsHandler Instance { get => instance; set => instance = value; }
+    private static MementoHandler instance = null!;
+    public static MementoHandler Instance { get => instance; set => instance = value; }
 
     private List<IMemento> mementoList = [];
 
@@ -46,28 +46,28 @@ public partial class ActionsHandler : Node
         }
     }
 
-    private TimingPoint? timingPointChangingOffset = null;
+    private TimingPoint? timingPointBeingChanged = null;
 
     /// <summary>
-    /// When doing many changes to a single <see cref="TimingPoint"/>, this method will save them all in one <see cref="IMemento"/>.
+    /// When doing many changes to a single <see cref="TimingPoint"/>, this overload will save them all in one <see cref="IMemento"/>.
     /// </summary>
     /// <param name="timingPoint"></param>
     public void AddTimingMemento(TimingPoint? timingPoint)
     {
-        if (timingPointChangingOffset == timingPoint)
+        if (timingPointBeingChanged == timingPoint)
             DeleteMementosAfterIndex(mementoIndex - 1);
 
         IMemento memento = Timing.Instance.GetMemento();
         AddMemento(memento);
 
-        timingPointChangingOffset = timingPoint;
+        timingPointBeingChanged = timingPoint;
     }
 
     public void AddTimingMemento()
     {
         IMemento memento = Timing.Instance.GetMemento();
         AddMemento(memento);
-        timingPointChangingOffset = null;
+        timingPointBeingChanged = null;
     }
 
     private void AddMemento(IMemento memento)
