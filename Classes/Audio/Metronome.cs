@@ -11,13 +11,14 @@ namespace Tempora.Classes.Audio;
 public partial class Metronome : Node
 {
     /// <summary>
-    /// If <see cref="MusicPlayer.PitchScale"/> is less than 1, then <see cref="currentMusicFrame"/> will gradually go out of sync with reality due to accumulating floating-point error. 
+    /// If <see cref="MusicPlayer.PitchScale"/> is less than 1, then <see cref="currentBufferMusicFrame"/> will gradually go out of sync with reality due to accumulating floating-point error. 
     /// A timer is implemented to manually update the value at a fixed interval.
     /// </summary>
     [Export]
     Timer resyncTimer = null!;
 
-    private MusicPlayer? musicPlayer;
+    [Export]
+    private MusicPlayer musicPlayer = null!;
 
     private float previousVolumeDb;
     private bool isMuted;
@@ -28,7 +29,7 @@ public partial class Metronome : Node
     /// Will hold the AudioStreamGeneratorPlayback. Object gets a new instance whenever music playback is stopped and started.
     /// </summary>
     private AudioStreamGeneratorPlayback? playback;
-    private float bufferLength = 1f; // Maximum frame time until it becomes unable to keep the buffer filled
+    private float bufferLength = 1f; // Maximum frame time (seconds) until it becomes unable to keep the buffer filled
     private float musicSampleRate = 44100; // Hz
     private float musicPitchScale = 1f;
 
@@ -46,8 +47,6 @@ public partial class Metronome : Node
         click1Cache = CacheWavFile("res://Audio/Click1.wav");
         metronomeSampleRate = GetSampleRate("res://Audio/Click1.wav");
         click2Cache = CacheWavFile("res://Audio/Click2.wav");
-
-        musicPlayer = GetParentOrNull<MusicPlayer>();
 
         audioStreamGenerator = new AudioStreamGenerator { BufferLength = bufferLength, MixRate = musicSampleRate };
         audioStreamPlayer = new AudioStreamPlayer
@@ -67,6 +66,7 @@ public partial class Metronome : Node
         musicPlayer.Seeked += SeekPlayback;
         musicPlayer.Paused += StopPlayback;
         musicPlayer.PitchScaleChanged += OnPitchScaleChanged;
+        GlobalEvents.Instance.TimingChanged += OnTimingChanged;
 
         GlobalEvents.Instance.SettingsChanged += OnSettingsChanged;
         lastMetronomeFollowsGrid = Settings.Instance.MetronomeFollowsGrid;
@@ -99,9 +99,10 @@ public partial class Metronome : Node
         }
     } 
     #endregion
+
     #region Buffer
 
-    private double currentMusicFrame;
+    private double currentBufferMusicFrame;
     private int numClickFramesLeftToAdd;
     private bool isPrimaryClick;
     private float triggerPosition;
@@ -118,16 +119,16 @@ public partial class Metronome : Node
 
         float sampleRateRatio = metronomeSampleRate / musicSampleRate;
 
-        double initialMusicFrame = currentMusicFrame;
+        double initialBufferMusicFrame = currentBufferMusicFrame;
         for (int i = 0; i < framesAvailable; i++)
         {
-            double currentMusicTime = currentMusicFrame / musicSampleRate;
+            double currentBufferMusicTime = currentBufferMusicFrame / musicSampleRate;
 
-            if (currentMusicTime > triggerTime)
+            if (currentBufferMusicTime > triggerTime)
             {
                 numClickFramesLeftToAdd = triggerPosition % 1 == 0 ? click1Cache.Length : click2Cache.Length;
                 isPrimaryClick = triggerPosition % 1 == 0;
-                UpdateTriggerTime(currentMusicTime);
+                UpdateTriggerTime(currentBufferMusicTime);
             }
 
             if (numClickFramesLeftToAdd > 0)
@@ -140,7 +141,7 @@ public partial class Metronome : Node
                 buffer[bufferIndex] = Vector2.Zero;
             }
 
-            currentMusicFrame = initialMusicFrame + musicPitchScale * i / sampleRateRatio;
+            currentBufferMusicFrame = initialBufferMusicFrame + musicPitchScale * i / sampleRateRatio;
             bufferIndex++;
 
             if (bufferIndex >= buffer.Length)
@@ -153,10 +154,11 @@ public partial class Metronome : Node
         if (bufferIndex > 0)
             playback.PushBuffer(buffer[..bufferIndex]);
     }
+
     private void RefillBuffer()
     {
         if (playback is null) return;
-        SeekPlayback(musicPlayer!.PlaybackTime);
+        SeekPlayback(musicPlayer.PlaybackTime);
     }
 
     private void UpdateTriggerTime(double currentTime)
@@ -164,10 +166,11 @@ public partial class Metronome : Node
         float musicPosition = Timing.Instance.TimeToMusicPosition((float)currentTime);
         triggerPosition = GetTriggerPosition(musicPosition);
         triggerTime = Timing.Instance.MusicPositionToTime(triggerPosition);
-    } 
+    }
     #endregion
 
 
+    #region Playback control
     private void StartPlayback()
     {
         if (playback is not null) return;
@@ -178,7 +181,7 @@ public partial class Metronome : Node
 
     private void SeekPlayback(double time)
     {
-        currentMusicFrame = time * musicSampleRate;
+        currentBufferMusicFrame = time * musicSampleRate;
         UpdateTriggerTime((float)time);
         if (playback is null) return;
         StopPlayback();
@@ -189,9 +192,8 @@ public partial class Metronome : Node
     {
         audioStreamPlayer.Stop();
         playback = null;
-    }
-
-
+    } 
+    #endregion
 
     #region Events
     private void OnPitchScaleChanged(float value)
@@ -200,6 +202,11 @@ public partial class Metronome : Node
         RefillBuffer();
     }
     private void OnResyncTimerTimeout() => RefillBuffer();
+    private void OnTimingChanged(object? sender, EventArgs e)
+    {
+        RefillBuffer();
+    }
+    private void RefillBuffer(object? sender, EventArgs e) => RefillBuffer();
 
     private void OnSettingsChanged(object? sender, EventArgs e)
     {

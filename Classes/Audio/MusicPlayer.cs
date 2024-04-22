@@ -32,7 +32,6 @@ public partial class MusicPlayer : AudioStreamPlayer
         //VolumeDb = base.VolumeDb;
         GlobalEvents.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
         GlobalEvents.Instance.AudioFileChanged += OnAudioFileChanged;
-        GD.Print(nameof(GlobalEvents.Instance.AudioFileChanged));
     }
 
     public override void _Process(double delta)

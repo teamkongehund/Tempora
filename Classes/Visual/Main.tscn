@@ -39,8 +39,9 @@ metadata/_edit_lock_ = true
 [node name="MusicPlayer" parent="." instance=ExtResource("2_nrfju")]
 bus = &"Music"
 
-[node name="Metronome" parent="MusicPlayer" node_paths=PackedStringArray("resyncTimer") instance=ExtResource("4_n2ir2")]
+[node name="Metronome" parent="MusicPlayer" node_paths=PackedStringArray("resyncTimer", "musicPlayer") instance=ExtResource("4_n2ir2")]
 resyncTimer = NodePath("ResyncTimer")
+musicPlayer = NodePath("..")
 
 [node name="ResyncTimer" type="Timer" parent="MusicPlayer/Metronome"]
 wait_time = 5.0
