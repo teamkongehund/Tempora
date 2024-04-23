@@ -16,8 +16,7 @@ public partial class FileMenu : PopupMenu
     [Export]
     private FileDialog loadFileDialog = null!;
 
-    [Export]
-    private MusicPlayer audioPlayer = null!;
+    private MusicPlayer MusicPlayer => MusicPlayer.Instance;
 
     private enum SaveConfig
     {
@@ -115,7 +114,7 @@ public partial class FileMenu : PopupMenu
             case var value when value == mp3Extension:
                 var audioFile = new AudioFile(selectedPath);
                 Project.Instance.AudioFile = audioFile;
-                audioPlayer.LoadMp3();
+                MusicPlayer.LoadMp3();
                 break;
             case var value when value == projectFileExtension:
                 ProjectFileManager.Instance.LoadProjectFromFilePath(selectedPath);

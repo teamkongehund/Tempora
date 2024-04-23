@@ -6,8 +6,6 @@ namespace Tempora.Classes.Visual;
 
 public partial class GridScrollBar : LabeledScrollbarHorizontal
 {
-    [Export] private MusicPlayer audioPlayer = null!;
-
     protected override void UpdateValueLabel() => valueLabel.Text = Settings.SliderToDivisorDict[(int)hScrollBar.Value].ToString();
 
     protected override void UpdateValue() => Settings.Instance.GridDivisor = Settings.SliderToDivisorDict[(int)hScrollBar.Value];

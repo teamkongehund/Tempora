@@ -29,8 +29,9 @@ Timing="*res://Classes/TimingClasses/Timing.tscn"
 Settings="*res://Classes/Singletons/Settings.tscn"
 Context="*res://Classes/Singletons/Context.tscn"
 ProjectFileManager="*res://Classes/Singletons/ProjectFileManager.tscn"
-ActionsHandler="*res://Classes/Singletons/MementoHandler.cs"
 TimingPointSelection="*res://Classes/TimingClasses/TimingPointSelection.tscn"
+MusicPlayer="*res://Classes/Audio/MusicPlayer.tscn"
+MementoHandler="*res://Classes/Singletons/MementoHandler.tscn"
 
 [display]
 

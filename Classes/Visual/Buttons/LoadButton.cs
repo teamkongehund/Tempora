@@ -8,8 +8,7 @@ namespace Tempora.Classes.Visual;
 
 public partial class LoadButton : Button
 {
-    [Export]
-    MusicPlayer audioPlayer = null!;
+    MusicPlayer MusicPlayer => MusicPlayer.Instance;
 
     private FileDialog fileDialog = null!;
 
@@ -50,7 +49,7 @@ public partial class LoadButton : Button
             case var value when value == mp3Extension:
                 var audioFile = new AudioFile(selectedPath);
                 Project.Instance.AudioFile = audioFile;
-                audioPlayer.LoadMp3();
+                MusicPlayer.LoadMp3();
                 break;
             case var value when value == projectFileExtension:
                 ProjectFileManager.Instance.LoadProjectFromFilePath(selectedPath);

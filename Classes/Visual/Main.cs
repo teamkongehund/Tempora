@@ -15,8 +15,7 @@ public partial class Main : Control
     //private string audioPath = "res://Audio/UMO.mp3";
     [Export]
     private AudioStreamMP3 defaultMP3 = null!;
-    [Export]
-    private MusicPlayer musicPlayer = null!;
+    private MusicPlayer MusicPlayer => MusicPlayer.Instance;
     [Export]
     private AudioVisualsContainer audioVisualsContainer = null!;
     [Export]
@@ -24,28 +23,15 @@ public partial class Main : Control
     [Export]
     private BlockScrollBar blockScrollBar = null!;
     [Export]
-    private HScrollBar blockAmountScrollBar = null!;
-    [Export]
-    private HScrollBar gridScrollBar = null!;
-    [Export]
-    private HScrollBar offsetScrollBar = null!;
-    [Export]
-    private HScrollBar overlapScrollBar = null!;
-    [Export]
-    private HScrollBar playbackRateScrollBar = null!;
-    [Export]
-    private Label errorLabel = null!;
-
-    //AudioFile AudioFile;
+    private FileDialog? saveDialog = null;
 
     private ProjectFileManager projectFileManager = null!;
-
-    //private AudioDisplayPanel waveformWindow;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
         projectFileManager = ProjectFileManager.Instance;
+        projectFileManager.SaveDialog = saveDialog;
 
         // This works in Debug if we use i.e. audioPath = "res://Audio/UMO.mp3",
         // but won't work in production, as resources are converted to different file formats.
@@ -61,6 +47,7 @@ public partial class Main : Control
         audioVisualsContainer.CreateBlocks();
         blockScrollBar.UpdateRange();
         audioVisualsContainer.UpdateBlocksScroll();
+
 
         MementoHandler.Instance.AddTimingMemento();
     }
@@ -102,7 +89,7 @@ public partial class Main : Control
 
         var audioFile = new AudioFile(path);
         Project.Instance.AudioFile = audioFile;
-        musicPlayer.LoadMp3();
+        MusicPlayer.LoadMp3();
     }
 
     private void OnScrolled(object? sender, EventArgs e)
@@ -115,6 +102,6 @@ public partial class Main : Control
         if (e is not GlobalEvents.ObjectArgument<float> floatArgument)
             throw new Exception($"{nameof(e)} was not of type {nameof(GlobalEvents.ObjectArgument<float>)}");
         float playbackTime = floatArgument.Value;
-        musicPlayer.SeekPlay(playbackTime);
+        MusicPlayer.SeekPlay(playbackTime);
     }
 }

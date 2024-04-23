@@ -12,13 +12,18 @@ namespace Tempora.Classes.Utility;
 /// </summary>
 public partial class ProjectFileManager : Node
 {
+    #region Properties & Fields
     private static ProjectFileManager instance = null!;
+
+    // Set by Main
+    public FileDialog? SaveDialog = null;
 
     public static readonly string ProjectFileExtension = "tmpr";
     private Settings settings = null!;
     private static readonly string[] separator = ["\r\n", "\r", "\n"];
 
-    public static ProjectFileManager Instance { get => instance; set => instance = value; }
+    public static ProjectFileManager Instance { get => instance; set => instance = value; } 
+    #endregion
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -27,8 +32,14 @@ public partial class ProjectFileManager : Node
         settings = Settings.Instance;
     }
 
-    public static void SaveProjectAs(string filePath)
+    #region Save Project
+    public static void SaveProjectAs(string? filePath)
     {
+        if (filePath == null)
+        {
+
+        }
+
         string extension = FileHandler.GetExtension(filePath);
         string correctExtension = ProjectFileManager.ProjectFileExtension;
 
@@ -107,7 +118,9 @@ public partial class ProjectFileManager : Node
         }
         return timingPointsLines;
     }
+    #endregion
 
+    #region Load Project
     private void LoadProjectFromFile(string projectFile, string filePath)
     {
         Timing.Instance = new Timing
@@ -224,5 +237,6 @@ public partial class ProjectFileManager : Node
         AudioPath,
         TimingPoints,
         TimeSignaturePoints
-    }
+    }  
+    #endregion
 }

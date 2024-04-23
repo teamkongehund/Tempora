@@ -20,8 +20,7 @@ public partial class AudioVisualsContainer : VBoxContainer
     [Export]
     private PackedScene packedAudioBlock = null!;
 
-    [Export]
-    private MusicPlayer musicPlayer = null!;
+    private MusicPlayer MusicPlayer => MusicPlayer.Instance;
 
     //public float FirstBlockStartTime = 0;
 
@@ -61,13 +60,13 @@ public partial class AudioVisualsContainer : VBoxContainer
     public override void _Ready()
     {
         MouseExited += OnMouseExited;
-        musicPlayer.Paused += OnMusicPaused;
+        MusicPlayer.Paused += OnMusicPaused;
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
-        if (musicPlayer.Playing)
+        if (MusicPlayer.Playing)
         {
             UpdatePlayHeads();
         }
@@ -75,14 +74,14 @@ public partial class AudioVisualsContainer : VBoxContainer
 
     private void UpdatePlayHeads()
     {
-        double playbackTime = musicPlayer.GetPlaybackTime();
+        double playbackTime = MusicPlayer.GetPlaybackTime();
         float musicPosition = Timing.Instance.TimeToMusicPosition((float)playbackTime);
         foreach (AudioBlock audioBlock in GetChildren().OfType<AudioBlock>())
         {
             AudioDisplayPanel audioDisplayPanel = audioBlock.AudioDisplayPanel;
             float x = audioDisplayPanel.MusicPositionToXPosition(musicPosition);
             audioDisplayPanel.Playhead.Position = new Vector2(x, 0.0f);
-            audioDisplayPanel.Playhead.Visible = x >= 0 && x <= audioDisplayPanel.Size.X && musicPlayer.Playing;
+            audioDisplayPanel.Playhead.Visible = x >= 0 && x <= audioDisplayPanel.Size.X && MusicPlayer.Playing;
         }
     }
 

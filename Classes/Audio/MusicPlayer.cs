@@ -7,7 +7,7 @@ namespace Tempora.Classes.Audio;
 
 public partial class MusicPlayer : AudioStreamPlayer
 {
-
+    public static MusicPlayer Instance = null!;
     //new public float VolumeDb; // Hides actual volume from other API's, so they can't mess with volume while fading.
 
     public event Action<double>? Seeked;
@@ -29,6 +29,7 @@ public partial class MusicPlayer : AudioStreamPlayer
 
     public override void _Ready()
     {
+        Instance = this;
         //VolumeDb = base.VolumeDb;
         GlobalEvents.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
         GlobalEvents.Instance.AudioFileChanged += OnAudioFileChanged;

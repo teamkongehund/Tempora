@@ -10,15 +10,8 @@ namespace Tempora.Classes.Audio;
 
 public partial class Metronome : Node
 {
-    /// <summary>
-    /// If <see cref="MusicPlayer.PitchScale"/> is less than 1, then <see cref="currentBufferMusicFrame"/> will gradually go out of sync with reality due to accumulating floating-point error. 
-    /// A timer is implemented to manually update the value at a fixed interval.
-    /// </summary>
     [Export]
-    Timer resyncTimer = null!;
-
-    [Export]
-    private MusicPlayer musicPlayer = null!;
+    private MusicPlayer MusicPlayer = null!;
 
     private float previousVolumeDb;
     private bool isMuted;
@@ -56,23 +49,21 @@ public partial class Metronome : Node
         };
         AddChild(audioStreamPlayer);
 
-        if (musicPlayer is null) return;
-        musicPitchScale = musicPlayer.PitchScale;
+        if (MusicPlayer is null) return;
+        musicPitchScale = MusicPlayer.PitchScale;
 
         musicSampleRate = Project.Instance.AudioFile?.SampleRate ?? musicSampleRate;
         GlobalEvents.Instance.AudioFileChanged += OnAudioFileChanged;
 
-        musicPlayer.PlaybackStarted += StartPlayback;
-        musicPlayer.Seeked += SeekPlayback;
-        musicPlayer.Paused += StopPlayback;
-        musicPlayer.PitchScaleChanged += OnPitchScaleChanged;
+        MusicPlayer.PlaybackStarted += StartPlayback;
+        MusicPlayer.Seeked += SeekPlayback;
+        MusicPlayer.Paused += StopPlayback;
+        MusicPlayer.PitchScaleChanged += OnPitchScaleChanged;
         GlobalEvents.Instance.TimingChanged += OnTimingChanged;
 
         GlobalEvents.Instance.SettingsChanged += OnSettingsChanged;
         lastMetronomeFollowsGrid = Settings.Instance.MetronomeFollowsGrid;
         lastGridDivisor = Settings.Instance.GridDivisor;
-
-        resyncTimer.Timeout += OnResyncTimerTimeout;
     }
     public override void _Process(double delta)
     {
@@ -158,7 +149,7 @@ public partial class Metronome : Node
     private void RefillBuffer()
     {
         if (playback is null) return;
-        SeekPlayback(musicPlayer.PlaybackTime);
+        SeekPlayback(MusicPlayer.PlaybackTime);
     }
 
     private void UpdateTriggerTime(double currentTime)
@@ -201,7 +192,6 @@ public partial class Metronome : Node
         musicPitchScale = value;
         RefillBuffer();
     }
-    private void OnResyncTimerTimeout() => RefillBuffer();
     private void OnTimingChanged(object? sender, EventArgs e)
     {
         RefillBuffer();
