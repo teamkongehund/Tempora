@@ -150,6 +150,7 @@ public partial class Timing
     public void DeleteTimingPoints(int indexFrom, int indexTo)
     {
         TimingPoint? previousTimingPoint = (indexFrom - 1) >= 0 ? TimingPoints[(indexFrom - 1)] : null;
+        bool isIndexToLast = indexTo == TimingPoints.Count;
 
         for (int i = indexFrom; i < indexTo; i++)
         {
@@ -158,7 +159,8 @@ public partial class Timing
         }
         TimingPoints.RemoveRange(indexFrom, indexTo - indexFrom);
 
-        previousTimingPoint?.MeasuresPerSecond_Set(this);
+        if (!isIndexToLast)
+            previousTimingPoint?.MeasuresPerSecond_Set(this);
 
         GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointCountChanged));
 
