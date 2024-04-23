@@ -22,8 +22,6 @@ public partial class Main : Control
     private Metronome metronome = null!;
     [Export]
     private BlockScrollBar blockScrollBar = null!;
-    [Export]
-    private FileDialog? saveDialog = null;
 
     private ProjectFileManager projectFileManager = null!;
 
@@ -31,7 +29,6 @@ public partial class Main : Control
     public override void _Ready()
     {
         projectFileManager = ProjectFileManager.Instance;
-        projectFileManager.SaveDialog = saveDialog;
 
         // This works in Debug if we use i.e. audioPath = "res://Audio/UMO.mp3",
         // but won't work in production, as resources are converted to different file formats.

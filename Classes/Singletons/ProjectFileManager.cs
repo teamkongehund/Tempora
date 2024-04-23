@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using Godot;
 using Tempora.Classes.Audio;
 using Tempora.Classes.TimingClasses;
@@ -15,11 +16,16 @@ public partial class ProjectFileManager : Node
     #region Properties & Fields
     private static ProjectFileManager instance = null!;
 
-    // Set by Main
-    public FileDialog? SaveDialog = null;
+    [Export]
+    public FileDialog SaveFileDialog = null!;
+
+    [Export]
+    public FileDialog LoadFileDialog = null!;
+
+    private MusicPlayer MusicPlayer => MusicPlayer.Instance;
 
     public static readonly string ProjectFileExtension = "tmpr";
-    private Settings settings = null!;
+    private Settings settings => Settings.Instance;
     private static readonly string[] separator = ["\r\n", "\r", "\n"];
 
     public static ProjectFileManager Instance { get => instance; set => instance = value; } 
@@ -29,15 +35,101 @@ public partial class ProjectFileManager : Node
     public override void _Ready()
     {
         Instance = this;
-        settings = Settings.Instance;
+
+        SaveFileDialog.FileSelected += OnSaveFilePathSelected;
+        LoadFileDialog.FileSelected += OnLoadFilePathSelected;
     }
+
+    #region Save Dialog
+
+    public enum SaveConfig
+    {
+        project,
+        osz
+    }
+
+    private SaveConfig latestSaveConfig = SaveConfig.project;
+    public void SaveOszFileDialogPopup() => SaveFileDialogPopup(SaveConfig.osz);
+    public void SaveProjectFileDialogPopup() => SaveFileDialogPopup(SaveConfig.project);
+    private void SaveFileDialogPopup(SaveConfig config)
+    {
+        switch (config)
+        {
+            case SaveConfig.project:
+                SaveFileDialog.CurrentDir = Settings.Instance.ProjectFilesDirectory;
+                break;
+            case SaveConfig.osz:
+                SaveFileDialog.CurrentDir = Settings.Instance.OszFilesDirectory;
+                break;
+        }
+        latestSaveConfig = config;
+        SaveFileDialog.Popup();
+    }
+    private void OnSaveFilePathSelected(string selectedPath)
+    {
+        switch (latestSaveConfig)
+        {
+            case SaveConfig.project:
+                ProjectFileManager.SaveProjectAs(selectedPath);
+                string dir = FileHandler.GetDirectory(selectedPath);
+                Settings.Instance.ProjectFilesDirectory = dir;
+                break;
+            case SaveConfig.osz:
+                OsuExporter.SaveOszAs_AndShowInFileExplorer(selectedPath);
+                dir = FileHandler.GetDirectory(selectedPath);
+                Settings.Instance.OszFilesDirectory = dir;
+                break;
+        }
+    }
+    #endregion
+
+    #region Load Dialog
+    public void LoadFileDialogPopup()
+    {
+        LoadFileDialog.CurrentDir = Settings.Instance.ProjectFilesDirectory;
+        LoadFileDialog.Popup();
+    }
+
+    private void OnLoadFilePathSelected(string selectedPath)
+    {
+        string extension = FileHandler.GetExtension(selectedPath);
+
+        string projectFileExtension = ProjectFileManager.ProjectFileExtension;
+        string mp3Extension = "mp3";
+
+        string[] allowedExtensions =
+        [
+            projectFileExtension,
+            mp3Extension
+        ];
+
+        if (!allowedExtensions.Contains(extension))
+            return;
+
+        switch (extension)
+        {
+            case var value when value == mp3Extension:
+                var audioFile = new AudioFile(selectedPath);
+                Project.Instance.AudioFile = audioFile;
+                MusicPlayer.LoadMp3();
+                break;
+            case var value when value == projectFileExtension:
+                ProjectFileManager.Instance.LoadProjectFromFilePath(selectedPath);
+                break;
+        }
+
+        string dir = FileHandler.GetDirectory(selectedPath);
+        Settings.Instance.ProjectFilesDirectory = dir;
+    }
+    #endregion
 
     #region Save Project
     public static void SaveProjectAs(string? filePath)
     {
         if (filePath == null)
         {
-
+            Instance.SaveProjectFileDialogPopup();
+            return;
         }
 
         string extension = FileHandler.GetExtension(filePath);

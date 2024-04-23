@@ -2,5 +2,21 @@
 
 [ext_resource type="Script" path="res://Classes/Singletons/ProjectFileManager.cs" id="1_hekhv"]
 
-[node name="ProjectFileManager" type="Node"]
+[node name="ProjectFileManager" type="Node" node_paths=PackedStringArray("SaveFileDialog", "LoadFileDialog")]
 script = ExtResource("1_hekhv")
+SaveFileDialog = NodePath("SaveFileDialog")
+LoadFileDialog = NodePath("LoadFileDialog")
+
+[node name="SaveFileDialog" type="FileDialog" parent="."]
+title = "Save Project"
+position = Vector2i(170, 70)
+size = Vector2i(1002, 587)
+access = 2
+
+[node name="LoadFileDialog" type="FileDialog" parent="."]
+title = "Load Project or Audio"
+position = Vector2i(170, 70)
+size = Vector2i(1002, 587)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
