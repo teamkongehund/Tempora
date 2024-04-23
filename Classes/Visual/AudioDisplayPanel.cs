@@ -29,6 +29,8 @@ public partial class AudioDisplayPanel : Control
     private PreviewLine PreviewLine = null!;
     [Export]
     private Line2D SelectedPositionLine = null!;
+    [Export]
+    private ColorRect? VisualSelector;
     //[Export]
     //private Label MeasureLabel;
     //[Export]
@@ -105,6 +107,8 @@ public partial class AudioDisplayPanel : Control
         MouseExited += OnMouseExited;
 
         GlobalEvents.Instance.TimingChanged += OnTimingChanged;
+
+        TimingPointSelection.Instance.SelectorChanged += OnSelectorChanged;
     }
 
     public override void _GuiInput(InputEvent @event)
@@ -122,53 +126,34 @@ public partial class AudioDisplayPanel : Control
         float time = Timing.Instance.MusicPositionToTime(musicPosition);
 
         TimingPoint? nearestTimingPoint = Timing.Instance.GetNearestTimingPoint(musicPosition);
-        Context.Instance.LitTimingPoint = nearestTimingPoint;
+        Context.Instance.TimingPointNearestCursor = nearestTimingPoint;
         float offsetPerWheelScroll = 0.002f;
 
         switch (mouseEvent)
         {
-            case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } mouseButtonEvent:
+            case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } mouseButtonEvent when !Input.IsKeyPressed(Key.Alt):
                 AttemptToAddTimingPoint?.Invoke(this, new GlobalEvents.ObjectArgument<float>(time));
                 break;
 
-            case InputEventMouseButton { ButtonIndex: MouseButton.Right, Pressed: true } mouseButtonEvent:
+            case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } mouseButtonEvent when Input.IsKeyPressed(Key.Alt):
+                TimingPointSelection.Instance.StartSelector(musicPosition);
+                break;
+
+            case InputEventMouseButton { ButtonIndex: MouseButton.Right, Pressed: true } mouseButtonEvent when !Input.IsKeyPressed(Key.Alt):
                 SeekPlaybackTime?.Invoke(this, new GlobalEvents.ObjectArgument<float>(time));
                 break;
 
             case InputEventMouseButton { ButtonIndex: MouseButton.WheelUp, Pressed: true } mouseButtonEvent when Input.IsKeyPressed(Key.Ctrl):
-                nearestTimingPoint?.Offset_Set(nearestTimingPoint.Offset + offsetPerWheelScroll, Timing.Instance);
-                MementoHandler.Instance.AddTimingMemento(nearestTimingPoint);
+                //nearestTimingPoint?.Offset_Set(nearestTimingPoint.Offset + offsetPerWheelScroll, Timing.Instance);
+                //MementoHandler.Instance.AddTimingMemento(nearestTimingPoint);
+                TimingPointSelection.Instance.OffsetSelectionOrPoint(nearestTimingPoint, offsetPerWheelScroll);
                 break;
 
             case InputEventMouseButton { ButtonIndex: MouseButton.WheelDown, Pressed: true } mouseButtonEvent when Input.IsKeyPressed(Key.Ctrl):
-                nearestTimingPoint?.Offset_Set(nearestTimingPoint.Offset - offsetPerWheelScroll, Timing.Instance);
-                MementoHandler.Instance.AddTimingMemento(nearestTimingPoint);
+                //nearestTimingPoint?.Offset_Set(nearestTimingPoint.Offset - offsetPerWheelScroll, Timing.Instance);
+                //MementoHandler.Instance.AddTimingMemento(nearestTimingPoint);
+                TimingPointSelection.Instance.OffsetSelectionOrPoint(nearestTimingPoint, -offsetPerWheelScroll);
                 break;
-
-            //case InputEventMouseMotion mouseMotion:
-            //    if (!mouseIsInside)
-            //        return; // Godot won't seem to let other Nodes handle the event if the mouse has been held down while moving from this Control to another
-                
-            //    GD.Print($"Node handling mouse motion: {this}");
-
-            //    UpdatePreviewLinePosition();
-
-            //    if (Context.Instance.HeldTimingPoint == null)
-            //        return;
-
-            //    if (Input.IsKeyPressed(Key.Ctrl))
-            //    {
-            //        float xMovement = mouseMotion.Relative.X;
-            //        float secondsPerPixel = 0.0002f;
-            //        float secondsDifference = xMovement * secondsPerPixel;
-            //        Context.Instance.HeldTimingPoint.Offset_Set(Context.Instance.HeldTimingPoint.Offset - secondsDifference, Timing.Instance);
-            //        return;
-            //    }
-
-            //    Timing.Instance.SnapTimingPoint(Context.Instance.HeldTimingPoint, musicPosition);
-
-            //    break;
-
             default:
                 return;
         }
@@ -225,6 +210,10 @@ public partial class AudioDisplayPanel : Control
 
                 UpdatePreviewLinePosition();
 
+                if (Input.IsKeyPressed(Key.Alt))
+                    TimingPointSelection.Instance.UpdateSelector(musicPosition);
+
+                // From here on down: update held timing point
                 if (Context.Instance.HeldTimingPoint == null)
                     return;
 
@@ -233,11 +222,13 @@ public partial class AudioDisplayPanel : Control
                     float xMovement = mouseMotion.Relative.X;
                     float secondsPerPixel = 0.0002f;
                     float secondsDifference = xMovement * secondsPerPixel;
-                    Context.Instance.HeldTimingPoint.Offset_Set(Context.Instance.HeldTimingPoint.Offset - secondsDifference, Timing.Instance);
+                    //Context.Instance.HeldTimingPoint.Offset_Set(Context.Instance.HeldTimingPoint.Offset - secondsDifference, Timing.Instance);
+                    TimingPointSelection.Instance.OffsetSelection(-secondsDifference);
                     return;
                 }
 
-                Timing.Instance.SnapTimingPoint(Context.Instance.HeldTimingPoint, musicPosition, out _);
+                //Timing.Instance.SnapTimingPoint(Context.Instance.HeldTimingPoint, musicPosition, out _);
+                TimingPointSelection.Instance.MoveSelection(Context.Instance.HeldTimingPoint.MusicPosition, musicPosition);
 
                 GetViewport().SetInputAsHandled();
 
@@ -279,6 +270,8 @@ public partial class AudioDisplayPanel : Control
     }
 
     private void OnScrolled(object? sender, EventArgs e) => UpdateSelectedPositionLine();
+
+    private void OnSelectorChanged(object? sender, EventArgs e) => UpdateVisualSelector();
     #endregion
 
     #region Render
@@ -526,6 +519,7 @@ public partial class AudioDisplayPanel : Control
         CreateWaveforms(); // takes 2-5 ms on 30 blocks  loaded
         RenderVisualTimingPoints(); // takes 2-3 ms on 30 blocks loaded
         CreateGridLines();
+        UpdateVisualSelector();
 
         // This works fine
         //await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
@@ -605,6 +599,33 @@ public partial class AudioDisplayPanel : Control
 
         FirstTimingPointIndex = firstIndex;
         LastTimingPointIndex = lastIndex;
+    }
+
+    private void UpdateVisualSelector()
+    {
+        if (VisualSelector == null)
+            return;
+
+        if (TimingPointSelection.Instance.SelectorStartPosition == null || TimingPointSelection.Instance.SelectorEndPosition == null)
+        {
+            VisualSelector.Visible = false;
+            return;
+        }
+        float xAtSelectorStart = MusicPositionToXPosition((float)TimingPointSelection.Instance.SelectorStartPosition);
+        float xAtSelectorEnd = MusicPositionToXPosition((float)TimingPointSelection.Instance.SelectorEndPosition);
+        if (xAtSelectorStart > Size.X || xAtSelectorEnd < 0)
+        {
+            VisualSelector.Visible = false;
+            return;
+        }
+
+        xAtSelectorStart = Math.Max(xAtSelectorStart, 0);
+        xAtSelectorEnd = Math.Min(xAtSelectorEnd, Size.X);
+
+        VisualSelector.Visible = true;
+
+        VisualSelector.Position = new Vector2(xAtSelectorStart, 0);
+        VisualSelector.Size = new Vector2(xAtSelectorEnd - xAtSelectorStart, Size.Y);
     }
 
     #endregion

@@ -4,13 +4,14 @@
 [ext_resource type="PackedScene" uid="uid://b8325rmwu4cpb" path="res://Classes/Visual/VisualTimingPoint.tscn" id="2_dx65v"]
 [ext_resource type="Script" path="res://Classes/Visual/PreviewLine.cs" id="2_lfylv"]
 
-[node name="AudioDisplayPanel" type="Control" node_paths=PackedStringArray("Playhead", "waveformSegments", "VisualTimingPointFolder", "GridFolder", "PreviewLine", "SelectedPositionLine")]
+[node name="AudioDisplayPanel" type="Control" node_paths=PackedStringArray("Playhead", "waveformSegments", "VisualTimingPointFolder", "GridFolder", "PreviewLine", "SelectedPositionLine", "VisualSelector")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 1
 script = ExtResource("1_oemdp")
 Playhead = NodePath("Playhead")
 waveformSegments = NodePath("WaveformSegments")
@@ -18,6 +19,7 @@ VisualTimingPointFolder = NodePath("VisualTimingPointFolder")
 GridFolder = NodePath("GridFolder")
 PreviewLine = NodePath("PreviewLine")
 SelectedPositionLine = NodePath("SelectedPositionLine")
+VisualSelector = NodePath("VisualSelector")
 packedVisualTimingPoint = ExtResource("2_dx65v")
 
 [node name="WaveformSegments" type="Node2D" parent="."]
@@ -62,3 +64,11 @@ width = 2.0
 default_color = Color(0.117647, 0.368627, 1, 1)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="VisualSelector" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.670588, 0, 0.568627, 0.407843)

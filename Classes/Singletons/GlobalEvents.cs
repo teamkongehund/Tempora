@@ -19,9 +19,10 @@ public partial class GlobalEvents : Node
     public event EventHandler? SelectedPositionChanged;
     public event EventHandler? SettingsChanged;
     public event EventHandler? TimingChanged;
+    public event EventHandler? TimingPointCountChanged;
     public event EventHandler? TimingPointHolding;
     public event EventHandler? MusicPositionChangeRejected;
-    public event EventHandler? TimingPointLightUp;
+    public event EventHandler? TimingPointNearestCursorChanged;
 
     /// <summary>
     /// Allows any class to invoke any event defined in <see cref="GlobalEvents"/>
@@ -72,5 +73,9 @@ public partial class GlobalEvents : Node
     public override void _Ready()
     {
         Instance = this;
+
+        TimingPointCountChanged += InvokeTimingChanged;
     }
+
+    private void InvokeTimingChanged(object? sender, EventArgs e) => TimingChanged?.Invoke(sender, e);
 }

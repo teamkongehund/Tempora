@@ -136,14 +136,14 @@ public partial class Timing
     /// <summary>
     /// Delegate that defines what a new music position should be for a timing point.
     /// </summary>
-    private delegate float GetNewMusicPosition(TimingPoint? timingPoint);
+    public delegate float GetNewMusicPosition(TimingPoint? timingPoint);
 
     /// <summary>
     /// Changes the music positions of all <see cref="TimingPoint"/>s from <see cref="TimingPoints"/>[lowerIndex] to and including <see cref="TimingPoints"/>[higherIndex].
     /// </summary>
     /// <param name="getNewMusicPosition">Delegate method used to calculate the new music position</param>
     /// <exception cref="NullReferenceException"></exception>
-    private void BatchChangeMusicPosition(int lowerIndex, int higherIndex, GetNewMusicPosition getNewMusicPosition)
+    public void BatchChangeMusicPosition(int lowerIndex, int higherIndex, GetNewMusicPosition getNewMusicPosition)
     {
         if (lowerIndex > higherIndex)
             (lowerIndex, higherIndex) = (higherIndex, lowerIndex);
@@ -175,6 +175,34 @@ public partial class Timing
                 GD.Print("Music Position change failed. Stopping batch operation.");
                 break;
             }
+        }
+    }
+
+    public void BatchChangeOffset(int lowerIndex, int higherIndex, float offsetChange)
+    {
+        if (lowerIndex > higherIndex)
+            (lowerIndex, higherIndex) = (higherIndex, lowerIndex);
+
+        if (higherIndex >= TimingPoints.Count)
+            higherIndex = TimingPoints.Count - 1;
+
+        if (lowerIndex < 0)
+            lowerIndex = 0;
+
+        bool increasing = offsetChange > 0;
+
+        // If the change decreases the offset, iterate forwards (less likely to trigger rejections).
+        // Vice versa for increases
+        int startIndex = increasing ? higherIndex : lowerIndex;
+        for (int i = startIndex
+            ; increasing ? i >= lowerIndex : i <= higherIndex
+            ; i = increasing ? i - 1 : i + 1)
+        {
+            TimingPoint? timingPoint = TimingPoints[i];
+            if (timingPoint?.Offset == null)
+                throw new NullReferenceException(nameof(timingPoint));
+
+            timingPoint.Offset_Set(timingPoint.Offset + offsetChange, this);
         }
     }
 

@@ -77,7 +77,6 @@ public partial class Main : Control
                         GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.MouseLeftReleased));
                         Context.Instance.IsSelectedMusicPositionMoving = false;
                     }
-
                     break;
                 }
         }

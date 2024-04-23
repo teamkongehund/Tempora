@@ -42,16 +42,16 @@ public partial class Context : Node
         }
     }
 
-    TimingPoint? litTimingPoint;
-    public TimingPoint? LitTimingPoint
+    TimingPoint? timingPointNearestCursor;
+    public TimingPoint? TimingPointNearestCursor
     {
-        get => litTimingPoint;
+        get => timingPointNearestCursor;
         set
         {
-            if (litTimingPoint == value)
+            if (timingPointNearestCursor == value)
                 return;
-            litTimingPoint = value;
-            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointLightUp), this, new GlobalEvents.ObjectArgument<TimingPoint?>(litTimingPoint));
+            timingPointNearestCursor = value;
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointNearestCursorChanged), this, new GlobalEvents.ObjectArgument<TimingPoint?>(timingPointNearestCursor));
         }
     }
 

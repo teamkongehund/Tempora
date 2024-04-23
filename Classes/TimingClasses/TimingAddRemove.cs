@@ -28,7 +28,7 @@ public partial class Timing
             TimingPoints[index - 1].MeasuresPerSecond_Set(this);
 
             if (!IsInstantiating)
-                GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
+                GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointCountChanged));
         }
         //if (index < TimingPoints.Count - 1)
         //{
@@ -77,7 +77,7 @@ public partial class Timing
         timingPoint.IsInstantiating = false;
 
         if (!IsInstantiating)
-            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointCountChanged));
 
         int index = TimingPoints.IndexOf(timingPoint);
 
@@ -125,13 +125,11 @@ public partial class Timing
 
         //ActionsHandler.Instance.AddTimingMemento();
 
-        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
+        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointCountChanged));
     }
 
     private void DeleteTimingPoint(TimingPoint timingPoint)
     {
-        TimingPoints.IndexOf(timingPoint);
-
         TimingPoint? previousTimingPoint = GetPreviousTimingPoint(timingPoint);
 
         timingPoint.QueueFree();
@@ -139,7 +137,30 @@ public partial class Timing
 
         previousTimingPoint?.MeasuresPerSecond_Set(this);
 
-        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
+        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointCountChanged));
+
+        MementoHandler.Instance.AddTimingMemento();
+    }
+
+    /// <summary>
+    /// Deletes timing points between index excluding indexTo.
+    /// </summary>
+    /// <param name="indexFrom"></param>
+    /// <param name="indexTo"></param>
+    public void DeleteTimingPoints(int indexFrom, int indexTo)
+    {
+        TimingPoint? previousTimingPoint = (indexFrom - 1) >= 0 ? TimingPoints[(indexFrom - 1)] : null;
+
+        for (int i = indexFrom; i < indexTo; i++)
+        {
+            TimingPoint timingPoint = TimingPoints[i];
+            timingPoint.QueueFree();
+        }
+        TimingPoints.RemoveRange(indexFrom, indexTo - indexFrom);
+
+        previousTimingPoint?.MeasuresPerSecond_Set(this);
+
+        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointCountChanged));
 
         MementoHandler.Instance.AddTimingMemento();
     }

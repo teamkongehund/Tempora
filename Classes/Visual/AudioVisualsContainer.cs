@@ -88,7 +88,7 @@ public partial class AudioVisualsContainer : VBoxContainer
 
     private void OnMouseExited()
     {
-        Context.Instance.LitTimingPoint = null;
+        Context.Instance.TimingPointNearestCursor = null;
     }
 
     private void OnMusicPaused() => UpdatePlayHeads();

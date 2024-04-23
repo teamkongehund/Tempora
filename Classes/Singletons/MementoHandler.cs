@@ -47,6 +47,7 @@ public partial class MementoHandler : Node
     }
 
     private TimingPoint? timingPointBeingChanged = null;
+    private int[]? SelectionBeingChanged = null;
 
     /// <summary>
     /// When doing many changes to a single <see cref="TimingPoint"/>, this overload will save them all in one <see cref="IMemento"/>.
@@ -63,9 +64,32 @@ public partial class MementoHandler : Node
         timingPointBeingChanged = timingPoint;
     }
 
+    /// <summary>
+    /// When doing many changes to a single selection, this overload will save them all in one <see cref="IMemento"/>.
+    /// </summary>
+    /// <param name="timingPoint"></param>
+    public void AddTimingMemento(int[]? selection)
+    {
+        if (SelectionBeingChanged == selection)
+            DeleteMementosAfterIndex(mementoIndex - 1);
+
+        IMemento memento = Timing.Instance.GetMemento();
+        AddMemento(memento);
+
+        SelectionBeingChanged = selection;
+    }
+
     public void AddTimingMemento()
     {
         IMemento memento = Timing.Instance.GetMemento();
+        AddMemento(memento);
+        timingPointBeingChanged = null;
+    }
+
+    public void AddSelectionMemento()
+    {
+        IMemento memento = Timing.Instance.GetMemento(); // TODO: Change this
+        return;
         AddMemento(memento);
         timingPointBeingChanged = null;
     }
