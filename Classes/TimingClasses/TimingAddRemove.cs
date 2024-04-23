@@ -166,5 +166,13 @@ public partial class Timing
 
         MementoHandler.Instance.AddTimingMemento();
     }
-     
+
+    public void DeleteAllTimingPoints()
+    {
+        TimingPoints.Clear();
+        TimeSignaturePoints.Clear();
+        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
+
+        MementoHandler.Instance.AddTimingMemento();
+    }
 }

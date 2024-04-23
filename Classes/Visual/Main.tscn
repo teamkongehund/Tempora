@@ -18,7 +18,7 @@
 [ext_resource type="PackedScene" uid="uid://bac4n7j15cns7" path="res://Classes/Visual/AudioBlock.tscn" id="16_mlqa0"]
 [ext_resource type="Script" path="res://Classes/Visual/MessageLabel.cs" id="20_c3wmk"]
 
-[node name="Main" type="Control" node_paths=PackedStringArray("audioVisualsContainer", "metronome", "blockScrollBar", "saveDialog")]
+[node name="Main" type="Control" node_paths=PackedStringArray("audioVisualsContainer", "metronome", "blockScrollBar")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -31,7 +31,6 @@ defaultMP3 = ExtResource("2_klkb2")
 audioVisualsContainer = NodePath("VSplitContainer/AudioMainHSplitContainer/AudioVisualsMarginContainer/AudioVisualsContainer")
 metronome = NodePath("")
 blockScrollBar = NodePath("VSplitContainer/AudioMainHSplitContainer/BlockScrollBarMarginContainer/BlockScrollBar")
-saveDialog = NodePath("SaveFileDialog")
 metadata/_edit_lock_ = true
 
 [node name="ColorRect" type="ColorRect" parent="."]
@@ -61,21 +60,21 @@ theme_override_constants/separation = 30
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 
-[node name="File" type="PopupMenu" parent="VSplitContainer/TopMenuHBox/MenuBar" node_paths=PackedStringArray("saveFileDialog", "loadFileDialog")]
+[node name="File" type="PopupMenu" parent="VSplitContainer/TopMenuHBox/MenuBar"]
 title = "File"
 theme_override_font_sizes/font_size = 12
-item_count = 4
-item_0/text = "Open..."
-item_0/id = 0
-item_1/text = "Save As..."
-item_1/id = 1
-item_2/text = "Export & Open .osz"
-item_2/id = 2
-item_3/text = "Export..."
-item_3/id = 3
+item_count = 5
+item_0/text = "New Project"
+item_0/id = 4
+item_1/text = "Open..."
+item_1/id = 0
+item_2/text = "Save As..."
+item_2/id = 1
+item_3/text = "Export & Open .osz"
+item_3/id = 2
+item_4/text = "Export..."
+item_4/id = 3
 script = ExtResource("5_kcxfp")
-saveFileDialog = NodePath("../../../../SaveFileDialog")
-loadFileDialog = NodePath("../../../../LoadFileDialog")
 
 [node name="Edit" type="PopupMenu" parent="VSplitContainer/TopMenuHBox/MenuBar" node_paths=PackedStringArray("clearAllConfirmationDialog")]
 title = "Edit"

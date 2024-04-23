@@ -40,6 +40,19 @@ public partial class ProjectFileManager : Node
         LoadFileDialog.FileSelected += OnLoadFilePathSelected;
     }
 
+    public override void _Input(InputEvent inputEvent)
+    {
+        switch (inputEvent)
+        {
+            case InputEventKey keyEvent:
+                {
+                    if (keyEvent.Keycode == Key.S && keyEvent.Pressed && Input.IsKeyPressed(Key.Ctrl))
+                        ProjectFileManager.SaveProjectAs(Project.Instance.ProjectPath);
+                    break;
+                }
+        }
+    }
+
     #region Save Dialog
 
     public enum SaveConfig
@@ -115,11 +128,11 @@ public partial class ProjectFileManager : Node
                 break;
             case var value when value == projectFileExtension:
                 ProjectFileManager.Instance.LoadProjectFromFilePath(selectedPath);
+                Project.Instance.NotificationMessage = $"Loaded {selectedPath}";
+                string dir = FileHandler.GetDirectory(selectedPath);
+                Settings.Instance.ProjectFilesDirectory = dir;
                 break;
         }
-
-        string dir = FileHandler.GetDirectory(selectedPath);
-        Settings.Instance.ProjectFilesDirectory = dir;
     }
     #endregion
 
@@ -213,6 +226,13 @@ public partial class ProjectFileManager : Node
     #endregion
 
     #region Load Project
+    public void NewProject()
+    {
+        Project.Instance.ProjectPath = null;
+        Timing.Instance.DeleteAllTimingPoints();
+        LoadFileDialogPopup();
+    }
+
     private void LoadProjectFromFile(string projectFile, string filePath)
     {
         Timing.Instance = new Timing

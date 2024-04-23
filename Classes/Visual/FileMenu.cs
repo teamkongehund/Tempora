@@ -33,6 +33,9 @@ public partial class FileMenu : PopupMenu
             case 3:
                 ProjectFileManager.Instance.SaveOszFileDialogPopup();
                 break;
+            case 4:
+                ProjectFileManager.Instance.NewProject();
+                break;
         }
     }
 }

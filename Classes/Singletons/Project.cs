@@ -4,6 +4,9 @@ using Tempora.Classes.Audio;
 
 namespace Tempora.Classes.Utility;
 
+/// <summary>
+/// Contains data about the current project.
+/// </summary>
 public partial class Project : Node
 {
     private static Project instance = null!;
@@ -12,7 +15,7 @@ public partial class Project : Node
 
     private Settings settings = null!;
 
-    public string ProjectPath = null!;
+    public string? ProjectPath = null;
 
     public event EventHandler NotificationMessageChanged = null!;
     private string notificationMessage = null!;
@@ -43,17 +46,4 @@ public partial class Project : Node
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() => Instance = this;
-
-    public override void _Input(InputEvent inputEvent)
-    {
-        switch (inputEvent)
-        {
-            case InputEventKey keyEvent:
-                {
-                    if (keyEvent.Keycode == Key.S && keyEvent.Pressed && Input.IsKeyPressed(Key.Ctrl))
-                        ProjectFileManager.SaveProjectAs(ProjectPath);
-                    break;
-                }
-        }
-    }
 }
