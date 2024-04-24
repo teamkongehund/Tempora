@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Godot;
 using NAudio.Wave;
+using NAudio.Vorbis;
 
 namespace Tempora.Classes.Utility;
 
@@ -59,6 +60,23 @@ public partial class AudioDataHandler : Node
     }
 
     public static short[] Mp3ToAudioSamples(byte[] mp3File) => Mp3ToAudioSamples(mp3File, out _, out _);
+    
+    public static short[] OggToAudioSamples(byte[] oggFile, out int sampleRate, out int channels)
+    {
+        byte[] audioBytes;
+        using (var audioFileMemoryStream = new MemoryStream(oggFile))
+        {
+            using var reader = new VorbisWaveReader(audioFileMemoryStream);
+            audioBytes = new byte[reader.Length];
+            reader.Read(audioBytes, 0, audioBytes.Length);
+            sampleRate = reader.WaveFormat.SampleRate;
+            channels = reader.WaveFormat.Channels;
+        }
+
+        return AudioBytesToSamples(audioBytes);
+    }
+
+    public static short[] OggToAudioSamples(byte[] oggFile) => OggToAudioSamples(oggFile, out _, out _);
 
     /// <summary>
     ///     Convert short[] audio sample array into float[] array spanning -1 to 1
@@ -85,4 +103,8 @@ public partial class AudioDataHandler : Node
     public static float[] Mp3ToAudioFloat(byte[] mp3File) => AudioSamplesToFloat(Mp3ToAudioSamples(mp3File));
 
     public static float[] Mp3ToAudioFloat(byte[] mp3File, out int sampleRate, out int channels) => AudioSamplesToFloat(Mp3ToAudioSamples(mp3File, out sampleRate, out channels));
+
+    public static float[] OggToAudioFloat(byte[] oggFile) => AudioSamplesToFloat(OggToAudioSamples(oggFile));
+
+    public static float[] OggToAudioFloat(byte[] oggFile, out int sampleRate, out int channels) => AudioSamplesToFloat(OggToAudioSamples(oggFile, out sampleRate, out channels));
 }

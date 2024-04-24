@@ -34,11 +34,13 @@ public partial class LoadButton : Button
 
         string projectFileExtension = ProjectFileManager.ProjectFileExtension;
         string mp3Extension = "mp3";
+        string oggExtension = "ogg";
 
         string[] allowedExtensions =
         [
             projectFileExtension,
-            mp3Extension
+            mp3Extension,
+            oggExtension
         ];
 
         if (!allowedExtensions.Contains(extension))
@@ -48,6 +50,10 @@ public partial class LoadButton : Button
         {
             case var value when value == mp3Extension:
                 var audioFile = new AudioFile(selectedPath);
+                Project.Instance.AudioFile = audioFile;
+                break;
+            case var value when value == oggExtension:
+                audioFile = new AudioFile(selectedPath);
                 Project.Instance.AudioFile = audioFile;
                 break;
             case var value when value == projectFileExtension:

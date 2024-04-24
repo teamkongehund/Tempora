@@ -18,6 +18,12 @@ public partial class AudioFile : Node
         }
     }
 
+    public byte[] AudioBuffer
+    {
+        get;
+        private set;
+    }
+
     public float[] AudioDataPer10Max = null!;
     public float[] AudioDataPer10Min = null!;
 
@@ -38,26 +44,42 @@ public partial class AudioFile : Node
 
     public int SampleRate;
 
+    public string Extension
+    {
+        get;
+        private set;
+    }
+
     public AudioFile(string path)
     {
-        string extension = FileHandler.GetExtension(path);
-        if (extension != "mp3")
-            throw new Exception($"Failed to create AudioFile with path {path} : Extention was not .mp3!");
+        if (!IsAudioFileExtensionValid(path, out string extension))
+            throw new Exception($"Failed to create AudioFile with path {path} : Extention was not valid!");
 
-        byte[] audioFileBytes = FileHandler.GetFileAsBuffer(path);
+        var audioStream = GetAudioStream(path, out byte[] audioBuffer);
 
-        var audioStreamMP3 = new AudioStreamMP3
+        if (audioStream == null)
+            throw new Exception($"Failed to create AudioFile with path {path} : Could not create an AudioStream");
+
+        float[] audioData = new float[] { 0 };
+        int sampleRate = 44100;
+        int channels = 2;
+
+        switch (extension)
         {
-            Data = audioFileBytes
-        };
-
-        float[] audioData = AudioDataHandler.Mp3ToAudioFloat(audioFileBytes, out int sampleRate, out int channels);
+            case "mp3":
+                audioData = AudioDataHandler.Mp3ToAudioFloat(audioBuffer, out sampleRate, out channels);
+                break;
+            case "ogg":
+                audioData = AudioDataHandler.OggToAudioFloat(audioBuffer, out sampleRate, out channels);
+                break;
+        }
 
         AudioData = audioData;
         SampleRate = sampleRate;
-        //Path = path;
-        Stream = audioStreamMP3;
+        Stream = audioStream;
         Channels = channels;
+        Extension = extension;
+        AudioBuffer = audioBuffer;
     }
 
     public AudioFile(AudioStreamMP3 audioStreamMP3)
@@ -70,6 +92,7 @@ public partial class AudioFile : Node
         SampleRate = sampleRate;
         Stream = audioStreamMP3;
         Channels = channels;
+        Extension = "mp3";
     }
 
     public int SecondsToSampleIndex(float seconds)
@@ -127,5 +150,34 @@ public partial class AudioFile : Node
         }
         AudioDataPer10Min[length - 1] = AudioData[((length - 1) * 10)..^1].Min();
         AudioDataPer10Max[length - 1] = AudioData[((length - 1) * 10)..^1].Max();
+    }
+
+    private bool IsAudioFileExtensionValid(string path, out string extension)
+    {
+        extension = FileHandler.GetExtension(path);
+        if (extension != "mp3" || extension != "ogg")
+            return false;
+        return true;
+    }
+
+    private AudioStream? GetAudioStream(string path, out byte[] buffer)
+    {
+        string extension = FileHandler.GetExtension(path);
+        AudioStream? audioStream = null;
+        buffer = FileHandler.GetFileAsBuffer(path);
+
+        switch (extension)
+        {
+            case "mp3":
+                audioStream = new AudioStreamMP3()
+                {
+                    Data = buffer
+                };
+                break;
+            case "ogg":
+                audioStream = AudioStreamOggVorbis.LoadFromBuffer(buffer);
+                break;
+        }
+        return audioStream;
     }
 }

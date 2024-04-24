@@ -137,9 +137,25 @@ public partial class MusicPlayer : AudioStreamPlayer
                 : throw new Exception($"Failed to update songPlayer stream - check if {Project.Instance.AudioFile.Path} exists."));
     }
 
+    private void LoadOgg()
+    {
+        Stream = Project.Instance.AudioFile.Stream ?? (Godot.FileAccess.FileExists(Project.Instance.AudioFile.Path)
+                ? AudioStreamOggVorbis.LoadFromFile(Project.Instance.AudioFile.Path)
+                : throw new Exception($"Failed to update songPlayer stream - check if {Project.Instance.AudioFile.Path} exists."));
+    }
+
     private void LoadAudio()
     {
-        LoadMp3();
+        string extension = Path.GetExtension(Project.Instance.AudioFile.Path);
+        switch (extension)
+        {
+            case "mp3":
+                LoadMp3();
+                break;
+            case "ogg":
+                LoadOgg();
+                break;
+        }
         if (!hasFirstAudioLoaded)
         {
             hasFirstAudioLoaded = true;

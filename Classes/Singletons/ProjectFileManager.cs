@@ -151,11 +151,14 @@ public partial class ProjectFileManager : Node
         string? fileDir = Path.GetDirectoryName(filePath) ?? throw new NullReferenceException(nameof(filePath));
         string fileName = Path.GetFileNameWithoutExtension(filePath);
 
-        string mp3PathShort = $"{fileName}.mp3";
-        string mp3PathLong = Path.Combine(fileDir, mp3PathShort);
+        string audioFileExtension = Project.Instance.AudioFile.Extension;
+        string audioFilePathShort = $"{fileName}.{audioFileExtension}";
+        string audioFilePathLong = Path.Combine(fileDir, audioFilePathShort);
 
-        string file = CreateProjectFileString(mp3PathShort);
-        FileHandler.SaveMP3(mp3PathLong, (AudioStreamMP3)Project.Instance.AudioFile.Stream);
+        using var audioFile = Godot.FileAccess.Open(audioFilePathLong, Godot.FileAccess.ModeFlags.Write);
+        audioFile.StoreBuffer(Project.Instance.AudioFile.AudioBuffer);
+
+        string file = CreateProjectFileString(audioFilePathShort);
         FileHandler.SaveText(filePath, file);
 
         Project.Instance.ProjectPath = filePath;
