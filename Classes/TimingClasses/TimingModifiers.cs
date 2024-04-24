@@ -172,7 +172,7 @@ public partial class Timing
             bool isMusicPositionValid = timingPoint.MusicPosition_Set(getNewMusicPosition(timingPoint), this);
             if (!isMusicPositionValid)
             {
-                GD.Print("Music Position change failed. Stopping batch operation.");
+                //GD.Print("Music Position change failed. Stopping batch operation.");
                 break;
             }
         }

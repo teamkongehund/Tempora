@@ -11,6 +11,7 @@ public partial class Context : Node
 {
     private static Context instance = null!;
 
+    public bool shouldDeleteHeldPointIfNotOnGrid = false;
     private float? heldTimingPoint_PreviousMusicPosition = null!;
     private float? heldTimingPoint_PreviousOffset = null!;
     private TimingPoint? heldTimingPoint = null!;
@@ -23,6 +24,17 @@ public partial class Context : Node
                 return;
             if (value == null)
             {
+                if (shouldDeleteHeldPointIfNotOnGrid && !Timing.Instance.IsTimingPointOnGrid(heldTimingPoint))
+                {
+                    TimingPoint? timingPointToDelete = heldTimingPoint;
+                    shouldDeleteHeldPointIfNotOnGrid = false;
+                    heldTimingPoint_PreviousMusicPosition = null;
+                    heldTimingPoint_PreviousOffset = null;
+                    heldTimingPoint = null;
+                    timingPointToDelete?.Delete();
+                    GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged)); // Gets rid of VisualTimingPoint
+                    return;
+                }
                 bool doesTimingPointStillExist = heldTimingPoint != null;
                 bool hasMusicPositionChanged = heldTimingPoint?.MusicPosition != heldTimingPoint_PreviousMusicPosition;
                 bool hasOffsetChanged = heldTimingPoint?.Offset != heldTimingPoint_PreviousOffset;

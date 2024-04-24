@@ -5,6 +5,13 @@ namespace Tempora.Classes.TimingClasses;
 
 public partial class Timing
 {
+    public bool IsTimingPointOnGrid(TimingPoint? point)
+    {
+        float? position = point?.MusicPosition;
+        if (position == null) return false;
+        return position == SnapMusicPosition((float)position);
+    }
+
     public int[] GetTimeSignature(float musicPosition)
     {
         //TimingPoint timingPoint = GetOperatingTimingPoint(musicPosition);

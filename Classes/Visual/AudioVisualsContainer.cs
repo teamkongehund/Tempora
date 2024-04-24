@@ -182,11 +182,14 @@ public partial class AudioVisualsContainer : VBoxContainer
         Timing.Instance.SnapTimingPoint(timingPoint, musicPosition, out bool didSnapSucceed);
         Context.Instance.HeldTimingPoint = timingPoint;
 
+        TimingPointSelection.Instance.SelectTimingPoint(timingPoint);
+
         if (!didSnapSucceed)
         {
-            Context.Instance.HeldTimingPoint = null;
-            Timing.Instance.TimingPoints.Remove(timingPoint);
-            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged)); // Gets rid of VisualTimingPoint
+            //Context.Instance.HeldTimingPoint = null;
+            //Timing.Instance.TimingPoints.Remove(timingPoint);
+            //GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged)); // Gets rid of VisualTimingPoint
+            Context.Instance.shouldDeleteHeldPointIfNotOnGrid = true;
             return;
         }
 
