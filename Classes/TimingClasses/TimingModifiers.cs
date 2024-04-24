@@ -145,14 +145,8 @@ public partial class Timing
     /// <exception cref="NullReferenceException"></exception>
     public void BatchChangeMusicPosition(int lowerIndex, int higherIndex, GetNewMusicPosition getNewMusicPosition)
     {
-        if (lowerIndex > higherIndex)
-            (lowerIndex, higherIndex) = (higherIndex, lowerIndex);
-
-        if (higherIndex >= TimingPoints.Count)
-            higherIndex = TimingPoints.Count - 1;
-
-        if (lowerIndex < 0)
-            lowerIndex = 0;
+        if (!ValidateIndices(lowerIndex, higherIndex, out lowerIndex, out higherIndex))
+            return;
 
         bool willMusicPositionsIncrease = true;
         if (higherIndex >= lowerIndex + 1)
@@ -178,16 +172,55 @@ public partial class Timing
         }
     }
 
+    /// <summary>
+    /// Multiplies BPM of selected timing points by a multiplier.
+    /// </summary>
+    public void BatchScaleTempo(int lowerIndex, int higherIndex, float multiplier)
+    {
+        if (!ValidateIndices(lowerIndex, higherIndex + 1, out lowerIndex, out higherIndex))
+            return;
+
+        float? lowerPositionNullable = TimingPoints[lowerIndex].MusicPosition;
+        float? higherPositionNullable = TimingPoints[higherIndex].MusicPosition;
+        if (lowerPositionNullable == null || higherPositionNullable == null)
+            return;
+        float lowerPosition = (float)lowerPositionNullable;
+        float higherPosition = (float)higherPositionNullable;
+
+        float oldPositionSpan = (float)higherPosition - (float)lowerPosition;
+        float newPositionSpan = oldPositionSpan * multiplier;
+        float maxPositionOffset = newPositionSpan - oldPositionSpan;
+
+        float getPositionForSubsequentPoints(TimingPoint? timingPoint)
+        {
+            if (timingPoint?.MusicPosition == null)
+                throw new NullReferenceException(nameof(timingPoint));
+
+            return (float)timingPoint.MusicPosition + maxPositionOffset;
+        }
+        float getPositionForSelectedPoints(TimingPoint? timingPoint)
+        {
+            if (timingPoint?.MusicPosition == null)
+                throw new NullReferenceException(nameof(timingPoint));
+
+            float oldPositionDifference = (float)(timingPoint.MusicPosition - lowerPosition);
+            float newPositionDifference = oldPositionDifference * multiplier;
+            return lowerPosition + newPositionDifference;
+        }
+
+        if (multiplier > 1)
+            BatchChangeMusicPosition(higherIndex + 1, TimingPoints.Count - 1, getPositionForSubsequentPoints);
+
+        BatchChangeMusicPosition(lowerIndex, higherIndex, getPositionForSelectedPoints);
+
+        if (multiplier <= 1)
+            BatchChangeMusicPosition(higherIndex + 1, TimingPoints.Count - 1, getPositionForSubsequentPoints);
+    }
+
     public void BatchChangeOffset(int lowerIndex, int higherIndex, float offsetChange)
     {
-        if (lowerIndex > higherIndex)
-            (lowerIndex, higherIndex) = (higherIndex, lowerIndex);
-
-        if (higherIndex >= TimingPoints.Count)
-            higherIndex = TimingPoints.Count - 1;
-
-        if (lowerIndex < 0)
-            lowerIndex = 0;
+        if (!ValidateIndices(lowerIndex, higherIndex, out lowerIndex, out higherIndex))
+            return;
 
         bool increasing = offsetChange > 0;
 
@@ -204,6 +237,31 @@ public partial class Timing
 
             timingPoint.Offset_Set(timingPoint.Offset + offsetChange, this);
         }
+    }
+
+    /// <summary>
+    /// Ensures that the specified indices can be applied to the <see cref="TimingPoints"/>.
+    /// This also means ensuring higherIndex is less than <see cref="TimingPoints"/>.Count.
+    /// </summary>
+    /// <returns>Whether out parameters are valid</returns>
+    private bool ValidateIndices(int lowerIndex, int higherIndex, out int lowerIndexNew, out int higherIndexNew)
+    {
+        lowerIndexNew = lowerIndex;
+        higherIndexNew = higherIndex;
+
+        if (TimingPoints.Count <= 0)
+            return false;
+
+        if (lowerIndexNew > higherIndexNew)
+            (lowerIndexNew, higherIndexNew) = (higherIndexNew, lowerIndexNew);
+
+        if (higherIndexNew >= TimingPoints.Count)
+            higherIndexNew = TimingPoints.Count - 1;
+
+        if (lowerIndexNew < 0)
+            lowerIndexNew = 0;
+
+        return true;
     }
 
     //[Obsolete]

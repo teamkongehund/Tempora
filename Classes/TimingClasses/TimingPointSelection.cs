@@ -279,6 +279,20 @@ public partial class TimingPointSelection : Node
         MementoHandler.Instance.AddTimingMemento(SelectionIndices);
     }
 
+    public void DoubleTempoForSelection()
+    {
+        if (SelectionIndices == null) return;
+        Timing.Instance.BatchScaleTempo(SelectionIndices[0], SelectionIndices[1], 2);
+        MementoHandler.Instance.AddTimingMemento(SelectionIndices);
+    }
+
+    public void HalveTempoForSelection()
+    {
+        if (SelectionIndices == null) return;
+        Timing.Instance.BatchScaleTempo(SelectionIndices[0], SelectionIndices[1], 0.5f);
+        MementoHandler.Instance.AddTimingMemento(SelectionIndices);
+    }
+
     private void OnTimingPointCountChanged(object? sender, EventArgs e)
     {
         DeselectAll();

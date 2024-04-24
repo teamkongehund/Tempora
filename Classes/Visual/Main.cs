@@ -63,6 +63,18 @@ public partial class Main : Control
                     }
                     break;
                 }
+            case InputEventKey keyEvent:
+                {
+                    if (keyEvent.Keycode == Key.U && keyEvent.IsPressed())
+                    {
+                        TimingPointSelection.Instance.HalveTempoForSelection();
+                    }
+                    else if (keyEvent.Keycode == Key.I && keyEvent.IsPressed())
+                    {
+                        TimingPointSelection.Instance.DoubleTempoForSelection();
+                    }
+                    break;
+                }
         }
     }
 
