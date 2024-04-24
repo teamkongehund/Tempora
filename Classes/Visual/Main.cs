@@ -86,7 +86,6 @@ public partial class Main : Control
 
         var audioFile = new AudioFile(path);
         Project.Instance.AudioFile = audioFile;
-        MusicPlayer.LoadMp3();
     }
 
     private void OnScrolled(object? sender, EventArgs e)

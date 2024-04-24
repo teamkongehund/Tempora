@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Godot;
 using Tempora.Classes.Utility;
 using Tempora.Classes.TimingClasses;
@@ -14,6 +15,8 @@ public partial class MusicPlayer : AudioStreamPlayer
     public event Action? PlaybackStarted;
     public event Action? Paused;
     public event Action<float>? PitchScaleChanged;
+
+    private bool hasFirstAudioLoaded = false;
 
     public void SetPitchScale(float pitchScale)
     {
@@ -66,7 +69,7 @@ public partial class MusicPlayer : AudioStreamPlayer
         PauseTime = time >= 0 ? (double)time : 0;
     }
 
-    private void OnAudioFileChanged(object? sender, EventArgs e) => LoadMp3();
+    private void OnAudioFileChanged(object? sender, EventArgs e) => LoadAudio();
 
     public void Pause()
     {
@@ -127,10 +130,24 @@ public partial class MusicPlayer : AudioStreamPlayer
             : PauseTime;
     }
 
-    public void LoadMp3()
+    private void LoadMp3()
     {
-        Stream = Project.Instance.AudioFile.Stream ?? (FileAccess.FileExists(Project.Instance.AudioFile.Path)
+        Stream = Project.Instance.AudioFile.Stream ?? (Godot.FileAccess.FileExists(Project.Instance.AudioFile.Path)
                 ? FileHandler.LoadFileAsAudioStreamMp3(Project.Instance.AudioFile.Path)
                 : throw new Exception($"Failed to update songPlayer stream - check if {Project.Instance.AudioFile.Path} exists."));
+    }
+
+    private void LoadAudio()
+    {
+        LoadMp3();
+        if (!hasFirstAudioLoaded)
+        {
+            hasFirstAudioLoaded = true;
+            return;
+        }
+        string? fileName = Path.GetFileName(Project.Instance.ProjectPath);
+        Project.Instance.NotificationMessage = fileName == null
+            ? "Audio loaded!"
+            : $"Audio loaded! You are still editing {fileName}";
     }
 }

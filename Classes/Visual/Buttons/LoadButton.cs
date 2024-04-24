@@ -49,7 +49,6 @@ public partial class LoadButton : Button
             case var value when value == mp3Extension:
                 var audioFile = new AudioFile(selectedPath);
                 Project.Instance.AudioFile = audioFile;
-                MusicPlayer.LoadMp3();
                 break;
             case var value when value == projectFileExtension:
                 ProjectFileManager.Instance.LoadProjectFromFilePath(selectedPath);

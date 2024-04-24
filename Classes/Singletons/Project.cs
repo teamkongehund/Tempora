@@ -54,7 +54,6 @@ public partial class Project : Node
                 return;
             audioFile = value;
             GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.Instance.AudioFileChanged), this, EventArgs.Empty);
-            Project.Instance.ProjectPath = null!;
         }
     }
 
