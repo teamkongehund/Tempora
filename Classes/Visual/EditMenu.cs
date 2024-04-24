@@ -16,7 +16,7 @@ public partial class EditMenu : PopupMenu
     public override void _Ready()
 	{
         IdPressed += OnIdPressed;
-        clearAllConfirmationDialog.Confirmed += Timing.Instance.DeleteAllTimingPoints;
+        clearAllConfirmationDialog.Confirmed += OnClearAllConfirmationDialogConfirmed;
     }
 
     private void OnIdPressed(long id)
@@ -30,4 +30,9 @@ public partial class EditMenu : PopupMenu
     }
 
     private void OnPressed() => clearAllConfirmationDialog.Popup();
+
+    private void OnClearAllConfirmationDialogConfirmed()
+    {
+        Timing.Instance.DeleteAllTimingPoints();
+    }
 }

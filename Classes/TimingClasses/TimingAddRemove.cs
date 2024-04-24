@@ -149,6 +149,7 @@ public partial class Timing
     /// <param name="indexTo"></param>
     public void DeleteTimingPoints(int indexFrom, int indexTo)
     {
+        if (TimingPoints.Count == 0) return;
         TimingPoint? previousTimingPoint = (indexFrom - 1) >= 0 ? TimingPoints[(indexFrom - 1)] : null;
         bool isIndexToLast = indexTo == TimingPoints.Count;
 
@@ -169,10 +170,6 @@ public partial class Timing
 
     public void DeleteAllTimingPoints()
     {
-        TimingPoints.Clear();
-        TimeSignaturePoints.Clear();
-        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
-
-        MementoHandler.Instance.AddTimingMemento();
+        DeleteTimingPoints(0, TimingPoints.Count);
     }
 }

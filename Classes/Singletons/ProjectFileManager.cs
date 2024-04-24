@@ -228,8 +228,7 @@ public partial class ProjectFileManager : Node
     public void NewProject()
     {
         Project.Instance.ProjectPath = null;
-        Timing.Instance.DeleteAllTimingPoints();
-        LoadFileDialogPopup();
+        Project.Instance.NotificationMessage = "You are now editing a new project.";
     }
 
     private void LoadProjectFromFile(string projectFile, string filePath)

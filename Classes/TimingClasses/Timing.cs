@@ -28,10 +28,6 @@ public partial class Timing : Node, IMementoOriginator
     }
 
 
-
-
-
-
     #region Properties & Signals
 
     private bool isInstantiating;
