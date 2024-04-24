@@ -18,7 +18,7 @@
 [ext_resource type="PackedScene" uid="uid://bac4n7j15cns7" path="res://Classes/Visual/AudioBlock.tscn" id="16_mlqa0"]
 [ext_resource type="Script" path="res://Classes/Visual/MessageLabel.cs" id="20_c3wmk"]
 
-[node name="Main" type="Control" node_paths=PackedStringArray("audioVisualsContainer", "metronome", "blockScrollBar")]
+[node name="Main" type="Control" node_paths=PackedStringArray("audioVisualsContainer", "blockScrollBar")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -29,7 +29,6 @@ focus_mode = 2
 script = ExtResource("1_n5xe1")
 defaultMP3 = ExtResource("2_klkb2")
 audioVisualsContainer = NodePath("VSplitContainer/AudioMainHSplitContainer/AudioVisualsMarginContainer/AudioVisualsContainer")
-metronome = NodePath("")
 blockScrollBar = NodePath("VSplitContainer/AudioMainHSplitContainer/BlockScrollBarMarginContainer/BlockScrollBar")
 metadata/_edit_lock_ = true
 

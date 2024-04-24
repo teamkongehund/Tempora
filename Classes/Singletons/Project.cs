@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Godot;
 using Tempora.Classes.Audio;
 
@@ -15,7 +16,20 @@ public partial class Project : Node
 
     private Settings settings = null!;
 
-    public string? ProjectPath = null;
+    private string? projectPath = null;
+    public string? ProjectPath
+    {
+        get => projectPath;
+        set
+        {
+            if (value == projectPath)
+                return;
+            projectPath = value;
+            string? projectName = Path.GetFileName(projectPath);
+            string titleAddition = projectName != null ? $" - {projectName}" : "";
+            GetWindow().Title = "Tempora" + titleAddition;
+        }
+    }
 
     public event EventHandler NotificationMessageChanged = null!;
     private string notificationMessage = null!;

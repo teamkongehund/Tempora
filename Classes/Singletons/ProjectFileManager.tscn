@@ -14,7 +14,7 @@ size = Vector2i(1002, 587)
 access = 2
 
 [node name="LoadFileDialog" type="FileDialog" parent="."]
-title = "Load Project or Audio"
+title = "Open a File"
 position = Vector2i(170, 70)
 size = Vector2i(1002, 587)
 ok_button_text = "Open"
