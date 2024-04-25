@@ -1,3 +1,4 @@
+using System.IO;
 using Godot;
 using Tempora.Classes.Utility;
 
@@ -26,7 +27,7 @@ public partial class SaveButton : Button
     {
         ProjectFileManager.SaveProjectAs(selectedPath);
 
-        string dir = FileHandler.GetDirectory(selectedPath);
+        string dir = Path.GetDirectoryName(selectedPath) ?? "";
         Settings.Instance.ProjectFilesDirectory = dir;
     }
 }

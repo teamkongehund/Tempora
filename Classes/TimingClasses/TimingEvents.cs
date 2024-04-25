@@ -26,7 +26,7 @@ public partial class Timing
         if (sender is not TimingPoint timingPoint)
             throw new Exception("Sender wasn't a TimingPoint.");
 
-        if (!timingPoint.IsInstantiating)
+        if (!timingPoint.IsInstantiating && !IsBatchOperationInProgress)
             GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
     }
     private void OnTimingPointDeleteAttempt(object? sender, EventArgs e)
@@ -37,8 +37,8 @@ public partial class Timing
     }
     private void OnTimingPointRequestingToUpdateMPS(object? sender, EventArgs e)
     {
-        if (IsBatchOperatingInProgress)
-            return; // defer update till after the operation is complete.
+        //if (IsBatchOperationInProgress)
+        //    return; // defer update till after the operation is complete.
         if (sender is not TimingPoint timingPoint)
             throw new Exception("Sender wasn't a TimingPoint.");
         if (timingPoint.MusicPosition == null)

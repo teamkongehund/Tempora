@@ -41,7 +41,7 @@ public partial class Timing : Node, IMementoOriginator
             isInstantiating = value;
         }
     }
-    private bool IsBatchOperatingInProgress = false;
+    private bool IsBatchOperationInProgress = false;
 
     public static Timing Instance { get => instance; set => instance = value; }
     private static Timing instance = null!;

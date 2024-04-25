@@ -222,6 +222,8 @@ public partial class Timing
         if (!ValidateIndices(lowerIndex, higherIndex, out lowerIndex, out higherIndex))
             return;
 
+        IsBatchOperationInProgress = true;
+
         bool increasing = offsetChange > 0;
 
         // If the change decreases the offset, iterate forwards (less likely to trigger rejections).
@@ -237,6 +239,10 @@ public partial class Timing
 
             timingPoint.Offset_Set(timingPoint.Offset + offsetChange, this);
         }
+
+        IsBatchOperationInProgress = false;
+
+        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
     }
 
     /// <summary>

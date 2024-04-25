@@ -104,23 +104,12 @@ public partial class FileHandler : Node
         return filePaths;
     }
 
-    public static string GetDirectory(string filePath)
-    {
-        string dir = "";
-        string[] pathParts = filePath.Split('/');
-        for (int i = 0; i < pathParts.Length - 1; i++)
-            dir += pathParts[i] + "/";
-        return dir;
-    }
-
-    public static string GetExtension(string filePath)
-    {
-        string[] pathParts = filePath.Split('.');
-        if (pathParts.Length < 2)
-            return null!;
-
-        string fileExtension = pathParts[^1];
-
-        return fileExtension;
-    }
+    //public static string GetDirectory(string filePath)
+    //{
+    //    string dir = "";
+    //    string[] pathParts = filePath.Split('/');
+    //    for (int i = 0; i < pathParts.Length - 1; i++)
+    //        dir += pathParts[i] + "/";
+    //    return dir;
+    //}
 }

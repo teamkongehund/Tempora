@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using Godot;
 using Tempora.Classes.Audio;
@@ -30,11 +31,11 @@ public partial class LoadButton : Button
 
     private void OnFileSelected(string selectedPath)
     {
-        string extension = FileHandler.GetExtension(selectedPath);
+        string extension = Path.GetExtension(selectedPath);
 
         string projectFileExtension = ProjectFileManager.ProjectFileExtension;
-        string mp3Extension = "mp3";
-        string oggExtension = "ogg";
+        string mp3Extension = ".mp3";
+        string oggExtension = ".ogg";
 
         string[] allowedExtensions =
         [
@@ -61,7 +62,7 @@ public partial class LoadButton : Button
                 break;
         }
 
-        string dir = FileHandler.GetDirectory(selectedPath);
+        string dir = Path.GetDirectoryName(selectedPath) ?? "";
         Settings.Instance.ProjectFilesDirectory = dir;
     }
 }

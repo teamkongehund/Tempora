@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using Godot;
 using Tempora.Classes.Utility;
@@ -32,7 +33,7 @@ public partial class AudioFile : Node
     /// </summary>
     public int Channels;
 
-    public string Path = null!;
+    public string AudioPath = null!;
 
     public AudioStream Stream = null!;
 
@@ -66,10 +67,10 @@ public partial class AudioFile : Node
 
         switch (extension)
         {
-            case "mp3":
+            case ".mp3":
                 audioData = AudioDataHandler.Mp3ToAudioFloat(audioBuffer, out sampleRate, out channels);
                 break;
-            case "ogg":
+            case ".ogg":
                 audioData = AudioDataHandler.OggToAudioFloat(audioBuffer, out sampleRate, out channels);
                 break;
         }
@@ -80,19 +81,21 @@ public partial class AudioFile : Node
         Channels = channels;
         Extension = extension;
         AudioBuffer = audioBuffer;
+        AudioPath = path;
     }
 
     public AudioFile(AudioStreamMP3 audioStreamMP3)
     {
-        byte[] audioFileBytes = audioStreamMP3.Data;
+        byte[] buffer = audioStreamMP3.Data;
 
-        float[] audioData = AudioDataHandler.Mp3ToAudioFloat(audioFileBytes, out int sampleRate, out int channels);
+        float[] audioData = AudioDataHandler.Mp3ToAudioFloat(buffer, out int sampleRate, out int channels);
 
         AudioData = audioData;
         SampleRate = sampleRate;
         Stream = audioStreamMP3;
         Channels = channels;
-        Extension = "mp3";
+        Extension = ".mp3";
+        AudioBuffer = buffer;
     }
 
     public int SecondsToSampleIndex(float seconds)
@@ -154,27 +157,27 @@ public partial class AudioFile : Node
 
     private bool IsAudioFileExtensionValid(string path, out string extension)
     {
-        extension = FileHandler.GetExtension(path);
-        if (extension != "mp3" || extension != "ogg")
+        extension = Path.GetExtension(path);
+        if (extension != ".mp3" && extension != ".ogg")
             return false;
         return true;
     }
 
     private AudioStream? GetAudioStream(string path, out byte[] buffer)
     {
-        string extension = FileHandler.GetExtension(path);
+        string extension = Path.GetExtension(path);
         AudioStream? audioStream = null;
         buffer = FileHandler.GetFileAsBuffer(path);
 
         switch (extension)
         {
-            case "mp3":
+            case ".mp3":
                 audioStream = new AudioStreamMP3()
                 {
                     Data = buffer
                 };
                 break;
-            case "ogg":
+            case ".ogg":
                 audioStream = AudioStreamOggVorbis.LoadFromBuffer(buffer);
                 break;
         }

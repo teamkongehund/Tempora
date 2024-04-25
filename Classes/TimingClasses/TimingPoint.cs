@@ -46,7 +46,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
     }
     #endregion
 
-    #region Time
+    #region Offset
     private float offset;
 
     /// <summary>

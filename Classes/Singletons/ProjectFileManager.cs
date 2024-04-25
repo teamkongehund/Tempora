@@ -24,7 +24,7 @@ public partial class ProjectFileManager : Node
 
     private MusicPlayer MusicPlayer => MusicPlayer.Instance;
 
-    public static readonly string ProjectFileExtension = "tmpr";
+    public static readonly string ProjectFileExtension = ".tmpr";
     private Settings settings => Settings.Instance;
     private static readonly string[] separator = ["\r\n", "\r", "\n"];
 
@@ -84,12 +84,12 @@ public partial class ProjectFileManager : Node
         {
             case SaveConfig.project:
                 ProjectFileManager.SaveProjectAs(selectedPath);
-                string dir = FileHandler.GetDirectory(selectedPath);
+                string dir = Path.GetDirectoryName(selectedPath) ?? "";
                 Settings.Instance.ProjectFilesDirectory = dir;
                 break;
             case SaveConfig.osz:
                 OsuExporter.SaveOszAs_AndShowInFileExplorer(selectedPath);
-                dir = FileHandler.GetDirectory(selectedPath);
+                dir = Path.GetDirectoryName(selectedPath) ?? "";
                 Settings.Instance.OszFilesDirectory = dir;
                 break;
         }
@@ -105,15 +105,17 @@ public partial class ProjectFileManager : Node
 
     private void OnLoadFilePathSelected(string selectedPath)
     {
-        string extension = FileHandler.GetExtension(selectedPath);
+        string extension = Path.GetExtension(selectedPath);
 
         string projectFileExtension = ProjectFileManager.ProjectFileExtension;
-        string mp3Extension = "mp3";
+        string mp3Extension = ".mp3";
+        string oggExtension = ".ogg";
 
         string[] allowedExtensions =
         [
             projectFileExtension,
-            mp3Extension
+            mp3Extension, 
+            oggExtension,
         ];
 
         if (!allowedExtensions.Contains(extension))
@@ -128,7 +130,7 @@ public partial class ProjectFileManager : Node
             case var value when value == projectFileExtension:
                 ProjectFileManager.Instance.LoadProjectFromFilePath(selectedPath);
                 Project.Instance.NotificationMessage = $"Loaded {selectedPath}";
-                string dir = FileHandler.GetDirectory(selectedPath);
+                string dir = Path.GetDirectoryName(selectedPath) ?? "";
                 Settings.Instance.ProjectFilesDirectory = dir;
                 break;
         }
@@ -144,7 +146,7 @@ public partial class ProjectFileManager : Node
             return;
         }
 
-        string extension = FileHandler.GetExtension(filePath);
+        string extension = Path.GetExtension(filePath);
         string correctExtension = ProjectFileManager.ProjectFileExtension;
 
         filePath = Path.ChangeExtension(filePath, correctExtension);
@@ -165,7 +167,7 @@ public partial class ProjectFileManager : Node
         Project.Instance.NotificationMessage = $"Saved to {filePath}";
     }
 
-    public static string CreateProjectFileString() => CreateProjectFileString(Project.Instance.AudioFile.Path);
+    public static string CreateProjectFileString() => CreateProjectFileString(Project.Instance.AudioFile.AudioPath);
 
     public static string CreateProjectFileString(string audioPath)
     {
