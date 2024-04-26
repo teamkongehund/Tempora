@@ -3,87 +3,60 @@ using System.IO;
 using Godot;
 using NAudio.Wave;
 using NAudio.Vorbis;
+using System.Runtime.CompilerServices;
 
 namespace Tempora.Classes.Utility;
 
 public partial class AudioDataHandler : Node
 {
-    /// <summary>
-    ///     Each audio sample consists of TWO consecutive bytes, since the audio is 16-bit.
-    ///     This method outputs an array with audio samples
-    /// </summary>
-    /// <param name="audioBytes"></param>
-    /// <returns></returns>
-    public static short[] AudioBytesToSamples(byte[] audioBytes)
-    {
-        short[] audioSamplesShort = new short[audioBytes.Length / 2];
-        Buffer.BlockCopy(audioBytes, 0, audioSamplesShort, 0, audioBytes.Length);
-
-        return audioSamplesShort;
-    }
-
-    /// <summary>
-    ///     Use NAudio to extract the audio data from a .wav file (i.e. removes the header)
-    /// </summary>
-    /// <param name="wavFile"></param>
-    /// <returns></returns>
-    public static short[] WavToAudioSamples(byte[] wavFile, out int sampleRate, out int channels)
-    {
-        byte[] audioBytes;
-        using (var audioFileMemoryStream = new MemoryStream(wavFile))
-        {
-            using var reader = new WaveFileReader(audioFileMemoryStream);
-            audioBytes = new byte[reader.Length];
-            reader.Read(audioBytes, 0, audioBytes.Length);
-            sampleRate = reader.WaveFormat.SampleRate;
-            channels = reader.WaveFormat.Channels;
-        }
-
-        return AudioBytesToSamples(audioBytes);
-    }
-
-    public static short[] WavToAudioSamples(byte[] wavFile) => WavToAudioSamples(wavFile, out _, out _);
-
+    public static float[] Mp3ToAudioFloat(byte[] mp3File, out int sampleRate, out int channels) => AudioSamplesToFloat(Mp3ToAudioSamples(mp3File, out sampleRate, out channels));
     public static short[] Mp3ToAudioSamples(byte[] mp3File, out int sampleRate, out int channels)
     {
-        byte[] audioBytes;
+        byte[] audioBuffer;
+        int bitsPerSample;
         using (var audioFileMemoryStream = new MemoryStream(mp3File))
         {
             using var reader = new Mp3FileReader(audioFileMemoryStream);
-            audioBytes = new byte[reader.Length];
-            reader.Read(audioBytes, 0, audioBytes.Length);
+            audioBuffer = new byte[reader.Length];
+            reader.Read(audioBuffer, 0, audioBuffer.Length);
             sampleRate = reader.Mp3WaveFormat.SampleRate;
             channels = reader.Mp3WaveFormat.Channels;
+            bitsPerSample = reader.WaveFormat.BitsPerSample;
         }
 
-        return AudioBytesToSamples(audioBytes);
+        return AudioBytesToSamples(audioBuffer);
     }
 
-    public static short[] Mp3ToAudioSamples(byte[] mp3File) => Mp3ToAudioSamples(mp3File, out _, out _);
-    
-    public static short[] OggToAudioSamples(byte[] oggFile, out int sampleRate, out int channels)
+
+    // General method to extract audio data from any supported format
+    public static float[] ExtractAudioFloat(string audioFilePath, out int sampleRate, out int channels)
     {
-        byte[] audioBytes;
-        using (var audioFileMemoryStream = new MemoryStream(oggFile))
-        {
-            using var reader = new VorbisWaveReader(audioFileMemoryStream);
-            audioBytes = new byte[reader.Length];
-            reader.Read(audioBytes, 0, audioBytes.Length);
-            sampleRate = reader.WaveFormat.SampleRate;
-            channels = reader.WaveFormat.Channels;
-        }
+        string extension = Path.GetExtension(audioFilePath).ToLower();
 
-        return AudioBytesToSamples(audioBytes);
+        switch (extension)
+        {
+            case ".wav":
+                return WavToAudioFloat(audioFilePath, out sampleRate, out channels);
+            case ".mp3":
+                return Mp3ToAudioFloat(audioFilePath, out sampleRate, out channels);
+            case ".ogg":
+                return OggToAudioFloat(audioFilePath, out sampleRate, out channels);
+            default:
+                throw new NotSupportedException($"Audio format '{extension}' is not supported.");
+        }
     }
 
-    public static short[] OggToAudioSamples(byte[] oggFile) => OggToAudioSamples(oggFile, out _, out _);
+    // Convert audio bytes to samples
+    private static short[] AudioBytesToSamples(byte[] audioBytes, int bitsPerSample = 16)
+    {
+        int bytesPerSample = bitsPerSample / 8;
+        short[] audioSamplesShort = new short[audioBytes.Length / bytesPerSample];
+        Buffer.BlockCopy(audioBytes, 0, audioSamplesShort, 0, audioBytes.Length);
+        return audioSamplesShort;
+    }
 
-    /// <summary>
-    ///     Convert short[] audio sample array into float[] array spanning -1 to 1
-    /// </summary>
-    /// <param name="audioSamplesShort"></param>
-    /// <returns></returns>
-    public static float[] AudioSamplesToFloat(short[] audioSamplesShort)
+    // Convert audio samples to float array
+    private static float[] AudioSamplesToFloat(short[] audioSamplesShort)
     {
         float[] audioSamplesFloat = new float[audioSamplesShort.Length];
         for (int i = 0; i < audioSamplesShort.Length; i++)
@@ -91,20 +64,60 @@ public partial class AudioDataHandler : Node
         return audioSamplesFloat;
     }
 
-    /// <summary>
-    ///     Extract audio data from a .wav and convert into a float array with range -1..1
-    /// </summary>
-    /// <param name="wavFile"></param>
-    /// <returns></returns>
-    public static float[] WavToAudioFloat(byte[] wavFile) => AudioSamplesToFloat(WavToAudioSamples(wavFile));
+    // Extract audio data from a .wav file and convert it into a float array
+    private static float[] WavToAudioFloat(string audioFilePath, out int sampleRate, out int channels)
+    {
+        byte[] audioBytes;
+        int bitsPerSample;
+        using (var reader = new WaveFileReader(audioFilePath))
+        {
+            sampleRate = reader.WaveFormat.SampleRate;
+            channels = reader.WaveFormat.Channels;
+            bitsPerSample = reader.WaveFormat.BitsPerSample;
+            audioBytes = new byte[reader.Length];
+            reader.Read(audioBytes, 0, audioBytes.Length);
+        }
 
-    public static float[] WavToAudioFloat(byte[] wavFile, out int sampleRate, out int channels) => AudioSamplesToFloat(WavToAudioSamples(wavFile, out sampleRate, out channels));
+        return AudioSamplesToFloat(AudioBytesToSamples(audioBytes));
+    }
 
-    public static float[] Mp3ToAudioFloat(byte[] mp3File) => AudioSamplesToFloat(Mp3ToAudioSamples(mp3File));
+    // Extract audio data from an .mp3 file and convert it into a float array
+    private static float[] Mp3ToAudioFloat(string audioFilePath, out int sampleRate, out int channels)
+    {
+        byte[] audioBytes;
+        int bitsPerSample;
+        using (var reader = new Mp3FileReader(audioFilePath))
+        {
+            sampleRate = reader.Mp3WaveFormat.SampleRate;
+            channels = reader.Mp3WaveFormat.Channels;
+            bitsPerSample = reader.Mp3WaveFormat.BitsPerSample;
+            using (var ms = new MemoryStream())
+            {
+                reader.CopyTo(ms);
+                audioBytes = ms.ToArray();
+            }
+        }
 
-    public static float[] Mp3ToAudioFloat(byte[] mp3File, out int sampleRate, out int channels) => AudioSamplesToFloat(Mp3ToAudioSamples(mp3File, out sampleRate, out channels));
+        return AudioSamplesToFloat(AudioBytesToSamples(audioBytes));
+    }
 
-    public static float[] OggToAudioFloat(byte[] oggFile) => AudioSamplesToFloat(OggToAudioSamples(oggFile));
+    // Extract audio data from an .ogg file and convert it into a float array
+    private static float[] OggToAudioFloat(string audioFilePath, out int sampleRate, out int channels)
+    {
+        byte[] audioBytes;
+        int bitsPerSample;
+        using (var reader = new VorbisWaveReader(audioFilePath))
+        {
+            sampleRate = reader.WaveFormat.SampleRate;
+            channels = reader.WaveFormat.Channels;
+            bitsPerSample = reader.WaveFormat.BitsPerSample;
+            using (var ms = new MemoryStream())
+            {
+                reader.CopyTo(ms);
+                audioBytes = ms.ToArray();
+            }
+        }
 
-    public static float[] OggToAudioFloat(byte[] oggFile, out int sampleRate, out int channels) => AudioSamplesToFloat(OggToAudioSamples(oggFile, out sampleRate, out channels));
+        return AudioSamplesToFloat(AudioBytesToSamples(audioBytes, bitsPerSample));
+    }
 }

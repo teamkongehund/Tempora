@@ -31,7 +31,7 @@ public partial class LoadButton : Button
 
     private void OnFileSelected(string selectedPath)
     {
-        string extension = Path.GetExtension(selectedPath);
+        string extension = Path.GetExtension(selectedPath).ToLower();
 
         string projectFileExtension = ProjectFileManager.ProjectFileExtension;
         string mp3Extension = ".mp3";

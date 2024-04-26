@@ -61,24 +61,27 @@ public partial class AudioFile : Node
         if (audioStream == null)
             throw new Exception($"Failed to create AudioFile with path {path} : Could not create an AudioStream");
 
-        float[] audioData = new float[] { 0 };
-        int sampleRate = 44100;
-        int channels = 2;
+        //float[] audioData = new float[] { 0 };
+        //int sampleRate = 44100;
+        //int channels = 2;
 
-        switch (extension)
-        {
-            case ".mp3":
-                audioData = AudioDataHandler.Mp3ToAudioFloat(audioBuffer, out sampleRate, out channels);
-                break;
-            case ".ogg":
-                audioData = AudioDataHandler.OggToAudioFloat(audioBuffer, out sampleRate, out channels);
-                break;
-        }
+        //switch (extension)
+        //{
+        //    case ".mp3":
+        //        audioData = AudioDataHandler.Mp3ToAudioFloat(audioBuffer, out sampleRate, out channels);
+        //        break;
+        //    case ".ogg":
+        //        audioData = AudioDataHandler.OggToAudioFloat(audioBuffer, out sampleRate, out channels);
+        //        break;
+        //}
+        //Channels = channels;
+        //AudioData = audioData;
+        //SampleRate = sampleRate;
 
-        AudioData = audioData;
-        SampleRate = sampleRate;
+        AudioData = AudioDataHandler.ExtractAudioFloat(path, out SampleRate, out Channels);
+
+        Extension = extension;
         Stream = audioStream;
-        Channels = channels;
         Extension = extension;
         AudioBuffer = audioBuffer;
         AudioPath = path;
@@ -101,35 +104,34 @@ public partial class AudioFile : Node
     public int SecondsToSampleIndex(float seconds)
     {
         int sampleIndex = (int)Math.Floor((seconds + SampleIndexOffsetInSeconds) * SampleRate * Channels);
-        //int sampleIndexClamped = Math.Clamp(sampleIndex, 0, AudioData.Length);
         return sampleIndex;
     }
 
     public float SampleIndexToSeconds(int sampleIndex) => (sampleIndex / (float)SampleRate / Channels) - SampleIndexOffsetInSeconds;
 
-    public float[] GetAudioDataSegment(int sampleStart, int sampleStop)
-    {
-        if (sampleStart < 0)
-            sampleStart = 0;
-        if (sampleStop < 0)
-            sampleStop = 0;
-        if (sampleStop > AudioData.Length)
-            sampleStop = AudioData.Length;
-        if (sampleStart > AudioData.Length)
-            sampleStop = AudioData.Length;
+    //public float[] GetAudioDataSegment(int sampleStart, int sampleStop)
+    //{
+    //    if (sampleStart < 0)
+    //        sampleStart = 0;
+    //    if (sampleStop < 0)
+    //        sampleStop = 0;
+    //    if (sampleStop > AudioData.Length)
+    //        sampleStop = AudioData.Length;
+    //    if (sampleStart > AudioData.Length)
+    //        sampleStop = AudioData.Length;
 
-        float[] audioDataSegment = AudioData[sampleStart..sampleStop];
+    //    float[] audioDataSegment = AudioData[sampleStart..sampleStop];
 
-        return audioDataSegment;
-    }
+    //    return audioDataSegment;
+    //}
 
-    public float[] GetAudioDataSegment(float secondsStart, float secondsStop)
-    {
-        int sampleStart = SecondsToSampleIndex(secondsStart);
-        int sampleStop = SecondsToSampleIndex(secondsStop);
+    //public float[] GetAudioDataSegment(float secondsStart, float secondsStop)
+    //{
+    //    int sampleStart = SecondsToSampleIndex(secondsStart);
+    //    int sampleStop = SecondsToSampleIndex(secondsStop);
 
-        return GetAudioDataSegment(sampleStart, sampleStop);
-    }
+    //    return GetAudioDataSegment(sampleStart, sampleStop);
+    //}
 
     /// <summary>
     /// Return audio duration in seconds
@@ -157,7 +159,7 @@ public partial class AudioFile : Node
 
     private bool IsAudioFileExtensionValid(string path, out string extension)
     {
-        extension = Path.GetExtension(path);
+        extension = Path.GetExtension(path).ToLower();
         if (extension != ".mp3" && extension != ".ogg")
             return false;
         return true;
@@ -165,7 +167,7 @@ public partial class AudioFile : Node
 
     private AudioStream? GetAudioStream(string path, out byte[] buffer)
     {
-        string extension = Path.GetExtension(path);
+        string extension = Path.GetExtension(path).ToLower();
         AudioStream? audioStream = null;
         buffer = FileHandler.GetFileAsBuffer(path);
 

@@ -105,7 +105,7 @@ public partial class ProjectFileManager : Node
 
     private void OnLoadFilePathSelected(string selectedPath)
     {
-        string extension = Path.GetExtension(selectedPath);
+        string extension = Path.GetExtension(selectedPath).ToLower();
 
         string projectFileExtension = ProjectFileManager.ProjectFileExtension;
         string mp3Extension = ".mp3";
@@ -146,7 +146,7 @@ public partial class ProjectFileManager : Node
             return;
         }
 
-        string extension = Path.GetExtension(filePath);
+        string extension = Path.GetExtension(filePath).ToLower();
         string correctExtension = ProjectFileManager.ProjectFileExtension;
 
         filePath = Path.ChangeExtension(filePath, correctExtension);

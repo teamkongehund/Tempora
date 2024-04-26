@@ -146,7 +146,8 @@ public partial class MusicPlayer : AudioStreamPlayer
 
     private void LoadAudio()
     {
-        string extension = Path.GetExtension(Project.Instance.AudioFile.AudioPath);
+        var audioFile = Project.Instance.AudioFile;
+        string extension = audioFile.Extension ?? Path.GetExtension(Project.Instance.AudioFile?.AudioPath ?? "").ToLower();
         switch (extension)
         {
             case ".mp3":
@@ -155,6 +156,8 @@ public partial class MusicPlayer : AudioStreamPlayer
             case ".ogg":
                 LoadOgg();
                 break;
+            default:
+                throw new Exception("Could not determine audio codec");
         }
         if (!hasFirstAudioLoaded)
         {
