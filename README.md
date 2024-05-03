@@ -5,7 +5,7 @@ An application designed to simplify and increase the speed of synchronizing a re
 The program is mainly made for osu! but may have a use case for other rhythm games as well as music production.
 
 ## Building from source
-- Download Godot (Mono version): https://godotengine.org/download/windows/
+- Download Godot (.Net verson): https://godotengine.org/download/windows/
 - Clone the repository
 - Open the Godot launcher and import project.godot from the chosen repository directory
 - Open the project in Godot and run (F5)
@@ -27,7 +27,7 @@ The musical timeline is represented by measures and measure divisions (i.e. 4th 
 Each row of audio represents a measure. By default, the metronome plays a sound on every 4th note (beat).
 Each measure division is represented by a vertical line overlayed the audio. By default, only the downbeat (first beat of a measure) is displayed.
 - The desired measure division is controlled by the `Grid` bar in the top of the UI.
-- The metronome can be set to follow the chosen measure division in the Options menu in the top of the UI.
+- The metronome can be set to follow the chosen measure division in the `Options` menu in the top of the UI.
 - The `Rows`, `Offset` and `Overlap` bars in the top of the UI can be used to configure the timeline.
 
 ### Timing points basics
