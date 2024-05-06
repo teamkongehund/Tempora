@@ -6,6 +6,7 @@
 
 [node name="MusicPlayer" type="AudioStreamPlayer"]
 stream = ExtResource("1_fukal")
+bus = &"Music"
 script = ExtResource("1_g7kbg")
 
 [node name="Metronome" parent="." node_paths=PackedStringArray("MusicPlayer") instance=ExtResource("2_n8qns")]

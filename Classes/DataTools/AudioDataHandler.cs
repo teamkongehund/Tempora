@@ -149,67 +149,70 @@ public partial class AudioDataHandler : Node
             GD.Print($"AudioDataHandler.AudioBytesToSamples: Warning: interpreting 0 bits per sample as 16.");
         bitsPerSample = (bitsPerSample == 0) ? 16 : bitsPerSample;
 
+        // debug
+        //bitsPerSample = 32;
+
         int bytesPerSample = bitsPerSample / 8;
         int numSamples = audioBytes.Length / bytesPerSample;
         int[] audioSamplesInt = new int[numSamples];
 
         // Iterate through the byte array and convert bytes to integers
-        for (int i = 0; i < numSamples; i++)
-        {
-            var sampleBytes = new byte[bytesPerSample];
-            for (int j = 0; j < bytesPerSample; j++)
-            {
-                sampleBytes[j] = audioBytes[i + j];
-            }
-
-            int sampleInt = 0;
-            switch (bitsPerSample)
-            {
-                case 16:
-                    var sampleShort = BitConverter.ToInt16(sampleBytes);
-                    sampleInt = (int)sampleShort;
-                    break;
-                case 32:
-                    sampleInt = BitConverter.ToInt32(sampleBytes);
-                    break;
-                default:
-                    throw new NotImplementedException("Only 16-bit and 32-bit audio is supported for now. Ping me and maybe I can change this if there's demand for it. (@kongehund)");
-            }
-            //int sampleInt = BitConverter.ToInt32(sampleBytes, 0);
-
-            audioSamplesInt[i] = sampleInt;
-        }
-
-        //    // Iterate through the byte array and convert bytes to integers
         //for (int i = 0; i < numSamples; i++)
         //{
-        //    // Combine bytes into an integer based on little-endian encoding
-        //    int value = 0;
-
-        //    // Adjust the sign if the most significant bit is set
-        //    // the range 0b_0000_0000 to 0b_0111_1111 represent negative samples.
-        //    // the range 0b_1000_0000 ro 0b_1111_1111 represent positive samples.
-        //    // 0x80 is equal to 0b_1000_0000
-        //    // the bitwise & operation will turn every number below 0b_1000_0000 into 0.
-        //    bool isNegative = (audioBytes[i * bytesPerSample + bytesPerSample - 1] & 0x80) != 0;
-
-        //    // If the number is negative, set all higher bits to 1
-        //    if (isNegative)
+        //    var sampleBytes = new byte[bytesPerSample];
+        //    for (int j = 0; j < bytesPerSample; j++)
         //    {
-        //        for (int j = bytesPerSample; j < 4; j++)
-        //        {
-        //            value |= 0xFF << (8 * j);
-        //        }
+        //        sampleBytes[j] = audioBytes[i + j];
         //    }
 
-        //    // Combine bytes into an integer
-        //    for (int j = bytesPerSample - 1; j >= 0; j--)
+        //    int sampleInt = 0;
+        //    switch (bitsPerSample)
         //    {
-        //        value |= audioBytes[i * bytesPerSample + j] << (8 * j);
+        //        case 16:
+        //            var sampleShort = BitConverter.ToInt16(sampleBytes);
+        //            sampleInt = (int)sampleShort;
+        //            break;
+        //        case 32:
+        //            sampleInt = BitConverter.ToInt32(sampleBytes);
+        //            break;
+        //        default:
+        //            throw new NotImplementedException("Only 16-bit and 32-bit audio is supported for now. Ping me and maybe I can change this if there's demand for it. (@kongehund)");
         //    }
+        //    //int sampleInt = BitConverter.ToInt32(sampleBytes, 0);
 
-        //    audioSamplesInt[i] = value;
+        //    audioSamplesInt[i] = sampleInt;
         //}
+
+        // Iterate through the byte array and convert bytes to integers
+        for (int i = 0; i < numSamples; i++)
+        {
+            // Combine bytes into an integer based on little-endian encoding
+            int value = 0;
+
+            // Adjust the sign if the most significant bit is set
+            // the range 0b_0000_0000 to 0b_0111_1111 represent negative samples.
+            // the range 0b_1000_0000 ro 0b_1111_1111 represent positive samples.
+            // 0x80 is equal to 0b_1000_0000
+            // the bitwise & operation will turn every number below 0b_1000_0000 into 0.
+            bool isNegative = (audioBytes[i * bytesPerSample + bytesPerSample - 1] & 0x80) != 0;
+
+            // If the number is negative, set all higher bits to 1
+            if (isNegative)
+            {
+                for (int j = bytesPerSample; j < 4; j++)
+                {
+                    value |= 0xFF << (8 * j);
+                }
+            }
+
+            // Combine bytes into an integer
+            for (int j = bytesPerSample - 1; j >= 0; j--)
+            {
+                value |= audioBytes[i * bytesPerSample + j] << (8 * j);
+            }
+
+            audioSamplesInt[i] = value;
+        }
 
         return audioSamplesInt;
     }
