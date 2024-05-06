@@ -58,6 +58,7 @@ public partial class Metronome : Node
         MusicPlayer.PlaybackStarted += StartPlayback;
         MusicPlayer.Seeked += SeekPlayback;
         MusicPlayer.Paused += StopPlayback;
+        MusicPlayer.Finished += StopPlayback;
         MusicPlayer.PitchScaleChanged += OnPitchScaleChanged;
         GlobalEvents.Instance.TimingChanged += OnTimingChanged;
 
