@@ -159,7 +159,7 @@ public partial class Timing
     {
         //GD.Print(Project.Instance);
         //GD.Print(Project.Instance.AudioFile);
-        float lengthInSeconds = Project.Instance.AudioFile.SampleIndexToSeconds(Project.Instance.AudioFile.AudioData.Length - 1);
+        float lengthInSeconds = Project.Instance.AudioFile.SampleIndexToSeconds(Project.Instance.AudioFile.PCMFloats.Length - 1);
         float lastMeasure = TimeToMusicPosition(lengthInSeconds);
         return (int)lastMeasure;
     }

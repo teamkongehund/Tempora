@@ -8,13 +8,24 @@ namespace Tempora.Classes.Audio;
 
 public partial class AudioFile : Node
 {
-    private float[] _audioData = null!;
-    public float[] AudioData
+
+    public float[] AudioDataPer10Max = null!;
+    public float[] AudioDataPer10Min = null!;
+
+
+    #region Audio Data
+    public SoundData? SoundData;
+
+    private float[] _pcmFloats = null!;
+    /// <summary>
+    /// The PCM audio data
+    /// </summary>
+    public float[] PCMFloats
     {
-        get => _audioData;
+        get => _pcmFloats;
         set
         {
-            _audioData = value;
+            _pcmFloats = value;
             CalculatePer10s();
         }
     }
@@ -24,16 +35,14 @@ public partial class AudioFile : Node
         get;
         private set;
     }
-
-    public float[] AudioDataPer10Max = null!;
-    public float[] AudioDataPer10Min = null!;
-
     /// <summary>
     ///     1 = mono , 2 = stereo
     /// </summary>
-    public int Channels;
+    private int Channels;
+    public int SampleRate;
 
-    public string AudioPath = null!;
+    public string AudioPath = null!; 
+    #endregion
 
     public AudioStream Stream = null!;
 
@@ -43,7 +52,6 @@ public partial class AudioFile : Node
     /// </summary>
     public float SampleIndexOffsetInSeconds = 0.025f;
 
-    public int SampleRate;
 
     public string Extension
     {
@@ -61,28 +69,17 @@ public partial class AudioFile : Node
         if (audioStream == null)
             throw new Exception($"Failed to create AudioFile with path {path} : Could not create an AudioStream");
 
-        //float[] audioData = new float[] { 0 };
-        //int sampleRate = 44100;
-        //int channels = 2;
+        //AudioData = AudioDataHandler.ExtractAudioFloat(path, out SampleRate, out Channels);
 
-        //switch (extension)
-        //{
-        //    case ".mp3":
-        //        audioData = AudioDataHandler.Mp3ToAudioFloat(audioBuffer, out sampleRate, out channels);
-        //        break;
-        //    case ".ogg":
-        //        audioData = AudioDataHandler.OggToAudioFloat(audioBuffer, out sampleRate, out channels);
-        //        break;
-        //}
-        //Channels = channels;
-        //AudioData = audioData;
-        //SampleRate = sampleRate;
+        SoundData = AudioDataHandler.GetSound(path);
+        SampleRate = SoundData.SampleRate;
+        Channels = SoundData.Channels;
 
-        AudioData = AudioDataHandler.ExtractAudioFloat(path, out SampleRate, out Channels);
+        // For now, use left channel
+        PCMFloats = SoundData.Floats[0];
 
         Extension = extension;
         Stream = audioStream;
-        Extension = extension;
         AudioBuffer = audioBuffer;
         AudioPath = path;
     }
@@ -93,7 +90,7 @@ public partial class AudioFile : Node
 
         float[] audioData = AudioDataHandler.Mp3ToAudioFloat(buffer, out int sampleRate, out int channels);
 
-        AudioData = audioData;
+        PCMFloats = audioData;
         SampleRate = sampleRate;
         Stream = audioStreamMP3;
         Channels = channels;
@@ -137,12 +134,12 @@ public partial class AudioFile : Node
     /// Return audio duration in seconds
     /// </summary>
     /// <returns></returns>
-    public float GetAudioLength() => SampleIndexToSeconds(AudioData.Length - 1);
+    public float GetAudioLength() => SampleIndexToSeconds(PCMFloats.Length - 1);
 
     public void CalculatePer10s()
     {
-        int smallLength = AudioData.Length / 10;
-        bool isDataLengthDivisibleBy10 = AudioData.Length % 10 == 0;
+        int smallLength = PCMFloats.Length / 10;
+        bool isDataLengthDivisibleBy10 = PCMFloats.Length % 10 == 0;
         int length = isDataLengthDivisibleBy10 ? smallLength : smallLength + 1;
 
         AudioDataPer10Min = new float[length];
@@ -150,11 +147,11 @@ public partial class AudioFile : Node
 
         for (int i = 0; i < length - 1; i++)
         {
-            AudioDataPer10Min[i] = AudioData[(i * 10)..((i * 10) + 10)].Min();
-            AudioDataPer10Max[i] = AudioData[(i * 10)..((i * 10) + 10)].Max();
+            AudioDataPer10Min[i] = PCMFloats[(i * 10)..((i * 10) + 10)].Min();
+            AudioDataPer10Max[i] = PCMFloats[(i * 10)..((i * 10) + 10)].Max();
         }
-        AudioDataPer10Min[length - 1] = AudioData[((length - 1) * 10)..^1].Min();
-        AudioDataPer10Max[length - 1] = AudioData[((length - 1) * 10)..^1].Max();
+        AudioDataPer10Min[length - 1] = PCMFloats[((length - 1) * 10-1)..^1].Min();
+        AudioDataPer10Max[length - 1] = PCMFloats[((length - 1) * 10-1)..^1].Max();
     }
 
     private bool IsAudioFileExtensionValid(string path, out string extension)
@@ -165,22 +162,22 @@ public partial class AudioFile : Node
         return true;
     }
 
-    private AudioStream? GetAudioStream(string path, out byte[] buffer)
+    private AudioStream? GetAudioStream(string path, out byte[] fileBuffer)
     {
         string extension = Path.GetExtension(path).ToLower();
         AudioStream? audioStream = null;
-        buffer = FileHandler.GetFileAsBuffer(path);
+        fileBuffer = FileHandler.GetFileAsBuffer(path);
 
         switch (extension)
         {
             case ".mp3":
                 audioStream = new AudioStreamMP3()
                 {
-                    Data = buffer
+                    Data = fileBuffer
                 };
                 break;
             case ".ogg":
-                audioStream = AudioStreamOggVorbis.LoadFromBuffer(buffer);
+                audioStream = AudioStreamOggVorbis.LoadFromBuffer(fileBuffer);
                 break;
         }
         return audioStream;

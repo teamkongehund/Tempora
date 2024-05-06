@@ -72,8 +72,8 @@ public partial class Waveform : Node2D
         float pickedValue;
 
         bool pointIsBeforeAudioData = sampleIndexBegin < 0 || sampleIndexEnd < 0;
-        bool pointIsAfterAudioData = sampleIndexBegin > AudioFile.AudioData.Length
-                                     || sampleIndexEnd > AudioFile.AudioData.Length;
+        bool pointIsAfterAudioData = sampleIndexBegin > AudioFile.PCMFloats.Length
+                                     || sampleIndexEnd > AudioFile.PCMFloats.Length;
 
         if (pointIsBeforeAudioData || pointIsAfterAudioData)
         {
@@ -81,7 +81,7 @@ public partial class Waveform : Node2D
         }
         else if (sampleIndexEnd - sampleIndexBegin == 0)
         {
-            pickedValue = AudioFile.AudioData[sampleIndexBegin];
+            pickedValue = AudioFile.PCMFloats[sampleIndexBegin];
         }
         else
         {
@@ -89,8 +89,8 @@ public partial class Waveform : Node2D
             float max;
             if (sampleIndexEnd - sampleIndexBegin <= 10)
             {
-                min = EfficientMin(AudioFile.AudioData, sampleIndexBegin, sampleIndexEnd);
-                max = EfficientMax(AudioFile.AudioData, sampleIndexBegin, sampleIndexEnd);
+                min = EfficientMin(AudioFile.PCMFloats, sampleIndexBegin, sampleIndexEnd);
+                max = EfficientMax(AudioFile.PCMFloats, sampleIndexBegin, sampleIndexEnd);
             }
             else
             {
@@ -101,7 +101,7 @@ public partial class Waveform : Node2D
             if (PointsPerPixel > 1)
                 pickedValue = pointIndex % 2 == 0 ? min : max; // Alternate to capture as much data as possible
             else
-                pickedValue = AudioFile.AudioData[sampleIndexBegin];
+                pickedValue = AudioFile.PCMFloats[sampleIndexBegin];
         }
 
         return pickedValue;
@@ -188,7 +188,7 @@ public partial class Waveform : Node2D
     private int[] audioDataRange = [0, 0];
 
     /// <summary>
-    ///     Indices for the first and last audio sample to use from <see cref="Tempora.Classes.Audio.AudioFile.AudioData" />
+    ///     Indices for the first and last audio sample to use from <see cref="Tempora.Classes.Audio.AudioFile.PCMFloats" />
     /// </summary>
     public int[] AudioDataRange
     {
@@ -198,7 +198,7 @@ public partial class Waveform : Node2D
             {
                 return [
                     0,
-                    AudioFile?.AudioData.Length ?? 0
+                    AudioFile?.PCMFloats.Length ?? 0
                 ];
             }
 
@@ -255,14 +255,14 @@ public partial class Waveform : Node2D
     public Waveform(AudioFile audioFile)
     {
         AudioFile = audioFile;
-        AudioDataRange = [0, AudioFile.AudioData.Length];
+        AudioDataRange = [0, AudioFile.PCMFloats.Length];
         QueueRedraw();
     }
 
     public Waveform(AudioFile audioFile, float length, float height)
     {
         AudioFile = audioFile;
-        AudioDataRange = [0, AudioFile.AudioData.Length];
+        AudioDataRange = [0, AudioFile.PCMFloats.Length];
         Height = height;
         Length = length;
         QueueRedraw();
@@ -271,7 +271,7 @@ public partial class Waveform : Node2D
     public Waveform(AudioFile audioFile, float length, float height, float[] timeRange)
     {
         AudioFile = audioFile;
-        AudioDataRange = [0, AudioFile.AudioData.Length];
+        AudioDataRange = [0, AudioFile.PCMFloats.Length];
         Height = height;
         Length = length;
         TimeRange = timeRange;

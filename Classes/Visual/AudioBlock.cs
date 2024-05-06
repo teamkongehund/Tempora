@@ -32,6 +32,8 @@ public partial class AudioBlock : Control
     {
         GlobalEvents.Instance.TimingChanged += OnTimingChanged;
 
+        VisibilityChanged += OnVisibilityChanged;
+
         timeSignatureLineEdit.TimeSignatureSubmitted += OnTimingSignatureSubmitted;
     }
 
@@ -40,6 +42,11 @@ public partial class AudioBlock : Control
         if (!Visible)
             return;
         UpdateLabels();
+    }
+
+    private void OnVisibilityChanged()
+    {
+        AudioDisplayPanel.Visible = Visible;
     }
 
     private void OnTimingSignatureSubmitted(object? sender, EventArgs e)
