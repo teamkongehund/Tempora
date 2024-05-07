@@ -133,7 +133,7 @@ public partial class Metronome : Node
                 buffer[bufferIndex] = Vector2.Zero;
             }
 
-            currentBufferMusicFrame = initialBufferMusicFrame + musicPitchScale * i / sampleRateRatio;
+            currentBufferMusicFrame = initialBufferMusicFrame + musicPitchScale * (i+1) / sampleRateRatio;
             bufferIndex++;
 
             if (bufferIndex >= buffer.Length)

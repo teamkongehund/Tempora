@@ -9,8 +9,10 @@ namespace Tempora.Classes.Utility;
 public partial class Settings : Node
 {
     private static Settings instance = null!;
+    public static Settings Instance { get => instance; set => instance = value; }
+    private static readonly string[] separator = ["\r\n", "\r", "\n"];
 
-    public static readonly Dictionary<int, int> SliderToDivisorDict = new() {
+    public static readonly Dictionary<int, int> GridSliderToDivisorDict = new() {
         { 1, 1 },
         { 2, 2 },
         { 3, 3 },
@@ -21,51 +23,15 @@ public partial class Settings : Node
         { 8, 16 }
     };
 
+    #region Grid
     private int divisor = 1;
-
-    /// <summary>
-    ///     Should not be changed during runtime!
-    /// </summary>
-    public int MaxNumberOfBlocks = 30;
-
-    private float musicPositionMargin;
-
-    private float musicPositionOffset = 0.125f;
-
-    private int numberOfBlocks = 10;
-
-
-    private string settingsPath = "user://settings.txt";
-
+    public static int DivisorToSlider(int divisor) => GridSliderToDivisorDict.FirstOrDefault(x => x.Value == divisor).Key;
     /// <summary>
     ///     Snap timing points to beat grid when moving them.
     ///     Should always be true because osu's timing points are always on-grid.
     ///     Probably best to exclude from any settings menu beacuse of this.
     /// </summary>
-    public bool SnapToGridEnabled = true;
-
-    private string projectFilesDirectory = "";
-    public string ProjectFilesDirectory
-    {
-        get => projectFilesDirectory;
-        set
-        {
-            projectFilesDirectory = value;
-            SaveSettings();
-        }
-    }
-
-    private string oszFilesDirectory = "";
-    public string OszFilesDirectory
-    {
-        get => oszFilesDirectory;
-        set
-        {
-            oszFilesDirectory = value;
-            SaveSettings();
-        }
-    }
-
+    public bool SnapToGridEnabled = true; 
     /// <summary>
     ///     Musical grid divisor - can be thought of as 1/Divisor - i.e. a value of 4 means "display quarter notes"
     /// </summary>
@@ -80,7 +46,35 @@ public partial class Settings : Node
             GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.SettingsChanged));
         }
     }
+    #endregion
 
+    #region Files settings
+    private string settingsPath = "user://settings.txt";
+    private string projectFilesDirectory = "";
+    public string ProjectFilesDirectory
+    {
+        get => projectFilesDirectory;
+        set
+        {
+            projectFilesDirectory = value;
+            SaveSettings();
+        }
+    }
+    private string oszFilesDirectory = "";
+    public string OszFilesDirectory
+    {
+        get => oszFilesDirectory;
+        set
+        {
+            oszFilesDirectory = value;
+            SaveSettings();
+        }
+    }
+    #endregion
+
+    #region Timeline
+    public readonly int MaxNumberOfBlocks = 30;
+    private int numberOfBlocks = 10;
     /// <summary>
     ///     Number of waveform blocks to display
     /// </summary>
@@ -96,7 +90,7 @@ public partial class Settings : Node
             GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.SettingsChanged));
         }
     }
-
+    private float musicPositionMargin;
     /// <summary>
     ///     How many measures of overlapping time is added to the beginning and end of each waveform block
     /// </summary>
@@ -111,7 +105,7 @@ public partial class Settings : Node
             GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.SettingsChanged));
         }
     }
-
+    private float musicPositionOffset = 0.125f;
     public float MusicPositionOffset
     {
         get => musicPositionOffset;
@@ -122,11 +116,10 @@ public partial class Settings : Node
             musicPositionOffset = value;
             GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.SettingsChanged));
         }
-    }
+    } 
+    #endregion
 
-    public static Settings Instance { get => instance; set => instance = value; }
 
-    private static readonly string[] separator = ["\r\n", "\r", "\n"];
 
 
     private bool metronomeFollowsGrid;
@@ -145,7 +138,6 @@ public partial class Settings : Node
 
     public bool MoveSubsequentTimingPointsWhenChangingTimeSignature = true;
 
-    public static int DivisorToSlider(int divisor) => SliderToDivisorDict.FirstOrDefault(x => x.Value == divisor).Key;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
