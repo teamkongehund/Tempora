@@ -41,7 +41,7 @@ public partial class Metronome : Node
         metronomeSampleRate = GetSampleRate("res://Audio/Click1.wav");
         click2Cache = CacheWavFile("res://Audio/Click2.wav");
 
-        audioStreamGenerator = new AudioStreamGenerator { BufferLength = bufferLength, MixRate = musicSampleRate };
+        audioStreamGenerator = new AudioStreamGenerator { BufferLength = bufferLength, MixRate = metronomeSampleRate };
         audioStreamPlayer = new AudioStreamPlayer
         {
             Stream = audioStreamGenerator,
