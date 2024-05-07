@@ -18,7 +18,7 @@ public partial class AudioFile : Node
 
     private float[] _pcmFloats = null!;
     /// <summary>
-    /// The PCM audio data
+    /// The PCM audio data for one channel
     /// </summary>
     public float[] PCMFloats
     {
@@ -100,11 +100,11 @@ public partial class AudioFile : Node
 
     public int SecondsToSampleIndex(float seconds)
     {
-        int sampleIndex = (int)Math.Floor((seconds + SampleIndexOffsetInSeconds) * SampleRate * Channels);
+        int sampleIndex = (int)Math.Floor((seconds + SampleIndexOffsetInSeconds) * SampleRate );
         return sampleIndex;
     }
 
-    public float SampleIndexToSeconds(int sampleIndex) => (sampleIndex / (float)SampleRate / Channels) - SampleIndexOffsetInSeconds;
+    public float SampleIndexToSeconds(int sampleIndex) => (sampleIndex / (float)SampleRate) - SampleIndexOffsetInSeconds;
 
     //public float[] GetAudioDataSegment(int sampleStart, int sampleStop)
     //{

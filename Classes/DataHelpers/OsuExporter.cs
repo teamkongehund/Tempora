@@ -127,7 +127,6 @@ SliderTickRate:1
         zipPacker.CloseFile();
 
         zipPacker.StartFile("audio.mp3");
-        //zipPacker.WriteFile(FileHandler.GetFileAsBuffer(audioFile.Path));
         zipPacker.WriteFile(((AudioStreamMP3)audioFile.Stream).Data);
         zipPacker.CloseFile();
 

@@ -275,7 +275,7 @@ public partial class AudioDataHandler : Node
         int bitsPerSample;
         int channels;
         int sampleRate;
-        int numSamplesTotal;
+        int numBytesTotal;
 
         using (var reader = new Mp3FileReader(audioFilePath))
         {
@@ -283,10 +283,11 @@ public partial class AudioDataHandler : Node
             sampleRate = reader.Mp3WaveFormat.SampleRate;
             channels = reader.Mp3WaveFormat.Channels;
             bitsPerSample = reader.Mp3WaveFormat.BitsPerSample;
-            numSamplesTotal = reader.Read(dataBytes, 0, dataBytes.Length * channels);
+            numBytesTotal = reader.Read(dataBytes, 0, dataBytes.Length * channels);
         }
 
-        //float[] dataFloats = new float[dataBytes.Length / sizeof(float)];
+        int numSamplesTotal = numBytesTotal / sizeof(short);
+        int numSamplesPerChannel = numSamplesTotal / channels;
 
         // Separate data into separate buffer streams
         byte[][] buffers = new byte[channels][];
@@ -295,17 +296,22 @@ public partial class AudioDataHandler : Node
 
         for (int i = 0; i < channels; i++)
         {
-            buffers[i] = new byte[dataBytes.Length / channels];
-            floats[i] = new float[numSamplesTotal / channels];
-            shorts[i] = new short[numSamplesTotal / channels];
+            buffers[i] = new byte[numSamplesPerChannel*sizeof(short)];
+            floats[i] = new float[numSamplesPerChannel];
+            shorts[i] = new short[numSamplesPerChannel];
         }
 
-        // Get buffer for each channel
-        for (int sampleIndex = 0; sampleIndex < numSamplesTotal / channels; sampleIndex++)
+        // Get buffer for each channel. 
+        for (int sampleIndex = 0; sampleIndex < numSamplesPerChannel; sampleIndex++)
         {
+            int byteIndexForSample = sampleIndex * sizeof(short) * channels;
             for (int channelIndex = 0; channelIndex < channels; channelIndex++)
             {
-                buffers[channelIndex][sampleIndex] = dataBytes[sampleIndex + channelIndex];
+                for (int relativeByteIndex = 0; relativeByteIndex < sizeof(short); relativeByteIndex++)
+                {
+                    buffers[channelIndex][sampleIndex * sizeof(short) + relativeByteIndex]
+                        = dataBytes[byteIndexForSample + sizeof(short) * channelIndex + relativeByteIndex];
+                }
             }
         }
 
@@ -313,7 +319,7 @@ public partial class AudioDataHandler : Node
         for (int channelIndex = 0; channelIndex < channels; channelIndex++)
         {
             Buffer.BlockCopy(buffers[channelIndex], 0, shorts[channelIndex], 0, buffers[channelIndex].Length);
-            for (int sampleIndex = 0; (sampleIndex < numSamplesTotal / channels); sampleIndex++)
+            for (int sampleIndex = 0; (sampleIndex < numSamplesPerChannel); sampleIndex++)
             {
                 floats[channelIndex][sampleIndex] = (float)shorts[channelIndex][sampleIndex]/short.MaxValue;
             }
@@ -330,71 +336,80 @@ public partial class AudioDataHandler : Node
     private static SoundData OggToSoundData(string audioFilePath)
     {
         // Based on https://github.com/leezer3/OpenBVE/blob/84064b7ef4e51def0b26e07226c114c004bcd4d3/source/Plugins/Sound.Vorbis/Plugin.Parser.cs#L12
+        int channels;
+        int samplesPerChannel;
+        float[] floatsRaw;
+        int sampleRate;
+        int numRawSamples;
+        int numFloatBytesTotal;
+
         using (VorbisWaveReader reader = new VorbisWaveReader(audioFilePath))
         {
-            int channels = reader.WaveFormat.Channels;
-            int samplesPerChannel = (int)reader.Length / (channels * sizeof(float));
-            float[] dataFloats = new float[samplesPerChannel * channels];
+            channels = reader.WaveFormat.Channels;
+            sampleRate = reader.WaveFormat.SampleRate;
+
+            numFloatBytesTotal = (int)reader.Length;
+            samplesPerChannel = numFloatBytesTotal / (channels * sizeof(float));
+            floatsRaw = new float[samplesPerChannel * channels];
 
             // Convert Ogg Vorbis to raw 32-bit float n channels PCM.
-            int numSamplesTotal = reader.Read(dataFloats, 0, samplesPerChannel * channels);
+            numRawSamples = reader.Read(floatsRaw, 0, samplesPerChannel * channels);
+        }
 
-            // Separate float samples into separate arrays
-            float[][] floats = new float[channels][];
-            byte[] dataBytes = new byte[numSamplesTotal * sizeof(short)];
-            byte[][] buffers = new byte[channels][];
+        // Separate float samples into separate arrays
+        float[][] floats = new float[channels][];
+        byte[] shortsRaw_byte = new byte[numRawSamples * sizeof(short)];
+        byte[][] shorts_byte = new byte[channels][];
 
-            for (int i = 0; i < channels; i++)
-            {
-                buffers[i] = new byte[dataBytes.Length / channels];
-                floats[i] = new float[samplesPerChannel]; // if OGG stops working, change this back to dataBytes.Length
-            }
+        for (int i = 0; i < channels; i++)
+        {
+            shorts_byte[i] = new byte[shortsRaw_byte.Length / channels];
+            floats[i] = new float[samplesPerChannel]; // if OGG stops working, change this back to dataBytes.Length
+        }
 
+        for (int channelIndex = 0; channelIndex < channels; channelIndex++)
+        {
             for (int sampleIndex = 0; sampleIndex < samplesPerChannel; sampleIndex++)
             {
-                for (int channelIndex = 0; channelIndex < channels; channelIndex++)
-                {
-                    floats[channelIndex][sampleIndex] = dataFloats[sampleIndex + channelIndex];
-                }
+                floats[channelIndex][sampleIndex] = floatsRaw[sampleIndex * channels + channelIndex];
             }
-
-            // Convert PCM bit depth from 32-bit float to 16-bit integer.
-            using (MemoryStream stream = new MemoryStream(dataBytes))
-            using (BinaryWriter writer = new BinaryWriter(stream))
-            {
-                for (int i = 0; i < numSamplesTotal; i++)
-                {
-                    float sample = dataFloats[i];
-
-                    if (sample < -1.0f)
-                    {
-                        sample = -1.0f;
-                    }
-
-                    if (sample > 1.0f)
-                    {
-                        sample = 1.0f;
-                    }
-
-                    writer.Write((short)(sample * short.MaxValue));
-                }
-            }
-
-            // Get buffer for each channel
-            for (int sampleIndex = 0; sampleIndex < numSamplesTotal / channels; sampleIndex++)
-            {
-                for (int channelIndex = 0; channelIndex < channels; channelIndex++)
-                {
-                    for (int byteIndex = 0; byteIndex < sizeof(short); byteIndex++)
-                    {
-                        buffers[channelIndex][sampleIndex * sizeof(short) + byteIndex]
-                            = dataBytes[sampleIndex * sizeof(short) * channels + sizeof(short) * channelIndex + byteIndex];
-                    }
-                }
-            }
-
-            return new SoundData(reader.WaveFormat.SampleRate, sizeof(short) * 8, buffers, floats);
         }
+
+        // Convert PCM bit depth from 32-bit float to 16-bit integer.
+        using (MemoryStream stream = new MemoryStream(shortsRaw_byte))
+        using (BinaryWriter writer = new BinaryWriter(stream))
+        {
+            for (int i = 0; i < numRawSamples; i++)
+            {
+                float sample = floatsRaw[i];
+
+                if (sample < -1.0f)
+                {
+                    sample = -1.0f;
+                }
+
+                if (sample > 1.0f)
+                {
+                    sample = 1.0f;
+                }
+
+                writer.Write((short)(sample * short.MaxValue));
+            }
+        }
+
+        // Get buffer for each channel
+        for (int sampleIndex = 0; sampleIndex < numRawSamples / channels; sampleIndex++)
+        {
+            for (int channelIndex = 0; channelIndex < channels; channelIndex++)
+            {
+                for (int byteIndex = 0; byteIndex < sizeof(short); byteIndex++)
+                {
+                    shorts_byte[channelIndex][sampleIndex * sizeof(short) + byteIndex]
+                        = shortsRaw_byte[sampleIndex * sizeof(short) * channels + sizeof(short) * channelIndex + byteIndex];
+                }
+            }
+        }
+        return new SoundData(sampleRate, sizeof(short) * 8, shorts_byte, floats);
     }
 
     //// General method to extract audio data from any supported format
