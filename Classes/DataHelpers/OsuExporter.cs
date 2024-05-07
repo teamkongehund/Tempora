@@ -15,7 +15,7 @@ public partial class OsuExporter : Node
     private static string defaultDotOsuFormer = @"osu file format v14
 
 [General]
-AudioFilename: audio.mp3
+AudioFilename: audio{0}
 AudioLeadIn: 0
 PreviewTime: -1
 Countdown: 1
@@ -72,12 +72,14 @@ SliderTickRate:1
     public static string DefaultDotOsuFormer { get => defaultDotOsuFormer; set => defaultDotOsuFormer = value; }
     public static string DefaultDotOsuLatter { get => defaultDotOsuLatter; set => defaultDotOsuLatter = value; }
 
-    public static string GetDotOsu(Timing timing)
+    public static string GetDotOsu(Timing timing, AudioFile audioFile)
     {
         var newTiming = Timing.CopyAndAddExtraPoints(timing);
         List<TimingPoint> timingPoints = newTiming.TimingPoints;
         string timingPointsData = TimingPointToText(timingPoints);
-        string dotOsu = $"{DefaultDotOsuFormer}{timingPointsData}{DefaultDotOsuLatter}";
+        string extension = audioFile.Extension;
+        string dotOsuUnformatted = $"{DefaultDotOsuFormer}{timingPointsData}{DefaultDotOsuLatter}";
+        string dotOsu = String.Format(dotOsuUnformatted, extension);
         return dotOsu;
     }
 
@@ -107,7 +109,7 @@ SliderTickRate:1
         oszPath = Path.ChangeExtension(oszPath, ".osz");
         changedPath = oszPath;
 
-        string dotOsu = GetDotOsu(Timing.Instance);
+        string dotOsu = GetDotOsu(Timing.Instance, Project.Instance.AudioFile);
 
         SaveOsz(oszPath, dotOsu, Project.Instance.AudioFile);
     }
@@ -126,8 +128,13 @@ SliderTickRate:1
         zipPacker.WriteFile(dotOsuString.ToUtf8Buffer());
         zipPacker.CloseFile();
 
-        zipPacker.StartFile("audio.mp3");
-        zipPacker.WriteFile(((AudioStreamMP3)audioFile.Stream).Data);
+        //zipPacker.StartFile("audio.mp3");
+        //zipPacker.WriteFile(audioStreamMP3.Data);
+
+        zipPacker.StartFile($"audio{audioFile.Extension}");
+        byte[] fileBuffer = FileHandler.GetFileAsBuffer(audioFile.AudioPath);
+        zipPacker.WriteFile(fileBuffer);
+
         zipPacker.CloseFile();
 
         zipPacker.Close();
@@ -140,7 +147,7 @@ SliderTickRate:1
         var random = new Random();
         int rand = random.Next();
         string path = $"user://{rand}.osz";
-        string dotOsu = GetDotOsu(Timing.Instance);
+        string dotOsu = GetDotOsu(Timing.Instance, Project.Instance.AudioFile);
         SaveOsz(path, dotOsu, Project.Instance.AudioFile);
 
         // Open with system:

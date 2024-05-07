@@ -68,7 +68,7 @@ public partial class Metronome : Node
     }
     public override void _Process(double delta)
     {
-        //UpdateCurrentMusicFrame(musicPlayer!.PlaybackTime); // Ensures music and metronome don't go out of sync due to accumulating rounding errors.
+        //UpdateCurrentMusicFrame(musicPlayer!.PlaybackTime); // Ensures music and metronome don't go out of sync due to accumulating rounding errors. 
         FillBuffer();
     }
     public override void _Input(InputEvent @event)
