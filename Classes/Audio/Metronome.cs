@@ -11,7 +11,7 @@ namespace Tempora.Classes.Audio;
 public partial class Metronome : Node
 {
     [Export]
-    private MusicPlayer MusicPlayer = null!;
+    private MusicPlayer musicPlayer = null!;
 
     private float previousVolumeDb;
     private bool isMuted;
@@ -49,17 +49,17 @@ public partial class Metronome : Node
         };
         AddChild(audioStreamPlayer);
 
-        if (MusicPlayer is null) return;
-        musicPitchScale = MusicPlayer.PitchScale;
+        if (musicPlayer is null) return;
+        musicPitchScale = musicPlayer.PitchScale;
 
         musicSampleRate = Project.Instance.AudioFile?.SampleRate ?? musicSampleRate;
         GlobalEvents.Instance.AudioFileChanged += OnAudioFileChanged;
 
-        MusicPlayer.PlaybackStarted += StartPlayback;
-        MusicPlayer.Seeked += SeekPlayback;
-        MusicPlayer.Paused += StopPlayback;
-        MusicPlayer.Finished += StopPlayback;
-        MusicPlayer.PitchScaleChanged += OnPitchScaleChanged;
+        musicPlayer.PlaybackStarted += StartPlayback;
+        musicPlayer.Seeked += SeekPlayback;
+        musicPlayer.Paused += StopPlayback;
+        musicPlayer.Finished += StopPlayback;
+        musicPlayer.PitchScaleChanged += OnPitchScaleChanged;
         GlobalEvents.Instance.TimingChanged += OnTimingChanged;
 
         GlobalEvents.Instance.SettingsChanged += OnSettingsChanged;
@@ -150,7 +150,7 @@ public partial class Metronome : Node
     private void RefillBuffer()
     {
         if (playback is null) return;
-        SeekPlayback(MusicPlayer.PlaybackTime);
+        SeekPlayback(musicPlayer.PlaybackTime);
     }
 
     private void UpdateTriggerTime(double currentTime)
