@@ -71,7 +71,7 @@ public partial class AudioFile : Node
 
         //AudioData = AudioDataHandler.ExtractAudioFloat(path, out SampleRate, out Channels);
 
-        SoundData = AudioDataHandler.GetSound(path);
+        SoundData = AudioDataHandler.GetSoundData(path);
         SampleRate = SoundData.SampleRate;
         Channels = SoundData.Channels;
 
@@ -88,12 +88,16 @@ public partial class AudioFile : Node
     {
         byte[] buffer = audioStreamMP3.Data;
 
-        float[] audioData = AudioDataHandler.Mp3ToAudioFloat(buffer, out int sampleRate, out int channels);
+        //float[] audioData = AudioDataHandler.Mp3ToAudioFloat(buffer, out int sampleRate, out int channels);
 
-        PCMFloats = audioData;
-        SampleRate = sampleRate;
+        SoundData = AudioDataHandler.GetSoundData(buffer, ".mp3");
+        SampleRate = SoundData.SampleRate;
+        Channels = SoundData.Channels;
+
+        // For now, use left channel
+        PCMFloats = SoundData.Floats[0];
+
         Stream = audioStreamMP3;
-        Channels = channels;
         Extension = ".mp3";
         AudioBuffer = buffer;
     }
