@@ -69,7 +69,11 @@ public partial class MusicPlayer : AudioStreamPlayer
         PauseTime = time >= 0 ? (double)time : 0;
     }
 
-    private void OnAudioFileChanged(object? sender, EventArgs e) => LoadAudio();
+    private void OnAudioFileChanged(object? sender, EventArgs e)
+    {
+        Pause();
+        LoadAudio();
+    }
 
     public void Pause()
     {

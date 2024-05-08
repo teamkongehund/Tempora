@@ -342,6 +342,7 @@ public partial class ProjectFileManager : Node
         string projectFile = FileHandler.LoadText(filePath);
         if (string.IsNullOrEmpty(projectFile))
             return;
+        MusicPlayer.Instance.Pause();
         LoadProjectFromFile(projectFile, filePath);
         Project.Instance.ProjectPath = filePath;
     }
