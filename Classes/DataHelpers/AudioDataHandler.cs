@@ -140,9 +140,9 @@ public partial class AudioDataHandler : Node
         }
 
         return floats;
-    } 
+    }
     #endregion
-
+    #region Get SoundData
     private static SoundData Mp3ToSoundData(string audioFilePath)
     {
         ExtractMp3(audioFilePath, out byte[] shortsRaw_byte, out int channels, out int sampleRate, out int numRawBytes);
@@ -234,5 +234,6 @@ public partial class AudioDataHandler : Node
             default:
                 throw new NotSupportedException($"Audio format '{extension}' is not supported.");
         }
-    }
+    } 
+    #endregion
 }

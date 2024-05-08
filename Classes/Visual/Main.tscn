@@ -40,7 +40,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0, 0.2, 0.254902, 1)
+color = Color(0, 0.14902, 0.188235, 1)
 metadata/_edit_lock_ = true
 
 [node name="VSplitContainer" type="VSplitContainer" parent="."]
