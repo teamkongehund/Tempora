@@ -15,6 +15,9 @@ namespace Tempora.Classes.Utility;
 public partial class AudioDataHandler : Node
 {
     #region Read audio
+    /// <summary>
+    /// Read an MP# file and output the raw contents. MP3 data 16-bit integer.
+    /// </summary>
     private static void ExtractMp3(byte[] mp3File, out byte[] shortsRaw_byte, out int channels, out int sampleRate, out int numRawBytes)
     {
         using var mp3FileMemoryStream = new MemoryStream(mp3File);
@@ -26,6 +29,9 @@ public partial class AudioDataHandler : Node
         numRawBytes = reader.Read(shortsRaw_byte, 0, shortsRaw_byte.Length * channels);
     }
 
+    /// <summary>
+    /// Read an MP# file and output the raw contents. MP3 data 16-bit integer.
+    /// </summary>
     private static void ExtractMp3(string mp3Path, out byte[] shortsRaw_byte, out int channels, out int sampleRate, out int numRawBytes)
     {
         using var reader = new Mp3FileReader(mp3Path);
@@ -36,6 +42,9 @@ public partial class AudioDataHandler : Node
         numRawBytes = reader.Read(shortsRaw_byte, 0, shortsRaw_byte.Length * channels);
     }
 
+    /// <summary>
+    /// Read an OGG file and output the raw contents. OGG data 32-bit float.
+    /// </summary>
     private static void ExtractOgg(string oggPath, out float[] floatsRaw, out int channels, out int sampleRate, out int numSamplesCombined)
     {
         int samplesPerChannel;
@@ -66,10 +75,10 @@ public partial class AudioDataHandler : Node
         Math.Clamp(f, -1.0f, 1.0f);
         return (short)(f * short.MaxValue);
     }
-    private static void FloatsToShortByteArray(float[] floats, out byte[] shorts_byte)
+    private static byte[] FloatsToShortByteArray(float[] floats)
     {
         int numRawSamples = floats.Length;
-        shorts_byte = new byte[numRawSamples * sizeof(short)];
+        byte[] shorts_byte = new byte[numRawSamples * sizeof(short)];
         using (MemoryStream stream = new MemoryStream(shorts_byte))
         using (BinaryWriter writer = new BinaryWriter(stream))
         {
@@ -80,6 +89,7 @@ public partial class AudioDataHandler : Node
                 writer.Write(sampleShort);
             }
         }
+        return shorts_byte;
     }
 
     private static byte[][] SeparateShortByteArrayIntoChannels(byte[] shortsRaw_byte, int channels)
@@ -188,7 +198,7 @@ public partial class AudioDataHandler : Node
         ExtractOgg(audioFilePath, out float[] floatsRaw, out int channels, out int sampleRate, out int numSamplesCombined);
 
         // Convert PCM bit depth from 32-bit float to 16-bit integer.
-        FloatsToShortByteArray(floatsRaw, out byte[] shortsRaw_byte);
+        byte[] shortsRaw_byte = FloatsToShortByteArray(floatsRaw);
 
         float[][] floats = SeparateFloatsIntoChannels(floatsRaw, channels);
         byte[][] shorts_byte = SeparateShortByteArrayIntoChannels(shortsRaw_byte, channels);
