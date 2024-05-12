@@ -98,16 +98,13 @@ public partial class Timing
         if (memento is not TimingMemento timingMemento)
             throw new ArgumentException($"{nameof(memento)} was not of type {nameof(TimingMemento)}");
 
-        bool hasTimingPointCountChanged = false;
-        var newTimingPoints = CloneUtility.CloneList<TimingPoint>(timingMemento.clonedTimingPoints);
-        if (newTimingPoints.Count != TimingPoints.Count)
-            hasTimingPointCountChanged = true; 
+        int oldCount = TimingPoints.Count;
 
-        TimingPoints = newTimingPoints;
+        TimingPoints = CloneUtility.CloneList<TimingPoint>(timingMemento.clonedTimingPoints);
         TimeSignaturePoints = CloneUtility.CloneList<TimeSignaturePoint>(timingMemento.clonedTimeSignaturePoints);
 
-        if (hasTimingPointCountChanged)
-            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.Instance.TimingPointCountChanged), EventArgs.Empty);
+        if (oldCount != TimingPoints.Count)
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointCountChanged));
     }
 
     private class TimingMemento(Timing originator) : IMemento
