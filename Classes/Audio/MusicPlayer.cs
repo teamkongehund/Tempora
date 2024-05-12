@@ -18,8 +18,30 @@ public partial class MusicPlayer : AudioStreamPlayer
 
     private bool hasFirstAudioLoaded = false;
 
+    public float DefaultPlaybackRate = 1f;
+
+    public float AlternativePlaybackRate = 0.5f;
+
+    private bool isUsingAlternativePlaybackRate = false;
+    private bool IsUsingAlternativePlaybackRate
+    {
+        get => isUsingAlternativePlaybackRate;
+        set
+        {
+            if (isUsingAlternativePlaybackRate == value)
+                return;
+            isUsingAlternativePlaybackRate = value;
+            SetPitchScale(isUsingAlternativePlaybackRate ? AlternativePlaybackRate : DefaultPlaybackRate);
+        }
+    }
+
     public void SetPitchScale(float pitchScale)
     {
+        if (isUsingAlternativePlaybackRate)
+            AlternativePlaybackRate = pitchScale;
+        else
+            DefaultPlaybackRate = pitchScale;
+
         PitchScale = pitchScale;
         PitchScaleChanged?.Invoke(pitchScale);
     }
@@ -58,6 +80,10 @@ public partial class MusicPlayer : AudioStreamPlayer
                 {
                     if (keyEvent.Keycode == Key.Space && keyEvent.Pressed)
                         PlayPause();
+                    if (keyEvent.Keycode == Key.S && keyEvent.Pressed && !Input.IsKeyPressed(Key.Ctrl))
+                        IsUsingAlternativePlaybackRate = true;
+                    if (keyEvent.Keycode == Key.S && keyEvent.IsReleased() && !Input.IsKeyPressed(Key.Ctrl))
+                        IsUsingAlternativePlaybackRate = false;
                     break;
                 }
         }

@@ -116,11 +116,8 @@ public partial class Settings : Node
             musicPositionOffset = value;
             GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.SettingsChanged));
         }
-    } 
+    }
     #endregion
-
-
-
 
     private bool metronomeFollowsGrid;
 
