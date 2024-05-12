@@ -177,27 +177,12 @@ public partial class Timing
     /// </summary>
     public void ScaleTempo(int lowerIndex, int higherIndex, float multiplier)
     {
-        if (!ValidateIndices(lowerIndex, higherIndex + 1, out lowerIndex, out higherIndex))
+        if (!ValidateIndices(lowerIndex, higherIndex, out lowerIndex, out higherIndex))
             return;
 
-        float? lowerPositionNullable = TimingPoints[lowerIndex].MusicPosition;
-        float? higherPositionNullable = TimingPoints[higherIndex].MusicPosition;
-        if (lowerPositionNullable == null || higherPositionNullable == null)
-            return;
-        float lowerPosition = (float)lowerPositionNullable;
-        float higherPosition = (float)higherPositionNullable;
+        float lowerPosition = (float)TimingPoints[lowerIndex].MusicPosition!; // Indices have been validated 
+        float higherPosition = (float)TimingPoints[higherIndex].MusicPosition!; // Indices have been validated 
 
-        float oldPositionSpan = (float)higherPosition - (float)lowerPosition;
-        float newPositionSpan = oldPositionSpan * multiplier;
-        float maxPositionOffset = newPositionSpan - oldPositionSpan;
-
-        float getPositionForSubsequentPoints(TimingPoint? timingPoint)
-        {
-            if (timingPoint?.MusicPosition == null)
-                throw new NullReferenceException(nameof(timingPoint));
-
-            return (float)timingPoint.MusicPosition + maxPositionOffset;
-        }
         float getPositionForSelectedPoints(TimingPoint? timingPoint)
         {
             if (timingPoint?.MusicPosition == null)
@@ -208,6 +193,23 @@ public partial class Timing
             return lowerPosition + newPositionDifference;
         }
 
+        float positionOffsetForSubsequentPoints = 0;
+        bool areThereAnySubsequentTimingPoints = (higherIndex + 1 < TimingPoints.Count);
+        if (areThereAnySubsequentTimingPoints)
+        {
+            float spanForChangedPointsBefore = (float)(TimingPoints[higherIndex + 1].MusicPosition - lowerPosition)!;
+            float spanForChangedPointsAfter = spanForChangedPointsBefore * multiplier;
+            positionOffsetForSubsequentPoints = spanForChangedPointsAfter - spanForChangedPointsBefore;
+        }
+
+        float getPositionForSubsequentPoints(TimingPoint? timingPoint)
+        {
+            if (timingPoint?.MusicPosition == null)
+                throw new NullReferenceException(nameof(timingPoint));
+
+            return (float)(timingPoint.MusicPosition + positionOffsetForSubsequentPoints);
+        }
+
         if (multiplier > 1)
             BatchChangeMusicPosition(higherIndex + 1, TimingPoints.Count - 1, getPositionForSubsequentPoints);
 
@@ -215,6 +217,12 @@ public partial class Timing
 
         if (multiplier <= 1)
             BatchChangeMusicPosition(higherIndex + 1, TimingPoints.Count - 1, getPositionForSubsequentPoints);
+
+        if (!areThereAnySubsequentTimingPoints)
+        {
+            TimingPoint higherTimingPoint = TimingPoints[higherIndex];
+            higherTimingPoint.Bpm_Set(higherTimingPoint.Bpm * multiplier, this);
+        }
 
         MementoHandler.Instance.AddTimingMemento();
     }
@@ -231,14 +239,12 @@ public partial class Timing
         if (timingPoint == null)
             throw new ArgumentNullException();
         int index = TimingPoints.IndexOf(timingPoint);
-        if (TimingPointSelection.Instance.Count > 1)
+        if (TimingPointSelection.Instance.Count > 1 && TimingPointSelection.Instance.IsPointInSelection(timingPoint))
         {
             int lower = (int)TimingPointSelection.Instance.SelectionIndices?[0]!; // Can't be null if Count > 1
             int higher = (int)TimingPointSelection.Instance.SelectionIndices?[1]!; // Can't be null if Count > 1
 
-            bool isPointInSelection = TimingPointSelection.Instance.IsPointInSelection(timingPoint);
-            if (isPointInSelection)
-                ScaleTempo(lower, higher, multiplier);
+            ScaleTempo(lower, higher, multiplier);
             return;
         }
         ScaleTempo(index, index, multiplier);
