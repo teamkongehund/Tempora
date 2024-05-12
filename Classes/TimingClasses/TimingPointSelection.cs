@@ -248,7 +248,7 @@ public partial class TimingPointSelection : Node
     {
         if (SelectionIndices == null || referencePosition == null) return;
 
-        newPosition = Timing.SnapMusicPosition(newPosition);
+        newPosition = Timing.Instance.SnapMusicPosition(newPosition);
 
         float positionDifference = newPosition - (float)referencePosition;
 

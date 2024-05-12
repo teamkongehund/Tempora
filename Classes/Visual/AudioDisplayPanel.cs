@@ -170,7 +170,7 @@ public partial class AudioDisplayPanel : Control
     {
         float musicPosition = XPositionToMusicPosition(mousePositionInLocalCoords.X);
         if (Input.IsKeyPressed(Key.Shift))
-            musicPosition = Timing.SnapMusicPosition(musicPosition);
+            musicPosition = Timing.Instance.SnapMusicPosition(musicPosition);
 
         return musicPosition;
     }
@@ -557,7 +557,7 @@ public partial class AudioDisplayPanel : Control
 
         if (Input.IsKeyPressed(Key.Shift))
         {
-            musicPosition = Timing.SnapMusicPosition(musicPosition);
+            musicPosition = Timing.Instance.SnapMusicPosition(musicPosition);
         }
 
         PreviewLine.Position = new Vector2(MusicPositionToXPosition(musicPosition), 0);

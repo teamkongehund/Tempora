@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Text;
 using Godot;
 
-namespace Tempora.Classes.DataTools;
+namespace Tempora.Classes.DataHelpers;
 
 /// <summary>
 ///     Godot's global functions.

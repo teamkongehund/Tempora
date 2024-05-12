@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System;
-using GD = Tempora.Classes.DataTools.GD;
+using GD = Tempora.Classes.DataHelpers.GD;
 
 namespace Tempora.Classes.TimingClasses;
 public partial class Timing

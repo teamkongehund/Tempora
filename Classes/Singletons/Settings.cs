@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
-using GD = Tempora.Classes.DataTools.GD;
+using GD = Tempora.Classes.DataHelpers.GD;
 
 namespace Tempora.Classes.Utility;
 

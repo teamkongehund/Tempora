@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
-using Tempora.Classes.DataTools;
-using GD = Tempora.Classes.DataTools.GD;
+using Tempora.Classes.DataHelpers;
+using GD = Tempora.Classes.DataHelpers.GD;
 using Tempora.Classes.Utility;
 
 namespace Tempora.Classes.TimingClasses;

@@ -82,6 +82,23 @@ public partial class Timing
         return position;
     }
 
+    public float GetNextOperatingGridPosition(float musicPosition)
+    {
+        int downbeatPosition = (musicPosition >= 0) ? (int)musicPosition : (int)musicPosition - 1;
+        int[] timeSignature = GetTimeSignature(musicPosition);
+        int divisor = Settings.Instance.GridDivisor;
+        float divisionLength = GetRelativeNotePosition(timeSignature, divisor, 1);
+        float relativePosition = (musicPosition >= 0)
+            ? musicPosition % 1
+            : 1 + (musicPosition % 1);
+        int divisionsFromDownbeat = (int)MathF.Ceiling(relativePosition / divisionLength);
+
+        float position = (relativePosition + divisionLength) <= 1
+            ? (divisionsFromDownbeat * divisionLength) + downbeatPosition
+            : downbeatPosition + 1;
+        return position;
+    }
+
     public float GetOperatingGridPosition(float musicPosition)
     {
         //TimingPoint? operatingTimingPoint = 
@@ -112,31 +129,31 @@ public partial class Timing
         return 0;
     }
 
-    public float GetNextOperatingGridPosition(float musicPosition)
-    {
-        //TimingPoint? operatingTimingPoint =
-        //    GetOperatingTimingPoint_ByMusicPosition(musicPosition)
-        //    ?? throw new NullReferenceException("This doesn't work unless there's a timing point yet. Fix me so it works always.");
-        //int[] timeSignature = operatingTimingPoint.TimeSignature;
+    //public float GetNextOperatingGridPosition(float musicPosition)
+    //{
+    //    //TimingPoint? operatingTimingPoint =
+    //    //    GetOperatingTimingPoint_ByMusicPosition(musicPosition)
+    //    //    ?? throw new NullReferenceException("This doesn't work unless there's a timing point yet. Fix me so it works always.");
+    //    //int[] timeSignature = operatingTimingPoint.TimeSignature;
 
-        int[] timeSignature = GetTimeSignature(musicPosition);
-        int gridDivisor = Settings.Instance.GridDivisor;
+    //    int[] timeSignature = GetTimeSignature(musicPosition);
+    //    int gridDivisor = Settings.Instance.GridDivisor;
 
-        int nextMeasure = (int)(musicPosition + 1);
-        for (int index = 0; index < 30; index++)
-        {
-            float relativePosition = GetRelativeNotePosition(timeSignature, gridDivisor, index);
-            float absolutePosition = (int)musicPosition + relativePosition;
+    //    int nextMeasure = (int)(musicPosition + 1);
+    //    for (int index = 0; index < 30; index++)
+    //    {
+    //        float relativePosition = GetRelativeNotePosition(timeSignature, gridDivisor, index);
+    //        float absolutePosition = (int)musicPosition + relativePosition;
 
-            if (absolutePosition > musicPosition)
-                return absolutePosition;
+    //        if (absolutePosition > musicPosition)
+    //            return absolutePosition;
 
-            if (absolutePosition >= nextMeasure)
-                throw new Exception("No operating grid position found");
-        }
+    //        if (absolutePosition >= nextMeasure)
+    //            throw new Exception("No operating grid position found");
+    //    }
 
-        return 0;
-    }
+    //    return 0;
+    //}
 
     public static float GetRelativeNotePosition(int[] timeSignature, int gridDivisor, int index)
     {
@@ -153,6 +170,15 @@ public partial class Timing
 
         float position = index * timeSignature[1] / (float)(timeSignature[0] * gridDivisor);
         return position;
+    }
+
+    public float GetNearestGridPosition(float musicPosition)
+    {
+        float previous = GetOperatingGridPosition(musicPosition);
+        float next = GetNextOperatingGridPosition(musicPosition);
+        float distanceToPrevious = Math.Abs(musicPosition - previous);
+        float distanceToNext = Math.Abs(next - musicPosition);
+        return (distanceToPrevious < distanceToNext) ? previous : next;
     }
 
     public int GetLastMeasure()
@@ -243,21 +269,11 @@ public partial class Timing
         return currentMusicPosition;
     }
 
-    public static float SnapMusicPosition(float musicPosition)
+    public float SnapMusicPosition(float musicPosition)
     {
         if (!Settings.Instance.SnapToGridEnabled)
             return musicPosition;
 
-        int divisor = Settings.Instance.GridDivisor;
-        //float divisionLength = 1f / divisor;
-        float divisionLength = GetRelativeNotePosition(Instance.GetTimeSignature(musicPosition), divisor, 1);
-
-        float relativePosition = musicPosition - (int)musicPosition;
-
-        int divisionIndex = (int)Math.Round(relativePosition / divisionLength);
-
-        float snappedMusicPosition = (int)musicPosition + Math.Min(divisionIndex * divisionLength, 1);
-
-        return snappedMusicPosition;
+        return GetNearestGridPosition(musicPosition);
     }
 }
