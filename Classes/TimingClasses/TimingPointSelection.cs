@@ -25,10 +25,10 @@ public partial class TimingPointSelection : Node
     {
         switch (inputEvent)
         {
-            case InputEventMouseButton mouseEvent:
-                if (mouseEvent.ButtonIndex == MouseButton.Right && mouseEvent.Pressed && Input.IsKeyPressed(Key.Alt))
-                    TimingPointSelection.Instance.DeselectAll();
-                break;
+            //case InputEventMouseButton mouseEvent:
+            //    if (mouseEvent.ButtonIndex == MouseButton.Right && mouseEvent.Pressed && Input.IsKeyPressed(Key.Alt))
+            //        TimingPointSelection.Instance.DeselectAll();
+            //    break;
             case InputEventKey keyEvent:
                 if (keyEvent.Keycode == Key.A && keyEvent.Pressed && Input.IsKeyPressed(Key.Ctrl))
                     Select(0, timing.TimingPoints.Count - 1);
@@ -63,7 +63,7 @@ public partial class TimingPointSelection : Node
         }
     }
 
-    private int Count
+    public int Count
     {
         get
         {
@@ -282,15 +282,15 @@ public partial class TimingPointSelection : Node
     public void DoubleTempoForSelection()
     {
         if (SelectionIndices == null) return;
-        Timing.Instance.BatchScaleTempo(SelectionIndices[0], SelectionIndices[1], 2);
-        MementoHandler.Instance.AddTimingMemento(SelectionIndices);
+        Timing.Instance.ScaleTempo(SelectionIndices[0], SelectionIndices[1], 2);
+        //MementoHandler.Instance.AddTimingMemento(SelectionIndices);
     }
 
     public void HalveTempoForSelection()
     {
         if (SelectionIndices == null) return;
-        Timing.Instance.BatchScaleTempo(SelectionIndices[0], SelectionIndices[1], 0.5f);
-        MementoHandler.Instance.AddTimingMemento(SelectionIndices);
+        Timing.Instance.ScaleTempo(SelectionIndices[0], SelectionIndices[1], 0.5f);
+        //MementoHandler.Instance.AddTimingMemento(SelectionIndices);
     }
 
     private void OnTimingPointCountChanged(object? sender, EventArgs e)

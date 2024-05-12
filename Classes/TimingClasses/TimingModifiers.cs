@@ -173,9 +173,9 @@ public partial class Timing
     }
 
     /// <summary>
-    /// Multiplies BPM of selected timing points by a multiplier.
+    /// Scales Tempo of selected timing points (including higherIndex) by a multiplier. Adds a <see cref="TimingMemento"/> on completion.
     /// </summary>
-    public void BatchScaleTempo(int lowerIndex, int higherIndex, float multiplier)
+    public void ScaleTempo(int lowerIndex, int higherIndex, float multiplier)
     {
         if (!ValidateIndices(lowerIndex, higherIndex + 1, out lowerIndex, out higherIndex))
             return;
@@ -215,6 +215,33 @@ public partial class Timing
 
         if (multiplier <= 1)
             BatchChangeMusicPosition(higherIndex + 1, TimingPoints.Count - 1, getPositionForSubsequentPoints);
+
+        MementoHandler.Instance.AddTimingMemento();
+    }
+
+    /// <summary>
+    /// Scales the tempo of the <see cref="TimingPoint"/>. 
+    /// If it is part of a selection, the whole selection's tempo will be scaled.
+    /// </summary>
+    /// <param name="timingPoint"></param>
+    /// <param name="multiplier"></param>
+    /// <exception cref="ArgumentNullException"></exception>
+    public void ScaleTempo(TimingPoint? timingPoint, float multiplier)
+    {
+        if (timingPoint == null)
+            throw new ArgumentNullException();
+        int index = TimingPoints.IndexOf(timingPoint);
+        if (TimingPointSelection.Instance.Count > 1)
+        {
+            int lower = (int)TimingPointSelection.Instance.SelectionIndices?[0]!; // Can't be null if Count > 1
+            int higher = (int)TimingPointSelection.Instance.SelectionIndices?[1]!; // Can't be null if Count > 1
+
+            bool isPointInSelection = TimingPointSelection.Instance.IsPointInSelection(timingPoint);
+            if (isPointInSelection)
+                ScaleTempo(lower, higher, multiplier);
+            return;
+        }
+        ScaleTempo(index, index, multiplier);
     }
 
     public void BatchChangeOffset(int lowerIndex, int higherIndex, float offsetChange)

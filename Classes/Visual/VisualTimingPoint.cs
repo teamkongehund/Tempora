@@ -74,6 +74,7 @@ public partial class VisualTimingPoint : Node2D
         defaultColor = colorRect.Color;
         sizeDefault = colorRect.Size;
     }
+    
     public override void _Input(InputEvent @event)
     {
         if (!Visible)
@@ -109,6 +110,10 @@ public partial class VisualTimingPoint : Node2D
         {
             TimingPointSelection.Instance.SelectTimingPoint(TimingPoint);
             GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointHolding), new GlobalEvents.ObjectArgument<TimingPoint>(TimingPoint));
+        }
+        else if (mouseEvent.ButtonIndex == MouseButton.Right && mouseEvent.Pressed && Input.IsKeyPressed(Key.Alt))
+        {
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.ContextMenuRequested), new GlobalEvents.ObjectArgument<VisualTimingPoint>(this));
         }
         else if (mouseEvent.ButtonIndex == MouseButton.WheelDown && mouseEvent.Pressed && Input.IsKeyPressed(Key.Ctrl))
         {

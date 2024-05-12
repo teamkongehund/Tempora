@@ -143,6 +143,20 @@ public partial class Timing
     }
 
     /// <summary>
+    /// Delete selection if the <see cref="TimingPoint"/> is in the selection. Otherwise, delete the timing point.
+    /// </summary>
+    /// <param name="timingPoint"></param>
+    public void DeleteTimingPointOrSelection(TimingPoint? timingPoint)
+    {
+        if (timingPoint == null)
+            return;
+        if (TimingPointSelection.Instance.IsPointInSelection(timingPoint))
+            TimingPointSelection.Instance.DeleteSelection();
+        else
+            DeleteTimingPoint(timingPoint);
+    }
+
+    /// <summary>
     /// Deletes timing points between index excluding indexTo.
     /// </summary>
     /// <param name="indexFrom"></param>

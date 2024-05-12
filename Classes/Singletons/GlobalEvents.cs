@@ -23,6 +23,7 @@ public partial class GlobalEvents : Node
     public event EventHandler? TimingPointHolding;
     public event EventHandler? MusicPositionChangeRejected;
     public event EventHandler? TimingPointNearestCursorChanged;
+    public event EventHandler? ContextMenuRequested;
 
     /// <summary>
     /// Allows any class to invoke any event defined in <see cref="GlobalEvents"/>
