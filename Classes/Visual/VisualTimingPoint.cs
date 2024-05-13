@@ -27,10 +27,12 @@ public partial class VisualTimingPoint : Node2D
     private Vector2 sizeDefault = new(128, 128);
     private Vector2 SizeRed => sizeDefault * 1.5f;
     private Vector2 SizeNearestCursor => sizeDefault * 1.3f;
-    private Color defaultColor = new("ff990096");
-    private Color red = new("ff000096");
-    private Color lightUpColor = new("ff990096");
-    private Color selectionColor = new("ab009196");
+    private Color colorDefault = new("ff990096");
+    private Color colorRed = new("ff000096");
+    private Color colorLightup = new("ff990096");
+    private Color colorSelection = new("ab009196");
+    private Color colorNearestCursor = new("ff990096");
+    private Color colorInvisible = new("ff990000");
     private bool isNearestCursor = false;
     private bool isSelected => TimingPointSelection.Instance.IsPointInSelection(TimingPoint);
 
@@ -71,7 +73,7 @@ public partial class VisualTimingPoint : Node2D
         VisibilityChanged += OnVisibilityChanged;
 
         flashTimer.Timeout += OnFlashTimerTimeout;
-        defaultColor = colorRect.Color;
+        colorDefault = colorRect.Color;
         sizeDefault = colorRect.Size;
     }
     
@@ -235,7 +237,7 @@ public partial class VisualTimingPoint : Node2D
     private void UpdateLooks()
     {
         if (!Visible) return;
-        SetColor(isRed ? red : isSelected ? selectionColor : defaultColor);
+        SetColor(isRed ? colorRed : isSelected ? colorSelection : isNearestCursor ? colorNearestCursor : colorInvisible);
         SetSize(isRed ? SizeRed : isNearestCursor ? SizeNearestCursor : sizeDefault);
     }
 
