@@ -21,6 +21,8 @@ public partial class VisualTimingPoint : Node2D
     [Export]
     private ColorRect colorRect = null!;
     [Export]
+    public Line2D OffsetLine = null!;
+    [Export]
     private Timer flashTimer = null!;
     private bool isFlashActive => !flashTimer.IsStopped();
     private bool isRed = false;

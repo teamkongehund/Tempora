@@ -6,12 +6,13 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rj6no"]
 size = Vector2(24.0416, 24.0416)
 
-[node name="VisualTimingPoint" type="Node2D" node_paths=PackedStringArray("area2D", "BpmLabel", "collisionShape2D", "colorRect", "flashTimer")]
+[node name="VisualTimingPoint" type="Node2D" node_paths=PackedStringArray("area2D", "BpmLabel", "collisionShape2D", "colorRect", "OffsetLine", "flashTimer")]
 script = ExtResource("1_es6qk")
 area2D = NodePath("Area2D")
 BpmLabel = NodePath("BPMLabel")
 collisionShape2D = NodePath("Area2D/CollisionShape2D")
 colorRect = NodePath("ColorRect")
+OffsetLine = NodePath("OffsetLine")
 flashTimer = NodePath("FlashTimer")
 
 [node name="ColorRect" type="ColorRect" parent="."]
@@ -77,3 +78,7 @@ anchor = 7
 [node name="FlashTimer" type="Timer" parent="."]
 wait_time = 0.33
 one_shot = true
+
+[node name="OffsetLine" type="Line2D" parent="."]
+width = 5.0
+default_color = Color(1, 0.6, 0, 1)
