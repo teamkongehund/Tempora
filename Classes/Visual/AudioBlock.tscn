@@ -13,7 +13,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 3
 script = ExtResource("1_4j3p3")
-AudioDisplayPanel = NodePath("BlockHBoxContainer/AudioDisplayPanel")
+AudioDisplayPanel = NodePath("BlockHBoxContainer/AudioDisplayMargins/AudioDisplayPanel")
 measureLabel = NodePath("BlockHBoxContainer/LabelHBoxContainer/MeasureLabel")
 timeSignatureLineEdit = NodePath("BlockHBoxContainer/LabelHBoxContainer/TimeSignatureLineEdit")
 
@@ -51,6 +51,12 @@ theme_override_font_sizes/font_size = 12
 alignment = 2
 script = ExtResource("2_agy5w")
 
-[node name="AudioDisplayPanel" parent="BlockHBoxContainer" instance=ExtResource("2_sidll")]
+[node name="AudioDisplayMargins" type="MarginContainer" parent="BlockHBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="AudioDisplayPanel" parent="BlockHBoxContainer/AudioDisplayMargins" instance=ExtResource("2_sidll")]
 layout_mode = 2
 size_flags_horizontal = 3
