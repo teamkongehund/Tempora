@@ -1,11 +1,10 @@
-[gd_scene load_steps=19 format=3 uid="uid://bk0ofb078cvgm"]
+[gd_scene load_steps=18 format=3 uid="uid://bk0ofb078cvgm"]
 
 [ext_resource type="Script" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
 [ext_resource type="AudioStream" uid="uid://clutjafa1rf7f" path="res://Audio/UMO.mp3" id="2_klkb2"]
 [ext_resource type="Script" path="res://Classes/Visual/AudioVisualsContainer.cs" id="3_bj8ok"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/BlockScrollBar.cs" id="5_aqu3i"]
 [ext_resource type="Script" path="res://Classes/Visual/FileMenu.cs" id="5_kcxfp"]
-[ext_resource type="Script" path="res://Classes/Visual/EditMenu.cs" id="5_xwj1j"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/VolumeSlider.cs" id="6_w0n8n"]
 [ext_resource type="Script" path="res://Classes/Visual/OptionsMenu.cs" id="7_1c6ke"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/GridScrollBar.cs" id="7_i2h88"]
@@ -75,15 +74,6 @@ item_3/id = 2
 item_4/text = "Export..."
 item_4/id = 3
 script = ExtResource("5_kcxfp")
-
-[node name="Edit" type="PopupMenu" parent="VSplitContainer/TopMenuHBox/MenuBar" node_paths=PackedStringArray("clearAllConfirmationDialog")]
-title = "Edit"
-theme_override_font_sizes/font_size = 12
-item_count = 1
-item_0/text = "Clear All"
-item_0/id = 0
-script = ExtResource("5_xwj1j")
-clearAllConfirmationDialog = NodePath("../../../../ClearAllConfirmationDialog")
 
 [node name="Options" type="PopupMenu" parent="VSplitContainer/TopMenuHBox/MenuBar"]
 title = "Options"
