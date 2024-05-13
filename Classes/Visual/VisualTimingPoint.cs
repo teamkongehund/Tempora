@@ -29,12 +29,18 @@ public partial class VisualTimingPoint : Node2D
     private Vector2 sizeDefault = new(128, 128);
     private Vector2 SizeRed => sizeDefault * 1.5f;
     private Vector2 SizeNearestCursor => sizeDefault * 1.3f;
-    private Color colorDefault = new("ff990096");
+    private Color rectColorDefault = new("ff990096");
+    private Color rectColorLightup = new("ff990096");
+    private Color rectColorNearestCursor = new("ff990096");
+    private Color rectColorSelection = new("ab009196");
+
     private Color colorRed = new("ff000096");
-    private Color colorLightup = new("ff990096");
-    private Color colorSelection = new("ab009196");
-    private Color colorNearestCursor = new("ff990096");
     private Color colorInvisible = new("ff990000");
+
+    private Color lineColorDefault = new("ff9900");
+    private Color lineColorSelection = new("ab0091");
+    private Color lineColorNearestCursor = new("00d49c");
+
     private bool isNearestCursor = false;
     private bool isSelected => TimingPointSelection.Instance.IsPointInSelection(TimingPoint);
 
@@ -75,8 +81,11 @@ public partial class VisualTimingPoint : Node2D
         VisibilityChanged += OnVisibilityChanged;
 
         flashTimer.Timeout += OnFlashTimerTimeout;
-        colorDefault = colorRect.Color;
+        rectColorDefault = colorRect.Color;
+        lineColorDefault = OffsetLine.DefaultColor;
         sizeDefault = colorRect.Size;
+
+        UpdateLooks();
     }
     
     public override void _Input(InputEvent @event)
@@ -239,21 +248,29 @@ public partial class VisualTimingPoint : Node2D
     private void UpdateLooks()
     {
         if (!Visible) return;
-        SetColor(isRed ? colorRed : isSelected ? colorSelection : isNearestCursor ? colorNearestCursor : colorInvisible);
-        SetSize(isRed ? SizeRed : isNearestCursor ? SizeNearestCursor : sizeDefault);
+        //SetRectColor(isRed ? colorRed : isSelected ? rectColorSelection : isNearestCursor ? rectColorNearestCursor : colorInvisible);
+        //SetRectSize(isRed ? SizeRed : isNearestCursor ? SizeNearestCursor : sizeDefault);
+        SetRectColor(colorInvisible);
+        SetLineColor(isRed ? colorRed : isSelected ? lineColorSelection : isNearestCursor ? lineColorNearestCursor : lineColorDefault);
     }
 
-    private void SetSize(Vector2 size)
+    private void SetRectSize(Vector2 size)
     {
         colorRect.Size = size;
         colorRect.Position = -size / 2;
         colorRect.PivotOffset = size / 2;
     }
 
-    private void SetColor(Color color)
+    private void SetRectColor(Color color)
     {
         if (colorRect.Color == color) return;
         colorRect.Color = color;
     } 
+
+    private void SetLineColor(Color color)
+    {
+        if (OffsetLine.DefaultColor == color) return;
+        OffsetLine.DefaultColor = color;
+    }
     #endregion
 }
