@@ -19,10 +19,10 @@ public partial class GridLine : Line2D
         RelativeMusicPosition = Timing.GetRelativeNotePosition(timeSignature, divisor, index);
         //new ColorConverter();
 
-        DefaultColor = new Color(0.7f, 0, 0, 0.7f);
+        DefaultColor = new Color(0.7f, 0, 0, 1f);
         //DefaultColor = (Godot.Color) converter.ConvertFromString("#FFDFD991");
 
-        Width = 3;
+        Width = 5;
 
         UpdateColor();
     }
@@ -31,7 +31,7 @@ public partial class GridLine : Line2D
     {
         if (RelativeMusicPosition == 0)
         {
-            DefaultColor = new Color(1f, 0, 0, 0.7f);
+            DefaultColor = new Color(1f, 0, 0, 1f);
         }
     }
 }

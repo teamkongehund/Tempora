@@ -495,8 +495,8 @@ public partial class AudioDisplayPanel : Control
         float xPosition = Size.X * ((gridLine.RelativeMusicPosition + measureOffset + margin + offset) / ((2 * margin) + 1f));
         gridLine.Position = new Vector2(xPosition, 0);
         gridLine.Points = [
-            new(0, 0),
-            new(0, Size.Y)
+            new(0, Size.Y*1/4f),
+            new(0, Size.Y*3/4f)
         ];
         gridLine.ZIndex = 90;
 
