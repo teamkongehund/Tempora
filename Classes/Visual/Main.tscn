@@ -75,38 +75,55 @@ item_4/text = "Export..."
 item_4/id = 3
 script = ExtResource("5_kcxfp")
 
-[node name="Options" type="PopupMenu" parent="VSplitContainer/TopMenuHBox/MenuBar"]
+[node name="Options" type="PopupMenu" parent="VSplitContainer/TopMenuHBox/MenuBar" node_paths=PackedStringArray("blockAmountScrollBar", "offsetScrollBar", "overlapScrollBar")]
 title = "Options"
 theme_override_font_sizes/font_size = 12
-item_count = 2
+item_count = 3
 item_0/text = "Time Signature Changes Move Points"
 item_0/checkable = 1
 item_0/id = 0
 item_1/text = "Metronome Follows Grid"
 item_1/checkable = 1
 item_1/id = 1
+item_2/text = "Show All Settings"
+item_2/checkable = 1
+item_2/id = 2
 script = ExtResource("7_1c6ke")
+blockAmountScrollBar = NodePath("../../SettingsHBox/BlockAmountScrollBar")
+offsetScrollBar = NodePath("../../SettingsHBox/OffsetScrollBar")
+overlapScrollBar = NodePath("../../SettingsHBox/OverlapScrollBar")
 
 [node name="SettingsHBox" type="HBoxContainer" parent="VSplitContainer/TopMenuHBox"]
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 20
 
 [node name="GridScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox" instance=ExtResource("8_6ej7c")]
 layout_mode = 2
+size_flags_horizontal = 3
 script = ExtResource("7_i2h88")
 title = "Grid"
 minValue = 1.0
 maxValue = 8.0
 step = 1.0
 
+[node name="HScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox/GridScrollBar" index="1"]
+size_flags_horizontal = 3
+
 [node name="PlaybackRateScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox" instance=ExtResource("8_6ej7c")]
 layout_mode = 2
+size_flags_horizontal = 3
 script = ExtResource("8_6jrsb")
 title = "Playback"
 minValue = 0.1
 
+[node name="HScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox/PlaybackRateScrollBar" index="1"]
+size_flags_horizontal = 3
+
 [node name="BlockAmountScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox" instance=ExtResource("8_6ej7c")]
+visible = false
 layout_mode = 2
+size_flags_horizontal = 3
 script = ExtResource("9_22ufa")
 title = "Rows"
 minValue = 1.0
@@ -114,14 +131,18 @@ maxValue = 25.0
 step = 1.0
 
 [node name="OffsetScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox" instance=ExtResource("8_6ej7c")]
+visible = false
 layout_mode = 2
+size_flags_horizontal = 3
 script = ExtResource("10_yfm4l")
 title = "Offset"
 maxValue = 0.5
 step = 0.025
 
 [node name="OverlapScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox" instance=ExtResource("8_6ej7c")]
+visible = false
 layout_mode = 2
+size_flags_horizontal = 3
 script = ExtResource("13_wubaw")
 title = "Overlap"
 maxValue = 0.25
@@ -311,3 +332,6 @@ access = 2
 
 [node name="ContextMenu" type="PopupMenu" parent="."]
 script = ExtResource("18_ra0tt")
+
+[editable path="VSplitContainer/TopMenuHBox/SettingsHBox/GridScrollBar"]
+[editable path="VSplitContainer/TopMenuHBox/SettingsHBox/PlaybackRateScrollBar"]

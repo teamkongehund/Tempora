@@ -6,8 +6,15 @@ namespace Tempora.Classes.Visual;
 
 public partial class OptionsMenu : PopupMenu
 {
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
+    [Export]
+    private Control blockAmountScrollBar = null!;
+    [Export]
+    private Control offsetScrollBar = null!;
+    [Export]
+    private Control overlapScrollBar = null!;
+
+    // Called when the node enters the scene tree for the first time.
+    public override void _Ready()
     {
         IdPressed += OnIdPressed;
         SetItemChecked(0, Settings.Instance.MoveSubsequentTimingPointsWhenChangingTimeSignature);
@@ -16,6 +23,7 @@ public partial class OptionsMenu : PopupMenu
 
     int id_PreserveBpm = 0;
     int id_MetronopmeFollowsGrid = 1;
+    int id_MoreSettings = 2;
 
     private void OnIdPressed(long id)
     {
@@ -29,6 +37,10 @@ public partial class OptionsMenu : PopupMenu
                 ToggleCheckBox(id_MetronopmeFollowsGrid, out newStatus);
                 Settings.Instance.MetronomeFollowsGrid = newStatus;
                 break;
+            case var expression when (id == id_MoreSettings):
+                ToggleCheckBox(id_MoreSettings, out newStatus);
+                ShowHideMoreSettings(newStatus);
+                break;
         }
     }
 
@@ -38,5 +50,12 @@ public partial class OptionsMenu : PopupMenu
         bool isChecked = IsItemChecked(index);
         SetItemChecked(index, !isChecked);
         newStatus = IsItemChecked(index);
+    }
+
+    private void ShowHideMoreSettings(bool visible)
+    {
+        blockAmountScrollBar.Visible = visible;
+        offsetScrollBar.Visible = visible;
+        overlapScrollBar.Visible = visible;
     }
 }
