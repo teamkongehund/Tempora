@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using GD = Tempora.Classes.DataHelpers.GD;
 
 public partial class ControlOriginComponent : Node
 {
@@ -32,10 +33,13 @@ public partial class ControlOriginComponent : Node
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-        //targetControl.Resized += AdjustTransform;
-        targetControl.ItemRectChanged += OnItemRectChanged;
-        AdjustTransform();
+        GetViewport().Ready += OnTreeReady;
 	}
+
+    private void OnTreeReady()
+    {
+        targetControl.ItemRectChanged += OnItemRectChanged;
+    }
 
     private void OnItemRectChanged()
     {
@@ -58,6 +62,7 @@ public partial class ControlOriginComponent : Node
         float scaleY = GetYMultiplier(anchor);
         var positionOffset = new Vector2(targetControl.Size.X * scaleX, targetControl.Size.Y * scaleY);
         modifiedPosition = positionOffset + anchorPosition;
+        GD.Print($"Changed control from {targetControl.Position} to {modifiedPosition}");
         targetControl.Position = modifiedPosition;
         targetControl.PivotOffset = -positionOffset;
     }

@@ -432,6 +432,7 @@ public partial class AudioDisplayPanel : Control
             visualTimingPoint.TimingPoint = timingPoint;
             visualTimingPoint.Position = new Vector2(x, Size.Y / 2);
             visualTimingPoint.BpmLabel.Position = new Vector2(0, -Size.Y / 2);
+            visualTimingPoint.BpmLabel.Position = new Vector2(0, -Size.Y / 2); // Godot fucks shit up if we don't do this twice.
             visualTimingPoint.OffsetLine.Points = [
                 new(0, -Size.Y * 1 / 4f),
                 new(0, Size.Y * 1 / 4f)
