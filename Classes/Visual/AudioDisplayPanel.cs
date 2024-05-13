@@ -177,6 +177,7 @@ public partial class AudioDisplayPanel : Control
 
     public override void _Input(InputEvent @event)
     {
+        if (!Visible) return;
         switch (@event)
         {
             case InputEventKey { Keycode: Key.Shift }:
