@@ -435,6 +435,7 @@ public partial class AudioDisplayPanel : Control
                 new(0, -Size.Y * 1 / 4f),
                 new(0, Size.Y * 1 / 4f)
             ];
+            visualTimingPoint.LineDefaultHeight = Size.Y * 1 / 2f;
             visualTimingPoint.UpdateLabels(timingPoint);
             visualTimingPoint.Visible = true;
             index++;

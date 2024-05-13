@@ -4,6 +4,7 @@ using Godot;
 using GD = Tempora.Classes.DataHelpers.GD;
 using Tempora.Classes.Utility;
 using Tempora.Classes.TimingClasses;
+//using System.Drawing;
 
 namespace Tempora.Classes.Visual;
 
@@ -27,19 +28,28 @@ public partial class VisualTimingPoint : Node2D
     private bool isFlashActive => !flashTimer.IsStopped();
     private bool isRed = false;
     private Vector2 sizeDefault = new(128, 128);
-    private Vector2 SizeRed => sizeDefault * 1.5f;
-    private Vector2 SizeNearestCursor => sizeDefault * 1.3f;
+    private Vector2 rectSizeRed => sizeDefault * 1.5f;
+    private Vector2 rectSizeNearestCursor => sizeDefault * 1.3f;
     private Color rectColorDefault = new("ff990096");
     private Color rectColorLightup = new("ff990096");
     private Color rectColorNearestCursor = new("ff990096");
     private Color rectColorSelection = new("ab009196");
+    private Color rectColorRed = new("ff000096");
 
-    private Color colorRed = new("ff000096");
     private Color colorInvisible = new("ff990000");
 
+    private Color lineColorRed = new("ff0000");
     private Color lineColorDefault = new("ff9900");
     private Color lineColorSelection = new("ab0091");
-    private Color lineColorNearestCursor = new("00d49c");
+    //private Color lineColorNearestCursor = new("00d49c");
+    private Color lineColorNearestCursor = new("ff9900");
+
+    public float LineDefaultHeight = 0;
+    private float lineDefaultWidth = 5;
+
+    private float lineSizeRed = 2;
+    private float lineSizeNearedCursor = 1.3f;
+    private float lineSizeDefault = 1;
 
     private bool isNearestCursor = false;
     private bool isSelected => TimingPointSelection.Instance.IsPointInSelection(TimingPoint);
@@ -85,7 +95,7 @@ public partial class VisualTimingPoint : Node2D
         lineColorDefault = OffsetLine.DefaultColor;
         sizeDefault = colorRect.Size;
 
-        UpdateLooks();
+        lineDefaultWidth = OffsetLine.Width;
     }
     
     public override void _Input(InputEvent @event)
@@ -249,9 +259,10 @@ public partial class VisualTimingPoint : Node2D
     {
         if (!Visible) return;
         //SetRectColor(isRed ? colorRed : isSelected ? rectColorSelection : isNearestCursor ? rectColorNearestCursor : colorInvisible);
-        //SetRectSize(isRed ? SizeRed : isNearestCursor ? SizeNearestCursor : sizeDefault);
+        //SetRectSize(isRed ? rectSizeRed : isNearestCursor ? rectSizeNearestCursor : sizeDefault);
         SetRectColor(colorInvisible);
-        SetLineColor(isRed ? colorRed : isSelected ? lineColorSelection : isNearestCursor ? lineColorNearestCursor : lineColorDefault);
+        SetLineColor(isRed ? lineColorRed : isSelected ? lineColorSelection : isNearestCursor ? lineColorNearestCursor : lineColorDefault);
+        SetLineSize(isRed ? lineSizeRed : isNearestCursor ? lineSizeNearedCursor : lineSizeDefault);
     }
 
     private void SetRectSize(Vector2 size)
@@ -259,6 +270,17 @@ public partial class VisualTimingPoint : Node2D
         colorRect.Size = size;
         colorRect.Position = -size / 2;
         colorRect.PivotOffset = size / 2;
+    }
+
+    private void SetLineSize(float multiplier)
+    {
+        if (OffsetLine.Points.Length == 0)
+            return;
+        OffsetLine.Points = [
+                new(0, -LineDefaultHeight / 2 * multiplier),
+                new(0, LineDefaultHeight / 2 * multiplier)
+            ];
+        OffsetLine.Width = lineDefaultWidth * multiplier;
     }
 
     private void SetRectColor(Color color)
