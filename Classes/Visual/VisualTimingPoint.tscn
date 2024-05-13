@@ -1,16 +1,16 @@
-[gd_scene load_steps=3 format=3 uid="uid://b8325rmwu4cpb"]
+[gd_scene load_steps=4 format=3 uid="uid://b8325rmwu4cpb"]
 
 [ext_resource type="Script" path="res://Classes/Visual/VisualTimingPoint.cs" id="1_es6qk"]
+[ext_resource type="PackedScene" uid="uid://c5ghoqiqusvkk" path="res://Classes/Visual/Components/ControlOriginComponent.tscn" id="2_uv85o"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rj6no"]
-size = Vector2(128, 128)
+size = Vector2(24.0416, 24.0416)
 
-[node name="VisualTimingPoint" type="Node2D" node_paths=PackedStringArray("area2D", "bpmLabel", "collisionShape2D", "numberLabel", "colorRect", "flashTimer")]
+[node name="VisualTimingPoint" type="Node2D" node_paths=PackedStringArray("area2D", "BpmLabel", "collisionShape2D", "colorRect", "flashTimer")]
 script = ExtResource("1_es6qk")
 area2D = NodePath("Area2D")
-bpmLabel = NodePath("BPMLabel")
+BpmLabel = NodePath("BPMLabel")
 collisionShape2D = NodePath("Area2D/CollisionShape2D")
-numberLabel = NodePath("NumberLabel")
 colorRect = NodePath("ColorRect")
 flashTimer = NodePath("FlashTimer")
 
@@ -20,14 +20,14 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -64.0
-offset_top = -64.0
-offset_right = 64.0
-offset_bottom = 64.0
+offset_left = -12.0
+offset_top = -12.0
+offset_right = 12.0
+offset_bottom = 12.0
 grow_horizontal = 2
 grow_vertical = 2
 rotation = 0.785398
-pivot_offset = Vector2(64, 64)
+pivot_offset = Vector2(12, 12)
 mouse_filter = 2
 color = Color(1, 0.6, 0, 0.588235)
 
@@ -35,6 +35,7 @@ color = Color(1, 0.6, 0, 0.588235)
 rotation = 0.785398
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(-1.3487e-06, 1.3487e-06)
 shape = SubResource("RectangleShape2D_rj6no")
 
 [node name="NumberLabel" type="Label" parent="."]
@@ -57,19 +58,21 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -160.5
-offset_top = -48.0
-offset_right = 160.5
-offset_bottom = 48.0
+offset_right = 1.0
+offset_bottom = 96.0
 grow_horizontal = 2
 grow_vertical = 2
-size_flags_horizontal = 4
+scale = Vector2(0.2, 0.2)
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 30
 theme_override_font_sizes/font_size = 70
 horizontal_alignment = 1
-vertical_alignment = 1
+vertical_alignment = 2
+
+[node name="ControlOriginComponent" parent="BPMLabel" node_paths=PackedStringArray("targetControl") instance=ExtResource("2_uv85o")]
+targetControl = NodePath("..")
+anchor = 7
 
 [node name="FlashTimer" type="Timer" parent="."]
 wait_time = 0.33

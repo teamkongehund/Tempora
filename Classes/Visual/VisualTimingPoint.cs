@@ -13,11 +13,11 @@ public partial class VisualTimingPoint : Node2D
     [Export]
     private Area2D area2D = null!;
     [Export]
-    private Label bpmLabel = null!;
+    public Label BpmLabel = null!;
     [Export]
     private CollisionShape2D collisionShape2D = null!;
-    [Export]
-    private Label numberLabel = null!;
+    //[Export]
+    //private Label numberLabel = null!;
     [Export]
     private ColorRect colorRect = null!;
     [Export]
@@ -55,8 +55,8 @@ public partial class VisualTimingPoint : Node2D
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        numberLabel.Text = Timing.Instance.TimingPoints.IndexOf(TimingPoint).ToString();
-        bpmLabel.Text = TimingPoint.Bpm.ToString("0.00");
+        //numberLabel.Text = Timing.Instance.TimingPoints.IndexOf(TimingPoint).ToString();
+        BpmLabel.Text = TimingPoint.Bpm.ToString("0.00");
 
         //SystemTimeWhenCreated = Time.GetTicksMsec();
 
@@ -153,8 +153,8 @@ public partial class VisualTimingPoint : Node2D
     #region Timing Changes
     public void UpdateLabels(TimingPoint timingPoint)
     {
-        numberLabel.Text = Timing.Instance.TimingPoints.IndexOf(timingPoint).ToString();
-        bpmLabel.Text = timingPoint.Bpm.ToString("0.00");
+        //numberLabel.Text = Timing.Instance.TimingPoints.IndexOf(timingPoint).ToString();
+        BpmLabel.Text = timingPoint.Bpm.ToString("0.00");
     }
 
     private void DeleteTimingPoint()

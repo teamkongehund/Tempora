@@ -382,7 +382,7 @@ public partial class AudioDisplayPanel : Control
         visualTimingPoint = (VisualTimingPoint)instantiatedVisualTimingPoint;
 
         visualTimingPoint.Visible = false;
-        visualTimingPoint.Scale = new Vector2(0.2f, 0.2f);
+        //visualTimingPoint.Scale = new Vector2(0.2f, 0.2f);
         visualTimingPoint.ZIndex = 95;
         visualTimingPoint.TimingPoint = timingPoint;
         VisualTimingPointFolder.AddChild(visualTimingPoint);
@@ -430,6 +430,7 @@ public partial class AudioDisplayPanel : Control
             float x = MusicPositionToXPosition((float)timingPoint.MusicPosition);
             visualTimingPoint.TimingPoint = timingPoint;
             visualTimingPoint.Position = new Vector2(x, Size.Y / 2);
+            visualTimingPoint.BpmLabel.Position = new Vector2(0, -Size.Y / 2);
             visualTimingPoint.UpdateLabels(timingPoint);
             visualTimingPoint.Visible = true;
             index++;
