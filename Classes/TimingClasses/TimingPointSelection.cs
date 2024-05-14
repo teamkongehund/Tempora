@@ -21,7 +21,7 @@ public partial class TimingPointSelection : Node
 
         GlobalEvents.Instance.TimingPointCountChanged += OnTimingPointCountChanged;
     }
-    public override void _Input(InputEvent inputEvent)
+    public override void _UnhandledKeyInput(InputEvent inputEvent)
     {
         switch (inputEvent)
         {
