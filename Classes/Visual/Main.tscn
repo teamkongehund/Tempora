@@ -53,7 +53,6 @@ grow_vertical = 2
 
 [node name="TopMenuHBox" type="HBoxContainer" parent="VSplitContainer"]
 layout_mode = 2
-theme_override_constants/separation = 30
 
 [node name="MenuBar" type="MenuBar" parent="VSplitContainer/TopMenuHBox"]
 layout_mode = 2
@@ -96,7 +95,6 @@ overlapScrollBar = NodePath("../../SettingsHBox/OverlapScrollBar")
 [node name="SettingsHBox" type="HBoxContainer" parent="VSplitContainer/TopMenuHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 20
 
 [node name="GridScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox" instance=ExtResource("8_6ej7c")]
 layout_mode = 2
@@ -230,6 +228,11 @@ theme_override_font_sizes/font_size = 12
 text = "Master"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Button" type="Button" parent="VSplitContainer/TopMenuHBox"]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+text = "?"
 
 [node name="AudioMainHSplitContainer" type="HSplitContainer" parent="VSplitContainer"]
 layout_mode = 2
