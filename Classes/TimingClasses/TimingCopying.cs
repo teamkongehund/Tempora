@@ -10,6 +10,7 @@ public partial class Timing
     public static Timing CopyAndAddExtraPoints(Timing timing, AudioFile audioFile)
     {
         var newTiming = CopyTiming(timing);
+        RemovePointsThatChangeNothing(newTiming, out newTiming);
         AddExtraPointsOnDownbeats(newTiming, out newTiming);
         AddExtraPointsOnQuarterNotes(newTiming, out newTiming);
         AddExtraPointsOn8thSignatures(newTiming, out newTiming, audioFile);
@@ -100,6 +101,29 @@ public partial class Timing
                 continue;
 
             newTiming.AddTimingPoint(measure);
+        }
+    }
+
+    private static void RemovePointsThatChangeNothing(Timing timing, out Timing newTiming)
+    {
+        newTiming = timing;
+
+        var pointsToDelete = new List<TimingPoint>();
+
+        foreach(TimingPoint timingPoint in newTiming.TimingPoints)
+        {
+            var previous = newTiming.GetPreviousTimingPoint(timingPoint);
+            bool mpsIsSame = previous?.MeasuresPerSecond == timingPoint.MeasuresPerSecond;
+            bool ts0IsSame = previous?.TimeSignature[0] == timingPoint.TimeSignature[0];
+            bool ts1IsSame = previous?.TimeSignature[1] == timingPoint.TimeSignature[1];
+
+            if (mpsIsSame && ts0IsSame && ts1IsSame)
+                pointsToDelete.Add(timingPoint);
+        }
+
+        foreach(TimingPoint timingPoint in pointsToDelete)
+        {
+            newTiming.DeleteTimingPoint(timingPoint);
         }
     }
 
