@@ -545,8 +545,8 @@ public partial class AudioDisplayPanel : Control
     public void UpdatePreviewLineScaling()
     {
         PreviewLine.Points = [
-            new(0, 0),
-            new(0, Size.Y)
+            new(0, Size.Y/4f),
+            new(0, Size.Y*3/4f)
         ];
     }
 

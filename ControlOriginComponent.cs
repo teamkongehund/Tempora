@@ -62,7 +62,7 @@ public partial class ControlOriginComponent : Node
         float scaleY = GetYMultiplier(anchor);
         var positionOffset = new Vector2(targetControl.Size.X * scaleX, targetControl.Size.Y * scaleY);
         modifiedPosition = positionOffset + anchorPosition;
-        GD.Print($"Changed control from {targetControl.Position} to {modifiedPosition}");
+        //GD.Print($"Changed control from {targetControl.Position} to {modifiedPosition}");
         targetControl.Position = modifiedPosition;
         targetControl.PivotOffset = -positionOffset;
     }
