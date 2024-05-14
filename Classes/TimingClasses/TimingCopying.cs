@@ -58,8 +58,11 @@ public partial class Timing
             TimingPoint? nextTimingPoint = newTiming.GetNextTimingPoint(timingPoint);
             float? nextPointPosition = nextTimingPoint?.MusicPosition;
 
-            float epsilon = 0.00001f;
-            bool isOnQuarterNote = (timingPoint.MusicPosition % beatLength < epsilon || (beatLength - timingPoint.MusicPosition % beatLength) < epsilon);
+            //float epsilon = 0.00001f;
+            //bool isOnQuarterNote = (timingPoint.MusicPosition % beatLength < epsilon || (beatLength - timingPoint.MusicPosition % beatLength) < epsilon);
+
+            bool isOnQuarterNote = IsPositionOnDivisor((float)timingPoint.MusicPosition, timingPoint.TimeSignature, 4);
+
             bool nextPointIsOnOrBeforeNextQuarterNote = (nextTimingPoint != null
                 && nextPointPosition <= beatPosition + beatLength);
             if (isOnQuarterNote || nextPointIsOnOrBeforeNextQuarterNote)

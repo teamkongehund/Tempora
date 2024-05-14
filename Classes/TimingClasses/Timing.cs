@@ -130,6 +130,39 @@ public partial class Timing : Node, IMementoOriginator
         return time;
     }
     
+    /// <summary>
+    /// Checks whether a music position division (defined by a divisor and an index) is divisible by a different divisor.
+    /// Example: (divisor = 12, index = 7, otherIndex = 4) should return true because the 7th 12th note has the same relative music position as the 2nd 4th note.
+    /// </summary>
+    /// <param name="otherDivisor"></param>
+    /// <param name="index"></param>
+    /// <param name="divisor"></param>
+    /// <returns></returns>
+    public static bool IsDivisionOnDivisor(int divisor, int index, int otherDivisor)
+    {
+        int[] timeSignature = [4,4]; // The time signature doesn't matter in this case.
+        float relativePosition = GetRelativeNotePosition(timeSignature, divisor, index);
+
+        return IsPositionOnDivisor(relativePosition, timeSignature, otherDivisor);
+    }
+
+    /// <summary>
+    /// Checks whether a music position is divisible by a different divisor for a given time signature.
+    /// Example: For a 4/4 time signature, music position 0.5 and divisor 4 should return true, as that position is on the 3rd quarter note.
+    /// </summary>
+    /// <param name="musicPosition"></param>
+    /// <param name="timeSignature"></param>
+    /// <param name="divisor"></param>
+    /// <returns></returns>
+    public static bool IsPositionOnDivisor(float musicPosition, int[] timeSignature, int divisor)
+    {
+        float divisorLength = GetRelativeNotePosition(timeSignature, divisor, 1);
+
+        float epsilon = 0.00001f;
+        bool isDivisible = (musicPosition % divisorLength < epsilon || (divisorLength - musicPosition % divisorLength) < epsilon);
+
+        return isDivisible;
+    }
     #endregion
 
 }

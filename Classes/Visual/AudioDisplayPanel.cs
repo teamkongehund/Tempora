@@ -495,16 +495,12 @@ public partial class AudioDisplayPanel : Control
 
     public GridLine GetGridLine(int[] timeSignature, int divisor, int index, int measureOffset)
     {
-        var gridLine = new GridLine(timeSignature, divisor, index);
+        var gridLine = new GridLine(timeSignature, divisor, index, Size.Y);
 
         float offset = Settings.Instance.MusicPositionOffset;
         float margin = Settings.Instance.MusicPositionMargin;
         float xPosition = Size.X * ((gridLine.RelativeMusicPosition + measureOffset + margin + offset) / ((2 * margin) + 1f));
-        gridLine.Position = new Vector2(xPosition, 0);
-        gridLine.Points = [
-            new(0, Size.Y*1/4f),
-            new(0, Size.Y*3/4f)
-        ];
+        gridLine.Position = new Vector2(xPosition, Size.Y/2);
         gridLine.ZIndex = 90;
 
         return gridLine;
