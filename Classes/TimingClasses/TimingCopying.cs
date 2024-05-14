@@ -2,15 +2,17 @@
 using System;
 using Tempora.Classes.DataHelpers;
 using Tempora.Classes.Utility;
+using Tempora.Classes.Audio;
 
 namespace Tempora.Classes.TimingClasses;
 public partial class Timing
 {
-    public static Timing CopyAndAddExtraPoints(Timing timing)
+    public static Timing CopyAndAddExtraPoints(Timing timing, AudioFile audioFile)
     {
         var newTiming = CopyTiming(timing);
         AddExtraPointsOnDownbeats(newTiming, out newTiming);
         AddExtraPointsOnQuarterNotes(newTiming, out newTiming);
+        AddExtraPointsOn8thSignatures(newTiming, out newTiming, audioFile);
         return newTiming;
     }
 
@@ -75,6 +77,29 @@ public partial class Timing
             //float time = newTiming.MusicPositionToTime(quarterNote);
             //newTiming.AddTimingPoint(quarterNote, time);
             newTiming.AddTimingPoint(quarterNote);
+        }
+    }
+
+    private static void AddExtraPointsOn8thSignatures(Timing timing, out Timing newTiming, AudioFile audioFile)
+    {
+        newTiming = timing;
+
+        // Maybe add exceptions later like 4/8 and 8/8 
+
+        int firstMeasure = (int)newTiming.TimeToMusicPosition(0f);
+        int lastMeasure = (int)newTiming.TimeToMusicPosition((float)audioFile.Stream.GetLength());
+
+        for (int measure = firstMeasure;  measure < lastMeasure + 1; measure++)
+        {
+            int[] timeSignature = newTiming.GetTimeSignature(measure);
+            if (timeSignature[1] == 4) continue;
+
+            TimingPoint? operatingPoint = newTiming.GetOperatingTimingPoint_ByMusicPosition(measure);
+
+            if (operatingPoint?.MusicPosition == measure)
+                continue;
+
+            newTiming.AddTimingPoint(measure);
         }
     }
 

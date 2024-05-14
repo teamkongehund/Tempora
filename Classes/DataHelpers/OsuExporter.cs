@@ -74,7 +74,7 @@ SliderTickRate:1
 
     public static string GetDotOsu(Timing timing, AudioFile audioFile)
     {
-        var newTiming = Timing.CopyAndAddExtraPoints(timing);
+        var newTiming = Timing.CopyAndAddExtraPoints(timing, audioFile);
         List<TimingPoint> timingPoints = newTiming.TimingPoints;
         string timingPointsData = TimingPointToText(timingPoints);
         string extension = audioFile.Extension;

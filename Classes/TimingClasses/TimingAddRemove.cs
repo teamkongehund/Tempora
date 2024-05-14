@@ -42,7 +42,7 @@ public partial class Timing
     }
 
     /// <summary>
-    /// Add a timing point and decude time and MPS from other Timing Points. Useful for adding extra points on downbeats and quarter notes.
+    /// Add a timing point and deduce time and MPS from other Timing Points. Useful for adding extra points on downbeats and quarter notes.
     /// This method should not be accessible from the GUI.
     /// </summary>
     /// <param name="musicPosition"></param>
