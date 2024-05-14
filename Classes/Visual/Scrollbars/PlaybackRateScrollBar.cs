@@ -14,7 +14,7 @@ public partial class PlaybackRateScrollBar : LabeledScrollbarHorizontal
         MusicPlayer.Instance.PitchScaleChanged += OnPitchScaleChanged;
     }
 
-    protected override void UpdateLabel() => valueLabel.Text = (hScrollBar.Value * 100).ToString("0") + " %";
+    protected override void UpdateValueLabel() => valueLabel.Text = (hScrollBar.Value * 100).ToString("0") + " %";
 
     protected override void UpdateTarget()
     {
@@ -31,6 +31,6 @@ public partial class PlaybackRateScrollBar : LabeledScrollbarHorizontal
     private void UpdateValue(double pitchScale)
     {
         hScrollBar.Value = pitchScale;
-        UpdateLabel();
+        UpdateValueLabel();
     }
 }

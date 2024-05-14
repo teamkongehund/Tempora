@@ -9,7 +9,7 @@
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/VolumeSlider.cs" id="6_w0n8n"]
 [ext_resource type="Script" path="res://Classes/Visual/OptionsMenu.cs" id="7_1c6ke"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/GridScrollBar.cs" id="7_i2h88"]
-[ext_resource type="PackedScene" path="res://Classes/Visual/Scrollbars/LabeledScrollbarHorizontal.tscn" id="8_6ej7c"]
+[ext_resource type="PackedScene" uid="uid://dy4lywdntdohe" path="res://Classes/Visual/Scrollbars/LabeledScrollbarHorizontal.tscn" id="8_6ej7c"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/PlaybackRateScrollBar.cs" id="8_6jrsb"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/BlockAmountScrollBar.cs" id="9_22ufa"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/OffsetScrollBar.cs" id="10_yfm4l"]
@@ -107,6 +107,7 @@ offsetScrollBar = NodePath("../../SettingsHBox/OffsetScrollBar")
 overlapScrollBar = NodePath("../../SettingsHBox/OverlapScrollBar")
 
 [node name="MenuBar" type="MenuBar" parent="VSplitContainer/TopMenuHBox"]
+visible = false
 layout_mode = 2
 theme_override_constants/outline_size = 0
 theme_override_font_sizes/font_size = 12
@@ -119,29 +120,26 @@ size_flags_horizontal = 3
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("7_i2h88")
+showTitleInside = true
 title = "Grid"
 minValue = 1.0
 maxValue = 8.0
 step = 1.0
 
-[node name="HScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox/GridScrollBar" index="1"]
-size_flags_horizontal = 3
-
 [node name="PlaybackRateScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox" instance=ExtResource("8_6ej7c")]
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("8_6jrsb")
+showTitleInside = true
 title = "Playback"
 minValue = 0.1
-
-[node name="HScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox/PlaybackRateScrollBar" index="1"]
-size_flags_horizontal = 3
 
 [node name="BlockAmountScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox" instance=ExtResource("8_6ej7c")]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("9_22ufa")
+showTitleInside = true
 title = "Rows"
 minValue = 1.0
 maxValue = 25.0
@@ -152,6 +150,7 @@ visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("10_yfm4l")
+showTitleInside = true
 title = "Offset"
 maxValue = 0.5
 step = 0.025
@@ -161,6 +160,7 @@ visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("13_wubaw")
+showTitleInside = true
 title = "Overlap"
 maxValue = 0.25
 
