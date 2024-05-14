@@ -32,7 +32,7 @@ public partial class TimingPointSelection : Node
             case InputEventKey keyEvent:
                 if (keyEvent.Keycode == Key.A && keyEvent.Pressed && Input.IsKeyPressed(Key.Ctrl))
                     Select(0, timing.TimingPoints.Count - 1);
-                else if (keyEvent.Keycode == Key.Delete || keyEvent.Keycode == Key.Backspace)
+                else if ((keyEvent.Keycode == Key.Delete || keyEvent.Keycode == Key.Backspace) && keyEvent.Pressed)
                     DeleteSelection();
                 break;
         }
