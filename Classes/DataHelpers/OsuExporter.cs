@@ -128,11 +128,10 @@ SliderTickRate:1
         zipPacker.WriteFile(dotOsuString.ToUtf8Buffer());
         zipPacker.CloseFile();
 
-        //zipPacker.StartFile("audio.mp3");
-        //zipPacker.WriteFile(audioStreamMP3.Data);
-
         zipPacker.StartFile($"audio{audioFile.Extension}");
-        byte[] fileBuffer = FileHandler.GetFileAsBuffer(audioFile.AudioPath);
+        byte[] fileBuffer = (audioFile.Extension == ".mp3")
+            ? ((AudioStreamMP3)audioFile.Stream).Data
+            : FileHandler.GetFileAsBuffer(audioFile.AudioPath);
         zipPacker.WriteFile(fileBuffer);
 
         zipPacker.CloseFile();
