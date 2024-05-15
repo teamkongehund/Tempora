@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://c5ghoqiqusvkk"]
 
-[ext_resource type="Script" path="res://ControlOriginComponent.cs" id="1_u56vd"]
+[ext_resource type="Script" path="res://Classes/Visual/Components/ControlOriginComponent.cs" id="1_u56vd"]
 
 [node name="ControlOriginComponent" type="Node"]
 script = ExtResource("1_u56vd")

@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://xf0kngdc5d36"]
 
-[ext_resource type="Script" path="res://Classes/Visual/AudioDisplayPanel.cs" id="1_oemdp"]
-[ext_resource type="PackedScene" uid="uid://b8325rmwu4cpb" path="res://Classes/Visual/VisualTimingPoint.tscn" id="2_dx65v"]
-[ext_resource type="Script" path="res://Classes/Visual/PreviewLine.cs" id="2_lfylv"]
+[ext_resource type="Script" path="res://Classes/Visual/AudioDisplay/AudioDisplayPanel.cs" id="1_oemdp"]
+[ext_resource type="PackedScene" uid="uid://b8325rmwu4cpb" path="res://Classes/Visual/TimingDisplay/VisualTimingPoint.tscn" id="2_rbe4s"]
+[ext_resource type="Script" path="res://Classes/Visual/TimingDisplay/PreviewLine.cs" id="3_v3ucu"]
 
 [node name="AudioDisplayPanel" type="Control" node_paths=PackedStringArray("Playhead", "waveformSegments", "VisualTimingPointFolder", "GridFolder", "PreviewLine", "SelectedPositionLine", "VisualSelector")]
 layout_mode = 3
@@ -20,7 +20,7 @@ GridFolder = NodePath("GridFolder")
 PreviewLine = NodePath("PreviewLine")
 SelectedPositionLine = NodePath("SelectedPositionLine")
 VisualSelector = NodePath("VisualSelector")
-packedVisualTimingPoint = ExtResource("2_dx65v")
+packedVisualTimingPoint = ExtResource("2_rbe4s")
 
 [node name="WaveformSegments" type="Node2D" parent="."]
 
@@ -36,7 +36,7 @@ default_color = Color(0.839216, 0, 0.635294, 1)
 visible = false
 width = 3.0
 default_color = Color(0.541176, 0, 0.407843, 1)
-script = ExtResource("2_lfylv")
+script = ExtResource("3_v3ucu")
 TimeLabel = NodePath("TimeLabel")
 
 [node name="TimeLabel" type="Label" parent="PreviewLine"]

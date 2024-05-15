@@ -1,13 +1,13 @@
 [gd_scene load_steps=4 format=3 uid="uid://b8325rmwu4cpb"]
 
-[ext_resource type="Script" path="res://Classes/Visual/VisualTimingPoint.cs" id="1_es6qk"]
-[ext_resource type="PackedScene" uid="uid://c5ghoqiqusvkk" path="res://Classes/Visual/Components/ControlOriginComponent.tscn" id="2_uv85o"]
+[ext_resource type="Script" path="res://Classes/Visual/TimingDisplay/VisualTimingPoint.cs" id="1_3rehq"]
+[ext_resource type="PackedScene" uid="uid://c5ghoqiqusvkk" path="res://Classes/Visual/Components/ControlOriginComponent.tscn" id="2_igj6l"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rj6no"]
 size = Vector2(24.0416, 24.0416)
 
 [node name="VisualTimingPoint" type="Node2D" node_paths=PackedStringArray("area2D", "BpmLabel", "collisionShape2D", "colorRect", "OffsetLine", "flashTimer")]
-script = ExtResource("1_es6qk")
+script = ExtResource("1_3rehq")
 area2D = NodePath("Area2D")
 BpmLabel = NodePath("BPMLabel")
 collisionShape2D = NodePath("Area2D/CollisionShape2D")
@@ -71,7 +71,7 @@ theme_override_font_sizes/font_size = 70
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="ControlOriginComponent" parent="BPMLabel" node_paths=PackedStringArray("targetControl") instance=ExtResource("2_uv85o")]
+[node name="ControlOriginComponent" parent="BPMLabel" node_paths=PackedStringArray("targetControl") instance=ExtResource("2_igj6l")]
 targetControl = NodePath("..")
 anchor = 7
 
