@@ -33,13 +33,18 @@ public partial class Metronome : Node
     private int metronomeSampleRate;
     private Vector2[] click2Cache = null!;
 
+    //private string click1Path = "res://Audio/Click1.wav";
+    //private string click2Path = "res://Audio/Click2.wav";
+    private string click1Path = "res://Audio/Stick1.wav";
+    private string click2Path = "res://Audio/Stick2.wav";
+
     #region Godot
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        click1Cache = CacheWavFile("res://Audio/Click1.wav");
-        metronomeSampleRate = GetSampleRate("res://Audio/Click1.wav");
-        click2Cache = CacheWavFile("res://Audio/Click2.wav");
+        click1Cache = CacheWavFile(click1Path);
+        metronomeSampleRate = GetSampleRate(click1Path);
+        click2Cache = CacheWavFile(click2Path);
 
         audioStreamGenerator = new AudioStreamGenerator { BufferLength = bufferLength, MixRate = metronomeSampleRate };
         audioStreamPlayer = new AudioStreamPlayer
