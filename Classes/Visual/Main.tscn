@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://bk0ofb078cvgm"]
+[gd_scene load_steps=20 format=3 uid="uid://bk0ofb078cvgm"]
 
 [ext_resource type="Script" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
 [ext_resource type="AudioStream" uid="uid://clutjafa1rf7f" path="res://Audio/UMO.mp3" id="2_klkb2"]
@@ -13,6 +13,7 @@
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/PlaybackRateScrollBar.cs" id="8_6jrsb"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/BlockAmountScrollBar.cs" id="9_22ufa"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/OffsetScrollBar.cs" id="10_yfm4l"]
+[ext_resource type="Script" path="res://Classes/Visual/Buttons/HelpButton.cs" id="13_v1cca"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/OverlapScrollBar.cs" id="13_wubaw"]
 [ext_resource type="Script" path="res://Classes/Visual/VersionLabel.cs" id="16_j6b0h"]
 [ext_resource type="PackedScene" uid="uid://bac4n7j15cns7" path="res://Classes/Visual/AudioBlock.tscn" id="16_mlqa0"]
@@ -248,10 +249,13 @@ text = "Master"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Button" type="Button" parent="VSplitContainer/TopMenuHBox"]
+[node name="HelpButton" type="Button" parent="VSplitContainer/TopMenuHBox" node_paths=PackedStringArray("helpWindow")]
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
+focus_mode = 0
 text = "?"
+script = ExtResource("13_v1cca")
+helpWindow = NodePath("../../../HelpWindow")
 
 [node name="AudioMainHSplitContainer" type="HSplitContainer" parent="VSplitContainer"]
 layout_mode = 2
@@ -354,6 +358,81 @@ access = 2
 
 [node name="ContextMenu" type="PopupMenu" parent="."]
 script = ExtResource("18_ra0tt")
+
+[node name="HelpWindow" type="Window" parent="."]
+title = "Help"
+position = Vector2i(0, 121)
+size = Vector2i(800, 500)
+visible = false
+popup_window = true
+keep_title_visible = true
+
+[node name="RichTextLabel" type="RichTextLabel" parent="HelpWindow"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 2
+bbcode_enabled = true
+text = "[center][font_size=40]Tempora[/font_size]
+by kongehund[/center]
+
+[font_size=25]Files[/font_size]
+Drag an .mp3 or .ogg file into Tempora to import it. 
+The \"File\" menu in the top left corner reveals common file handling options.
+
+[i]Ctrl + S									[/i] Save project
+
+[font_size=25]Timeline[/font_size]
+Each row of audio represents a measure of music. Each measure begins on the bright red line (downbeat).
+
+[i](Shift +) Scroll wheel			[/i] Navigate timeline
+[i]\"Grid\"										[/i] Timeline division to use for each measure (i.e. 4 = 1/4 = quarter note)
+
+[font_size=25]Audio[/font_size]
+Adjust the volumes in the top right. By default, the metronome plays every 1/4 note.
+
+[i]Space										[/i] Start/Stop audio 
+[i]Right-click								[/i] Start audio from position
+[i]\"Playback\"								[/i] Adjust the playback rate
+[i]S												[/i] Toggle the playback rate between two states
+[i]A												[/i] Hold to mute metronome
+
+[font_size=25]Timing[/font_size]
+Click and drag on the timeline to create a timing point and move it around on the musical timeline. 
+Double-click to remove. 
+Change the time signature in the left-hand side (Default: 4/4)
+
+[b]Basic workflow:[/b] Listen to the music to identify where the downbeat is. Then click and drag that part of the music on to the bright red line to tell Tempora \"the downbeat goes here\". Repeat for other downbeats.
+
+[i]Ctrl + A									[/i] Select all Timing Points
+[i]Delete / Backspace				[/i] Delete selected Timing Points
+[i]Ctrl + Z / Y								[/i] Undo / Redo
+[i]Alt + Click + Drag					[/i] Select / Deselect Timing Points
+[i]Alt + Double Click				[/i] Deselect All Timing Points
+
+When cursor is on a Timing Point:
+[i]Ctrl + Click + Drag				[/i] Change offset of Timing Point
+[i]Ctrl + Scroll wheel				[/i] Change BPM of Timing Point (only if it is the last point)
+	[i]+ Shift / Alt						[/i] Larger / Smaller increments	
+[i]Alt + Click								[/i] Select / Deselect Timing Point
+
+When cursor is not on a Timing Point:
+[i]Ctrl + Scroll wheel				[/i] Change offset of nearest Timing Point
+
+[font_size=25]Options[/font_size]
+[b]Time Signature Changes Move Points [/b]
+When toggled, changing the time signature will move subsequent points such that the BPM is preserved instead of each point's position on the timeline.
+[font_size=6] [/font_size]
+[b]Metronome Follows Grid [/b] 
+Metronome plays on every grid line instead of every 1/4 note.
+[font_size=6] [/font_size]
+[b]Show All Settings [/b] 
+Reveals additional timeline settings
+
+"
+selection_enabled = true
 
 [editable path="VSplitContainer/TopMenuHBox/SettingsHBox/GridScrollBar"]
 [editable path="VSplitContainer/TopMenuHBox/SettingsHBox/PlaybackRateScrollBar"]
