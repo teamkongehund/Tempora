@@ -80,14 +80,14 @@ public partial class Metronome : Node
     {
         if (@event is InputEventKey keyEvent)
         {
-            if (keyEvent is { Keycode: Key.A, Pressed: true } && !isMuted)
+            if (keyEvent is { Keycode: Key.Z, Pressed: true } && !isMuted)
             {
                 // Mute metronome
                 previousVolumeDb = audioStreamPlayer.VolumeDb;
                 audioStreamPlayer.VolumeDb = -60;
                 isMuted = true;
             }
-            else if (keyEvent is { Keycode: Key.A, Pressed: false } && isMuted)
+            else if (keyEvent is { Keycode: Key.Z, Pressed: false } && isMuted)
             {
                 // Restore metronome volume to previous
                 audioStreamPlayer.VolumeDb = previousVolumeDb;
