@@ -22,6 +22,7 @@ mouse_default_cursor_shape = 2
 
 [node name="NumberLabel" type="Label" parent="."]
 visible = false
+layout_mode = 0
 offset_left = -160.0
 offset_top = -96.0
 offset_right = 161.0
