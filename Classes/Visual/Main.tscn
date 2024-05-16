@@ -396,8 +396,8 @@ Adjust the volumes in the top right. By default, the metronome plays every 1/4 n
 [i]Space										[/i] Start/Stop audio 
 [i]Right-click								[/i] Start audio from position
 [i]\"Playback\"								[/i] Adjust the playback rate
-[i]S												[/i] Toggle the playback rate between two states
-[i]A												[/i] Hold to mute metronome
+[i]X												[/i] Toggle the playback rate between two states
+[i]Z												[/i] Hold to mute metronome
 
 [font_size=25]Timing[/font_size]
 Click and drag on the timeline to create a timing point and move it around on the musical timeline. 
