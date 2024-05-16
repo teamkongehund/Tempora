@@ -18,6 +18,7 @@ GrabArea = NodePath("GrabArea")
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
+mouse_default_cursor_shape = 2
 
 [node name="NumberLabel" type="Label" parent="."]
 visible = false

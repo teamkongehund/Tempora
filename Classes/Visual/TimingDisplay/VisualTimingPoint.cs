@@ -143,14 +143,18 @@ public partial class VisualTimingPoint : Control
         if (!Visible)
             return;
 
-        if (@event is not InputEventMouseButton mouseEvent)
-            return;
+        
 
         Vector2 mousePosition = GetLocalMousePosition();
         Rect2 rectangle = GrabArea.GetRect();
         bool hasMouseInside = rectangle.HasPoint(mousePosition);
 
         if (!hasMouseInside)
+            return;
+
+        //Input.SetDefaultCursorShape(Input.CursorShape.PointingHand);
+
+        if (@event is not InputEventMouseButton mouseEvent)
             return;
         else if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick)
         {
