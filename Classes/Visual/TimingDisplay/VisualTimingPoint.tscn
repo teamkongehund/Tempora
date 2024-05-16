@@ -1,43 +1,23 @@
-[gd_scene load_steps=4 format=3 uid="uid://b8325rmwu4cpb"]
+[gd_scene load_steps=3 format=3 uid="uid://b8325rmwu4cpb"]
 
 [ext_resource type="Script" path="res://Classes/Visual/TimingDisplay/VisualTimingPoint.cs" id="1_3rehq"]
 [ext_resource type="PackedScene" uid="uid://c5ghoqiqusvkk" path="res://Classes/Visual/Components/ControlOriginComponent.tscn" id="2_igj6l"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_rj6no"]
-size = Vector2(24.0416, 24.0416)
-
-[node name="VisualTimingPoint" type="Node2D" node_paths=PackedStringArray("area2D", "BpmLabel", "collisionShape2D", "colorRect", "OffsetLine", "flashTimer")]
+[node name="VisualTimingPoint" type="Control" node_paths=PackedStringArray("BpmLabel", "OffsetLine", "flashTimer", "GrabArea")]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 50.0
+offset_bottom = 50.0
 script = ExtResource("1_3rehq")
-area2D = NodePath("Area2D")
 BpmLabel = NodePath("BPMLabel")
-collisionShape2D = NodePath("Area2D/CollisionShape2D")
-colorRect = NodePath("ColorRect")
 OffsetLine = NodePath("OffsetLine")
 flashTimer = NodePath("FlashTimer")
+GrabArea = NodePath("GrabArea")
 
-[node name="ColorRect" type="ColorRect" parent="."]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -12.0
-offset_top = -12.0
-offset_right = 12.0
-offset_bottom = 12.0
-grow_horizontal = 2
-grow_vertical = 2
-rotation = 0.785398
-pivot_offset = Vector2(12, 12)
-mouse_filter = 2
-color = Color(1, 0.6, 0, 0.588235)
-
-[node name="Area2D" type="Area2D" parent="."]
-rotation = 0.785398
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2(-1.3487e-06, 1.3487e-06)
-shape = SubResource("RectangleShape2D_rj6no")
+[node name="GrabArea" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
 
 [node name="NumberLabel" type="Label" parent="."]
 visible = false
@@ -54,13 +34,16 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="BPMLabel" type="Label" parent="."]
+layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_right = 1.0
-offset_bottom = 96.0
+offset_left = -14.5
+offset_top = -20.5
+offset_right = -13.5
+offset_bottom = 75.5
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(0.2, 0.2)

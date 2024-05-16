@@ -8,33 +8,28 @@ using Tempora.Classes.TimingClasses;
 
 namespace Tempora.Classes.Visual;
 
-public partial class VisualTimingPoint : Node2D
+public partial class VisualTimingPoint : Control
 {
     #region Properties & Fields
     [Export]
-    private Area2D area2D = null!;
-    [Export]
     public Label BpmLabel = null!;
-    [Export]
-    private CollisionShape2D collisionShape2D = null!;
-    //[Export]
-    //private Label numberLabel = null!;
-    [Export]
-    private ColorRect colorRect = null!;
     [Export]
     public Line2D OffsetLine = null!;
     [Export]
     private Timer flashTimer = null!;
+    [Export]
+    public Control GrabArea = null!;
+
     private bool isFlashActive => !flashTimer.IsStopped();
     private bool isRed = false;
     private Vector2 sizeDefault = new(128, 128);
-    private Vector2 rectSizeRed => sizeDefault * 1.5f;
-    private Vector2 rectSizeNearestCursor => sizeDefault * 1.3f;
-    private Color rectColorDefault = new("ff990096");
-    private Color rectColorLightup = new("ff990096");
-    private Color rectColorNearestCursor = new("ff990096");
-    private Color rectColorSelection = new("ab009196");
-    private Color rectColorRed = new("ff000096");
+    //private Vector2 rectSizeRed => sizeDefault * 1.5f;
+    //private Vector2 rectSizeNearestCursor => sizeDefault * 1.3f;
+    //private Color rectColorDefault = new("ff990096");
+    //private Color rectColorLightup = new("ff990096");
+    //private Color rectColorNearestCursor = new("ff990096");
+    //private Color rectColorSelection = new("ab009196");
+    //private Color rectColorRed = new("ff000096");
 
     private Color colorInvisible = new("ff990000");
 
@@ -53,6 +48,8 @@ public partial class VisualTimingPoint : Node2D
 
     private bool isNearestCursor = false;
     private bool isSelected => TimingPointSelection.Instance.IsPointInSelection(TimingPoint);
+
+    public int GrabWidth = 20;
 
     private TimingPoint timingPoint = null!;
     public TimingPoint TimingPoint
@@ -91,38 +88,70 @@ public partial class VisualTimingPoint : Node2D
         VisibilityChanged += OnVisibilityChanged;
 
         flashTimer.Timeout += OnFlashTimerTimeout;
-        rectColorDefault = colorRect.Color;
         lineColorDefault = OffsetLine.DefaultColor;
-        sizeDefault = colorRect.Size;
-
         lineDefaultWidth = OffsetLine.Width;
     }
     
+    //public override void _Input(InputEvent @event)
+    //{
+    //    if (!Visible)
+    //        return;
+    //    Vector2 mousePosition = GetLocalMousePosition();
+    //    Rect2 rectangle = GetRect();
+    //    bool hasMouseInside = rectangle.HasPoint(mousePosition);
+
+    //    if (@event is not InputEventMouseButton mouseEvent)
+    //        return;
+    //    if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased())
+    //    {
+    //        //Signals.Instance.EmitEvent(Signals.Events.MouseLeftReleased);
+    //        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.MouseLeftReleased), this, EventArgs.Empty);
+    //        return;
+    //    }
+    //    if (!hasMouseInside)
+    //        return;
+
+    //    if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick && Input.IsKeyPressed(Key.Alt))
+    //    {
+    //        TimingPointSelection.Instance.DeselectAll();
+    //    }
+    //    else if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick)
+    //    {
+    //        TimingPointSelection.Instance.DeleteSelection();
+    //    }
+    //    else if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed && Input.IsKeyPressed(Key.Alt))
+    //    {
+    //        TimingPointSelection.Instance.RescopeSelection(TimingPoint);
+    //    }
+    //    else if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed)
+    //    {
+    //        TimingPointSelection.Instance.SelectTimingPoint(TimingPoint);
+    //        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointHolding), new GlobalEvents.ObjectArgument<TimingPoint>(TimingPoint));
+    //    }
+    //    else if (mouseEvent.ButtonIndex == MouseButton.Right && mouseEvent.Pressed && Input.IsKeyPressed(Key.Alt))
+    //    {
+    //        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.ContextMenuRequested), new GlobalEvents.ObjectArgument<VisualTimingPoint>(this));
+    //    }
+    //    else
+    //        return;
+
+    //    GetViewport().SetInputAsHandled();
+    //}
+
     public override void _Input(InputEvent @event)
     {
         if (!Visible)
             return;
-        Vector2 mousePosition = GetLocalMousePosition();
-        Rect2 rectangle = collisionShape2D.Shape.GetRect();
-        bool hasMouseInside = rectangle.HasPoint(mousePosition);
-
-        float offsetPerWheelScroll = 0.002f;
 
         if (@event is not InputEventMouseButton mouseEvent)
             return;
-        if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased())
-        {
-            //Signals.Instance.EmitEvent(Signals.Events.MouseLeftReleased);
-            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.MouseLeftReleased), this, EventArgs.Empty);
-            return;
-        }
+
+        Vector2 mousePosition = GetLocalMousePosition();
+        Rect2 rectangle = GrabArea.GetRect();
+        bool hasMouseInside = rectangle.HasPoint(mousePosition);
+
         if (!hasMouseInside)
             return;
-
-        if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick && Input.IsKeyPressed(Key.Alt))
-        {
-            TimingPointSelection.Instance.DeselectAll();
-        }
         else if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick)
         {
             TimingPointSelection.Instance.DeleteSelection();
@@ -145,6 +174,7 @@ public partial class VisualTimingPoint : Node2D
 
         GetViewport().SetInputAsHandled();
     }
+
     #endregion
 
     #region Timing Changes
@@ -232,18 +262,8 @@ public partial class VisualTimingPoint : Node2D
     private void UpdateLooks()
     {
         if (!Visible) return;
-        //SetRectColor(isRed ? colorRed : isSelected ? rectColorSelection : isNearestCursor ? rectColorNearestCursor : colorInvisible);
-        //SetRectSize(isRed ? rectSizeRed : isNearestCursor ? rectSizeNearestCursor : sizeDefault);
-        SetRectColor(colorInvisible);
         SetLineColor(isRed ? lineColorRed : isSelected ? lineColorSelection : isNearestCursor ? lineColorNearestCursor : lineColorDefault);
         SetLineSize(isRed ? lineSizeRed : isNearestCursor ? lineSizeNearedCursor : lineSizeDefault);
-    }
-
-    private void SetRectSize(Vector2 size)
-    {
-        colorRect.Size = size;
-        colorRect.Position = -size / 2;
-        colorRect.PivotOffset = size / 2;
     }
 
     private void SetLineSize(float multiplier)
@@ -256,12 +276,6 @@ public partial class VisualTimingPoint : Node2D
             ];
         OffsetLine.Width = lineDefaultWidth * multiplier;
     }
-
-    private void SetRectColor(Color color)
-    {
-        if (colorRect.Color == color) return;
-        colorRect.Color = color;
-    } 
 
     private void SetLineColor(Color color)
     {

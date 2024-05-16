@@ -425,7 +425,7 @@ public partial class AudioDisplayPanel : Control
         int childrenAmount = children.Count;
         int index = 0;
 
-        foreach (Node2D child in children.Cast<Node2D>())
+        foreach (Control child in children.Cast<Control>())
             child.Visible = false;
 
         // this assumes all children are VisualTimingPoint
@@ -461,6 +461,8 @@ public partial class AudioDisplayPanel : Control
             float x = MusicPositionToXPosition((float)timingPoint.MusicPosition);
             visualTimingPoint.TimingPoint = timingPoint;
             visualTimingPoint.Position = new Vector2(x, Size.Y / 2);
+            visualTimingPoint.GrabArea.Size = new Vector2(visualTimingPoint.GrabWidth, Size.Y);
+            visualTimingPoint.GrabArea.Position = new Vector2(-visualTimingPoint.GrabWidth / 2, -Size.Y / 2);
             visualTimingPoint.BpmLabel.Position = new Vector2(0, -Size.Y / 2);
             visualTimingPoint.BpmLabel.Position = new Vector2(0, -Size.Y / 2); // This is dumb, but it's the easiest way to fix Position being wrong when scrolling.
             visualTimingPoint.OffsetLine.Points = [
