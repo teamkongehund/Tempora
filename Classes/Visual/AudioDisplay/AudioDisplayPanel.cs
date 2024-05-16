@@ -135,6 +135,10 @@ public partial class AudioDisplayPanel : Control
                 AttemptToAddTimingPoint?.Invoke(this, new GlobalEvents.ObjectArgument<float>(time));
                 break;
 
+            case InputEventMouseButton { ButtonIndex: MouseButton.Left, DoubleClick: true } mouseButtonEvent when Input.IsKeyPressed(Key.Alt):
+                TimingPointSelection.Instance.DeselectAll();
+                break;
+
             case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } mouseButtonEvent when Input.IsKeyPressed(Key.Alt):
                 TimingPointSelection.Instance.StartSelector(musicPosition);
                 break;
@@ -144,16 +148,14 @@ public partial class AudioDisplayPanel : Control
                 break;
 
             case InputEventMouseButton { ButtonIndex: MouseButton.WheelUp, Pressed: true } mouseButtonEvent when Input.IsKeyPressed(Key.Ctrl):
-                //nearestTimingPoint?.Offset_Set(nearestTimingPoint.Offset + offsetPerWheelScroll, Timing.Instance);
-                //MementoHandler.Instance.AddTimingMemento(nearestTimingPoint);
                 TimingPointSelection.Instance.OffsetSelectionOrPoint(nearestTimingPoint, offsetPerWheelScroll);
                 break;
 
             case InputEventMouseButton { ButtonIndex: MouseButton.WheelDown, Pressed: true } mouseButtonEvent when Input.IsKeyPressed(Key.Ctrl):
-                //nearestTimingPoint?.Offset_Set(nearestTimingPoint.Offset - offsetPerWheelScroll, Timing.Instance);
-                //MementoHandler.Instance.AddTimingMemento(nearestTimingPoint);
                 TimingPointSelection.Instance.OffsetSelectionOrPoint(nearestTimingPoint, -offsetPerWheelScroll);
                 break;
+
+
             default:
                 return;
         }
