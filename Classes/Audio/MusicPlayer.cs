@@ -80,10 +80,8 @@ public partial class MusicPlayer : AudioStreamPlayer
                 {
                     if (keyEvent.Keycode == Key.Space && keyEvent.Pressed)
                         PlayPause();
-                    if (keyEvent.Keycode == Key.S && keyEvent.Pressed && !Input.IsKeyPressed(Key.Ctrl))
-                        IsUsingAlternativePlaybackRate = true;
-                    if (keyEvent.Keycode == Key.S && keyEvent.IsReleased() && !Input.IsKeyPressed(Key.Ctrl))
-                        IsUsingAlternativePlaybackRate = false;
+                    if (keyEvent.Keycode == Key.X && keyEvent.Pressed && !Input.IsKeyPressed(Key.Ctrl))
+                        IsUsingAlternativePlaybackRate = !IsUsingAlternativePlaybackRate;
                     break;
                 }
         }
