@@ -155,11 +155,39 @@ public partial class AudioDisplayPanel : Control
                 TimingPointSelection.Instance.OffsetSelectionOrPoint(nearestTimingPoint, -offsetPerWheelScroll);
                 break;
 
+            case InputEventMouseButton { ButtonIndex: MouseButton.WheelDown, Pressed: true } mouseButtonEvent when Input.IsKeyPressed(Key.Alt):
+                if (nearestTimingPoint == null) break;
+                // Decrease BPM by 1 (snapping to integers) - only for last timing point.
+                float previousBpm = nearestTimingPoint.Bpm;
+                float newBpm = (int)previousBpm - 1;
+                if (Input.IsKeyPressed(Key.Shift) && !Input.IsKeyPressed(Key.Alt))
+                    newBpm = (int)previousBpm - 5;
+                else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Alt))
+                    newBpm = previousBpm - 0.1f;
+
+                nearestTimingPoint.Bpm_Set(newBpm, Timing.Instance);
+
+                MementoHandler.Instance.AddTimingMemento(nearestTimingPoint);
+                break;
+
+            case InputEventMouseButton { ButtonIndex: MouseButton.WheelUp, Pressed: true } mouseButtonEvent when Input.IsKeyPressed(Key.Alt):
+                if (nearestTimingPoint == null) break;
+                // Increase BPM by 1 (snapping to integers) - only for last timing point.
+                previousBpm = nearestTimingPoint.Bpm;
+                newBpm = (int)previousBpm + 1;
+                if (Input.IsKeyPressed(Key.Shift) && !Input.IsKeyPressed(Key.Alt))
+                    newBpm = (int)previousBpm + 5;
+                else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Alt))
+                    newBpm = previousBpm + 0.1f;
+
+                nearestTimingPoint.Bpm_Set(newBpm, Timing.Instance);
+
+                MementoHandler.Instance.AddTimingMemento(nearestTimingPoint);
+                break;
 
             default:
                 return;
         }
-
         GetViewport().SetInputAsHandled();
     }
 

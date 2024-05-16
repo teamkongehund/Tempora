@@ -106,6 +106,8 @@ public partial class VisualTimingPoint : Node2D
         Rect2 rectangle = collisionShape2D.Shape.GetRect();
         bool hasMouseInside = rectangle.HasPoint(mousePosition);
 
+        float offsetPerWheelScroll = 0.002f;
+
         if (@event is not InputEventMouseButton mouseEvent)
             return;
         if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased())
@@ -137,34 +139,6 @@ public partial class VisualTimingPoint : Node2D
         else if (mouseEvent.ButtonIndex == MouseButton.Right && mouseEvent.Pressed && Input.IsKeyPressed(Key.Alt))
         {
             GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.ContextMenuRequested), new GlobalEvents.ObjectArgument<VisualTimingPoint>(this));
-        }
-        else if (mouseEvent.ButtonIndex == MouseButton.WheelDown && mouseEvent.Pressed && Input.IsKeyPressed(Key.Ctrl))
-        {
-            // Decrease BPM by 1 (snapping to integers) - only for last timing point.
-            float previousBpm = TimingPoint.Bpm;
-            float newBpm = (int)previousBpm - 1;
-            if (Input.IsKeyPressed(Key.Shift) && !Input.IsKeyPressed(Key.Alt))
-                newBpm = (int)previousBpm - 5;
-            else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Alt))
-                newBpm = previousBpm - 0.1f;
-
-            TimingPoint.Bpm_Set(newBpm, Timing.Instance);
-
-            MementoHandler.Instance.AddTimingMemento(TimingPoint);
-        }
-        else if (mouseEvent.ButtonIndex == MouseButton.WheelUp && mouseEvent.Pressed && Input.IsKeyPressed(Key.Ctrl))
-        {
-            // Increase BPM by 1 (snapping to integers) - only for last timing point.
-            float previousBpm = TimingPoint.Bpm;
-            float newBpm = (int)previousBpm + 1;
-            if (Input.IsKeyPressed(Key.Shift) && !Input.IsKeyPressed(Key.Alt))
-                newBpm = (int)previousBpm + 5;
-            else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Alt))
-                newBpm = previousBpm + 0.1f;
-
-            TimingPoint.Bpm_Set(newBpm, Timing.Instance);
-
-            MementoHandler.Instance.AddTimingMemento(TimingPoint);
         }
         else
             return;
