@@ -135,6 +135,8 @@ public partial class Settings : Node
 
     public bool MoveSubsequentTimingPointsWhenChangingTimeSignature = true;
 
+    public bool AutoScrollWhenAddingTimingPoints = false;
+
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()

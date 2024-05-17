@@ -61,6 +61,7 @@ public partial class AudioVisualsContainer : VBoxContainer
     {
         MouseExited += OnMouseExited;
         MusicPlayer.Paused += OnMusicPaused;
+        GlobalEvents.Instance.TimingPointAdded += OnTimingPointAdded;
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -181,6 +182,7 @@ public partial class AudioVisualsContainer : VBoxContainer
         float musicPosition = (float)timingPoint.MusicPosition;
         Timing.Instance.SnapTimingPoint(timingPoint, musicPosition, out bool didSnapSucceed);
         Context.Instance.HeldTimingPoint = timingPoint;
+        Context.Instance.HeldPointIsJustBeingAdded = true;
 
         TimingPointSelection.Instance.SelectTimingPoint(timingPoint);
 
@@ -189,10 +191,47 @@ public partial class AudioVisualsContainer : VBoxContainer
             //Context.Instance.HeldTimingPoint = null;
             //Timing.Instance.TimingPoints.Remove(timingPoint);
             //GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged)); // Gets rid of VisualTimingPoint
-            Context.Instance.shouldDeleteHeldPointIfNotOnGrid = true;
+            Context.Instance.ShouldDeleteHeldPointIfNotOnGrid = true;
             return;
         }
 
         MementoHandler.Instance.AddTimingMemento();
+    }
+
+    private void OnTimingPointAdded(object? sender, EventArgs e)
+    {
+        if (e is not GlobalEvents.ObjectArgument<TimingPoint> timingPointArgument)
+            throw new Exception($"{nameof(e)} was not of type {nameof(GlobalEvents.ObjectArgument<TimingPoint>)}");
+
+        if (!Settings.Instance.AutoScrollWhenAddingTimingPoints)
+            return;
+
+        var timingPoint = timingPointArgument.Value;
+        if (timingPoint.MusicPosition == null) 
+            return;
+        float musicPosition = (float)timingPoint.MusicPosition!;
+
+        SetTopBlockToPosition(musicPosition);
+    }
+
+    /// <summary>
+    /// Changes the Block scroll such that the top block contains the music position. 
+    /// If more than one block contains the music position due to timeline offset settings, select the last one that does.
+    /// </summary>
+    /// <param name="musicPosition"></param>
+    private void SetTopBlockToPosition(float musicPosition)
+    {
+        // Get the last ActualMusicPositionStart which is smaller than musicPosition. This way, we account for Timeline overlap.
+        int bestNominalMeasureStart = (int)(musicPosition - 1);
+        for (int measure = bestNominalMeasureStart; measure <= bestNominalMeasureStart + 2; measure++)
+        {
+            float actualStartForThisMeasure = AudioDisplayPanel.ActualMusicPositionStart(measure);
+            if (actualStartForThisMeasure > musicPosition)
+            {
+                NominalMusicPositionStartForTopBlock = bestNominalMeasureStart;
+                break;
+            }
+            bestNominalMeasureStart = measure;
+        }
     }
 }

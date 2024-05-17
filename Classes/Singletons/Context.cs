@@ -11,7 +11,8 @@ public partial class Context : Node
 {
     private static Context instance = null!;
 
-    public bool shouldDeleteHeldPointIfNotOnGrid = false;
+    public bool ShouldDeleteHeldPointIfNotOnGrid = false;
+    public bool HeldPointIsJustBeingAdded = false;
     private float? heldTimingPoint_PreviousMusicPosition = null!;
     private float? heldTimingPoint_PreviousOffset = null!;
     private TimingPoint? heldTimingPoint = null!;
@@ -24,15 +25,16 @@ public partial class Context : Node
                 return;
             if (value == null)
             {
-                if (shouldDeleteHeldPointIfNotOnGrid && !Timing.Instance.IsTimingPointOnGrid(heldTimingPoint))
+                if (ShouldDeleteHeldPointIfNotOnGrid && !Timing.Instance.IsTimingPointOnGrid(heldTimingPoint))
                 {
                     TimingPoint? timingPointToDelete = heldTimingPoint;
-                    shouldDeleteHeldPointIfNotOnGrid = false;
+                    ShouldDeleteHeldPointIfNotOnGrid = false;
                     heldTimingPoint_PreviousMusicPosition = null;
                     heldTimingPoint_PreviousOffset = null;
                     heldTimingPoint = null;
                     timingPointToDelete?.Delete();
                     GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged)); // Gets rid of VisualTimingPoint
+                    HeldPointIsJustBeingAdded = false;
                     return;
                 }
                 bool doesTimingPointStillExist = heldTimingPoint != null;
@@ -42,6 +44,9 @@ public partial class Context : Node
                 {
                     MementoHandler.Instance.AddTimingMemento();
                 }
+                if (HeldPointIsJustBeingAdded && doesTimingPointStillExist)
+                    GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.Instance.TimingPointAdded), this, new GlobalEvents.ObjectArgument<TimingPoint>(heldTimingPoint!));
+                HeldPointIsJustBeingAdded = false;
                 heldTimingPoint_PreviousMusicPosition = null;
                 heldTimingPoint_PreviousOffset = null;
                 heldTimingPoint = value;

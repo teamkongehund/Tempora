@@ -58,9 +58,17 @@ public partial class AudioDisplayPanel : Control
         }
     }
 
+    /// <summary>
+    /// For any <see cref="AudioDisplayPanel"/>, returns the music position where this panel actually starts with the current settings.
+    /// </summary>
+    /// <param name="nominalMusicPositionStart"></param>
+    /// <returns></returns>
+    public static float ActualMusicPositionStart(int nominalMusicPositionStart) 
+        => nominalMusicPositionStart - Settings.Instance.MusicPositionMargin - Settings.Instance.MusicPositionOffset;
+
     public float ActualMusicPositionStartForPanel
     {
-        get => NominalMusicPositionStartForWindow - Settings.Instance.MusicPositionMargin - Settings.Instance.MusicPositionOffset;
+        get => ActualMusicPositionStart(NominalMusicPositionStartForWindow);
         private set { }
     }
 
