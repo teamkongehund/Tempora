@@ -156,7 +156,7 @@ public partial class VisualTimingPoint : Control
 
         if (@event is not InputEventMouseButton mouseEvent)
             return;
-        else if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick)
+        else if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick && !Input.IsKeyPressed(Key.Alt))
         {
             TimingPointSelection.Instance.DeleteSelection();
         }
