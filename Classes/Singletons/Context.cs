@@ -110,4 +110,15 @@ public partial class Context : Node
     {
         FocusedControl = focusedControl;
     }
+
+    public bool AreAnySubwindowsVisible
+    {
+        get
+        {
+            var subWindows = GetViewport().GetEmbeddedSubwindows();
+            if (subWindows.Count > 0)
+                return true;
+            return false;
+        }
+    }
 }
