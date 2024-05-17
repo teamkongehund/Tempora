@@ -116,7 +116,7 @@ public partial class TimingPointSelection : Node
     }
     #endregion
 
-    #region Selection Properties
+    #region Selection Info
     private int[]? selectionIndices = null;
     /// <summary>
     /// The beginning and end indices of <see cref="Timing.TimingPoints"/> that are a part of this selection.
@@ -175,6 +175,43 @@ public partial class TimingPointSelection : Node
             return (LastPoint.MusicPosition - FirstPoint.MusicPosition) / 2 + FirstPoint.MusicPosition;
         }
     }
+
+    public bool AreTherePointsBefore(int index) => index > 0 && Timing.Instance.TimingPoints.Count > 1;
+    public bool AreTherePointsAfter(int index) => Timing.Instance.TimingPoints.Count - 1 > index;
+    public bool AreTherePointsBefore(TimingPoint point) => AreTherePointsBefore(Timing.Instance.TimingPoints.IndexOf(point));
+    public bool AreTherePointsAfter(TimingPoint point) => AreTherePointsAfter(Timing.Instance.TimingPoints.IndexOf(point));
+    /// <summary>
+    /// If point is in selection, returns true if there's points before selection. 
+    /// If point is not in selection, returns true if there's points before point.
+    /// </summary>
+    /// <param name="point"></param>
+    /// <returns></returns>
+    public bool AreTherePointsBeforePointOrSelection(TimingPoint point)
+    {
+        return (SelectionIndices != null && IsPointInSelection(point))
+            ? AreTherePointsBefore(SelectionIndices[0])
+            : AreTherePointsBefore(point);
+    }
+    /// <summary>
+    /// If point is in selection, returns true if there's points after selection. 
+    /// If point is not in selection, returns true if there's points after point.
+    /// </summary>
+    /// <param name="point"></param>
+    /// <returns></returns>
+    public bool AreTherePointsAfterPointOrSelection(TimingPoint point)
+    {
+        return (SelectionIndices != null && IsPointInSelection(point))
+            ? AreTherePointsAfter(SelectionIndices[1])
+            : AreTherePointsAfter(point);
+    }
+    public bool IsPointInSelection(TimingPoint point)
+    {
+        int index = timing.TimingPoints.IndexOf(point);
+        if (index == -1) return false;
+        if (SelectionIndices == null) return false;
+        return (index >= SelectionIndices[0] && index <= SelectionIndices[1]);
+    }
+
     #endregion
 
     #region Selection Modifiers
@@ -182,6 +219,9 @@ public partial class TimingPointSelection : Node
     {
         if (first > last)
             (first, last) = (last, first);
+        int lastIndexInList = Timing.Instance.TimingPoints.Count - 1;
+        if (first < 0 || last < 0 || first > lastIndexInList || last > lastIndexInList)
+            SelectionIndices = null;
         SelectionIndices = [first, last];
     }
 
@@ -193,6 +233,35 @@ public partial class TimingPointSelection : Node
         int lastIndex = timing.TimingPoints.FindLastIndex(point => point.MusicPosition >= positionFirst && point.MusicPosition <= positionLast);
         Select(firstIndex, lastIndex);
     }
+
+    public void SelectAllFrom(int? indexFrom)
+    {
+        if (indexFrom == null || indexFrom < 0)
+            return;
+        Select((int)indexFrom, Timing.Instance.TimingPoints.Count - 1);
+    }
+
+    public void SelectAllTo(int? indexTo)
+    {
+        if (indexTo == null || indexTo < 0)
+            return;
+        Select(0, (int)indexTo);
+    }
+
+    public void SelectAllFrom(TimingPoint? point)
+    {
+        if (point == null)
+            return;
+        SelectAllFrom(Timing.Instance.TimingPoints.IndexOf(point));
+    }
+
+    public void SelectAllTo(TimingPoint? point)
+    {
+        if (point == null)
+            return;
+        SelectAllTo(Timing.Instance.TimingPoints.IndexOf(point));
+    }
+
     public void DeselectAll() => SelectionIndices = null;
 
     /// <summary>
@@ -299,13 +368,6 @@ public partial class TimingPointSelection : Node
     }
     #endregion
 
-    public bool IsPointInSelection(TimingPoint point)
-    {
-        int index = timing.TimingPoints.IndexOf(point);
-        if (index == -1) return false;
-        if (SelectionIndices == null) return false;
-        return (index >= SelectionIndices[0] && index <= SelectionIndices[1]);
-    }
 
     /// <summary>
     /// Description of a selection of multiple timing points:
