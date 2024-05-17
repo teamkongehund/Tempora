@@ -130,6 +130,9 @@ minValue = 1.0
 maxValue = 8.0
 step = 1.0
 
+[node name="HScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox/GridScrollBar" index="1"]
+tooltip_text = "Distance between grid lines"
+
 [node name="PlaybackRateScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox" instance=ExtResource("8_6ej7c")]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -137,6 +140,9 @@ script = ExtResource("8_6jrsb")
 showTitleInside = true
 title = "Playback"
 minValue = 0.1
+
+[node name="HBoxContainer" parent="VSplitContainer/TopMenuHBox/SettingsHBox/PlaybackRateScrollBar/HScrollBar" index="0"]
+tooltip_text = "Playback rate. Press X to toggle between two states."
 
 [node name="BlockAmountScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox" instance=ExtResource("8_6ej7c")]
 visible = false
@@ -149,6 +155,9 @@ minValue = 1.0
 maxValue = 25.0
 step = 1.0
 
+[node name="HScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox/BlockAmountScrollBar" index="1"]
+tooltip_text = "Number of audio rows to display"
+
 [node name="OffsetScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox" instance=ExtResource("8_6ej7c")]
 visible = false
 layout_mode = 2
@@ -159,6 +168,9 @@ title = "Offset"
 maxValue = 0.5
 step = 0.025
 
+[node name="HScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox/OffsetScrollBar" index="1"]
+tooltip_text = "Offsets the start of each row by X% into the previous measure."
+
 [node name="OverlapScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox" instance=ExtResource("8_6ej7c")]
 visible = false
 layout_mode = 2
@@ -168,6 +180,9 @@ showTitleInside = true
 title = "Overlap"
 maxValue = 0.25
 
+[node name="HScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox/OverlapScrollBar" index="1"]
+tooltip_text = "How much of the previous and next measure to show at the beginning and end of each row."
+
 [node name="VolumeSlidersHBox" type="HBoxContainer" parent="VSplitContainer/TopMenuHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -176,6 +191,7 @@ size_flags_horizontal = 3
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
+tooltip_text = "Music Volume"
 max_value = 1.0
 script = ExtResource("6_w0n8n")
 BusName = "Music"
@@ -203,6 +219,7 @@ vertical_alignment = 1
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
+tooltip_text = "Metronome Volume. Hold Z to mute temporarily."
 max_value = 1.0
 script = ExtResource("6_w0n8n")
 BusName = "Metronome"
@@ -230,6 +247,7 @@ vertical_alignment = 1
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
+tooltip_text = "Master Volume"
 max_value = 1.0
 script = ExtResource("6_w0n8n")
 BusName = "Master"
@@ -255,6 +273,7 @@ vertical_alignment = 1
 [node name="HelpButton" type="Button" parent="VSplitContainer/TopMenuHBox" node_paths=PackedStringArray("helpWindow")]
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
+tooltip_text = "Help"
 focus_mode = 0
 text = "?"
 script = ExtResource("13_v1cca")
@@ -439,3 +458,6 @@ selection_enabled = true
 
 [editable path="VSplitContainer/TopMenuHBox/SettingsHBox/GridScrollBar"]
 [editable path="VSplitContainer/TopMenuHBox/SettingsHBox/PlaybackRateScrollBar"]
+[editable path="VSplitContainer/TopMenuHBox/SettingsHBox/BlockAmountScrollBar"]
+[editable path="VSplitContainer/TopMenuHBox/SettingsHBox/OffsetScrollBar"]
+[editable path="VSplitContainer/TopMenuHBox/SettingsHBox/OverlapScrollBar"]
