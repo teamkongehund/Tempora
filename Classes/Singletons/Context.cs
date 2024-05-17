@@ -83,6 +83,8 @@ public partial class Context : Node
         }
     }
 
+    public Control? FocusedControl = null!;
+
     public static Context Instance { get => instance; set => instance = value; }
 
     public override void _Ready()
@@ -91,6 +93,8 @@ public partial class Context : Node
 
         GlobalEvents.Instance.TimingPointHolding += OnTimingPointHolding;
         GlobalEvents.Instance.MouseLeftReleased += OnMouseLeftReleased;
+
+        GetViewport().GuiFocusChanged += OnGuiFocusChanged;
     }
 
     private void OnTimingPointHolding(object? sender, EventArgs e)
@@ -101,4 +105,9 @@ public partial class Context : Node
     }
 
     private void OnMouseLeftReleased(object? sender, EventArgs e) => HeldTimingPoint = null;
+
+    private void OnGuiFocusChanged(Control focusedControl)
+    {
+        FocusedControl = focusedControl;
+    }
 }

@@ -81,6 +81,8 @@ public partial class AudioDisplayPanel : Control
 
     public int LastTimingPointIndex;
 
+    public override string ToString() => "AudioDisplayPanel";
+
     #endregion
 
     #region Godot & Signals

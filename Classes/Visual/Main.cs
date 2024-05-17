@@ -100,4 +100,6 @@ public partial class Main : Control
         float playbackTime = floatArgument.Value;
         MusicPlayer.SeekPlay(playbackTime);
     }
+
+    public override string ToString() => "Main";
 }
