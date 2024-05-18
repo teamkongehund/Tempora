@@ -156,7 +156,7 @@ public partial class ProjectFileManager : Node
         string fileName = Path.GetFileNameWithoutExtension(filePath);
 
         string audioFileExtension = Project.Instance.AudioFile.Extension;
-        string audioFilePathShort = $"{fileName}.{audioFileExtension}";
+        string audioFilePathShort = $"{fileName}{audioFileExtension}";
         string audioFilePathLong = Path.Combine(fileDir, audioFilePathShort);
 
         using var audioFile = Godot.FileAccess.Open(audioFilePathLong, Godot.FileAccess.ModeFlags.Write);
