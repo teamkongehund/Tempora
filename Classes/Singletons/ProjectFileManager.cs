@@ -70,9 +70,11 @@ public partial class ProjectFileManager : Node
         {
             case SaveConfig.project:
                 SaveFileDialog.CurrentDir = Settings.Instance.ProjectFilesDirectory;
+                SaveFileDialog.Title = "Save Project";
                 break;
             case SaveConfig.osz:
                 SaveFileDialog.CurrentDir = Settings.Instance.OszFilesDirectory;
+                SaveFileDialog.Title = "Export osz";
                 break;
         }
         latestSaveConfig = config;
