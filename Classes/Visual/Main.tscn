@@ -1,7 +1,7 @@
 [gd_scene load_steps=20 format=3 uid="uid://bk0ofb078cvgm"]
 
 [ext_resource type="Script" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
-[ext_resource type="AudioStream" uid="uid://clutjafa1rf7f" path="res://Audio/UMO.mp3" id="2_klkb2"]
+[ext_resource type="AudioStream" uid="uid://2gpllbqn0qef" path="res://Audio/clickedy.mp3" id="2_k0owh"]
 [ext_resource type="Script" path="res://Classes/Visual/AudioDisplay/AudioVisualsContainer.cs" id="3_bj8ok"]
 [ext_resource type="PackedScene" uid="uid://bk2vtyro5t8k" path="res://Classes/Visual/Buttons/PopupMenuButton.tscn" id="3_mrr0o"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/BlockScrollBar.cs" id="5_aqu3i"]
@@ -29,7 +29,7 @@ grow_horizontal = 2
 grow_vertical = 2
 focus_mode = 2
 script = ExtResource("1_n5xe1")
-defaultMP3 = ExtResource("2_klkb2")
+defaultMP3 = ExtResource("2_k0owh")
 audioVisualsContainer = NodePath("VSplitContainer/AudioMainHSplitContainer/AudioVisualsMarginContainer/AudioVisualsContainer")
 blockScrollBar = NodePath("VSplitContainer/AudioMainHSplitContainer/BlockScrollBarMarginContainer/BlockScrollBar")
 metadata/_edit_lock_ = true

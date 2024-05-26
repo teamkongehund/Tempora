@@ -1,11 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://djvimmuyfu0pu"]
+[gd_scene load_steps=3 format=3 uid="uid://djvimmuyfu0pu"]
 
-[ext_resource type="AudioStream" uid="uid://clutjafa1rf7f" path="res://Audio/UMO.mp3" id="1_fukal"]
 [ext_resource type="Script" path="res://Classes/Audio/MusicPlayer.cs" id="1_g7kbg"]
 [ext_resource type="PackedScene" uid="uid://bnbif04ymgk1h" path="res://Classes/Audio/Metronome.tscn" id="2_n8qns"]
 
 [node name="MusicPlayer" type="AudioStreamPlayer"]
-stream = ExtResource("1_fukal")
 bus = &"Music"
 script = ExtResource("1_g7kbg")
 
