@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://bk0ofb078cvgm"]
+[gd_scene load_steps=20 format=3 uid="uid://bk0ofb078cvgm"]
 
 [ext_resource type="Script" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
 [ext_resource type="AudioStream" uid="uid://2gpllbqn0qef" path="res://Audio/clickedy.mp3" id="2_k0owh"]
@@ -17,6 +17,7 @@
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/OverlapScrollBar.cs" id="13_wubaw"]
 [ext_resource type="Script" path="res://Classes/Visual/VersionLabel.cs" id="16_j6b0h"]
 [ext_resource type="PackedScene" uid="uid://bac4n7j15cns7" path="res://Classes/Visual/AudioDisplay/AudioBlock.tscn" id="16_mlqa0"]
+[ext_resource type="Script" path="res://Classes/Visual/Menus/ContextMenu.cs" id="18_ra0tt"]
 [ext_resource type="Script" path="res://Classes/Visual/MessageLabel.cs" id="20_c3wmk"]
 
 [node name="Main" type="Control" node_paths=PackedStringArray("audioVisualsContainer", "blockScrollBar")]
@@ -380,6 +381,7 @@ file_mode = 0
 access = 2
 
 [node name="ContextMenu" type="PopupMenu" parent="."]
+script = ExtResource("18_ra0tt")
 
 [node name="HelpWindow" type="Window" parent="."]
 title = "Help"
