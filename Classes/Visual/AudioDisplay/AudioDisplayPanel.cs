@@ -613,7 +613,7 @@ public partial class AudioDisplayPanel : Control
 
         float time = Timing.Instance.MusicPositionToTime(musicPosition);
         var musicTime = TimeSpan.FromSeconds(time);
-        PreviewLine.TimeLabel.Text = (time < 0 ? "-" : "") + musicTime.ToString(@"mm\:ss\:fffff");
+        PreviewLine.TimeLabel.Text = (time < 0 ? "-" : "") + musicTime.ToString(@"mm\:ss\:fff");
     }
 
     public void UpdateSelectedPositionLine()
