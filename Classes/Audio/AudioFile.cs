@@ -46,17 +46,32 @@ public partial class AudioFile : Node
 
     public AudioStream Stream = null!;
 
+    private static float sampleIndexOffsetInSecondsMP3 = 0.025f;
+    //private static float sampleIndexOffsetInSecondsMP3 = 0.0f;
+    private static float sampleIndexOffsetInSecondsOGG = 0;
+
     /// <summary>
-    ///     Amount of seconds to offset any sample indices. Band-aid fix to compensate the discrepancy between audio playback
-    ///     and audio visualization.
+    ///     Amount of seconds to offset any sample indices for the visuals. Band-aid fix to compensate the discrepancy between audio playback
+    ///     and audio visualization. The result can be verified by comparing with how Audacity displays audio. This should not affect timing, only display of audio.
     /// </summary>
-    public float SampleIndexOffsetInSeconds = 0.025f;
+    public float SampleIndexOffsetInSeconds = sampleIndexOffsetInSecondsMP3;
 
-
+    private string extension;
     public string Extension
     {
-        get;
-        private set;
+        get => extension;
+        private set
+        {
+            if (value == extension)
+                return;
+            extension = value;
+            SampleIndexOffsetInSeconds = extension switch
+            {
+                ".mp3" => sampleIndexOffsetInSecondsMP3,
+                ".ogg" => sampleIndexOffsetInSecondsOGG,
+                _ => 0
+            };
+        }
     }
 
     public AudioFile(string path)
