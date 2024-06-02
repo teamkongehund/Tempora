@@ -559,6 +559,8 @@ public partial class AudioDisplayPanel : Control
             return;
         if (!Visible)
             return;
+        if (Size.X <= 0)
+            return;
         UpdatePlayheadScaling();
         UpdatePreviewLineScaling();
         UpdatePreviewLinePosition();
@@ -611,7 +613,7 @@ public partial class AudioDisplayPanel : Control
 
         float time = Timing.Instance.MusicPositionToTime(musicPosition);
         var musicTime = TimeSpan.FromSeconds(time);
-        PreviewLine.TimeLabel.Text = (time < 0 ? "-" : "") + musicTime.ToString(@"mm\:ss\:fff");
+        PreviewLine.TimeLabel.Text = (time < 0 ? "-" : "") + musicTime.ToString(@"mm\:ss\:fffff");
     }
 
     public void UpdateSelectedPositionLine()

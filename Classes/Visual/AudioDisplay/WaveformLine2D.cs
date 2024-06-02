@@ -77,8 +77,8 @@ public partial class WaveformLine2D : Line2D
                 ];
             }
 
-            int sampleStart = AudioFile?.SecondsToSampleIndex(TimeRange[0]) ?? 0;
-            int sampleEnd = AudioFile?.SecondsToSampleIndex(TimeRange[1]) ?? 0;
+            int sampleStart = AudioFile?.SampleTimeToSampleIndex(TimeRange[0]) ?? 0;
+            int sampleEnd = AudioFile?.SampleTimeToSampleIndex(TimeRange[1]) ?? 0;
 
             return [sampleStart, sampleEnd];
         }

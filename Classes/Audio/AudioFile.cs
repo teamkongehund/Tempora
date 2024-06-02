@@ -46,15 +46,25 @@ public partial class AudioFile : Node
 
     public AudioStream Stream = null!;
 
-    private static float sampleIndexOffsetInSecondsMP3 = 0.025f;
-    //private static float sampleIndexOffsetInSecondsMP3 = 0.0f;
-    private static float sampleIndexOffsetInSecondsOGG = 0;
 
+    private const float audacityOriginMP3 = -0.0261f;
+    private const float audacityOriginOGG = 0;
     /// <summary>
-    ///     Amount of seconds to offset any sample indices for the visuals. Band-aid fix to compensate the discrepancy between audio playback
-    ///     and audio visualization. The result can be verified by comparing with how Audacity displays audio. This should not affect timing, only display of audio.
+    /// For MP3 data, We have 1151 samples less than Audacity has for the same data (according to one single test I made)
+    /// 1151 samples / 44100 samples/second = 0.0261 seconds.
+    /// This might be down to the differences between Audacity's and NAudio's decompression algorhithms, if I were to guess.
     /// </summary>
-    public float SampleIndexOffsetInSeconds = sampleIndexOffsetInSecondsMP3;
+    private float audacityOrigin = audacityOriginMP3;
+
+
+    //private const float playbackOrigininSecondsMP3 = 0.0512f;
+    private const float playbackOrigininSecondsMP3 = 0.0251f;
+    private const float playbackOriginInSecondsOGG = 0;
+    /// <summary>
+    /// The timewise position of playback origin, counting with the first sample <see cref="AudioFile.SoundData.Floats[0][0]"/> being 0:000
+    /// Both the Godot AudioStreamPlayer and Osu take the built-in silence in the beginning of MP3 files into account, placing the origin where the audio actuall starts.
+    /// </summary>
+    private float playbackOriginÍnSeconds = playbackOrigininSecondsMP3;
 
     private string extension;
     public string Extension
@@ -65,10 +75,16 @@ public partial class AudioFile : Node
             if (value == extension)
                 return;
             extension = value;
-            SampleIndexOffsetInSeconds = extension switch
+            audacityOrigin = extension switch
             {
-                ".mp3" => sampleIndexOffsetInSecondsMP3,
-                ".ogg" => sampleIndexOffsetInSecondsOGG,
+                ".mp3" => audacityOriginMP3,
+                ".ogg" => audacityOriginOGG,
+                _ => 0
+            };
+            playbackOriginÍnSeconds = extension switch
+            {
+                ".mp3" => playbackOrigininSecondsMP3,
+                ".ogg" => playbackOriginInSecondsOGG,
                 _ => 0
             };
         }
@@ -117,43 +133,29 @@ public partial class AudioFile : Node
         AudioBuffer = buffer;
     }
 
-    public int SecondsToSampleIndex(float seconds)
-    {
-        int sampleIndex = (int)Math.Floor((seconds + SampleIndexOffsetInSeconds) * SampleRate );
-        return sampleIndex;
-    }
+    public int SampleTimeToSampleIndex(float seconds) => (int)Math.Floor(seconds * SampleRate);
+    public float SampleIndexToSampleTime(int sampleIndex) => (sampleIndex / (float)SampleRate);
 
-    public float SampleIndexToSeconds(int sampleIndex) => (sampleIndex / (float)SampleRate) - SampleIndexOffsetInSeconds;
-
-    //public float[] GetAudioDataSegment(int sampleStart, int sampleStop)
-    //{
-    //    if (sampleStart < 0)
-    //        sampleStart = 0;
-    //    if (sampleStop < 0)
-    //        sampleStop = 0;
-    //    if (sampleStop > AudioData.Length)
-    //        sampleStop = AudioData.Length;
-    //    if (sampleStart > AudioData.Length)
-    //        sampleStop = AudioData.Length;
-
-    //    float[] audioDataSegment = AudioData[sampleStart..sampleStop];
-
-    //    return audioDataSegment;
-    //}
-
-    //public float[] GetAudioDataSegment(float secondsStart, float secondsStop)
-    //{
-    //    int sampleStart = SecondsToSampleIndex(secondsStart);
-    //    int sampleStop = SecondsToSampleIndex(secondsStop);
-
-    //    return GetAudioDataSegment(sampleStart, sampleStop);
-    //}
+    /// <summary>
+    /// Sample Time is the number of seconds from the very first sample, in seconds.
+    /// Playback Time is the number of seconds from the Playback origin.
+    /// </summary>
+    /// <param name="sampleTime"></param>
+    /// <returns></returns>
+    public float SampleTimeToPlaybackTime(float sampleTime) => sampleTime - playbackOriginÍnSeconds;
+    /// <summary>
+    /// Sample Time is the number of seconds from the very first sample, in seconds.
+    /// Playback Time is the number of seconds from the Playback origin.
+    /// </summary>
+    /// <param name="playbackTime"></param>
+    /// <returns></returns>
+    public float PlaybackTimeToSampleTime(float playbackTime) => playbackTime + playbackOriginÍnSeconds;
 
     /// <summary>
     /// Return audio duration in seconds
     /// </summary>
     /// <returns></returns>
-    public float GetAudioLength() => SampleIndexToSeconds(PCMFloats.Length - 1);
+    public float GetAudioLength() => SampleIndexToSampleTime(PCMFloats.Length - 1);
 
     public void CalculatePer10s()
     {

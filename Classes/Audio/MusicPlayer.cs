@@ -123,8 +123,9 @@ public partial class MusicPlayer : AudioStreamPlayer
             Resume();
     }
 
-    public void SeekPlay(float playbackTime)
+    public void SeekPlay(float sampleTime)
     {
+        float playbackTime = Project.Instance.AudioFile.SampleTimeToPlaybackTime(sampleTime);
         if (!Playing)
             Play();
         if (playbackTime < 0)

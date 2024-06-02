@@ -15,9 +15,9 @@ public partial class Waveform : Node2D
         int sampleEndIndex = AudioDataRange[1];
 
         int numberOfSamples = sampleEndIndex - sampleIndexStart;
-        float samplesPerPoint = numberOfSamples / Length / PointsPerPixel;
+        float samplesPerPoint = numberOfSamples / Length / PointsPerLengthwisePixel;
 
-        int nbPoints = (int)Length * PointsPerPixel;
+        int nbPoints = (int)Length * PointsPerLengthwisePixel;
         if (nbPoints <= 0)
             return;
 
@@ -36,11 +36,11 @@ public partial class Waveform : Node2D
             int sampleIndexBegin = (int)(sampleIndexStart + (pointIndex * samplesPerPoint));
             int sampleIndexEnd = (int)(sampleIndexStart + ((pointIndex + 1) * samplesPerPoint));
 
-            float pickedValue;
+            float pickedFloatSample;
 
-            pickedValue = GetPickedValue(sampleIndexBegin, sampleIndexEnd, pointIndex);
+            pickedFloatSample = GetPickedFloatSample(sampleIndexBegin, sampleIndexEnd, pointIndex);
 
-            var coordinate = new Vector2((float)pointIndex / PointsPerPixel, pickedValue * Height / 2);
+            var coordinate = new Vector2((float)pointIndex / PointsPerLengthwisePixel, -pickedFloatSample * Height / 2);
 
             points[pointIndex] = coordinate;
 
@@ -67,7 +67,7 @@ public partial class Waveform : Node2D
         //waveImage.SavePng("user://renderedWave.png");
     }
 
-    private float GetPickedValue(int sampleIndexBegin, int sampleIndexEnd, int pointIndex)
+    private float GetPickedFloatSample(int sampleIndexBegin, int sampleIndexEnd, int pointIndex)
     {
         float pickedValue;
 
@@ -98,7 +98,7 @@ public partial class Waveform : Node2D
                 max = EfficientMax(audioFile.AudioDataPer10Max, sampleIndexBegin / 10, sampleIndexEnd / 10);
             }
 
-            if (PointsPerPixel > 1)
+            if (PointsPerLengthwisePixel > 1)
                 pickedValue = pointIndex % 2 == 0 ? min : max; // Alternate to capture as much data as possible
             else
                 pickedValue = AudioFile.PCMFloats[sampleIndexBegin];
@@ -181,7 +181,7 @@ public partial class Waveform : Node2D
     ///     Instead of putting one data point in the plot arrays, a larger number may show a better waveform.
     ///     Even numbers should be used, as the plotter alternates between mix and max for each data point
     /// </summary>
-    public int PointsPerPixel = 2;
+    public int PointsPerLengthwisePixel = 2;
 
     public bool ShouldDisplayWholeFile = true;
 
@@ -202,8 +202,8 @@ public partial class Waveform : Node2D
                 ];
             }
 
-            int sampleStart = AudioFile?.SecondsToSampleIndex(TimeRange[0]) ?? 0;
-            int sampleEnd = AudioFile?.SecondsToSampleIndex(TimeRange[1]) ?? 0;
+            int sampleStart = AudioFile?.SampleTimeToSampleIndex(TimeRange[0]) ?? 0;
+            int sampleEnd = AudioFile?.SampleTimeToSampleIndex(TimeRange[1]) ?? 0;
 
             return [sampleStart, sampleEnd];
         }

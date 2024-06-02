@@ -76,7 +76,8 @@ public partial class AudioVisualsContainer : VBoxContainer
     private void UpdatePlayHeads()
     {
         double playbackTime = MusicPlayer.GetPlaybackTime();
-        float musicPosition = Timing.Instance.TimeToMusicPosition((float)playbackTime);
+        float sampleTime = Project.Instance.AudioFile.PlaybackTimeToSampleTime((float)playbackTime);
+        float musicPosition = Timing.Instance.TimeToMusicPosition((float)sampleTime);
         foreach (AudioBlock audioBlock in GetChildren().OfType<AudioBlock>())
         {
             AudioDisplayPanel audioDisplayPanel = audioBlock.AudioDisplayPanel;
