@@ -63,7 +63,7 @@ public partial class WaveformLine2D : Line2D
     private int[] audioDataRange = [0, 0];
 
     /// <summary>
-    ///     Indices for the first and last audio sample to use from <see cref="Audio.AudioFile.PCMFloats" />
+    ///     Indices for the first and last audio sample to use from <see cref="Audio.AudioFile.PcmLeft" />
     /// </summary>
     public int[] AudioDataRange
     {
@@ -73,7 +73,7 @@ public partial class WaveformLine2D : Line2D
             {
                 return [
                     0,
-                    AudioFile?.PCMFloats.Length ?? 0
+                    AudioFile?.PcmLeft.Length ?? 0
                 ];
             }
 
@@ -119,7 +119,7 @@ public partial class WaveformLine2D : Line2D
     public WaveformLine2D(AudioFile audioFile)
     {
         AudioFile = audioFile;
-        AudioDataRange = [0, AudioFile.PCMFloats.Length];
+        AudioDataRange = [0, AudioFile.PcmLeft.Length];
         isInitializing = false;
         PlotWaveform();
     }
@@ -127,7 +127,7 @@ public partial class WaveformLine2D : Line2D
     public WaveformLine2D(AudioFile audioFile, float length, float height)
     {
         AudioFile = audioFile;
-        AudioDataRange = [0, AudioFile.PCMFloats.Length];
+        AudioDataRange = [0, AudioFile.PcmLeft.Length];
         Height = height;
         Length = length;
         isInitializing = false;
@@ -137,7 +137,7 @@ public partial class WaveformLine2D : Line2D
     public WaveformLine2D(AudioFile audioFile, float length, float height, float[] timeRange)
     {
         AudioFile = audioFile;
-        AudioDataRange = [0, AudioFile.PCMFloats.Length];
+        AudioDataRange = [0, AudioFile.PcmLeft.Length];
         Height = height;
         Length = length;
         TimeRange = timeRange;
@@ -185,8 +185,8 @@ public partial class WaveformLine2D : Line2D
             // make sure not to clamp values when you get the AudioDataRange
 
             bool dataPointIsBeforeAudio = sampleAtDataPointStart < 0 || sampleAtDataPointEnd < 0;
-            bool dataPointIsAfterAudio = sampleAtDataPointStart > AudioFile.PCMFloats.Length
-                                         || sampleAtDataPointEnd > AudioFile.PCMFloats.Length;
+            bool dataPointIsAfterAudio = sampleAtDataPointStart > AudioFile.PcmLeft.Length
+                                         || sampleAtDataPointEnd > AudioFile.PcmLeft.Length;
 
             float pickedValue;
             if (dataPointIsBeforeAudio || dataPointIsAfterAudio)
@@ -195,17 +195,17 @@ public partial class WaveformLine2D : Line2D
             }
             else if (sampleAtDataPointEnd - sampleAtDataPointStart == 0)
             {
-                pickedValue = AudioFile.PCMFloats[sampleAtDataPointStart];
+                pickedValue = AudioFile.PcmLeft[sampleAtDataPointStart];
             }
             else
             {
-                float max = AudioFile.PCMFloats[sampleAtDataPointStart..sampleAtDataPointEnd].Max();
-                float min = AudioFile.PCMFloats[sampleAtDataPointStart..sampleAtDataPointEnd].Min();
+                float max = AudioFile.PcmLeft[sampleAtDataPointStart..sampleAtDataPointEnd].Max();
+                float min = AudioFile.PcmLeft[sampleAtDataPointStart..sampleAtDataPointEnd].Min();
 
                 if (DataPointsPerPixel > 1)
                     pickedValue = dataPointIndex % 2 == 0 ? min : max; // Alternate to capture as much data as possible
                 else
-                    pickedValue = AudioFile.PCMFloats[sampleAtDataPointStart];
+                    pickedValue = AudioFile.PcmLeft[sampleAtDataPointStart];
 
                 //pickedValue = AudioFile.AudioData[sampleAtDataPointStart];
             }

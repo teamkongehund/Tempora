@@ -161,22 +161,22 @@ public partial class MusicPlayer : AudioStreamPlayer
 
     private void LoadMp3()
     {
-        Stream = Project.Instance.AudioFile.Stream ?? (Godot.FileAccess.FileExists(Project.Instance.AudioFile.AudioPath)
-                ? FileHandler.LoadFileAsAudioStreamMp3(Project.Instance.AudioFile.AudioPath)
-                : throw new Exception($"Failed to update songPlayer stream - check if {Project.Instance.AudioFile.AudioPath} exists."));
+        Stream = Project.Instance.AudioFile.Stream ?? (Godot.FileAccess.FileExists(Project.Instance.AudioFile.FilePath)
+                ? FileHandler.LoadFileAsAudioStreamMp3(Project.Instance.AudioFile.FilePath)
+                : throw new Exception($"Failed to update songPlayer stream - check if {Project.Instance.AudioFile.FilePath} exists."));
     }
 
     private void LoadOgg()
     {
-        Stream = Project.Instance.AudioFile.Stream ?? (Godot.FileAccess.FileExists(Project.Instance.AudioFile.AudioPath)
-                ? AudioStreamOggVorbis.LoadFromFile(Project.Instance.AudioFile.AudioPath)
-                : throw new Exception($"Failed to update songPlayer stream - check if {Project.Instance.AudioFile.AudioPath} exists."));
+        Stream = Project.Instance.AudioFile.Stream ?? (Godot.FileAccess.FileExists(Project.Instance.AudioFile.FilePath)
+                ? AudioStreamOggVorbis.LoadFromFile(Project.Instance.AudioFile.FilePath)
+                : throw new Exception($"Failed to update songPlayer stream - check if {Project.Instance.AudioFile.FilePath} exists."));
     }
 
     private void LoadAudio()
     {
         var audioFile = Project.Instance.AudioFile;
-        string extension = audioFile.Extension ?? Path.GetExtension(Project.Instance.AudioFile?.AudioPath ?? "").ToLower();
+        string extension = audioFile.Extension ?? Path.GetExtension(Project.Instance.AudioFile?.FilePath ?? "").ToLower();
         switch (extension)
         {
             case ".mp3":

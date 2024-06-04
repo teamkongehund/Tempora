@@ -2,11 +2,15 @@ using System;
 using System.IO;
 using System.Linq;
 using Godot;
+using Tempora.Classes.DataHelpers;
 using Tempora.Classes.Utility;
 
 namespace Tempora.Classes.Audio;
 
-public partial class AudioFile : Node
+/// <summary>
+/// Stores audio data and metadata.
+/// </summary>
+public partial class AudioFile : PcmData
 {
 
     public float[] AudioDataPer10Max = null!;
@@ -14,23 +18,25 @@ public partial class AudioFile : Node
 
 
     #region Audio Data
-    public SoundData? SoundData;
 
-    private float[] _pcmFloats = null!;
+    private float[] pcmLeft = null!;
     /// <summary>
     /// The PCM audio data for one channel
     /// </summary>
-    public float[] PCMFloats
+    public float[] PcmLeft
     {
-        get => _pcmFloats;
+        get => pcmLeft;
         set
         {
-            _pcmFloats = value;
+            pcmLeft = value;
             CalculatePer10s();
         }
     }
 
-    public byte[] AudioBuffer
+    /// <summary>
+    /// The audio file contents as stored on the hard drive - i.e. contents of "audio.mp3"
+    /// </summary>
+    public byte[] FileBuffer
     {
         get;
         private set;
@@ -38,35 +44,41 @@ public partial class AudioFile : Node
     /// <summary>
     ///     1 = mono , 2 = stereo
     /// </summary>
-    private int Channels;
-    public int SampleRate;
 
-    public string AudioPath = null!; 
+    public string FilePath = null!; 
     #endregion
 
     public AudioStream Stream = null!;
 
-
-    private const float audacityOriginMP3 = -0.0261f;
+    /// <summary>
+    /// Audacity's origin seems to be one mp3 frame (1152 samples) earlier than NAudio.  
+    /// <para>My best guess as to why: Audacity likely includes the LAME/Xing header in the audio rendering as silence, whereas NAudio doesn't</para>
+    /// </summary>
+    private float AudacityOriginMP3 => -1152 / (float)sampleRate;
     private const float audacityOriginOGG = 0;
     /// <summary>
     /// For MP3 data, We have 1151 samples less than Audacity has for the same data (according to one single test I made)
     /// 1151 samples / 44100 samples/second = 0.0261 seconds.
-    /// This might be down to the differences between Audacity's and NAudio's decompression algorhithms, if I were to guess.
+    /// This might be down to the differences between Audacity's and NAudio's decoding algorhithms, if I were to guess.
     /// </summary>
-    private float audacityOrigin = audacityOriginMP3;
+    private float audacityOrigin;
 
 
-    //private const float playbackOrigininSecondsMP3 = 0.0512f;
-    private const float playbackOrigininSecondsMP3 = 0.0251f;
-    private const float playbackOriginInSecondsOGG = 0;
     /// <summary>
     /// The timewise position of playback origin, counting with the first sample <see cref="AudioFile.SoundData.Floats[0][0]"/> being 0:000
-    /// Both the Godot AudioStreamPlayer and Osu take the built-in silence in the beginning of MP3 files into account, placing the origin where the audio actuall starts.
+    /// Both the Godot AudioStreamPlayer and Osu take the built-in silence in the beginning of MP3 files into account, placing the origin where the audio actually starts.
+    /// <para>Take the example of an audio file "click-quick", which started as .ogg and was encoded as mp3: 
+    /// for both audacity and NAudio, in click-quick.ogg, index 1 has value 0.755. 
+    /// For NAudio, in click-quick.mp3, index 1106 has value 0.755. Audacity has it one frame (1152 samples) later.</para>
+    /// <para>My best take on where the number comes from follows here. 
+    /// This logic is implemented in <see cref="AudioDataHelper.DecodeMp3(NAudio.Wave.Mp3FileReader, out byte[], out int, out int, out int, out int)"/></para>
+    /// <para>The encoder adds 576 samples of delay. This can be found via <see cref="AudioDataHelper.ExtractLameHeaderInfo(byte[], out int, out int)"/>.
+    /// All MP3 decodes add 528 samples of delay as mentioned in <see href="https://lame.sourceforge.io/tech-FAQ.txt"/>.
+    /// Add 1 sample, which is also mentioned in the link. This gets us to 1105 for click-quick.mp3, which is what we observe.</para>
     /// </summary>
-    private float playbackOriginÍnSeconds = playbackOrigininSecondsMP3;
+    private float playbackOrigin_Seconds => playbackOriginSample / (float)sampleRate;
 
-    private string extension;
+    private string extension = "";
     public string Extension
     {
         get => extension;
@@ -77,60 +89,39 @@ public partial class AudioFile : Node
             extension = value;
             audacityOrigin = extension switch
             {
-                ".mp3" => audacityOriginMP3,
+                ".mp3" => AudacityOriginMP3,
                 ".ogg" => audacityOriginOGG,
-                _ => 0
-            };
-            playbackOriginÍnSeconds = extension switch
-            {
-                ".mp3" => playbackOrigininSecondsMP3,
-                ".ogg" => playbackOriginInSecondsOGG,
                 _ => 0
             };
         }
     }
 
-    public AudioFile(string path)
+    public AudioFile(string path) : base(path)
     {
         if (!IsAudioFileExtensionValid(path, out string extension))
             throw new Exception($"Failed to create AudioFile with path {path} : Extention was not valid!");
 
-        var audioStream = GetAudioStream(path, out byte[] audioBuffer);
+        var audioStream = GetAudioStream(path, out byte[] fileBuffer);
 
         if (audioStream == null)
             throw new Exception($"Failed to create AudioFile with path {path} : Could not create an AudioStream");
 
-        //AudioData = AudioDataHandler.ExtractAudioFloat(path, out SampleRate, out Channels);
-
-        SoundData = AudioDataHandler.GetSoundData(path);
-        SampleRate = SoundData.SampleRate;
-        Channels = SoundData.Channels;
-
         // For now, use left channel
-        PCMFloats = SoundData.Floats[0];
+        PcmLeft = PcmFloats[0];
 
         Extension = extension;
         Stream = audioStream;
-        AudioBuffer = audioBuffer;
-        AudioPath = path;
+        this.FileBuffer = fileBuffer;
+        FilePath = path;
     }
 
-    public AudioFile(AudioStreamMP3 audioStreamMP3)
+    public AudioFile(AudioStreamMP3 audioStreamMP3) : base(audioStreamMP3.Data, ".mp3")
     {
-        byte[] buffer = audioStreamMP3.Data;
-
-        //float[] audioData = AudioDataHandler.Mp3ToAudioFloat(buffer, out int sampleRate, out int channels);
-
-        SoundData = AudioDataHandler.GetSoundData(buffer, ".mp3");
-        SampleRate = SoundData.SampleRate;
-        Channels = SoundData.Channels;
-
         // For now, use left channel
-        PCMFloats = SoundData.Floats[0];
-
+        PcmLeft = PcmFloats[0];
         Stream = audioStreamMP3;
         Extension = ".mp3";
-        AudioBuffer = buffer;
+        FileBuffer = audioStreamMP3.Data;
     }
 
     public int SampleTimeToSampleIndex(float seconds) => (int)Math.Floor(seconds * SampleRate);
@@ -142,25 +133,25 @@ public partial class AudioFile : Node
     /// </summary>
     /// <param name="sampleTime"></param>
     /// <returns></returns>
-    public float SampleTimeToPlaybackTime(float sampleTime) => sampleTime - playbackOriginÍnSeconds;
+    public float SampleTimeToPlaybackTime(float sampleTime) => sampleTime - playbackOrigin_Seconds;
     /// <summary>
     /// Sample Time is the number of seconds from the very first sample, in seconds.
     /// Playback Time is the number of seconds from the Playback origin.
     /// </summary>
     /// <param name="playbackTime"></param>
     /// <returns></returns>
-    public float PlaybackTimeToSampleTime(float playbackTime) => playbackTime + playbackOriginÍnSeconds;
+    public float PlaybackTimeToSampleTime(float playbackTime) => playbackTime + playbackOrigin_Seconds;
 
     /// <summary>
     /// Return audio duration in seconds
     /// </summary>
     /// <returns></returns>
-    public float GetAudioLength() => SampleIndexToSampleTime(PCMFloats.Length - 1);
+    public float GetAudioLength() => SampleIndexToSampleTime(PcmLeft.Length - 1);
 
     public void CalculatePer10s()
     {
-        int smallLength = PCMFloats.Length / 10;
-        bool isDataLengthDivisibleBy10 = PCMFloats.Length % 10 == 0;
+        int smallLength = PcmLeft.Length / 10;
+        bool isDataLengthDivisibleBy10 = PcmLeft.Length % 10 == 0;
         int length = isDataLengthDivisibleBy10 ? smallLength : smallLength + 1;
 
         AudioDataPer10Min = new float[length];
@@ -168,11 +159,11 @@ public partial class AudioFile : Node
 
         for (int i = 0; i < length - 1; i++)
         {
-            AudioDataPer10Min[i] = PCMFloats[(i * 10)..((i * 10) + 10)].Min();
-            AudioDataPer10Max[i] = PCMFloats[(i * 10)..((i * 10) + 10)].Max();
+            AudioDataPer10Min[i] = PcmLeft[(i * 10)..((i * 10) + 10)].Min();
+            AudioDataPer10Max[i] = PcmLeft[(i * 10)..((i * 10) + 10)].Max();
         }
-        AudioDataPer10Min[length - 1] = PCMFloats[((length - 1) * 10-1)..^1].Min();
-        AudioDataPer10Max[length - 1] = PCMFloats[((length - 1) * 10-1)..^1].Max();
+        AudioDataPer10Min[length - 1] = PcmLeft[((length - 1) * 10-1)..^1].Min();
+        AudioDataPer10Max[length - 1] = PcmLeft[((length - 1) * 10-1)..^1].Max();
     }
 
     private bool IsAudioFileExtensionValid(string path, out string extension)

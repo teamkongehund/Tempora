@@ -129,9 +129,14 @@ SliderTickRate:1
         zipPacker.CloseFile();
 
         zipPacker.StartFile($"audio{audioFile.Extension}");
-        byte[] fileBuffer = (audioFile.Extension == ".mp3")
-            ? ((AudioStreamMP3)audioFile.Stream).Data
-            : FileHandler.GetFileAsBuffer(audioFile.AudioPath);
+        
+        // If osu export no longer works, uncomment this:
+        //byte[] fileBuffer = (audioFile.Extension == ".mp3")
+        //    ? ((AudioStreamMP3)audioFile.Stream).Data
+        //    : FileHandler.GetFileAsBuffer(audioFile.filePath);
+
+        byte[] fileBuffer = audioFile.FileBuffer;
+
         zipPacker.WriteFile(fileBuffer);
 
         zipPacker.CloseFile();

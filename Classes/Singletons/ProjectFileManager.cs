@@ -160,7 +160,7 @@ public partial class ProjectFileManager : Node
         string audioFilePathLong = Path.Combine(fileDir, audioFilePathShort);
 
         using var audioFile = Godot.FileAccess.Open(audioFilePathLong, Godot.FileAccess.ModeFlags.Write);
-        audioFile.StoreBuffer(Project.Instance.AudioFile.AudioBuffer);
+        audioFile.StoreBuffer(Project.Instance.AudioFile.FileBuffer);
 
         string file = CreateProjectFileString(audioFilePathShort);
         FileHandler.SaveText(filePath, file);
@@ -169,7 +169,7 @@ public partial class ProjectFileManager : Node
         Project.Instance.NotificationMessage = $"Saved to {filePath}";
     }
 
-    public static string CreateProjectFileString() => CreateProjectFileString(Project.Instance.AudioFile.AudioPath);
+    public static string CreateProjectFileString() => CreateProjectFileString(Project.Instance.AudioFile.FilePath);
 
     public static string CreateProjectFileString(string audioPath)
     {
