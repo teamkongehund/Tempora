@@ -76,32 +76,51 @@ SliderTickRate:1
     {
         var newTiming = Timing.CopyAndAddExtraPoints(timing, audioFile);
         List<TimingPoint> timingPoints = newTiming.TimingPoints;
-        string timingPointsData = TimingPointToText(timingPoints);
+        //string timingPointsData = TimingPointToText(timingPoints);
+        string timingPointsData = TimingToDotOsuTimingPoints(newTiming);
         string extension = audioFile.Extension;
         string dotOsuUnformatted = $"{DefaultDotOsuFormer}{timingPointsData}{DefaultDotOsuLatter}";
         string dotOsu = String.Format(dotOsuUnformatted, extension);
         return dotOsu;
     }
 
-    public static string TimingPointToText(List<TimingPoint> timingPoints)
+    public static string TimingToDotOsuTimingPoints(Timing timing)
     {
-        string theText = "";
-        foreach (TimingPoint timingPoint in timingPoints)
+        if (timing.TimingPoints == null)
+            throw new NullReferenceException("timing.TimingPoints was null");
+
+        string result = "";
+
+        for (int i = 0; i < timing.TimingPoints!.Count; i++)
         {
-            //GD.Print(timingPoint.Bpm);
-            theText += TimingPointToText(timingPoint);
+            var timingPoint = timing.TimingPoints[i];
+            TimingPoint? previousTimingPoint = i > 0 ? timing.TimingPoints?[i - 1] : null;
+
+            // Omit first barlines where relevant (taiko, mania)
+            string effects = "0";
+            if (previousTimingPoint != null)
+            {
+                float previousOffsetMsRounded = (int)(previousTimingPoint.Offset * 1000);
+                float measureDifference = (float)(timingPoint.MusicPosition! - previousTimingPoint.MusicPosition!);
+                float timeDifference = measureDifference / previousTimingPoint.MeasuresPerSecond;
+                float previousWhiteLineOffsetMsRounded = (int)(previousOffsetMsRounded + timeDifference*1000);
+                float offsetMsRounded = (int)(timingPoint.Offset * 1000);
+                if (offsetMsRounded != previousWhiteLineOffsetMsRounded)
+                {
+                    bool isNewBpmGreater = (timingPoint.Bpm > previousTimingPoint.Bpm);
+                    if (isNewBpmGreater)
+                        effects = "8";
+                }
+            }
+
+            // offsetMS,MSPerBeat,beatsInMeasure,sampleSet,sampleIndex,volume,uninherited,effects
+            string offsetMs = ((int)(timingPoint.Offset * 1000) + ExportOffsetMs).ToString();
+            string msPerBeat = (timingPoint.BeatLengthSec * 1000).ToString(CultureInfo.InvariantCulture);
+            string beatsInMeasure = timingPoint.TimeSignature[0].ToString();
+            result += $"{offsetMs},{msPerBeat},{beatsInMeasure},2,0,80,1,{effects}\n";
         }
 
-        return theText;
-    }
-
-    public static string TimingPointToText(TimingPoint timingPoint)
-    {
-        // offsetMS,MSPerBeat,beatsInMeasure,sampleSet,sampleIndex,volume,uninherited,effects
-        string offsetMs = ((int)(timingPoint.Offset * 1000) + ExportOffsetMs).ToString();
-        string msPerBeat = (timingPoint.BeatLengthSec * 1000).ToString(CultureInfo.InvariantCulture);
-        string beatsInMeasure = timingPoint.TimeSignature[0].ToString();
-        return $"{offsetMs},{msPerBeat},{beatsInMeasure},2,0,80,1,0\n";
+        return result;
     }
 
     public static void SaveOsz(string oszPath, out string changedPath)
