@@ -105,12 +105,8 @@ SliderTickRate:1
                 float timeDifference = measureDifference / previousTimingPoint.MeasuresPerSecond;
                 float previousWhiteLineOffsetMsRounded = (int)(previousOffsetMsRounded + timeDifference*1000);
                 float offsetMsRounded = (int)(timingPoint.Offset * 1000);
-                if (offsetMsRounded != previousWhiteLineOffsetMsRounded)
-                {
-                    bool isNewBpmGreater = (timingPoint.Bpm > previousTimingPoint.Bpm);
-                    if (isNewBpmGreater)
-                        effects = "8";
-                }
+                if (offsetMsRounded != previousWhiteLineOffsetMsRounded && timingPoint.Bpm > previousTimingPoint.Bpm)
+                    effects = "8";
             }
 
             // offsetMS,MSPerBeat,beatsInMeasure,sampleSet,sampleIndex,volume,uninherited,effects
