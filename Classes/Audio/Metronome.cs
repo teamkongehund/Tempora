@@ -99,7 +99,7 @@ public partial class Metronome : Node
 
     #region Buffer
 
-    private double currentBufferMusicFrame;
+    private double currentBufferMusicSample;
     private int numClickFramesLeftToAdd;
     private bool isPrimaryClick;
     private float triggerPosition;
@@ -116,10 +116,10 @@ public partial class Metronome : Node
 
         float sampleRateRatio = metronomeSampleRate / musicSampleRate;
 
-        double initialBufferMusicFrame = currentBufferMusicFrame;
+        double initialBufferMusicFrame = currentBufferMusicSample;
         for (int i = 0; i < framesAvailable; i++)
         {
-            double currentBufferMusicTime = currentBufferMusicFrame / musicSampleRate;
+            double currentBufferMusicTime = currentBufferMusicSample / musicSampleRate;
 
             if (currentBufferMusicTime > triggerTime)
             {
@@ -138,7 +138,7 @@ public partial class Metronome : Node
                 buffer[bufferIndex] = Vector2.Zero;
             }
 
-            currentBufferMusicFrame = initialBufferMusicFrame + musicPitchScale * (i+1) / sampleRateRatio;
+            currentBufferMusicSample = initialBufferMusicFrame + musicPitchScale * (i+1) / sampleRateRatio;
             bufferIndex++;
 
             if (bufferIndex >= buffer.Length)
@@ -158,11 +158,14 @@ public partial class Metronome : Node
         SeekPlayback(musicPlayer.PlaybackTime);
     }
 
-    private void UpdateTriggerTime(double currentTime)
+    private void UpdateTriggerTime(double currentPlaybackTime)
     {
-        float musicPosition = Timing.Instance.TimeToMusicPosition((float)currentTime);
+        float currentSampleTime = Project.Instance.AudioFile.PlaybackTimeToSampleTime((float)currentPlaybackTime);
+        float musicPosition = Timing.Instance.SampleTimeToMusicPosition((float)currentSampleTime);
         triggerPosition = GetTriggerPosition(musicPosition);
-        triggerTime = Timing.Instance.MusicPositionToTime(triggerPosition);
+        var triggerSampleTime = Timing.Instance.MusicPositionToSampleTime(triggerPosition);
+        triggerTime = triggerSampleTime;
+        //triggerTime = Project.Instance.AudioFile.SampleTimeToPlaybackTime(triggerSampleTime);
     }
     #endregion
 
@@ -176,10 +179,10 @@ public partial class Metronome : Node
         FillBuffer();
     }
 
-    private void SeekPlayback(double time)
+    private void SeekPlayback(double playbackTime)
     {
-        currentBufferMusicFrame = time * musicSampleRate;
-        UpdateTriggerTime((float)time);
+        currentBufferMusicSample = Project.Instance.AudioFile.PlaybackTimeToSampleTime((float)playbackTime) * musicSampleRate;
+        UpdateTriggerTime((float)playbackTime);
         if (playback is null) return;
         StopPlayback();
         StartPlayback();

@@ -50,7 +50,7 @@ public partial class Timing
     public void AddTimingPoint(float musicPosition)
     {
         var timingPoint = new TimingPoint(musicPosition);
-        timingPoint.Offset_Set(MusicPositionToTime(musicPosition), this);
+        timingPoint.Offset_Set(MusicPositionToSampleTime(musicPosition), this);
         TimingPoints.Add(timingPoint);
         SubscribeToEvents(timingPoint);
         TimingPoints.Sort();
@@ -97,7 +97,7 @@ public partial class Timing
     /// <param name="time"></param>
     public void AddTimingPoint(float time, out TimingPoint? timingPoint)
     {
-        timingPoint = new TimingPoint(time, GetTimeSignature(TimeToMusicPosition(time)));
+        timingPoint = new TimingPoint(time, GetTimeSignature(SampleTimeToMusicPosition(time)));
         TimingPoints.Add(timingPoint);
         TimingPoints.Sort();
 
@@ -106,7 +106,7 @@ public partial class Timing
         TimingPoint? previousTimingPoint = GetPreviousTimingPoint(timingPoint);
         TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
 
-        timingPoint.MusicPosition_Set(TimeToMusicPosition(time), this);
+        timingPoint.MusicPosition_Set(SampleTimeToMusicPosition(time), this);
 
         if (timingPoint.MusicPosition == null
             || previousTimingPoint?.MusicPosition == timingPoint.MusicPosition

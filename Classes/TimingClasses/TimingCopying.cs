@@ -87,8 +87,8 @@ public partial class Timing
 
         // Maybe add exceptions later like 4/8 and 8/8 
 
-        int firstMeasure = (int)newTiming.TimeToMusicPosition(0f);
-        int lastMeasure = (int)newTiming.TimeToMusicPosition((float)audioFile.Stream.GetLength());
+        int firstMeasure = (int)newTiming.SampleTimeToMusicPosition(0f);
+        int lastMeasure = (int)newTiming.SampleTimeToMusicPosition((float)audioFile.Stream.GetLength());
 
         for (int measure = firstMeasure;  measure < lastMeasure + 1; measure++)
         {

@@ -133,7 +133,7 @@ public partial class AudioDisplayPanel : Control
 
         Vector2 mousePos = mouseEvent.Position;
         float musicPosition = GetMouseMusicPosition(mousePos);
-        float time = Timing.Instance.MusicPositionToTime(musicPosition);
+        float time = Timing.Instance.MusicPositionToSampleTime(musicPosition);
 
         TimingPoint? nearestTimingPoint = Timing.Instance.GetNearestTimingPoint(musicPosition);
         Context.Instance.TimingPointNearestCursor = nearestTimingPoint;
@@ -330,8 +330,8 @@ public partial class AudioDisplayPanel : Control
 
         float margin = Settings.Instance.MusicPositionMargin;
 
-        float timeWherePanelStarts = Timing.Instance.MusicPositionToTime(ActualMusicPositionStartForPanel);
-        float timeWherePanelEnds = Timing.Instance.MusicPositionToTime(ActualMusicPositionEndForPanel);
+        float timeWherePanelStarts = Timing.Instance.MusicPositionToSampleTime(ActualMusicPositionStartForPanel);
+        float timeWherePanelEnds = Timing.Instance.MusicPositionToSampleTime(ActualMusicPositionEndForPanel);
 
         TimingPoint? previousTimingPoint = Timing.Instance.GetOperatingTimingPoint_ByMusicPosition(ActualMusicPositionStartForPanel);
 
@@ -367,8 +367,8 @@ public partial class AudioDisplayPanel : Control
 
     private void AddWaveformSegment(float waveSegmentStartTime, float waveSegmentEndTime)
     {
-        float musicPositionStart = Timing.Instance.TimeToMusicPosition(waveSegmentStartTime);
-        float musicPositionEnd = Timing.Instance.TimeToMusicPosition(waveSegmentEndTime);
+        float musicPositionStart = Timing.Instance.SampleTimeToMusicPosition(waveSegmentStartTime);
+        float musicPositionEnd = Timing.Instance.SampleTimeToMusicPosition(waveSegmentEndTime);
 
         float margin = Settings.Instance.MusicPositionMargin;
         TimingPoint? heldTimingPoint = Context.Instance.HeldTimingPoint;
@@ -611,7 +611,7 @@ public partial class AudioDisplayPanel : Control
 
         PreviewLine.Position = new Vector2(MusicPositionToXPosition(musicPosition), 0);
 
-        float time = Timing.Instance.MusicPositionToTime(musicPosition);
+        float time = Timing.Instance.MusicPositionToSampleTime(musicPosition);
         var musicTime = TimeSpan.FromSeconds(time);
         PreviewLine.TimeLabel.Text = (time < 0 ? "-" : "") + musicTime.ToString(@"mm\:ss\:fff");
     }

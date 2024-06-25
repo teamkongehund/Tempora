@@ -21,7 +21,7 @@ public class PcmData
     protected byte[][] pcmBytes;
     protected float[][] pcmFloats;
     protected int channels;
-    protected int playbackOriginSample = 0;
+    protected int startSilenceSamples = 0;
     #endregion
     #region constructors
     /// <param name="sampleRate">The number of samples per second.</param>
@@ -61,7 +61,7 @@ public class PcmData
             this.bitsPerSample = bitsPerSample;
             this.pcmBytes = pcmBytes;
             this.pcmFloats = pcmFloats;
-            this.playbackOriginSample = playbackOriginSample;
+            this.startSilenceSamples = playbackOriginSample;
         }
     }
 
@@ -134,14 +134,14 @@ public class PcmData
         InitializeValues(sampleRate, channels, floats, shorts_byte, 16, startSilenceSamples);
     }
 
-    private void InitializeValues(int sampleRate, int channels, float[][] pcmFloats, byte[][] pcmBytes, int bitsPerSample, int playbackOriginSample)
+    private void InitializeValues(int sampleRate, int channels, float[][] pcmFloats, byte[][] pcmBytes, int bitsPerSample, int startSilenceSamples)
     {
         this.sampleRate = sampleRate;
         this.channels = channels;
         this.pcmFloats = pcmFloats;
         this.pcmBytes = pcmBytes;
         this.bitsPerSample = bitsPerSample;
-        this.playbackOriginSample = playbackOriginSample;
+        this.startSilenceSamples = startSilenceSamples;
     }
 
     #endregion
@@ -178,6 +178,6 @@ public class PcmData
     /// Sample index to be considered as origin due to added silence in start of file. Mainly relevant for mp3 files.
     /// <para>Some playback devices start their playback here, including Godot and osu.</para>
     /// </summary>
-    public int PlaybackOriginSample => playbackOriginSample;
+    public int PlaybackOriginSample => startSilenceSamples;
     #endregion
 }

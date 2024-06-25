@@ -76,7 +76,7 @@ public partial class AudioFile : PcmData
     /// All MP3 decodes add 528 samples of delay as mentioned in <see href="https://lame.sourceforge.io/tech-FAQ.txt"/>.
     /// Add 1 sample, which is also mentioned in the link. This gets us to 1105 for click-quick.mp3, which is what we observe.</para>
     /// </summary>
-    private float playbackOrigin_Seconds => playbackOriginSample / (float)sampleRate;
+    private float playbackOrigin_Seconds => startSilenceSamples / (float)sampleRate;
 
     private string extension = "";
     public string Extension

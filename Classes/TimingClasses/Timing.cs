@@ -114,7 +114,15 @@ public partial class Timing : Node, IMementoOriginator
             : TimingPoints[timingPointIndex2].Offset - TimingPoints[timingPointIndex1].Offset;
     }
 
-    public float MusicPositionToTime(float musicPosition)
+    /// <summary>
+    /// Converts a music position to number of seconds from first sample. 
+    /// Note that mp3 playback does not start at first sample, so must be transformed if used in a playback context.
+    /// </summary>
+    /// <param name="musicPosition"></param>
+    /// <returns></returns>
+    /// <exception cref="NullReferenceException"></exception>
+    /// <exception cref="Exception"></exception>
+    public float MusicPositionToSampleTime(float musicPosition)
     {
         TimingPoint? timingPoint = GetOperatingTimingPoint_ByMusicPosition(musicPosition);
         if (timingPoint == null)

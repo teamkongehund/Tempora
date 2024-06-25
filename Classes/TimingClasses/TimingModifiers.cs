@@ -80,7 +80,7 @@ public partial class Timing
         }
 
         if (TimingPoints.Find(point => point.MusicPosition == musicPosition) == null && TimingPoints.Count > 0)
-            AddTimingPoint(musicPosition, MusicPositionToTime(musicPosition));
+            AddTimingPoint(musicPosition, MusicPositionToSampleTime(musicPosition));
 
         ShiftTimingPointsUponTimeSignatureChange(oldTiming, timeSignaturePoint);
 
