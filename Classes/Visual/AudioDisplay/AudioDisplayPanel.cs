@@ -137,43 +137,50 @@ public partial class AudioDisplayPanel : Control
 
         TimingPoint? nearestTimingPoint = Timing.Instance.GetNearestTimingPoint(musicPosition);
         Context.Instance.TimingPointNearestCursor = nearestTimingPoint;
-        float offsetPerWheelScroll = 0.002f;
+        float offsetPerWheelScroll = Input.IsKeyPressed(Key.Shift) ? 0.01f : 0.001f;
 
         switch (mouseEvent)
         {
-            case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } mouseButtonEvent when !Input.IsKeyPressed(Key.Alt):
+            case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } mouseButtonEvent 
+            when !Input.IsKeyPressed(Key.Alt):
                 if (!Context.Instance.AreAnySubwindowsVisible)
                     AttemptToAddTimingPoint?.Invoke(this, new GlobalEvents.ObjectArgument<float>(time));
                 break;
 
-            case InputEventMouseButton { ButtonIndex: MouseButton.Left, DoubleClick: true } mouseButtonEvent when Input.IsKeyPressed(Key.Alt):
+            case InputEventMouseButton { ButtonIndex: MouseButton.Left, DoubleClick: true } mouseButtonEvent 
+            when Input.IsKeyPressed(Key.Alt):
                 TimingPointSelection.Instance.DeselectAll();
                 break;
 
-            case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } mouseButtonEvent when Input.IsKeyPressed(Key.Alt):
+            case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } mouseButtonEvent 
+            when Input.IsKeyPressed(Key.Alt):
                 TimingPointSelection.Instance.StartSelector(musicPosition);
                 break;
 
-            case InputEventMouseButton { ButtonIndex: MouseButton.Right, Pressed: true } mouseButtonEvent when !Input.IsKeyPressed(Key.Alt):
+            case InputEventMouseButton { ButtonIndex: MouseButton.Right, Pressed: true } mouseButtonEvent 
+            when !Input.IsKeyPressed(Key.Alt):
                 SeekPlaybackTime?.Invoke(this, new GlobalEvents.ObjectArgument<float>(time));
                 break;
 
-            case InputEventMouseButton { ButtonIndex: MouseButton.WheelUp, Pressed: true } mouseButtonEvent when Input.IsKeyPressed(Key.Ctrl):
+            case InputEventMouseButton { ButtonIndex: MouseButton.WheelUp, Pressed: true } mouseButtonEvent 
+            when Input.IsKeyPressed(Key.Ctrl) && !Input.IsKeyPressed(Key.Alt):
                 TimingPointSelection.Instance.OffsetSelectionOrPoint(nearestTimingPoint, offsetPerWheelScroll);
                 break;
 
-            case InputEventMouseButton { ButtonIndex: MouseButton.WheelDown, Pressed: true } mouseButtonEvent when Input.IsKeyPressed(Key.Ctrl):
+            case InputEventMouseButton { ButtonIndex: MouseButton.WheelDown, Pressed: true } mouseButtonEvent 
+            when Input.IsKeyPressed(Key.Ctrl) && !Input.IsKeyPressed(Key.Alt):
                 TimingPointSelection.Instance.OffsetSelectionOrPoint(nearestTimingPoint, -offsetPerWheelScroll);
                 break;
 
-            case InputEventMouseButton { ButtonIndex: MouseButton.WheelDown, Pressed: true } mouseButtonEvent when Input.IsKeyPressed(Key.Alt):
+            case InputEventMouseButton { ButtonIndex: MouseButton.WheelDown, Pressed: true } mouseButtonEvent 
+            when Input.IsKeyPressed(Key.Alt):
                 if (nearestTimingPoint == null) break;
                 // Decrease BPM by 1 (snapping to integers) - only for last timing point.
                 float previousBpm = nearestTimingPoint.Bpm;
                 float newBpm = (int)previousBpm - 1;
-                if (Input.IsKeyPressed(Key.Shift) && !Input.IsKeyPressed(Key.Alt))
+                if (Input.IsKeyPressed(Key.Shift) && !Input.IsKeyPressed(Key.Ctrl))
                     newBpm = (int)previousBpm - 5;
-                else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Alt))
+                else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Ctrl))
                     newBpm = previousBpm - 0.1f;
 
                 nearestTimingPoint.Bpm_Set(newBpm, Timing.Instance);
@@ -181,14 +188,15 @@ public partial class AudioDisplayPanel : Control
                 MementoHandler.Instance.AddTimingMemento(nearestTimingPoint);
                 break;
 
-            case InputEventMouseButton { ButtonIndex: MouseButton.WheelUp, Pressed: true } mouseButtonEvent when Input.IsKeyPressed(Key.Alt):
+            case InputEventMouseButton { ButtonIndex: MouseButton.WheelUp, Pressed: true } mouseButtonEvent 
+            when Input.IsKeyPressed(Key.Alt):
                 if (nearestTimingPoint == null) break;
                 // Increase BPM by 1 (snapping to integers) - only for last timing point.
                 previousBpm = nearestTimingPoint.Bpm;
                 newBpm = (int)previousBpm + 1;
-                if (Input.IsKeyPressed(Key.Shift) && !Input.IsKeyPressed(Key.Alt))
+                if (Input.IsKeyPressed(Key.Shift) && !Input.IsKeyPressed(Key.Ctrl))
                     newBpm = (int)previousBpm + 5;
-                else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Alt))
+                else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Ctrl))
                     newBpm = previousBpm + 0.1f;
 
                 nearestTimingPoint.Bpm_Set(newBpm, Timing.Instance);
