@@ -428,22 +428,21 @@ Click and drag on the timeline to create a timing point and move it around on th
 Double-click to remove. 
 Change the time signature in the left-hand side (Default: 4/4)
 
-[b]Basic workflow:[/b] Listen to the music to identify where the downbeat is. Then click and drag that part of the music on to the bright red line to tell Tempora \"the downbeat goes here\". Repeat for other downbeats.
+[b]Recommended workflow:[/b] Listen to the music to identify where the downbeat is. Then click and drag that part of the music on to the bright red line to tell Tempora \"the downbeat goes here\". Repeat for other downbeats. Once downbeats have been placed throughout the whole song, listen to the song again (at lower playback rate if desired), and listen for inaccuracies. To fix inaccuracies try adjusting offset of existing timing points on downbeats and/or adding more. If this can't fix it, increase \"Grid\" slider to 2 so you can add timing points in the middle of measures.
 
 [i]Ctrl + A									[/i] Select all Timing Points
 [i]Delete / Backspace				[/i] Delete selected Timing Points
 [i]Ctrl + Z / Y								[/i] Undo / Redo
 [i]Alt + Click + Drag					[/i] Select / Deselect Timing Points
 [i]Alt + Double Click				[/i] Deselect All Timing Points
+[i]Ctrl + Scroll wheel				[/i] Change offset of nearest Timing Point
+	[i]+ Shift									[/i] Larger increments	
+[i]Alt + Scroll wheel					[/i] Change BPM of Timing Point (only if it is the last point)
+	[i]+ Shift / Ctrl						[/i] Larger / Smaller increments	
 
 When cursor is on a Timing Point:
 [i]Ctrl + Click + Drag				[/i] Change offset of Timing Point
-[i]Ctrl + Scroll wheel				[/i] Change BPM of Timing Point (only if it is the last point)
-	[i]+ Shift / Alt						[/i] Larger / Smaller increments	
 [i]Alt + Click								[/i] Select / Deselect Timing Point
-
-When cursor is not on a Timing Point:
-[i]Ctrl + Scroll wheel				[/i] Change offset of nearest Timing Point
 
 [font_size=25]Options[/font_size]
 [b]Time Signature Changes Move Points [/b]
