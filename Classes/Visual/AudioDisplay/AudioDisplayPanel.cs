@@ -276,6 +276,14 @@ public partial class AudioDisplayPanel : Control
                     TimingPointSelection.Instance.OffsetSelection(-secondsDifference);
                     return;
                 }
+                else if (Input.IsKeyPressed(Key.Shift))
+                {
+                    float xMovement = mouseMotion.Relative.X;
+                    float bpmPerPixel = 0.02f;
+                    float bpmDifference = xMovement * bpmPerPixel;
+                    Context.Instance.HeldTimingPoint.Bpm_Set(Context.Instance.HeldTimingPoint.Bpm + bpmDifference, Timing.Instance);
+                    return;
+                }
 
                 //Timing.Instance.SnapTimingPoint(Context.Instance.HeldTimingPoint, musicPosition, out _);
                 TimingPointSelection.Instance.MoveSelection(Context.Instance.HeldTimingPoint.MusicPosition, musicPosition);
