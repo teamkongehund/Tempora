@@ -21,6 +21,7 @@ public partial class OptionsMenu : PopupMenu
 		SetItemChecked(id_MetronopmeFollowsGrid, Settings.Instance.MetronomeFollowsGrid);
 		SetItemChecked(id_AutoScroll, Settings.Instance.AutoScrollWhenAddingTimingPoints);
 		SetItemChecked(id_RoundBPM, Settings.Instance.RoundBPM);
+        SetItemChecked(id_PlaybackOnNewPoints, Settings.Instance.SeekPlaybackOnTimingPointChanges);
 	}
 
 	int id_PreserveBpm = 0;
@@ -28,6 +29,7 @@ public partial class OptionsMenu : PopupMenu
 	int id_MoreSettings = 2;
 	int id_AutoScroll = 3;
 	int id_RoundBPM = 4;
+    int id_PlaybackOnNewPoints = 5;
 
 	private void OnIdPressed(long id)
 	{
@@ -53,7 +55,11 @@ public partial class OptionsMenu : PopupMenu
 				ToggleCheckBox(id_RoundBPM, out newStatus);
 				Settings.Instance.RoundBPM = newStatus;
 				break;
-		}
+            case var expression when (id == id_PlaybackOnNewPoints):
+                ToggleCheckBox(id_PlaybackOnNewPoints, out newStatus);
+                Settings.Instance.SeekPlaybackOnTimingPointChanges = newStatus;
+                break;
+        }
 	}
 
 	private void ToggleCheckBox(int id, out bool newStatus)
