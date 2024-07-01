@@ -58,6 +58,7 @@ public partial class MusicPlayer : AudioStreamPlayer
         //VolumeDb = base.VolumeDb;
         GlobalEvents.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
         GlobalEvents.Instance.AudioFileChanged += OnAudioFileChanged;
+        GlobalEvents.Instance.TimingPointAdded += OnTimingPointAdded;
     }
 
     public override void _Process(double delta)
@@ -97,6 +98,16 @@ public partial class MusicPlayer : AudioStreamPlayer
     {
         Pause();
         LoadAudio();
+    }
+
+    private void OnTimingPointAdded(object? sender, EventArgs e)
+    {
+        if (e is not GlobalEvents.ObjectArgument<TimingPoint> timingPointArg)
+            return;
+        if (!Settings.Instance.SeekPlaybackOnTimingPointChanges)
+            return;
+        var timingPoint = timingPointArg.Value;
+        SeekPlay(timingPoint.Offset - 0.1f);
     }
 
     public void Pause()

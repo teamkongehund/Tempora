@@ -153,6 +153,8 @@ public partial class Settings : Node
 
 	public bool AutoScrollWhenAddingTimingPoints = false;
 
+    public bool SeekPlaybackOnTimingPointChanges = true;
+
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
