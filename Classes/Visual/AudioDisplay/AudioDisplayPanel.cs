@@ -137,7 +137,7 @@ public partial class AudioDisplayPanel : Control
 
         TimingPoint? nearestTimingPoint = Timing.Instance.GetNearestTimingPoint(musicPosition);
         Context.Instance.TimingPointNearestCursor = nearestTimingPoint;
-        float offsetPerWheelScroll = Input.IsKeyPressed(Key.Shift) ? 0.01f : 0.001f;
+        float offsetPerWheelScroll = Input.IsKeyPressed(Key.Shift) ? 0.01f : 0.002f;
 
         switch (mouseEvent)
         {
