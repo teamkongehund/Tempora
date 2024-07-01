@@ -150,7 +150,12 @@ public partial class VisualTimingPoint : Control
         bool hasMouseInside = rectangle.HasPoint(mousePosition);
 
         if (!hasMouseInside)
+        {
+            BpmLabel.Visible = true;
             return;
+        }
+
+        BpmLabel.Visible = false;
 
         //Input.SetDefaultCursorShape(Input.CursorShape.PointingHand);
 
