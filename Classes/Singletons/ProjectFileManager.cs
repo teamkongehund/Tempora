@@ -125,7 +125,7 @@ public partial class ProjectFileManager : Node
 
         switch (extension)
         {
-            case var value when value == mp3Extension:
+            case var value when (value == mp3Extension || value == oggExtension):
                 var audioFile = new AudioFile(selectedPath);
                 Project.Instance.AudioFile = audioFile;
                 break;
