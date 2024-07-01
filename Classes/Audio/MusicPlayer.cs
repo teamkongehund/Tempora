@@ -107,7 +107,7 @@ public partial class MusicPlayer : AudioStreamPlayer
         if (!Settings.Instance.SeekPlaybackOnTimingPointChanges)
             return;
         var timingPoint = timingPointArg.Value;
-        SeekPlay(timingPoint.Offset - 0.1f);
+        SeekPlay(timingPoint.Offset - 0.05f);
     }
 
     public void Pause()

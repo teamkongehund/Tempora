@@ -133,7 +133,7 @@ public partial class AudioDisplayPanel : Control
 
         Vector2 mousePos = mouseEvent.Position;
         float musicPosition = GetMouseMusicPosition(mousePos);
-        float time = Timing.Instance.MusicPositionToSampleTime(musicPosition);
+        float sampletime = Timing.Instance.MusicPositionToSampleTime(musicPosition);
 
         TimingPoint? nearestTimingPoint = Timing.Instance.GetNearestTimingPoint(musicPosition);
         Context.Instance.TimingPointNearestCursor = nearestTimingPoint;
@@ -144,7 +144,7 @@ public partial class AudioDisplayPanel : Control
             case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } mouseButtonEvent 
             when !Input.IsKeyPressed(Key.Alt):
                 if (!Context.Instance.AreAnySubwindowsVisible)
-                    AttemptToAddTimingPoint?.Invoke(this, new GlobalEvents.ObjectArgument<float>(time));
+                    AttemptToAddTimingPoint?.Invoke(this, new GlobalEvents.ObjectArgument<float>(sampletime));
                 break;
 
             case InputEventMouseButton { ButtonIndex: MouseButton.Left, DoubleClick: true } mouseButtonEvent 
@@ -159,7 +159,9 @@ public partial class AudioDisplayPanel : Control
 
             case InputEventMouseButton { ButtonIndex: MouseButton.Right, Pressed: true } mouseButtonEvent 
             when !Input.IsKeyPressed(Key.Alt):
-                SeekPlaybackTime?.Invoke(this, new GlobalEvents.ObjectArgument<float>(time));
+                var heldTimingPoint = Context.Instance?.HeldTimingPoint;
+                var seekTime = heldTimingPoint != null ? heldTimingPoint.Offset - 0.05f : sampletime;
+                SeekPlaybackTime?.Invoke(this, new GlobalEvents.ObjectArgument<float>(seekTime));
                 break;
 
             case InputEventMouseButton { ButtonIndex: MouseButton.WheelUp, Pressed: true } mouseButtonEvent 
