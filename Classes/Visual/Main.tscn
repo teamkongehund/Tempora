@@ -406,8 +406,8 @@ text = "[center][font_size=40]Tempora[/font_size]
 by kongehund[/center]
 
 [font_size=25]Files[/font_size]
-Drag an .mp3 or .ogg file into Tempora to import it. 
 The \"File\" menu in the top left corner reveals common file handling options.
+Drag an .mp3 or .ogg file into Tempora to import it, or use the \"Open...\" dialog. 
 
 [i]Ctrl + S									[/i] Save project
 
@@ -442,10 +442,12 @@ Change the time signature in the left-hand side (Default: 4/4)
 	[i]+ Shift									[/i] Larger increments	
 [i]Alt + Scroll wheel					[/i] Change BPM of Timing Point (only if it is the last point)
 	[i]+ Shift / Ctrl						[/i] Larger / Smaller increments	
+[i]Alt + Click								[/i] (on a Timing Point) Select / Deselect
 
-When cursor is on a Timing Point:
+When cursor is on a Timing Point (or holding one):
 [i]Ctrl + Click + Drag				[/i] Change offset of Timing Point
-[i]Alt + Click								[/i] Select / Deselect Timing Point
+[i]Shift + Click + Drag				[/i] Change BPM of Timing Point (only if it's last)
+
 
 [font_size=25]Options[/font_size]
 [b]Time Signature Changes Move Points [/b]
