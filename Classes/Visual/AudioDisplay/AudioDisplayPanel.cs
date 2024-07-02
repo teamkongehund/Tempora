@@ -142,8 +142,7 @@ public partial class AudioDisplayPanel : Control
         switch (mouseEvent)
         {
             case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } mouseButtonEvent 
-            when !Input.IsKeyPressed(Key.Alt):
-                if (!Context.Instance.AreAnySubwindowsVisible)
+            when !Input.IsKeyPressed(Key.Alt) && !Context.Instance.AreAnySubwindowsVisible:
                     AttemptToAddTimingPoint?.Invoke(this, new GlobalEvents.ObjectArgument<float>(sampletime));
                 break;
 

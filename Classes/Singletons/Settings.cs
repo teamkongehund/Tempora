@@ -25,7 +25,7 @@ public partial class Settings : Node
 
 	#region Grid
 	private int divisor = 1;
-	public static int DivisorToSlider(int divisor) => GridSliderToDivisorDict.FirstOrDefault(x => x.Value == divisor).Key;
+	public static int DivisorToSliderValue(int divisor) => GridSliderToDivisorDict.FirstOrDefault(x => x.Value == divisor).Key;
 	/// <summary>
 	///     Snap timing points to beat grid when moving them.
 	///     Should always be true because osu's timing points are always on-grid.
