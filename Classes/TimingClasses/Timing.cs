@@ -166,6 +166,8 @@ public partial class Timing : Node, IMementoOriginator
     {
         float divisorLength = GetRelativeNotePosition(timeSignature, divisor, 1);
 
+        musicPosition = musicPosition % 1;
+
         float epsilon = 0.00001f;
         bool isDivisible = (musicPosition % divisorLength < epsilon || (divisorLength - musicPosition % divisorLength) < epsilon);
 
