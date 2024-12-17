@@ -21,20 +21,20 @@ public partial class FileMenu : PopupMenu
     {
         switch (id)
         {
-            case 0:
-                ProjectFileManager.Instance.LoadFileDialogPopup();
-                break;
             case 1:
-                ProjectFileManager.Instance.SaveProjectFileDialogPopup();
+                ProjectFileManager.Instance.NewProject();
                 break;
             case 2:
-                OsuExporter.ExportAndOpenOsz();
+                ProjectFileManager.Instance.LoadFileDialogPopup();
                 break;
             case 3:
-                ProjectFileManager.Instance.SaveOszFileDialogPopup();
+                ProjectFileManager.Instance.SaveProjectFileDialogPopup();
                 break;
             case 4:
-                ProjectFileManager.Instance.NewProject();
+                OsuExporter.ExportAndOpenOsz();
+                break;
+            case 5:
+                ProjectFileManager.Instance.SaveOszFileDialogPopup();
                 break;
         }
     }
