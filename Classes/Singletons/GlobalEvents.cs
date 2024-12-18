@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using Godot;
+using Tempora.Classes.TimingClasses;
 using SysCol = System.Collections.Generic;
 
 namespace Tempora.Classes.Utility;
@@ -21,6 +22,9 @@ public partial class GlobalEvents : Node
     public event EventHandler? TimingChanged;
     public event EventHandler? TimingPointCountChanged;
     public event EventHandler? TimingPointHolding;
+    /// <summary>
+    /// Event argument should be an <see cref="ObjectArgument{TimingPoint}"/> of the point rejecting the change
+    /// </summary>
     public event EventHandler? MusicPositionChangeRejected;
     public event EventHandler? TimingPointNearestCursorChanged;
     public event EventHandler? ContextMenuRequested;

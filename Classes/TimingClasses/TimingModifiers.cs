@@ -11,16 +11,14 @@ public partial class Timing
     /// </summary>
     /// <param name="timingPoint"></param>
     /// <param name="musicPosition"></param>
-    public void SnapTimingPoint(TimingPoint timingPoint, float musicPosition, out bool success)
+    public void SnapTimingPoint(TimingPoint timingPoint, float musicPosition)
     {
         if (timingPoint == null)
-        {
-            success = false;
             return;
-        }
 
         float snappedMusicPosition = SnapMusicPosition(musicPosition);
-        success = timingPoint.MusicPosition_Set(snappedMusicPosition, this);
+
+        timingPoint.MusicPosition = snappedMusicPosition;
     }
 
     public void UpdateTimeSignature(int[] timeSignature, int musicPosition)
@@ -148,6 +146,8 @@ public partial class Timing
         if (!ValidateIndices(lowerIndex, higherIndex, out lowerIndex, out higherIndex))
             return;
 
+        IsBatchOperationInProgress = true;
+
         bool willMusicPositionsIncrease = true;
         if (higherIndex >= lowerIndex + 1)
             willMusicPositionsIncrease = getNewMusicPosition(TimingPoints[lowerIndex + 1]) > TimingPoints[lowerIndex + 1].MusicPosition;
@@ -163,13 +163,16 @@ public partial class Timing
             if (timingPoint?.MusicPosition == null)
                 throw new NullReferenceException(nameof(timingPoint));
 
-            bool isMusicPositionValid = timingPoint.MusicPosition_Set(getNewMusicPosition(timingPoint), this);
-            if (!isMusicPositionValid)
+            timingPoint.MusicPosition = getNewMusicPosition(timingPoint);
+
+            if (ShouldCancelBatchOperation)
             {
-                //GD.Print("Music Position change failed. Stopping batch operation.");
+                ShouldCancelBatchOperation = false;
                 break;
             }
         }
+
+        IsBatchOperationInProgress = false;
     }
 
     /// <summary>
@@ -221,7 +224,7 @@ public partial class Timing
         if (!areThereAnySubsequentTimingPoints)
         {
             TimingPoint higherTimingPoint = TimingPoints[higherIndex];
-            higherTimingPoint.Bpm_Set(higherTimingPoint.Bpm * multiplier, this);
+            higherTimingPoint.Bpm = higherTimingPoint.Bpm * multiplier;
         }
 
         MementoHandler.Instance.AddTimingMemento();
@@ -270,7 +273,7 @@ public partial class Timing
             if (timingPoint?.Offset == null)
                 throw new NullReferenceException(nameof(timingPoint));
 
-            timingPoint.Offset_Set(timingPoint.Offset + offsetChange, this);
+            timingPoint.Offset = timingPoint.Offset + offsetChange;
         }
 
         IsBatchOperationInProgress = false;

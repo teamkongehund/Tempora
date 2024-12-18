@@ -181,20 +181,11 @@ public partial class AudioVisualsContainer : VBoxContainer
             throw new NullReferenceException($"{nameof(timingPoint.MusicPosition)} was null");
 
         float musicPosition = (float)timingPoint.MusicPosition;
-        Timing.Instance.SnapTimingPoint(timingPoint, musicPosition, out bool didSnapSucceed);
+        Timing.Instance.SnapTimingPoint(timingPoint, musicPosition);
         Context.Instance.HeldTimingPoint = timingPoint;
         Context.Instance.HeldPointIsJustBeingAdded = true;
 
         TimingPointSelection.Instance.SelectTimingPoint(timingPoint);
-
-        if (!didSnapSucceed)
-        {
-            //Context.Instance.HeldTimingPoint = null;
-            //Timing.Instance.TimingPoints.Remove(timingPoint);
-            //GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged)); // Gets rid of VisualTimingPoint
-            Context.Instance.ShouldDeleteHeldPointIfNotOnGrid = true;
-            return;
-        }
 
         MementoHandler.Instance.AddTimingMemento();
     }

@@ -336,7 +336,7 @@ public partial class TimingPointSelection : Node
             OffsetSelection(offset);
         else
         {
-            point.Offset_Set(point.Offset + offset, Timing.Instance);
+            point.Offset = point.Offset + offset;
             MementoHandler.Instance.AddTimingMemento(point);
         }
     }

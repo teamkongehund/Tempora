@@ -37,6 +37,7 @@ public partial class Context : Node
                     HeldPointIsJustBeingAdded = false;
                     return;
                 }
+                ShouldDeleteHeldPointIfNotOnGrid = false;
                 bool doesTimingPointStillExist = heldTimingPoint != null;
                 bool hasMusicPositionChanged = heldTimingPoint?.MusicPosition != heldTimingPoint_PreviousMusicPosition;
                 bool hasOffsetChanged = heldTimingPoint?.Offset != heldTimingPoint_PreviousOffset;
@@ -98,6 +99,7 @@ public partial class Context : Node
 
         GlobalEvents.Instance.TimingPointHolding += OnTimingPointHolding;
         GlobalEvents.Instance.MouseLeftReleased += OnMouseLeftReleased;
+        GlobalEvents.Instance.MusicPositionChangeRejected += OnTimingPointMusicPositionRejected;
 
         GetViewport().GuiFocusChanged += OnGuiFocusChanged;
     }
@@ -116,14 +118,15 @@ public partial class Context : Node
         FocusedControl = focusedControl;
     }
 
-    public bool AreAnySubwindowsVisible
+    private void OnTimingPointMusicPositionRejected(object? sender, EventArgs e)
     {
-        get
+        if (e is not GlobalEvents.ObjectArgument<TimingPoint> timingPointArgument)
+            return;
+        if (HeldPointIsJustBeingAdded && HeldTimingPoint != null)
         {
-            var subWindows = GetViewport().GetEmbeddedSubwindows();
-            if (subWindows.Count > 0)
-                return true;
-            return false;
+            ShouldDeleteHeldPointIfNotOnGrid = true;
         }
     }
+
+    public bool AreAnySubwindowsVisible => GetViewport().GetEmbeddedSubwindows().Count > 0;
 }

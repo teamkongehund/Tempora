@@ -23,9 +23,9 @@ public partial class Timing
 
         int index = TimingPoints.IndexOf(timingPoint);
 
-        if (index >= 1) // Set previous timing point
+        if (index >= 1) // Update previous timing point
         {
-            TimingPoints[index - 1].MeasuresPerSecond_Set(this);
+            UpdateMPS(TimingPoints[index - 1]);
 
             if (!IsInstantiating)
                 GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointCountChanged));
@@ -50,7 +50,7 @@ public partial class Timing
     public void AddTimingPoint(float musicPosition)
     {
         var timingPoint = new TimingPoint(musicPosition);
-        timingPoint.Offset_Set(MusicPositionToSampleTime(musicPosition), this);
+        timingPoint.Offset = MusicPositionToSampleTime(musicPosition);
         TimingPoints.Add(timingPoint);
         SubscribeToEvents(timingPoint);
         TimingPoints.Sort();
@@ -81,9 +81,9 @@ public partial class Timing
 
         int index = TimingPoints.IndexOf(timingPoint);
 
-        if (index >= 1) // Set previous timing point
+        if (index >= 1) // Update previous timing point
         {
-            TimingPoints[index - 1].MeasuresPerSecond_Set(this);
+            UpdateMPS(TimingPoints[index - 1]);
 
             if (!IsInstantiating)
                 GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
@@ -106,7 +106,7 @@ public partial class Timing
         TimingPoint? previousTimingPoint = GetPreviousTimingPoint(timingPoint);
         TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
 
-        timingPoint.MusicPosition_Set(SampleTimeToMusicPosition(time), this);
+        timingPoint.MusicPosition = SampleTimeToMusicPosition(time);
 
         if (timingPoint.MusicPosition == null
             || previousTimingPoint?.MusicPosition == timingPoint.MusicPosition
@@ -135,7 +135,8 @@ public partial class Timing
         timingPoint.QueueFree();
         TimingPoints.Remove(timingPoint);
 
-        previousTimingPoint?.MeasuresPerSecond_Set(this);
+        if (previousTimingPoint != null)
+            UpdateMPS(previousTimingPoint);
 
         GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointCountChanged));
 
@@ -174,8 +175,8 @@ public partial class Timing
         }
         TimingPoints.RemoveRange(indexFrom, indexTo - indexFrom);
 
-        if (!isIndexToLast)
-            previousTimingPoint?.MeasuresPerSecond_Set(this);
+        if (!isIndexToLast && previousTimingPoint != null)
+            UpdateMPS(previousTimingPoint);
 
         GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointCountChanged));
 

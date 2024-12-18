@@ -184,7 +184,7 @@ public partial class AudioDisplayPanel : Control
                 else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Ctrl))
                     newBpm = previousBpm - 0.1f;
 
-                nearestTimingPoint.Bpm_Set(newBpm, Timing.Instance);
+                nearestTimingPoint.Bpm = newBpm;
 
                 MementoHandler.Instance.AddTimingMemento(nearestTimingPoint);
                 break;
@@ -200,7 +200,7 @@ public partial class AudioDisplayPanel : Control
                 else if (!Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Ctrl))
                     newBpm = previousBpm + 0.1f;
 
-                nearestTimingPoint.Bpm_Set(newBpm, Timing.Instance);
+                nearestTimingPoint.Bpm = newBpm;
 
                 MementoHandler.Instance.AddTimingMemento(nearestTimingPoint);
                 break;
@@ -282,7 +282,7 @@ public partial class AudioDisplayPanel : Control
                     float xMovement = mouseMotion.Relative.X;
                     float bpmPerPixel = 0.02f;
                     float bpmDifference = xMovement * bpmPerPixel;
-                    Context.Instance.HeldTimingPoint.Bpm_Set(Context.Instance.HeldTimingPoint.Bpm + bpmDifference, Timing.Instance);
+                    Context.Instance.HeldTimingPoint.Bpm = Context.Instance.HeldTimingPoint.Bpm + bpmDifference;
                     return;
                 }
 

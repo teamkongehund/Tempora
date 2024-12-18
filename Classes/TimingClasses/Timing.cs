@@ -43,6 +43,8 @@ public partial class Timing : Node, IMementoOriginator
     }
     private bool IsBatchOperationInProgress = false;
 
+    private bool ShouldCancelBatchOperation = false;
+
     public static Timing Instance { get => instance; set => instance = value; }
     private static Timing instance = null!;
     
@@ -86,6 +88,13 @@ public partial class Timing : Node, IMementoOriginator
     
     // These methods can be moved to separate scripts if necessary.
 
+    /// <summary>
+    /// Checks if a new <see cref="TimingPoint.MusicPosition"/> is valid, by checking whether it crosses the position of other points.
+    /// </summary>
+    /// <param name="timingPoint"></param>
+    /// <param name="musicPosition"></param>
+    /// <param name="rejectingTimingPoint"></param>
+    /// <returns></returns>
     public bool CanTimingPointGoHere(TimingPoint? timingPoint, float musicPosition, out TimingPoint? rejectingTimingPoint)
     {
         TimingPoint? previousTimingPoint = GetPreviousTimingPoint(timingPoint);

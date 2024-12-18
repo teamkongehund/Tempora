@@ -35,7 +35,7 @@ public partial class MusicPlayer : AudioStreamPlayer
         }
     }
 
-    public void SetPitchScale(float pitchScale)
+    public new void SetPitchScale(float pitchScale)
     {
         if (isUsingAlternativePlaybackRate)
             AlternativePlaybackRate = pitchScale;

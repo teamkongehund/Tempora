@@ -16,6 +16,8 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 
 	public bool IsInstantiating = true;
 
+    public bool IsBeingUpdated = false;
+
 	public ulong SystemTimeWhenCreatedMsec;
 
 	#region Time Signature
@@ -32,16 +34,11 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 		set
 		{
 			if (timeSignature == value)
-			{
-				if (AreThereUncommunicatedChanges)
-					EmitChangedEvent();
 				return;
-			}
+            int[] oldValue = timeSignature;
 			timeSignature = value;
 
-			AreThereUncommunicatedChanges = true;
-			RequestUpdateMPS();
-			Bpm = MpsToBpm(MeasuresPerSecond);
+            PropertyChanged?.Invoke(this, new PropertyChangeArgument(PropertyType.TimeSignature, oldValue, value));
 		}
 	}
 	#endregion
@@ -55,42 +52,22 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 	public float Offset
 	{
 		get => offset;
-		private set
+		set
 		{
-			if (offset == value)
-			{
-				if (AreThereUncommunicatedChanges)
-					EmitChangedEvent();
-				return;
-			}
+            if (offset == value)
+                return;
+            if (IsInstantiating)
+            {
+                offset = value;
+                return;
+            }
 
+            float oldValue = offset;
 			offset = value;
-			AreThereUncommunicatedChanges = true;
-			RequestUpdateMPS();
-			return;
+
+            PropertyChanged?.Invoke(this, new PropertyChangeArgument(PropertyType.Offset, oldValue, value));
 		}
 	}
-
-	public void Offset_Set(float value, Timing timing)
-	{
-		if (IsInstantiating)
-		{
-			offset = value;
-			return;
-		}
-
-		TimingPoint? previousTimingPoint = timing.GetPreviousTimingPoint(this);
-		TimingPoint? nextTimingPoint = timing.GetNextTimingPoint(this);
-
-		// validity checks
-		if (previousTimingPoint != null && previousTimingPoint.Offset >= value)
-			return;
-		if (nextTimingPoint != null && nextTimingPoint.Offset <= value)
-			return;
-
-		Offset = value;
-	}
-
 	#endregion
 
 	#region MusicPosition
@@ -105,38 +82,16 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 	public float? MusicPosition
 	{
 		get => musicPosition;
-		private set
+		set
 		{
 			if (musicPosition == value)
-			{
-				if (AreThereUncommunicatedChanges)
-					EmitChangedEvent();
 				return;
-			}
 
+            float? oldValue = musicPosition;
 			musicPosition = value;
-			AreThereUncommunicatedChanges = true;
 
-			RequestUpdateMPS();
-		}
-	}
-
-	/// <summary>
-	/// Attempt to set <see cref="TimingPoint.MusicPosition"/>.
-	/// <param name="value">The value to set</param>
-	/// <param name="timing">If any <see cref="TimingPoint"/>s from this timing instance conflict with the new Music Position, the change is rejected</param>
-	/// <returns>Whether the operation was successful.</returns>
-	public bool MusicPosition_Set(float value, Timing timing)
-	{
-		bool isValid = timing.CanTimingPointGoHere(this, value, out TimingPoint? rejectingTimingPoint);
-
-		if (rejectingTimingPoint != null)
-			GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.MusicPositionChangeRejected), new GlobalEvents.ObjectArgument<TimingPoint>(rejectingTimingPoint));
-
-		if (isValid)
-			MusicPosition = value;
-
-		return isValid;
+            PropertyChanged?.Invoke(this, new PropertyChangeArgument(PropertyType.MusicPosition, oldValue, value));
+        }
 	}
 	#endregion
 
@@ -151,66 +106,16 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 	public float MeasuresPerSecond
 	{
 		get => measuresPerSecond;
-		private set
+		set
 		{
 			if (measuresPerSecond == value)
-			{
-				if (AreThereUncommunicatedChanges)
-					EmitChangedEvent();
 				return;
-			}
 
+            float oldValue = measuresPerSecond;
 			measuresPerSecond = value;
-			AreThereUncommunicatedChanges = true;
-			Bpm = MpsToBpm(value);
-		}
-	}
-	
-	/// <summary>
-	/// Sends a request to have both this point and the previous point's <see cref="MeasuresPerSecond"/>updated. 
-	/// Handled by <see cref="Timing"/>.
-	/// </summary>
-	public void RequestUpdateMPS()
-	{
-		if (MusicPosition == null)
-			return;
-		MPSUpdateRequested?.Invoke(this, EventArgs.Empty);
-	}
-	/// <summary>
-	/// Combined with the private <see cref="MeasuresPerSecond"/> setter, 
-	/// ensures that the value can only by set according to <see cref="Timing"/>
-	/// </summary>
-	/// <param name="timing"></param>
-	public void MeasuresPerSecond_Set(Timing timing)
-	{
-		TimingPoint? previousTimingPoint = timing.GetPreviousTimingPoint(this);
-		TimingPoint? nextTimingPoint = timing.GetNextTimingPoint(this);
 
-		if (MusicPosition == null)
-			throw new NullReferenceException(nameof(MusicPosition));
-		if (nextTimingPoint?.MusicPosition == musicPosition || previousTimingPoint?.MusicPosition == musicPosition)
-			throw new Exception("Neighboring Timing Point has same Music Position.");
-
-		if (nextTimingPoint?.MusicPosition != null)
-		{
-			MeasuresPerSecond =
-				((float)nextTimingPoint.MusicPosition - (float)MusicPosition)
-				/ (nextTimingPoint.Offset - Offset);
-		}
-		else if (previousTimingPoint?.MusicPosition != null)
-		{
-			float timeSignatureCorrection = ((float)previousTimingPoint.TimeSignature[0] / previousTimingPoint.TimeSignature[1]) / ((float)TimeSignature[0] / TimeSignature[1]);
-
-			MeasuresPerSecond =
-				((float)MusicPosition - (float)previousTimingPoint.MusicPosition)
-				/ (Offset - previousTimingPoint.Offset)
-				* timeSignatureCorrection;
-		}
-		else if (AreThereUncommunicatedChanges)
-		{
-			EmitChangedEvent();
-			return; // Make no changes
-		}
+            PropertyChanged?.Invoke(this, new PropertyChangeArgument(PropertyType.MeasuresPerSecond, oldValue, value));
+        }
 	}
 	#endregion
 
@@ -229,36 +134,16 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 				bpm = MpsToBpm(MeasuresPerSecond);
 			return bpm;
 		}
-		private set
+		set
 		{
 			if (bpm == value)
-			{
-				if (AreThereUncommunicatedChanges)
-					EmitChangedEvent();
 				return;
-			}
 			
-			
+			float oldValue = bpm;
 			bpm = Settings.Instance.RoundBPM ? (float)Math.Round(value*10, MidpointRounding.ToEven) / 10f : value;
-			AreThereUncommunicatedChanges = true;
-			MeasuresPerSecond = BpmToMps(bpm);
-			return;
+
+            PropertyChanged?.Invoke(this, new PropertyChangeArgument(PropertyType.Bpm, oldValue, value));
 		}
-	}
-
-
-	/// <summary>
-	/// Sets the <see cref="Bpm"/> if the value is valid according to supplied timing
-	/// </summary>
-	public void Bpm_Set(float bpm, Timing timing)
-	{
-		TimingPoint? nextTimingPoint = timing.GetNextTimingPoint(this);
-
-		// validity check
-		if (nextTimingPoint != null)
-			return;
-		
-		Bpm = bpm;
 	}
 	#endregion
 
@@ -328,19 +213,12 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 	}
 	#endregion
 	#region Change and Deletion Events
-	public event EventHandler MPSUpdateRequested = null!;
-
-	private bool AreThereUncommunicatedChanges = false;
-
-	//public event EventHandler MusicPositionChangeRejected = null!;
-
 	public event EventHandler Changed = null!;
 	public void EmitChangedEvent()
 	{
 		if (!IsInstantiating)
 		{
 			Changed?.Invoke(this, EventArgs.Empty);
-			AreThereUncommunicatedChanges = false;
 		}
 	}
 
@@ -349,11 +227,41 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 	///     Relies on parent <see cref="Timing" /> to delete from project.
 	/// </summary>
 	public void Delete() => AttemptDelete?.Invoke(this, EventArgs.Empty);
-	#endregion
-	#region Calculators
-	private float BpmToMps(float bpm) => bpm / (60 * (TimeSignature[0] * 4f / TimeSignature[1]));
 
-	private float MpsToBpm(float mps) => mps * 60 * (TimeSignature[0] * 4f / TimeSignature[1]);
+    public event EventHandler PropertyChanged = null!;
+
+    public enum PropertyType
+    {
+        TimeSignature,
+        Offset,
+        MusicPosition,
+        MeasuresPerSecond,
+        Bpm,
+    }
+
+    public class PropertyChangeArgument(PropertyType propertyType, object? oldValue, object? newValue) : EventArgs
+    {
+        private PropertyType propertyType = propertyType;
+        private object? oldValue = oldValue;
+        private object? newValue = newValue;
+        public object? OldValue
+        {
+            get => oldValue;
+        }
+        public object? NewValue
+        {
+            get => newValue;
+        }
+        public PropertyType PropertyType
+        {
+            get => propertyType;
+        }
+    }
+    #endregion
+    #region Calculators
+    public float BpmToMps(float bpm) => bpm / (60 * (TimeSignature[0] * 4f / TimeSignature[1]));
+
+	public float MpsToBpm(float mps) => mps * 60 * (TimeSignature[0] * 4f / TimeSignature[1]);
 
 	public float BeatLengthSec => 1 / (Bpm / 60);
 	#endregion
