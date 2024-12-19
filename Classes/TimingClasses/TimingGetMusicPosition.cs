@@ -183,7 +183,7 @@ public partial class Timing
 
     public int GetLastMeasure()
     {
-        float lengthInSeconds = Project.Instance.AudioFile.GetAudioLength();
+        float lengthInSeconds = Project.Instance.AudioFile?.GetAudioLength() ?? 0;
         float lastMeasure = SampleTimeToMusicPosition(lengthInSeconds);
         return (int)lastMeasure;
     }

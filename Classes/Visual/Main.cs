@@ -36,13 +36,12 @@ public partial class Main : Control
 
 		Project.Instance.AudioFile = new AudioFile(defaultMP3);
 
-		GlobalEvents.Instance.Scrolled += OnScrolled;
 		GlobalEvents.Instance.SettingsChanged += OnSettingsChanged;
 		audioVisualsContainer.SeekPlaybackTime += OnSeekPlaybackTime;
 		GetTree().Root.FilesDropped += OnFilesDropped;
 
 		audioVisualsContainer.CreateBlocks();
-		blockScrollBar.UpdateRange();
+		blockScrollBar.UpdateLimits();
 		audioVisualsContainer.UpdateBlocksScroll();
 
 
@@ -86,11 +85,6 @@ public partial class Main : Control
 
 		var audioFile = new AudioFile(path);
 		Project.Instance.AudioFile = audioFile;
-	}
-
-	private void OnScrolled(object? sender, EventArgs e)
-	{
-		blockScrollBar.Value = audioVisualsContainer.NominalMusicPositionStartForTopBlock;
 	}
 
 	private void OnSeekPlaybackTime(object? sender, EventArgs e)

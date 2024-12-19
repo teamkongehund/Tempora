@@ -28,6 +28,9 @@ public partial class AudioVisualsContainer : VBoxContainer
 
     public List<AudioBlock> AudioBlocks = [];
 
+    public int FirstTopMeasure => (int)Timing.Instance.SampleTimeToMusicPosition(0);
+    public int LastTopMeasure => Timing.Instance.GetLastMeasure() - (Settings.Instance.NumberOfBlocks - 1);
+
     public int NominalMusicPositionStartForTopBlock
     {
         get => nominalMusicPositionStartForTopBlock;
@@ -46,13 +49,15 @@ public partial class AudioVisualsContainer : VBoxContainer
         {
             if (mouseEvent.ButtonIndex == MouseButton.WheelDown && mouseEvent.Pressed && !Input.IsKeyPressed(Key.Ctrl) && !Input.IsKeyPressed(Key.Alt))
             {
-                NominalMusicPositionStartForTopBlock += Input.IsKeyPressed(Key.Shift) ? 5 : 1;
-                GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.Scrolled));
+                int distanceToLast = LastTopMeasure - NominalMusicPositionStartForTopBlock;
+                NominalMusicPositionStartForTopBlock += Math.Min(Input.IsKeyPressed(Key.Shift) ? 5 : 1, distanceToLast);
+                GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.AudioVisualsContainerScrolled));
             }
             else if (mouseEvent.ButtonIndex == MouseButton.WheelUp && mouseEvent.Pressed && !Input.IsKeyPressed(Key.Ctrl) && !Input.IsKeyPressed(Key.Alt))
             {
-                NominalMusicPositionStartForTopBlock -= Input.IsKeyPressed(Key.Shift) ? 5 : 1;
-                GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.Scrolled));
+                int distanceToFirst = NominalMusicPositionStartForTopBlock - FirstTopMeasure;
+                NominalMusicPositionStartForTopBlock -= Math.Min(Input.IsKeyPressed(Key.Shift) ? 5 : 1, distanceToFirst);
+                GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.AudioVisualsContainerScrolled));
             }
         }
     }

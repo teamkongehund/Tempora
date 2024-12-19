@@ -16,18 +16,25 @@ public partial class BlockScrollBar : VScrollBar
     public override void _Ready()
     {
         GlobalEvents.Instance.TimingChanged += OnTimingChanged;
+        GlobalEvents.Instance.AudioFileChanged += OnAudioFileChanged;
+        GlobalEvents.Instance.AudioVisualsContainerScrolled += OnScrolled;
         ValueChanged += OnValueChanged;
+        UpdateScrollBar();
     }
 
-    private void OnTimingChanged(object? sender, EventArgs e)
+    private void OnTimingChanged(object? sender, EventArgs e) => UpdateScrollBar();
+
+    private void OnAudioFileChanged(object? sender, EventArgs e) => UpdateScrollBar();
+
+    private void OnValueChanged(double value) => UpdateAudioVisualsContainer(value);
+
+    private void UpdateScrollBar()
     {
-        UpdateRange();
+        UpdateLimits();
         Value = audioVisualsContainer.NominalMusicPositionStartForTopBlock;
     }
 
-    private void OnValueChanged(double value) => UpdateTopMeasure(value);
-
-    private void UpdateTopMeasure(double value)
+    private void UpdateAudioVisualsContainer(double value)
     {
         if (isRangeChanging)
         {
@@ -38,8 +45,10 @@ public partial class BlockScrollBar : VScrollBar
         audioVisualsContainer.NominalMusicPositionStartForTopBlock = (int)value;
     }
 
-    public void UpdateRange()
+    public void UpdateLimits()
     {
+        //int firstMeasure = audioVisualsContainer.FirstTopMeasure;
+        //int lastMeasure = audioVisualsContainer.LastTopMeasure;
         int firstMeasure = (int)Timing.Instance.SampleTimeToMusicPosition(0);
         int lastMeasure = Timing.Instance.GetLastMeasure() - (Settings.Instance.NumberOfBlocks - 1);
         if (MinValue != firstMeasure)
@@ -54,5 +63,10 @@ public partial class BlockScrollBar : VScrollBar
         }
 
         //GD.Print($"UpdateRange() result: Range: {MinValue}...{MaxValue} with Value = {Value}");
+    }
+
+    private void OnScrolled(object? sender, EventArgs e)
+    {
+        Value = audioVisualsContainer.NominalMusicPositionStartForTopBlock;
     }
 }

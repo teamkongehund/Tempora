@@ -16,7 +16,7 @@ public partial class GlobalEvents : Node
 
     public event EventHandler? AudioFileChanged;
     public event EventHandler? MouseLeftReleased;
-    public event EventHandler? Scrolled;
+    public event EventHandler? AudioVisualsContainerScrolled;
     public event EventHandler? SelectedPositionChanged;
     public event EventHandler? SettingsChanged;
     public event EventHandler? TimingChanged;

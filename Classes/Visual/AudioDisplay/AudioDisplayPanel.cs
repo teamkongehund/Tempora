@@ -110,7 +110,7 @@ public partial class AudioDisplayPanel : Control
         Resized += OnResized;
         GlobalEvents.Instance.SettingsChanged += OnSettingsChanged;
         GlobalEvents.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
-        GlobalEvents.Instance.Scrolled += OnScrolled;
+        GlobalEvents.Instance.AudioVisualsContainerScrolled += OnScrolled;
         GlobalEvents.Instance.AudioFileChanged += OnAudioFileChanged;
 
         MouseEntered += OnMouseEntered;
