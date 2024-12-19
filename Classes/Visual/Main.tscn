@@ -437,6 +437,7 @@ Change the time signature in the left-hand side (Default: 4/4)
 [i]Ctrl + Z / Y								[/i] Undo / Redo
 [i]Alt + Click + Drag					[/i] Select / Deselect Timing Points
 [i]Alt + Double Click				[/i] Deselect All Timing Points
+[i]Esc											[/i] Deselect All Timing Points
 [i]Ctrl + Scroll wheel				[/i] Change offset of nearest Timing Point
 	[i]+ Shift									[/i] Larger increments	
 [i]Alt + Scroll wheel					[/i] Change BPM of Timing Point (only if it is the last point)
