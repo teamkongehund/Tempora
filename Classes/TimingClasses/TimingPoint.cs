@@ -213,12 +213,13 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 	}
 	#endregion
 	#region Change and Deletion Events
-	public event EventHandler Changed = null!;
-	public void EmitChangedEvent()
+	public event EventHandler ChangeFinalized = null!;
+
+	public void FinalizeChange()
 	{
 		if (!IsInstantiating)
 		{
-			Changed?.Invoke(this, EventArgs.Empty);
+			ChangeFinalized?.Invoke(this, EventArgs.Empty);
 		}
 	}
 

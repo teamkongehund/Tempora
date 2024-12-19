@@ -60,9 +60,9 @@ public partial class VisualTimingPoint : Control
             if (timingPoint == value)
                 return;
             if (timingPoint != null)
-                timingPoint.Changed -= OnTimingPointChanged;
+                timingPoint.ChangeFinalized -= OnTimingPointChanged;
             timingPoint = value;
-            TimingPoint.Changed += OnTimingPointChanged;
+            TimingPoint.ChangeFinalized += OnTimingPointChanged;
             //SubscribeToTimingPointEvents();
         }
     } 

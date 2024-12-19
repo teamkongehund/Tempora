@@ -13,7 +13,7 @@ public partial class Timing
         if (timingPoint == null)
             throw new NullReferenceException($"{nameof(timingPoint)} was null");
         timingPoint.AttemptDelete += OnTimingPointDeleteAttempt;
-        timingPoint.Changed += OnTimingPointChanged;
+        timingPoint.ChangeFinalized += OnTimingPointChanged;
         timingPoint.PropertyChanged += OnTimingPointPropertyChanged;
     }
 
@@ -147,7 +147,7 @@ public partial class Timing
     {
         if (timingPoint == null)
             throw new ArgumentNullException(nameof(timingPoint));
-        timingPoint.EmitChangedEvent();
+        timingPoint.FinalizeChange();
     }
 
     private void OnTimingPointPropertyChanged(object? sender, EventArgs e)
