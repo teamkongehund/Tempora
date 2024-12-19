@@ -30,9 +30,6 @@ public partial class Timing
         if (sender is not TimingPoint timingPoint)
             throw new Exception("Sender wasn't a TimingPoint.");
 
-        if (timingPoint == Context.Instance.HeldTimingPoint)
-            Context.Instance.ShouldDeleteHeldPointIfNotOnGrid = false;
-
         if (!timingPoint.IsInstantiating && !IsBatchOperationInProgress)
             GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
     }
