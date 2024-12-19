@@ -57,6 +57,17 @@ public partial class AudioVisualsContainer : VBoxContainer
         }
     }
 
+    public override void _Input(InputEvent @event)
+    {
+        if (@event is InputEventKey keyEvent)
+        {
+            if (keyEvent.Keycode == Key.Escape)
+            {
+                TimingPointSelection.Instance.DeselectAll();
+            }
+        }
+    }
+
     public override void _Ready()
     {
         MouseExited += OnMouseExited;
