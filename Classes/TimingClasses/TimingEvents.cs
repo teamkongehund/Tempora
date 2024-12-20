@@ -8,6 +8,8 @@ using Tempora.Classes.Utility;
 namespace Tempora.Classes.TimingClasses;
 public partial class Timing
 {
+    public bool ShouldHandleTimingPointChanges = true;
+
     private void SubscribeToEvents(TimingPoint timingPoint)
     {
         if (timingPoint == null)
@@ -152,6 +154,8 @@ public partial class Timing
 
     private void OnTimingPointPropertyChanged(object? sender, EventArgs e)
     {
+        if (!ShouldHandleTimingPointChanges)
+            return;
         if (sender is null) 
             return;
         if (e is null)

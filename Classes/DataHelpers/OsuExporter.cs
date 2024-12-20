@@ -74,7 +74,8 @@ SliderTickRate:1
 
     public static string GetDotOsu(Timing timing, AudioFile audioFile)
     {
-        var newTiming = Timing.CopyAndAddExtraPoints(timing, audioFile);
+        var newTiming = Timing.CloneAndParseForOsu(timing, audioFile);
+        FixBpmsToEnsureProperLineups(newTiming);
         List<TimingPoint> timingPoints = newTiming.TimingPoints;
         //string timingPointsData = TimingPointToText(timingPoints);
         string timingPointsData = TimingToDotOsuTimingPoints(newTiming);
@@ -95,28 +96,49 @@ SliderTickRate:1
         {
             var timingPoint = timing.TimingPoints[i];
             TimingPoint? previousTimingPoint = i > 0 ? timing.TimingPoints?[i - 1] : null;
-
-            // Omit first barlines where relevant (taiko, mania)
-            string effects = "0";
-            if (previousTimingPoint != null)
-            {
-                float previousOffsetMsRounded = (int)(previousTimingPoint.Offset * 1000);
-                float measureDifference = (float)(timingPoint.MusicPosition! - previousTimingPoint.MusicPosition!);
-                float timeDifference = measureDifference / previousTimingPoint.MeasuresPerSecond;
-                float previousWhiteLineOffsetMsRounded = (int)(previousOffsetMsRounded + timeDifference*1000);
-                float offsetMsRounded = (int)(timingPoint.Offset * 1000);
-                if (offsetMsRounded != previousWhiteLineOffsetMsRounded && timingPoint.Bpm > previousTimingPoint.Bpm)
-                    effects = "8";
-            }
-
-            // offsetMS,MSPerBeat,beatsInMeasure,sampleSet,sampleIndex,volume,uninherited,effects
-            string offsetMs = ((int)(timingPoint.Offset * 1000) + ExportOffsetMs).ToString();
-            string msPerBeat = (timingPoint.BeatLengthSec * 1000).ToString(CultureInfo.InvariantCulture);
-            string beatsInMeasure = timingPoint.TimeSignature[0].ToString();
-            result += $"{offsetMs},{msPerBeat},{beatsInMeasure},2,0,80,1,{effects}\n";
+            result += TimingPointToDotOsuLine(timingPoint);
         }
 
         return result;
+    }
+
+    private static bool ShouldOmitBarline(TimingPoint timingPoint) => timingPoint.MusicPosition % 1 != 0;
+
+    private static string TimingPointToDotOsuLine(TimingPoint timingPoint)
+    {
+        string offsetMs = ((int)(timingPoint.Offset * 1000) + ExportOffsetMs).ToString();
+        string msPerBeat = (timingPoint.BeatLengthSec * 1000).ToString(CultureInfo.InvariantCulture);
+        string beatsInMeasure = timingPoint.TimeSignature[0].ToString();
+        bool omit = ShouldOmitBarline(timingPoint);
+        string effects = omit ? "8" : "0";
+        return $"{offsetMs},{msPerBeat},{beatsInMeasure},2,0,80,1,{effects}\n";
+    }
+
+    private static void FixBpmsToEnsureProperLineups(Timing timing)
+    {
+        timing.ShouldHandleTimingPointChanges = false;
+        for (int i = 0; i < timing.TimingPoints!.Count; i++)
+        {
+            TimingPoint timingPoint = timing.TimingPoints[i];
+            TimingPoint? previousTimingPoint = i >= 1 ? timing.TimingPoints[i - 1] : null;
+
+            if (previousTimingPoint == null) 
+                continue;
+
+            float previousOffsetMsRounded = (int)(previousTimingPoint.Offset * 1000);
+            float measureDifference = (float)(timingPoint.MusicPosition! - previousTimingPoint.MusicPosition!);
+            float timeDifference = measureDifference / previousTimingPoint.MeasuresPerSecond;
+            float previousWhiteLineOffsetMsRounded = (int)(previousOffsetMsRounded + timeDifference * 1000);
+            float offsetMsRounded = (int)(timingPoint.Offset * 1000);
+            if (offsetMsRounded <= previousWhiteLineOffsetMsRounded)
+                continue;
+
+            float requiredTimeDifference = timeDifference + (0.001f - timeDifference % 0.001f + 0.0001f);
+            float requiredMeasuresPerSecond = measureDifference / requiredTimeDifference;
+            previousTimingPoint.MeasuresPerSecond = requiredMeasuresPerSecond;
+            previousTimingPoint.Bpm = previousTimingPoint.MpsToBpm(requiredMeasuresPerSecond);
+        }
+        timing.ShouldHandleTimingPointChanges = true;
     }
 
     public static void SaveOsz(string oszPath, out string changedPath)
