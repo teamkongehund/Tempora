@@ -149,15 +149,28 @@ public partial class Settings : Node
 			}
 		}
 	}
-	public bool MoveSubsequentTimingPointsWhenChangingTimeSignature = true;
+
+
+    public bool MoveSubsequentTimingPointsWhenChangingTimeSignature = true;
 
 	public bool AutoScrollWhenAddingTimingPoints = false;
 
     public bool SeekPlaybackOnTimingPointChanges = true;
 
+    private int fontSize = 12;
+    public int FontSize
+    {
+        get => fontSize;
+        set
+        {
+            fontSize = value;
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.FontSizeUpdated), new GlobalEvents.ObjectArgument<int>(value));
+        }
+    }
 
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
+
+    // Called when the node enters the scene tree for the first time.
+    public override void _Ready()
 	{
 		Instance = this;
 		LoadSettings();

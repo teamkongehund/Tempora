@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://bk0ofb078cvgm"]
+[gd_scene load_steps=22 format=3 uid="uid://bk0ofb078cvgm"]
 
 [ext_resource type="Script" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
 [ext_resource type="AudioStream" uid="uid://2gpllbqn0qef" path="res://Audio/clickedy.mp3" id="2_k0owh"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bk2vtyro5t8k" path="res://Classes/Visual/Buttons/PopupMenuButton.tscn" id="3_mrr0o"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/BlockScrollBar.cs" id="5_aqu3i"]
 [ext_resource type="Script" path="res://Classes/Visual/Menus/FileMenu.cs" id="5_kcxfp"]
+[ext_resource type="PackedScene" uid="uid://rioojs0c4v5j" path="res://Classes/Visual/Components/FontSizeComponent.tscn" id="5_w3rng"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/VolumeSlider.cs" id="6_w0n8n"]
 [ext_resource type="Script" path="res://Classes/Visual/Menus/OptionsMenu.cs" id="7_1c6ke"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/GridScrollBar.cs" id="7_i2h88"]
@@ -15,6 +16,7 @@
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/OffsetScrollBar.cs" id="10_yfm4l"]
 [ext_resource type="Script" path="res://Classes/Visual/Buttons/HelpButton.cs" id="13_v1cca"]
 [ext_resource type="Script" path="res://Classes/Visual/Scrollbars/OverlapScrollBar.cs" id="13_wubaw"]
+[ext_resource type="Script" path="res://Classes/Visual/Scrollbars/FontSizeScrollBar.cs" id="14_ecyx7"]
 [ext_resource type="Script" path="res://Classes/Visual/VersionLabel.cs" id="16_j6b0h"]
 [ext_resource type="PackedScene" uid="uid://bac4n7j15cns7" path="res://Classes/Visual/AudioDisplay/AudioBlock.tscn" id="16_mlqa0"]
 [ext_resource type="Script" path="res://Classes/Visual/Menus/ContextMenu.cs" id="18_ra0tt"]
@@ -80,13 +82,16 @@ item_4/text = "Export..."
 item_4/id = 5
 script = ExtResource("5_kcxfp")
 
+[node name="FontSizeComponent" parent="VSplitContainer/TopMenuHBox/FileButton" node_paths=PackedStringArray("Control") instance=ExtResource("5_w3rng")]
+Control = NodePath("..")
+
 [node name="OptionsButton" parent="VSplitContainer/TopMenuHBox" node_paths=PackedStringArray("popupMenu") instance=ExtResource("3_mrr0o")]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "Options"
 popupMenu = NodePath("Options")
 
-[node name="Options" type="PopupMenu" parent="VSplitContainer/TopMenuHBox/OptionsButton" node_paths=PackedStringArray("blockAmountScrollBar", "offsetScrollBar", "overlapScrollBar")]
+[node name="Options" type="PopupMenu" parent="VSplitContainer/TopMenuHBox/OptionsButton" node_paths=PackedStringArray("blockAmountScrollBar", "offsetScrollBar", "overlapScrollBar", "fontSizeScrollbar")]
 title = "Options"
 size = Vector2i(268, 100)
 theme_override_constants/v_separation = 0
@@ -95,6 +100,7 @@ theme_override_font_sizes/font_separator_size = 0
 item_count = 6
 item_0/text = "Time Signature Changes Move Points"
 item_0/checkable = 1
+item_0/id = 0
 item_1/text = "Metronome Follows Grid"
 item_1/checkable = 1
 item_1/id = 1
@@ -114,6 +120,10 @@ script = ExtResource("7_1c6ke")
 blockAmountScrollBar = NodePath("../../SettingsHBox/BlockAmountScrollBar")
 offsetScrollBar = NodePath("../../SettingsHBox/OffsetScrollBar")
 overlapScrollBar = NodePath("../../SettingsHBox/OverlapScrollBar")
+fontSizeScrollbar = NodePath("../../SettingsHBox/FontSizeScrollBar")
+
+[node name="FontSizeComponent" parent="VSplitContainer/TopMenuHBox/OptionsButton" node_paths=PackedStringArray("Control") instance=ExtResource("5_w3rng")]
+Control = NodePath("..")
 
 [node name="MenuBar" type="MenuBar" parent="VSplitContainer/TopMenuHBox"]
 layout_mode = 2
@@ -133,9 +143,6 @@ title = "Grid"
 minValue = 1.0
 maxValue = 8.0
 step = 1.0
-
-[node name="HScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox/GridScrollBar" index="1"]
-tooltip_text = "Distance between grid lines"
 
 [node name="PlaybackRateScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox" instance=ExtResource("8_6ej7c")]
 layout_mode = 2
@@ -187,6 +194,18 @@ maxValue = 0.25
 [node name="HScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox/OverlapScrollBar" index="1"]
 tooltip_text = "How much of the previous and next measure to show at the beginning and end of each row."
 
+[node name="FontSizeScrollBar" parent="VSplitContainer/TopMenuHBox/SettingsHBox" instance=ExtResource("8_6ej7c")]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+script = ExtResource("14_ecyx7")
+showTitleInside = true
+title = "Font Size"
+minValue = 12.0
+maxValue = 36.0
+step = 1.0
+
 [node name="VolumeSlidersHBox" type="HBoxContainer" parent="VSplitContainer/TopMenuHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -219,6 +238,9 @@ text = "Music
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="FontSizeComponent" parent="VSplitContainer/TopMenuHBox/VolumeSlidersHBox/VolumeSliderMusic/Label" node_paths=PackedStringArray("Control") instance=ExtResource("5_w3rng")]
+Control = NodePath("..")
+
 [node name="VolumeSliderMetronome" type="HScrollBar" parent="VSplitContainer/TopMenuHBox/VolumeSlidersHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -247,6 +269,9 @@ text = "Metronome
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="FontSizeComponent" parent="VSplitContainer/TopMenuHBox/VolumeSlidersHBox/VolumeSliderMetronome/Label" node_paths=PackedStringArray("Control") instance=ExtResource("5_w3rng")]
+Control = NodePath("..")
+
 [node name="VolumeSliderMaster" type="HScrollBar" parent="VSplitContainer/TopMenuHBox/VolumeSlidersHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -274,6 +299,9 @@ text = "Master"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="FontSizeComponent" parent="VSplitContainer/TopMenuHBox/VolumeSlidersHBox/VolumeSliderMaster/Label" node_paths=PackedStringArray("Control") instance=ExtResource("5_w3rng")]
+Control = NodePath("..")
+
 [node name="HelpButton" type="Button" parent="VSplitContainer/TopMenuHBox" node_paths=PackedStringArray("helpWindow")]
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
@@ -282,6 +310,9 @@ focus_mode = 0
 text = "?"
 script = ExtResource("13_v1cca")
 helpWindow = NodePath("../../../HelpWindow")
+
+[node name="FontSizeComponent" parent="VSplitContainer/TopMenuHBox/HelpButton" node_paths=PackedStringArray("Control") instance=ExtResource("5_w3rng")]
+Control = NodePath("..")
 
 [node name="AudioMainHSplitContainer" type="HSplitContainer" parent="VSplitContainer"]
 layout_mode = 2

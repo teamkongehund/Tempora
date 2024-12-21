@@ -1,4 +1,6 @@
-[gd_scene format=3 uid="uid://dy4lywdntdohe"]
+[gd_scene load_steps=2 format=3 uid="uid://dy4lywdntdohe"]
+
+[ext_resource type="PackedScene" uid="uid://rioojs0c4v5j" path="res://Classes/Visual/Components/FontSizeComponent.tscn" id="1_5p1jh"]
 
 [node name="HBoxContainer" type="HBoxContainer"]
 anchors_preset = 8
@@ -22,6 +24,9 @@ text = "(Title)"
 horizontal_alignment = 2
 vertical_alignment = 1
 
+[node name="FontSizeComponent" parent="OutsideTitleLabel" node_paths=PackedStringArray("Control") instance=ExtResource("1_5p1jh")]
+Control = NodePath("..")
+
 [node name="HScrollBar" type="HScrollBar" parent="."]
 custom_minimum_size = Vector2(60, 18)
 layout_mode = 2
@@ -41,8 +46,14 @@ alignment = 1
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 
+[node name="FontSizeComponent" parent="HScrollBar/HBoxContainer/InsideTitleLabel" node_paths=PackedStringArray("Control") instance=ExtResource("1_5p1jh")]
+Control = NodePath("..")
+
 [node name="ValueLabel" type="Label" parent="HScrollBar/HBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="FontSizeComponent" parent="HScrollBar/HBoxContainer/ValueLabel" node_paths=PackedStringArray("Control") instance=ExtResource("1_5p1jh")]
+Control = NodePath("..")

@@ -12,6 +12,8 @@ public partial class OptionsMenu : PopupMenu
 	private Control offsetScrollBar = null!;
 	[Export]
 	private Control overlapScrollBar = null!;
+    [Export]
+    private Control fontSizeScrollbar = null!;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -75,5 +77,6 @@ public partial class OptionsMenu : PopupMenu
 		blockAmountScrollBar.Visible = visible;
 		offsetScrollBar.Visible = visible;
 		overlapScrollBar.Visible = visible;
+        fontSizeScrollbar.Visible = visible;
 	}
 }
