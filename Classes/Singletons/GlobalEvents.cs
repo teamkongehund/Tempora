@@ -42,8 +42,6 @@ public partial class GlobalEvents : Node
 
     public void InvokeEvent(string eventName) => InvokeEvent(eventName, this, EventArgs.Empty);
 
-    //public void InvokeEvent(string eventName, object sender) => InvokeEvent(eventName, sender, EventArgs.Empty);
-
     public void InvokeEvent(string eventName, EventArgs args) => InvokeEvent(eventName, this, args);
 
     /// <summary>
@@ -66,15 +64,10 @@ public partial class GlobalEvents : Node
     private EventHandler? GetEventHandler(string eventName)
     {
         EventInfo? eventInfo = GetType().GetEvent(eventName);
-        if (eventInfo != null)
-        {
-            Delegate? eventDelegate = (Delegate?)GetType().GetField(eventName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)?.GetValue(this);
-            if (eventDelegate != null)
-            {
-                return (EventHandler)eventDelegate;
-            }
-        }
-        return null;
+        Delegate? eventDelegate = (eventInfo != null) 
+            ? (Delegate?)GetType().GetField(eventName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)?.GetValue(this) 
+            : null;
+        return (EventHandler?)eventDelegate;
     }
 
     public override void _Ready()

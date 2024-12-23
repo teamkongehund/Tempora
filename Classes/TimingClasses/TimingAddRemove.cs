@@ -30,15 +30,6 @@ public partial class Timing
             if (!IsInstantiating)
                 GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointCountChanged));
         }
-        //if (index < TimingPoints.Count - 1)
-        //{
-        //    timingPoint.MeasuresPerSecond_Set(this);
-
-        //    if (!IsInstantiating)
-        //        Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
-        //}
-
-        //ActionsHandler.Instance.AddTimingMemento();
     }
 
     /// <summary>
