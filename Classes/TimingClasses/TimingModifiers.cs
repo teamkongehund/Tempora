@@ -173,6 +173,8 @@ public partial class Timing
         }
 
         IsBatchOperationInProgress = false;
+
+        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
     }
 
     /// <summary>
