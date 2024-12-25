@@ -7,7 +7,7 @@ using Tempora.Classes.Audio;
 namespace Tempora.Classes.TimingClasses;
 public partial class Timing
 {
-    public static Timing CopyAndAddExtraPoints(Timing timing, AudioFile audioFile)
+    public static Timing CloneAndParseForOsu(Timing timing, AudioFile audioFile)
     {
         var newTiming = CopyTiming(timing);
         RemovePointsThatChangeNothing(newTiming, out newTiming);
