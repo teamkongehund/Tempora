@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://sumijiej7v46"]
+
+[ext_resource type="Script" path="res://Classes/Visual/Components/FontSizeComponent.cs" id="1_gex63"]
+
+[node name="FontSizeComponent" type="Node"]
+script = ExtResource("1_gex63")

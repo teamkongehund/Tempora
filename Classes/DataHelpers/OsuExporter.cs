@@ -191,7 +191,6 @@ SliderTickRate:1
         string dotOsu = GetDotOsu(Timing.Instance, Project.Instance.AudioFile);
         SaveOsz(path, dotOsu, Project.Instance.AudioFile);
 
-        // Open with system:
         string globalPath = ProjectSettings.GlobalizePath(path);
         if (Godot.FileAccess.FileExists(globalPath))
             OS.ShellOpen(globalPath);
