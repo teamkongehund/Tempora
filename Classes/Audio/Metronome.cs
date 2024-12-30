@@ -4,6 +4,7 @@ using Godot;
 using NAudio.Wave;
 using Tempora.Classes.Utility;
 using Tempora.Classes.TimingClasses;
+using Tempora.Classes.DataHelpers;
 using FileAccess = Godot.FileAccess;
 
 namespace Tempora.Classes.Audio;
@@ -33,18 +34,19 @@ public partial class Metronome : Node
     private int metronomeSampleRate;
     private Vector2[] click2Cache = null!;
 
-    //private string click1Path = "res://Audio/Click1.wav";
-    //private string click2Path = "res://Audio/Click2.wav";
-    private string click1Path = "res://Audio/Stick1.wav";
-    private string click2Path = "res://Audio/Stick2.wav";
+    [Export]
+    AudioStreamWav click1Stream = null!;
+    [Export]
+    AudioStreamWav click2Stream = null!;
 
     #region Godot
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        click1Cache = CacheWavFile(click1Path);
-        metronomeSampleRate = GetSampleRate(click1Path);
-        click2Cache = CacheWavFile(click2Path);
+        click1Cache = AudioDataHelper.ConvertToStereoVector2Floats(click1Stream.Data);
+        click2Cache = AudioDataHelper.ConvertToStereoVector2Floats(click2Stream.Data);
+
+        metronomeSampleRate = click1Stream.MixRate;
 
         audioStreamGenerator = new AudioStreamGenerator { BufferLength = bufferLength, MixRate = metronomeSampleRate };
         audioStreamPlayer = new AudioStreamPlayer
@@ -237,6 +239,7 @@ public partial class Metronome : Node
     }
 
 
+    [Obsolete]
     private static Vector2[] CacheWavFile(string path)
     {
         using FileAccess? file = FileAccess.Open(path, FileAccess.ModeFlags.Read);

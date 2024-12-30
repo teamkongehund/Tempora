@@ -111,9 +111,9 @@ public class PcmData
         AudioDataHelper.DecodeOgg(path, out float[] floatsMixed, out int channels, out int sampleRate, out int numSamplesCombined);
 
         // Convert PCM bit depth from 32-bit float to 16-bit integer.
-        byte[] shortsMixed_byte = AudioDataHelper.FloatsToShortByteArray(floatsMixed);
-        float[][] floats = AudioDataHelper.SeparateMixedFloatsIntoChannels(floatsMixed, channels);
-        byte[][] shorts_byte = AudioDataHelper.SeparateMixedShortBytesIntoChannels(shortsMixed_byte, channels);
+        byte[] shortsMixed_byte = AudioDataHelper.ConvertToPCM8(floatsMixed);
+        float[][] floats = AudioDataHelper.SeparateByChannels(floatsMixed, channels);
+        byte[][] shorts_byte = AudioDataHelper.SeparateByChannels(shortsMixed_byte, channels);
 
         InitializeValues(sampleRate, channels, floats, shorts_byte, 16, 0);
     }
@@ -122,7 +122,7 @@ public class PcmData
     {
         AudioDataHelper.DecodeMp3(path, out byte[] shortsMixed_byte, out int channels,
             out int sampleRate, out int numRawBytes, out int startSilenceSamples);
-        var floats = AudioDataHelper.ShortsByteToFloats(shortsMixed_byte, channels, out _, out byte[][] shorts_byte);
+        var floats = AudioDataHelper.ConvertToFloats(shortsMixed_byte, channels, out _, out byte[][] shorts_byte);
         InitializeValues(sampleRate, channels, floats, shorts_byte, 16, startSilenceSamples);
     }
 
@@ -130,7 +130,7 @@ public class PcmData
     {
         AudioDataHelper.DecodeMp3(mp3File, out byte[] shortsMixed_byte, out int channels,
             out int sampleRate, out int numRawBytes, out int startSilenceSamples);
-        var floats = AudioDataHelper.ShortsByteToFloats(shortsMixed_byte, channels, out _, out byte[][] shorts_byte);
+        var floats = AudioDataHelper.ConvertToFloats(shortsMixed_byte, channels, out _, out byte[][] shorts_byte);
         InitializeValues(sampleRate, channels, floats, shorts_byte, 16, startSilenceSamples);
     }
 

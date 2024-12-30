@@ -6,6 +6,8 @@
 
 [node name="Metronome" type="Node"]
 script = ExtResource("1_w6ueg")
+click1Stream = ExtResource("2_3awrr")
+click2Stream = ExtResource("3_nj1ox")
 
 [node name="Click1" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("2_3awrr")
