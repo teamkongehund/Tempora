@@ -32,9 +32,6 @@ public partial class Timing
         if (sender is not TimingPoint timingPoint)
             throw new Exception("Sender wasn't a TimingPoint.");
 
-        if (timingPoint == Context.Instance.HeldTimingPoint)
-            Context.Instance.ShouldDeleteHeldPointIfNotOnGrid = false;
-
         if (!timingPoint.IsInstantiating && !IsBatchOperationInProgress)
             GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
     }
@@ -229,26 +226,38 @@ public partial class Timing
                 if (previousPointBlocksChange || nextPointBlockschange)
                     return false;
                 return true;
+
             case TimingPoint.PropertyType.TimeSignature:
                 return true;
+
             case TimingPoint.PropertyType.MeasuresPerSecond:
                 if (nextTimingPoint == null)
                     return true;
+
                 float? calculatedMPS = CalculateMPSBasedOnAdjacentPoints(timingPoint);
+
                 return (float)newValue! == calculatedMPS!;
+
             case TimingPoint.PropertyType.Bpm:
                 if (nextTimingPoint == null)
                     return true;
+
                 calculatedMPS = CalculateMPSBasedOnAdjacentPoints(timingPoint);
+
                 if (calculatedMPS == null)
                     return true;
+
                 float newBpm = (float)newValue!;
                 float calculatedBpm = timingPoint.MpsToBpm((float)calculatedMPS);
+
                 if (Math.Abs(calculatedBpm - newBpm) < 0.0001)
                     return true;
+
                 return false;
+
             case TimingPoint.PropertyType.MusicPosition:
                 return CanTimingPointGoHere(timingPoint, (float)newValue!, out _);
+
             default:
                 return false;
         }
