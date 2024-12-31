@@ -1,3 +1,5 @@
+// 2024-12-31 kongehund notes: I didn't write this script, I don't remember who made this.
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
