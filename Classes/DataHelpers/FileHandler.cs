@@ -67,12 +67,6 @@ public partial class FileHandler : Node
         file.StoreString(text);
     }
 
-    //public static void SaveMP3(string path, AudioStreamMP3 audioStreamMP3)
-    //{
-    //    using var file = FileAccess.Open(path, FileAccess.ModeFlags.Write);
-    //    file.StoreBuffer(audioStreamMP3.Data);
-    //}
-
     public static string LoadText(string path)
     {
         if (FileAccess.FileExists(path))
@@ -116,13 +110,4 @@ public partial class FileHandler : Node
 
         return filePaths;
     }
-
-    //public static string GetDirectory(string filePath)
-    //{
-    //    string dir = "";
-    //    string[] pathParts = filePath.Split('/');
-    //    for (int i = 0; i < pathParts.Length - 1; i++)
-    //        dir += pathParts[i] + "/";
-    //    return dir;
-    //}
 }
