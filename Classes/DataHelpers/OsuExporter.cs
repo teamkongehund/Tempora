@@ -52,7 +52,7 @@ ArtistUnicode:
 Creator:
 Version:
 Source:
-Tags: tempora_timer
+Tags:
 BeatmapID:0
 BeatmapSetID:-1
 
