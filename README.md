@@ -4,7 +4,7 @@ An application designed to simplify and increase the speed of synchronizing a re
 
 The program is mainly made for osu! but may have a use case for other rhythm games as well as music production.
 
-## Building from source
+## Running Debug from source
 - Download Godot (.Net verson): https://godotengine.org/download/windows/
 - Clone the repository
 - Open the Godot launcher and import project.godot from the chosen repository directory
@@ -14,6 +14,9 @@ You can also build and run the project from an IDE such as Visual Studio. For Vi
 - In Launch Profile, locate the Godot executable (i.e. "Godot_v4.2-stable_mono_win64.exe")
 - Use command line arguments "--path . --verbose"
 - Use working directory "."
+
+## Building from source
+- Use Godot's Export functionality to build Tempora to your OS of choice
 
 ## Using Tempora
 ### Audio
