@@ -108,8 +108,14 @@ public partial class Timing : Node, IMementoOriginator
     /// <param name="musicPosition"></param>
     /// <param name="rejectingTimingPoint"></param>
     /// <returns></returns>
-    public bool CanTimingPointGoHere(TimingPoint? timingPoint, float musicPosition, out TimingPoint? rejectingTimingPoint)
+    public bool CanTimingPointGoHere(TimingPoint? timingPoint, float? musicPosition, out TimingPoint? rejectingTimingPoint)
     {
+        if (musicPosition == null)
+        {
+            rejectingTimingPoint = null;
+            return true;
+        }
+
         TimingPoint? previousTimingPoint = GetPreviousTimingPoint(timingPoint);
         TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
 

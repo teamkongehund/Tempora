@@ -101,7 +101,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 				return;
 
             float? oldValue = musicPosition;
-			musicPosition = value;
+            musicPosition = value;
 
             PropertyChanged?.Invoke(this, new PropertyChangeArgument(PropertyType.MusicPosition, oldValue, value));
         }
