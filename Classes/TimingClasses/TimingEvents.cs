@@ -75,7 +75,7 @@ public partial class Timing
         TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
 
         if (timingPoint.MusicPosition == null)
-            throw new NullReferenceException(nameof(timingPoint.MusicPosition));
+            return null;
         if (nextTimingPoint?.MusicPosition == timingPoint.MusicPosition || previousTimingPoint?.MusicPosition == timingPoint.MusicPosition)
             throw new Exception("Neighboring Timing Point has same Music Position.");
 
@@ -269,7 +269,7 @@ public partial class Timing
                 return false;
 
             case TimingPoint.PropertyType.MusicPosition:
-                return CanTimingPointGoHere(timingPoint, (float)newValue!, out _);
+                return CanTimingPointGoHere(timingPoint, (float?)newValue, out _);
 
             default:
                 return false;
