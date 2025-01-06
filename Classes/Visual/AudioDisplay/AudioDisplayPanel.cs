@@ -44,6 +44,8 @@ public partial class AudioDisplayPanel : Control
     private Line2D SelectedPositionLine = null!;
     [Export]
     private ColorRect? VisualSelector;
+    [Export]
+    private LoopTimer SpamPlaybackLoopTimer = null!;
     //[Export]
     //private Label MeasureLabel;
     //[Export]
@@ -132,6 +134,8 @@ public partial class AudioDisplayPanel : Control
         GlobalEvents.Instance.TimingChanged += OnTimingChanged;
 
         TimingPointSelection.Instance.SelectorChanged += OnSelectorChanged;
+
+        SpamPlaybackLoopTimer.TimeOut += OnSpamPlaybackLoopTimerTimeOut;
     }
 
     public override void _GuiInput(InputEvent @event)
@@ -154,11 +158,6 @@ public partial class AudioDisplayPanel : Control
 
         switch (mouseEvent)
         {
-            case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } mouseButtonEvent 
-            when !Input.IsKeyPressed(Key.Alt) && !Context.Instance.AreAnySubwindowsVisible:
-                    AttemptToAddTimingPoint?.Invoke(this, new GlobalEvents.ObjectArgument<float>(sampletime));
-                break;
-
             case InputEventMouseButton { ButtonIndex: MouseButton.Left, DoubleClick: true } mouseButtonEvent 
             when Input.IsKeyPressed(Key.Alt):
                 TimingPointSelection.Instance.DeselectAll();
@@ -174,6 +173,7 @@ public partial class AudioDisplayPanel : Control
                 var heldTimingPoint = Context.Instance?.HeldTimingPoint;
                 var seekTime = heldTimingPoint != null ? heldTimingPoint.Offset - 0.05f : sampletime;
                 SeekPlaybackTime?.Invoke(this, new GlobalEvents.ObjectArgument<float>(seekTime));
+                SpamPlaybackLoopTimer.DelayedStart();
                 break;
 
             case InputEventMouseButton { ButtonIndex: MouseButton.WheelUp, Pressed: true } mouseButtonEvent 
@@ -246,19 +246,6 @@ public partial class AudioDisplayPanel : Control
             case InputEventKey { Keycode: Key.Shift }:
 
                 {
-                    //if (!mouseIsInside) return;
-                    ////var mousePos = GetViewport().GetMousePosition();
-                    //var mousePos = GetLocalMousePosition();
-                    //float measurePosition = XPositionToMeasurePosition(mousePos.X);
-                    //GD.Print("First measurePosition = " + measurePosition);
-                    //if (keyEvent.Pressed)
-                    //{
-                    //    measurePosition = Timing.SnapMeasurePosition(measurePosition);
-                    //}
-                    //GD.Print("Second measurePosition = " + measurePosition);
-                    //UpdatePreviewLinePosition(measurePosition);
-                    //GetViewport().SetInputAsHandled();
-
                     UpdatePreviewLinePosition();
                     break;
                 }
@@ -306,6 +293,17 @@ public partial class AudioDisplayPanel : Control
 
                 break;
 
+            case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } mouseButtonEvent
+            when !Input.IsKeyPressed(Key.Alt) && !Context.Instance.AreAnySubwindowsVisible && mouseIsInside:
+                mousePos = GetLocalMousePosition();
+                musicPosition = GetMouseMusicPosition(mousePos);
+                float sampletime = Timing.Instance.MusicPositionToSampleTime(musicPosition);
+                AttemptToAddTimingPoint?.Invoke(this, new GlobalEvents.ObjectArgument<float>(sampletime));
+                break;
+
+            case InputEventMouseButton { ButtonIndex: MouseButton.Right, Pressed: false } mouseButtonEvent:
+                SpamPlaybackLoopTimer?.Stop();
+                break;
         }
     }
 
@@ -333,17 +331,40 @@ public partial class AudioDisplayPanel : Control
     {
         PreviewLine.Visible = true;
         mouseIsInside = true;
+        if (Input.IsMouseButtonPressed(MouseButton.Right))
+        {
+            SpamPlaybackLoopTimer?.Start();
+        }
     }
 
     private void OnMouseExited()
     {
         PreviewLine.Visible = false;
         mouseIsInside = false;
+        SpamPlaybackLoopTimer?.Stop();
     }
 
     private void OnScrolled(object? sender, EventArgs e) => UpdateSelectedPositionLine();
 
     private void OnSelectorChanged(object? sender, EventArgs e) => UpdateVisualSelector();
+
+    private void OnSpamPlaybackLoopTimerTimeOut(object? sender, EventArgs e)
+    {
+        if (Input.IsKeyPressed(Key.Alt))
+            return;
+        SeekPlaybackOnMousePosition();
+    }
+
+    private void SeekPlaybackOnMousePosition()
+    {
+        var mousePos = GetLocalMousePosition();
+        float musicPosition = GetMouseMusicPosition(mousePos);
+        float sampletime = Timing.Instance.MusicPositionToSampleTime(musicPosition);
+
+        var heldTimingPoint = Context.Instance?.HeldTimingPoint;
+        var seekTime = heldTimingPoint != null ? heldTimingPoint.Offset - 0.05f : sampletime;
+        SeekPlaybackTime?.Invoke(this, new GlobalEvents.ObjectArgument<float>(seekTime));
+    }
     #endregion
 
     #region Render
