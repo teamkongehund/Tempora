@@ -23,10 +23,14 @@ public partial class Timing
     public static Timing CloneAndParseForOsu(Timing timing, AudioFile audioFile)
     {
         var newTiming = CopyTiming(timing);
-        RemovePointsThatChangeNothing(newTiming, out newTiming);
-        AddExtraPointsOnDownbeats(newTiming, out newTiming);
-        AddExtraPointsOnQuarterNotes(newTiming, out newTiming);
-        AddExtraPointsOnUnsupportedSignatures(newTiming, out newTiming, audioFile);
+        if (Settings.Instance.removePointsThatChangeNothing)
+            RemovePointsThatChangeNothing(newTiming, out newTiming);
+        if (Settings.Instance.addExtraPointsOnDownbeats)
+            AddExtraPointsOnDownbeats(newTiming, out newTiming);
+        if (Settings.Instance.addExtraPointsOnQuarterNotes)
+            AddExtraPointsOnQuarterNotes(newTiming, out newTiming);
+        if (Settings.Instance.unsupportedTimeSignatures)
+            AddExtraPointsOnUnsupportedSignatures(newTiming, out newTiming, audioFile);
         return newTiming;
     }
 

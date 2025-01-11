@@ -47,13 +47,13 @@ public partial class FileMenu : PopupMenu
                 ProjectFileManager.Instance.SaveProjectFileDialogPopup();
                 break;
             case 4:
-                OsuExporter.ExportAndOpenOsz();
+                OsuExporter.Instance.ExportAndOpenOsz();
                 break;
             case 5:
                 ProjectFileManager.Instance.SaveOszFileDialogPopup();
                 break;
             case 6:
-                exportWindow.Show();
+                exportWindow.Popup();
                 break;
         }
     }

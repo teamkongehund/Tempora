@@ -23,8 +23,6 @@ namespace Tempora.Classes.Utility;
 
 public partial class OsuExporter : Node
 {
-    private static int exportOffsetMs = -29;
-
     private static string defaultDotOsuFormer = @"osu file format v14
 
 [General]
@@ -81,14 +79,23 @@ SliderTickRate:1
 
 [HitObjects]";
 
-    public static int ExportOffsetMs { get => exportOffsetMs; set => exportOffsetMs = value; }
+    private int exportOffsetMs => Settings.Instance.ExportOffsetMs;
     public static string DefaultDotOsuFormer { get => defaultDotOsuFormer; set => defaultDotOsuFormer = value; }
     public static string DefaultDotOsuLatter { get => defaultDotOsuLatter; set => defaultDotOsuLatter = value; }
 
-    public static string GetDotOsu(Timing timing, AudioFile audioFile)
+
+    public static OsuExporter Instance = null!;
+
+    public override void _Ready()
+    {
+        Instance = this;
+    }
+
+    public string GetDotOsu(Timing timing, AudioFile audioFile)
     {
         var newTiming = Timing.CloneAndParseForOsu(timing, audioFile);
-        FixBpmsToEnsureProperLineups(newTiming);
+        if (Settings.Instance.preventDoubleBarlines)
+            FixBpmsToEnsureProperLineups(newTiming);
         List<TimingPoint> timingPoints = newTiming.TimingPoints;
         //string timingPointsData = TimingPointToText(timingPoints);
         string timingPointsData = TimingToDotOsuTimingPoints(newTiming);
@@ -98,7 +105,7 @@ SliderTickRate:1
         return dotOsu;
     }
 
-    public static string TimingToDotOsuTimingPoints(Timing timing)
+    public string TimingToDotOsuTimingPoints(Timing timing)
     {
         if (timing.TimingPoints == null)
             throw new NullReferenceException("timing.TimingPoints was null");
@@ -115,11 +122,11 @@ SliderTickRate:1
         return result;
     }
 
-    private static bool ShouldOmitBarline(TimingPoint timingPoint) => timingPoint.MusicPosition % 1 != 0;
+    private static bool ShouldOmitBarline(TimingPoint timingPoint) => Settings.Instance.omitBarlines ? timingPoint.MusicPosition % 1 != 0 : false;
 
-    private static string TimingPointToDotOsuLine(TimingPoint timingPoint)
+    private string TimingPointToDotOsuLine(TimingPoint timingPoint)
     {
-        string offsetMs = ((int)(timingPoint.Offset * 1000) + ExportOffsetMs).ToString();
+        string offsetMs = ((int)(timingPoint.Offset * 1000) + exportOffsetMs).ToString();
         string msPerBeat = (timingPoint.BeatLengthSec * 1000).ToString(CultureInfo.InvariantCulture);
         string beatsInMeasure = timingPoint.TimeSignature[0].ToString();
         bool omit = ShouldOmitBarline(timingPoint);
@@ -154,7 +161,7 @@ SliderTickRate:1
         timing.ShouldHandleTimingPointChanges = true;
     }
 
-    public static void SaveOsz(string oszPath, out string changedPath)
+    public void SaveOsz(string oszPath, out string changedPath)
     {
         oszPath = Path.ChangeExtension(oszPath, ".osz");
         changedPath = oszPath;
@@ -196,7 +203,7 @@ SliderTickRate:1
 
     public static void SaveOsu(string osuPath, string dotOsuString) => FileHandler.SaveText(osuPath, dotOsuString);
 
-    public static void ExportAndOpenOsz()
+    public void ExportAndOpenOsz()
     {
         var random = new Random();
         int rand = random.Next();
@@ -209,7 +216,7 @@ SliderTickRate:1
             OS.ShellOpen(globalPath);
     }
 
-    public static void SaveOszAs_AndShowInFileExplorer(string path)
+    public void SaveOszAs_AndShowInFileExplorer(string path)
     {
         SaveOsz(path, out path);
         OS.ShellShowInFileManager(path);

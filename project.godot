@@ -31,6 +31,7 @@ ProjectFileManager="*res://Classes/Singletons/ProjectFileManager.tscn"
 TimingPointSelection="*res://Classes/TimingClasses/TimingPointSelection.tscn"
 MusicPlayer="*res://Classes/Audio/MusicPlayer.tscn"
 MementoHandler="*res://Classes/Singletons/MementoHandler.tscn"
+OsuExporter="*res://Classes/DataHelpers/OsuExporter.cs"
 
 [display]
 

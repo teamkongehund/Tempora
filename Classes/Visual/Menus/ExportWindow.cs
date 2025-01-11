@@ -35,6 +35,15 @@ public partial class ExportWindow : Window
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{
+        okButton.Pressed += OnOkButtonPressed;
+        defaultsButton.Pressed += OnResetButtonPressed;
+
+        CloseRequested += CloseWithoutSaving;
+        AboutToPopup += OnAboutToPopup;
+	}
+
+    private void LoadValuesFromSettings()
+    {
         exportOffsetEdit.Text = Settings.Instance.ExportOffsetMs.ToString();
         unsupportedTimeSignatures.ButtonPressed = Settings.Instance.unsupportedTimeSignatures;
         removePointsThatChangeNothing.ButtonPressed = Settings.Instance.removePointsThatChangeNothing;
@@ -42,14 +51,14 @@ public partial class ExportWindow : Window
         addExtraPointsOnQuarterNotes.ButtonPressed = Settings.Instance.addExtraPointsOnQuarterNotes;
         omitBarlines.ButtonPressed = Settings.Instance.omitBarlines;
         preventDoubleBarlines.ButtonPressed = Settings.Instance.preventDoubleBarlines;
+    }
 
-        okButton.Pressed += OnOkButtonPressed;
-        defaultsButton.Pressed += OnResetButtonPressed;
+    private void OnAboutToPopup()
+    {
+        LoadValuesFromSettings();
+    }
 
-        CloseRequested += CloseWithoutSaving;
-	}
-
-	private void OnOkButtonPressed()
+    private void OnOkButtonPressed()
     {
         SaveSettings();
         Hide();

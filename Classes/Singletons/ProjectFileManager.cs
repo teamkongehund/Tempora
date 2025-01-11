@@ -103,7 +103,7 @@ public partial class ProjectFileManager : Node
                 Settings.Instance.ProjectFilesDirectory = dir;
                 break;
             case SaveConfig.osz:
-                OsuExporter.SaveOszAs_AndShowInFileExplorer(selectedPath);
+                OsuExporter.Instance.SaveOszAs_AndShowInFileExplorer(selectedPath);
                 dir = Path.GetDirectoryName(selectedPath) ?? "";
                 Settings.Instance.OszFilesDirectory = dir;
                 break;
