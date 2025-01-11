@@ -45,12 +45,12 @@ public partial class ExportWindow : Window
     private void LoadValuesFromSettings()
     {
         exportOffsetEdit.Text = Settings.Instance.ExportOffsetMs.ToString();
-        unsupportedTimeSignatures.ButtonPressed = Settings.Instance.unsupportedTimeSignatures;
-        removePointsThatChangeNothing.ButtonPressed = Settings.Instance.removePointsThatChangeNothing;
-        addExtraPointsOnDownbeats.ButtonPressed = Settings.Instance.addExtraPointsOnDownbeats;
-        addExtraPointsOnQuarterNotes.ButtonPressed = Settings.Instance.addExtraPointsOnQuarterNotes;
-        omitBarlines.ButtonPressed = Settings.Instance.omitBarlines;
-        preventDoubleBarlines.ButtonPressed = Settings.Instance.preventDoubleBarlines;
+        unsupportedTimeSignatures.ButtonPressed = Settings.Instance.MeasureResetsOnUnsupportedTimeSignatures;
+        removePointsThatChangeNothing.ButtonPressed = Settings.Instance.RemovePointsThatChangeNothing;
+        addExtraPointsOnDownbeats.ButtonPressed = Settings.Instance.AddExtraPointsOnDownbeats;
+        addExtraPointsOnQuarterNotes.ButtonPressed = Settings.Instance.AddExtraPointsOnQuarterNotes;
+        omitBarlines.ButtonPressed = Settings.Instance.OmitBarlines;
+        preventDoubleBarlines.ButtonPressed = Settings.Instance.PreventDoubleBarlines;
     }
 
     private void OnAboutToPopup()
@@ -62,6 +62,7 @@ public partial class ExportWindow : Window
     {
         SaveSettings();
         Hide();
+        Settings.Instance.SaveSettings();
         Project.Instance.NotificationMessage = "Saved export options.";
     }
 
@@ -77,12 +78,12 @@ public partial class ExportWindow : Window
         {
             Settings.Instance.ExportOffsetMs = exportOffset;
         }
-        Settings.Instance.unsupportedTimeSignatures = unsupportedTimeSignatures.ButtonPressed;
-        Settings.Instance.removePointsThatChangeNothing = removePointsThatChangeNothing.ButtonPressed;
-        Settings.Instance.addExtraPointsOnDownbeats = addExtraPointsOnDownbeats.ButtonPressed;
-        Settings.Instance.addExtraPointsOnQuarterNotes = addExtraPointsOnQuarterNotes.ButtonPressed;
-        Settings.Instance.omitBarlines = omitBarlines.ButtonPressed;
-        Settings.Instance.preventDoubleBarlines = preventDoubleBarlines.ButtonPressed;
+        Settings.Instance.MeasureResetsOnUnsupportedTimeSignatures = unsupportedTimeSignatures.ButtonPressed;
+        Settings.Instance.RemovePointsThatChangeNothing = removePointsThatChangeNothing.ButtonPressed;
+        Settings.Instance.AddExtraPointsOnDownbeats = addExtraPointsOnDownbeats.ButtonPressed;
+        Settings.Instance.AddExtraPointsOnQuarterNotes = addExtraPointsOnQuarterNotes.ButtonPressed;
+        Settings.Instance.OmitBarlines = omitBarlines.ButtonPressed;
+        Settings.Instance.PreventDoubleBarlines = preventDoubleBarlines.ButtonPressed;
     }
 
     private void ResetToDefaults()

@@ -13,6 +13,7 @@
 
 using System;
 using Godot;
+using Tempora.Classes.Utility;
 
 namespace Tempora.Classes.Visual;
 
@@ -33,18 +34,27 @@ public partial class VolumeSlider : HScrollBar
         Value = invertedValue;
     }
 
-    //private void OnValueChanged(double value)
-    //{
-    //    double invertedValue = Math.Abs(1 - value);
-    //    AudioServer.SetBusVolumeDb(
-    //        busIndex,
-    //        Mathf.LinearToDb((float)invertedValue));
-    //}
-
     private void OnValueChanged(double value)
     {
         AudioServer.SetBusVolumeDb(
             busIndex,
             Mathf.LinearToDb((float)value));
+        SaveToSettings(value);
+    }
+
+    private void SaveToSettings(double value)
+    {
+        switch (BusName)
+        {
+            case "Music":
+                Settings.Instance.MusicVolumeNormalized = value;
+                break;
+            case "Metronome":
+                Settings.Instance.MetronomeVolumeNormalized = value;
+                break;
+            case "Master":
+                Settings.Instance.MasterVolumeNormalized = value;
+                break;
+        }
     }
 }

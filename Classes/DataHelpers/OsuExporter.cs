@@ -94,7 +94,7 @@ SliderTickRate:1
     public string GetDotOsu(Timing timing, AudioFile audioFile)
     {
         var newTiming = Timing.CloneAndParseForOsu(timing, audioFile);
-        if (Settings.Instance.preventDoubleBarlines)
+        if (Settings.Instance.PreventDoubleBarlines)
             FixBpmsToEnsureProperLineups(newTiming);
         List<TimingPoint> timingPoints = newTiming.TimingPoints;
         //string timingPointsData = TimingPointToText(timingPoints);
@@ -122,7 +122,7 @@ SliderTickRate:1
         return result;
     }
 
-    private static bool ShouldOmitBarline(TimingPoint timingPoint) => Settings.Instance.omitBarlines ? timingPoint.MusicPosition % 1 != 0 : false;
+    private static bool ShouldOmitBarline(TimingPoint timingPoint) => Settings.Instance.OmitBarlines ? timingPoint.MusicPosition % 1 != 0 : false;
 
     private string TimingPointToDotOsuLine(TimingPoint timingPoint)
     {

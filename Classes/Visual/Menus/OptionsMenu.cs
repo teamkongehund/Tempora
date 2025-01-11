@@ -35,13 +35,14 @@ public partial class OptionsMenu : PopupMenu
 		SetItemChecked(id_AutoScroll, Settings.Instance.AutoScrollWhenAddingTimingPoints);
 		SetItemChecked(id_RoundBPM, Settings.Instance.RoundBPM);
         SetItemChecked(id_PlaybackOnNewPoints, Settings.Instance.SeekPlaybackOnTimingPointChanges);
+        SetItemChecked(id_MoreSettings, Settings.Instance.ShowMoreSettings);
 	}
 
 	int id_PreserveBpm = 0;
 	int id_MetronopmeFollowsGrid = 1;
-	int id_MoreSettings = 2;
-	int id_AutoScroll = 3;
-	int id_RoundBPM = 4;
+	int id_AutoScroll = 2;
+	int id_RoundBPM = 3;
+	int id_MoreSettings = 4;
     int id_PlaybackOnNewPoints = 5;
 
 	private void OnIdPressed(long id)

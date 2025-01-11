@@ -42,7 +42,7 @@ public partial class AudioVisualsContainer : VBoxContainer
     public List<AudioBlock> AudioBlocks = [];
 
     public int FirstTopMeasure => (int)Timing.Instance.SampleTimeToMusicPosition(0);
-    public int LastTopMeasure => Timing.Instance.GetLastMeasure() - (Settings.Instance.NumberOfBlocks - 1);
+    public int LastTopMeasure => Timing.Instance.GetLastMeasure() - (Settings.Instance.NumberOfRows - 1);
 
     public int NominalMusicPositionStartForTopBlock
     {
@@ -167,7 +167,7 @@ public partial class AudioVisualsContainer : VBoxContainer
         for (int i = 0; i < children.Count; i++)
         {
             var waveformWindow = (AudioBlock)children[i];
-            waveformWindow.Visible = i < Settings.Instance.NumberOfBlocks;
+            waveformWindow.Visible = i < Settings.Instance.NumberOfRows;
         }
     }
 

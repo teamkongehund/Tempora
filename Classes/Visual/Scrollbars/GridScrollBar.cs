@@ -38,5 +38,5 @@ public partial class GridScrollBar : LabeledScrollbarHorizontal
 
     protected override void UpdateTarget() => Settings.Instance.GridDivisor = Settings.GridSliderToDivisorDict[(int)hScrollBar.Value];
 
-    protected override void SetInitialValue() => hScrollBar.Value = Settings.Instance.GridDivisor;
+    protected override void SetInitialValue() => hScrollBar.Value = Settings.DivisorToSliderValue(Settings.Instance.GridDivisor);
 }

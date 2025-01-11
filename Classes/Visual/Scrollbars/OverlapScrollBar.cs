@@ -19,7 +19,7 @@ public partial class OverlapScrollBar : LabeledScrollbarHorizontal
 {
     protected override void UpdateValueLabel() => valueLabel.Text = (hScrollBar.Value * 100).ToString("0") + " %";
 
-    protected override void UpdateTarget() => Settings.Instance.MusicPositionMargin = (float)hScrollBar.Value;
+    protected override void UpdateTarget() => Settings.Instance.MeasureOverlap = (float)hScrollBar.Value;
 
-    protected override void SetInitialValue() => hScrollBar.Value = Settings.Instance.MusicPositionMargin;
+    protected override void SetInitialValue() => hScrollBar.Value = Settings.Instance.MeasureOverlap;
 }

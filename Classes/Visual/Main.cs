@@ -41,7 +41,7 @@ public partial class Main : Control
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		projectFileManager = ProjectFileManager.Instance;
+        projectFileManager = ProjectFileManager.Instance;
 
 		// This works in Debug if we use i.e. audioPath = "res://Audio/UMO.mp3",
 		// but won't work in production, as resources are converted to different file formats.
@@ -88,7 +88,7 @@ public partial class Main : Control
 		}
 	}
 
-	private void OnSettingsChanged(object? sender, EventArgs e) => audioVisualsContainer.UpdateNumberOfVisibleBlocks();
+    private void OnSettingsChanged(object? sender, EventArgs e) => audioVisualsContainer.UpdateNumberOfVisibleBlocks();
 
 	private void OnFilesDropped(string[] filePaths)
 	{

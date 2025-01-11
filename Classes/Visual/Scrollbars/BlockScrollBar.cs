@@ -63,7 +63,7 @@ public partial class BlockScrollBar : VScrollBar
         //int firstMeasure = audioVisualsContainer.FirstTopMeasure;
         //int lastMeasure = audioVisualsContainer.LastTopMeasure;
         int firstMeasure = (int)Timing.Instance.SampleTimeToMusicPosition(0);
-        int lastMeasure = Timing.Instance.GetLastMeasure() - (Settings.Instance.NumberOfBlocks - 1);
+        int lastMeasure = Timing.Instance.GetLastMeasure() - (Settings.Instance.NumberOfRows - 1);
         if (MinValue != firstMeasure)
         {
             isRangeChanging = true;
