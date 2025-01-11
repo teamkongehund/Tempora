@@ -1,0 +1,149 @@
+[gd_scene load_steps=2 format=3 uid="uid://dsfi6js7yjf8n"]
+
+[ext_resource type="Script" path="res://Classes/Visual/Menus/ExportWindow.cs" id="1_ad7ek"]
+
+[node name="ExportWindow" type="Window" node_paths=PackedStringArray("exportOffset", "unsupportedTimeSignatures", "removePointsThatChangeNothing", "addExtraPointsOnDownbeats", "addExtraPointsOnQuarterNotes", "omitBarlines", "preventDoubleBarlines")]
+title = "Export Settings"
+position = Vector2i(0, 36)
+size = Vector2i(500, 400)
+script = ExtResource("1_ad7ek")
+exportOffset = NodePath("VBoxContainer/ExportOffset/LineEdit")
+unsupportedTimeSignatures = NodePath("VBoxContainer/UnsupportedTimeSignatures/CheckBox")
+removePointsThatChangeNothing = NodePath("VBoxContainer/RemovePointsThatChangeNothing/CheckBox")
+addExtraPointsOnDownbeats = NodePath("VBoxContainer/AddExtraPointsOnDownbeats/CheckBox")
+addExtraPointsOnQuarterNotes = NodePath("VBoxContainer/AddExtraPointsOnQuarterNotes/CheckBox")
+omitBarlines = NodePath("VBoxContainer/OmitBarlines/CheckBox")
+preventDoubleBarlines = NodePath("VBoxContainer/PreventDoubleBarlines/CheckBox")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="SectionOverall" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "Main"
+
+[node name="ExportOffset" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="LineEdit" type="LineEdit" parent="VBoxContainer/ExportOffset"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/ExportOffset"]
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Export offset [ms] (Default: -29)"
+
+[node name="UnsupportedTimeSignatures" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="CheckBox" type="CheckBox" parent="VBoxContainer/UnsupportedTimeSignatures"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/UnsupportedTimeSignatures"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "Add metronome resets on unsupported time signatures"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="SectionEfficiency" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "Timing Point Efficiency
+"
+
+[node name="RemovePointsThatChangeNothing" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="CheckBox" type="CheckBox" parent="VBoxContainer/RemovePointsThatChangeNothing"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/RemovePointsThatChangeNothing"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "Remove points that change nothing"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="SectionNightcoreMainMenu" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "Nightcore & main menu compatibility
+"
+
+[node name="AddExtraPointsOnDownbeats" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="CheckBox" type="CheckBox" parent="VBoxContainer/AddExtraPointsOnDownbeats"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/AddExtraPointsOnDownbeats"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "Add extra points on downbeats"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="AddExtraPointsOnQuarterNotes" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="CheckBox" type="CheckBox" parent="VBoxContainer/AddExtraPointsOnQuarterNotes"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/AddExtraPointsOnQuarterNotes"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "Add extra points on quarter notes"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="OmitBarlines" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="CheckBox" type="CheckBox" parent="VBoxContainer/OmitBarlines"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/OmitBarlines"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "Omit barlines on non-downbeats"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="SectionEfficiency2" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "Taiko & Mania Compatibility"
+
+[node name="PreventDoubleBarlines" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="CheckBox" type="CheckBox" parent="VBoxContainer/PreventDoubleBarlines"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/PreventDoubleBarlines"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "Prevent double barlines"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Button" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+text = "Ok"

@@ -168,9 +168,17 @@ public partial class Settings : Node
 
     public bool SeekPlaybackOnTimingPointChanges = true;
 
+    public int ExportOffsetMs = -29;
 
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
+    public bool unsupportedTimeSignatures = true;
+    public bool removePointsThatChangeNothing = true;
+    public bool addExtraPointsOnDownbeats = true;
+    public bool addExtraPointsOnQuarterNotes = true;
+    public bool omitBarlines = true;
+    public bool preventDoubleBarlines = true;
+
+    // Called when the node enters the scene tree for the first time.
+    public override void _Ready()
 	{
 		Instance = this;
 		LoadSettings();

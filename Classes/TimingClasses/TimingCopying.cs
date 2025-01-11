@@ -26,7 +26,7 @@ public partial class Timing
         RemovePointsThatChangeNothing(newTiming, out newTiming);
         AddExtraPointsOnDownbeats(newTiming, out newTiming);
         AddExtraPointsOnQuarterNotes(newTiming, out newTiming);
-        AddExtraPointsOn8thSignatures(newTiming, out newTiming, audioFile);
+        AddExtraPointsOnUnsupportedSignatures(newTiming, out newTiming, audioFile);
         return newTiming;
     }
 
@@ -94,7 +94,7 @@ public partial class Timing
         }
     }
 
-    private static void AddExtraPointsOn8thSignatures(Timing timing, out Timing newTiming, AudioFile audioFile)
+    private static void AddExtraPointsOnUnsupportedSignatures(Timing timing, out Timing newTiming, AudioFile audioFile)
     {
         newTiming = timing;
 
