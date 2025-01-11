@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://bk0ofb078cvgm"]
+[gd_scene load_steps=21 format=3 uid="uid://bk0ofb078cvgm"]
 
 [ext_resource type="Script" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
 [ext_resource type="AudioStream" uid="uid://2gpllbqn0qef" path="res://Audio/clickedy.mp3" id="2_k0owh"]
@@ -19,6 +19,7 @@
 [ext_resource type="PackedScene" uid="uid://bac4n7j15cns7" path="res://Classes/Visual/AudioDisplay/AudioBlock.tscn" id="16_mlqa0"]
 [ext_resource type="Script" path="res://Classes/Visual/Menus/ContextMenu.cs" id="18_ra0tt"]
 [ext_resource type="Script" path="res://Classes/Visual/MessageLabel.cs" id="20_c3wmk"]
+[ext_resource type="PackedScene" uid="uid://dsfi6js7yjf8n" path="res://Classes/Visual/Menus/ExportWindow.tscn" id="20_ruqaf"]
 
 [node name="Main" type="Control" node_paths=PackedStringArray("audioVisualsContainer", "blockScrollBar")]
 layout_mode = 3
@@ -62,12 +63,12 @@ theme_override_font_sizes/font_size = 12
 text = "File"
 popupMenu = NodePath("File")
 
-[node name="File" type="PopupMenu" parent="VSplitContainer/TopMenuHBox/FileButton"]
+[node name="File" type="PopupMenu" parent="VSplitContainer/TopMenuHBox/FileButton" node_paths=PackedStringArray("exportWindow")]
 title = "File"
 size = Vector2i(138, 113)
 theme_override_font_sizes/font_size = 12
 theme_override_font_sizes/font_separator_size = 0
-item_count = 5
+item_count = 6
 item_0/text = "New Project"
 item_0/id = 1
 item_1/text = "Open..."
@@ -78,7 +79,10 @@ item_3/text = "Export & Open .osz"
 item_3/id = 4
 item_4/text = "Export..."
 item_4/id = 5
+item_5/text = "Export Settings"
+item_5/id = 6
 script = ExtResource("5_kcxfp")
+exportWindow = NodePath("../../../../ExportWindow")
 
 [node name="OptionsButton" parent="VSplitContainer/TopMenuHBox" node_paths=PackedStringArray("popupMenu") instance=ExtResource("3_mrr0o")]
 layout_mode = 2
@@ -95,7 +99,6 @@ theme_override_font_sizes/font_separator_size = 0
 item_count = 6
 item_0/text = "Time Signature Changes Move Points"
 item_0/checkable = 1
-item_0/id = 0
 item_1/text = "Metronome Follows Grid"
 item_1/checkable = 1
 item_1/id = 1
@@ -462,6 +465,10 @@ Reveals additional timeline settings
 
 "
 selection_enabled = true
+
+[node name="ExportWindow" parent="." instance=ExtResource("20_ruqaf")]
+initial_position = 1
+visible = false
 
 [editable path="VSplitContainer/TopMenuHBox/SettingsHBox/GridScrollBar"]
 [editable path="VSplitContainer/TopMenuHBox/SettingsHBox/PlaybackRateScrollBar"]

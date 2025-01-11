@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Runtime.CompilerServices;
 using Tempora.Classes.Utility;
 
 public partial class ExportWindow : Window
@@ -28,6 +29,9 @@ public partial class ExportWindow : Window
     [Export]
     Button okButton = null!;
 
+    [Export]
+    Button defaultsButton = null!;
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{
@@ -40,11 +44,21 @@ public partial class ExportWindow : Window
         preventDoubleBarlines.ButtonPressed = Settings.Instance.preventDoubleBarlines;
 
         okButton.Pressed += OnOkButtonPressed;
+        defaultsButton.Pressed += OnResetButtonPressed;
+
+        CloseRequested += CloseWithoutSaving;
 	}
 
 	private void OnOkButtonPressed()
     {
         SaveSettings();
+        Hide();
+        Project.Instance.NotificationMessage = "Saved export options.";
+    }
+
+    private void OnResetButtonPressed()
+    {
+        ResetToDefaults();
     }
 
     private void SaveSettings()
@@ -60,5 +74,22 @@ public partial class ExportWindow : Window
         Settings.Instance.addExtraPointsOnQuarterNotes = addExtraPointsOnQuarterNotes.ButtonPressed;
         Settings.Instance.omitBarlines = omitBarlines.ButtonPressed;
         Settings.Instance.preventDoubleBarlines = preventDoubleBarlines.ButtonPressed;
+    }
+
+    private void ResetToDefaults()
+    {
+        exportOffsetEdit.Text = (-29).ToString();
+        unsupportedTimeSignatures.ButtonPressed = true;
+        removePointsThatChangeNothing.ButtonPressed = true;
+        addExtraPointsOnDownbeats.ButtonPressed = true;
+        addExtraPointsOnQuarterNotes.ButtonPressed = true;
+        omitBarlines.ButtonPressed = true;
+        preventDoubleBarlines.ButtonPressed = true;
+    }
+
+    private void CloseWithoutSaving()
+    {
+        Hide();
+        Project.Instance.NotificationMessage = "Export options were not saved.";
     }
 }

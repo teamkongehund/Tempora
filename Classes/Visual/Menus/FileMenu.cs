@@ -24,6 +24,9 @@ using SaveConfig = Tempora.Classes.Utility.ProjectFileManager.SaveConfig;
 namespace Tempora.Classes.Visual;
 public partial class FileMenu : PopupMenu
 {
+    [Export]
+    ExportWindow exportWindow = null!;
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{
@@ -48,6 +51,9 @@ public partial class FileMenu : PopupMenu
                 break;
             case 5:
                 ProjectFileManager.Instance.SaveOszFileDialogPopup();
+                break;
+            case 6:
+                exportWindow.Show();
                 break;
         }
     }
