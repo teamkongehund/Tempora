@@ -1,10 +1,11 @@
-[gd_scene load_steps=4 format=3 uid="uid://xf0kngdc5d36"]
+[gd_scene load_steps=5 format=3 uid="uid://xf0kngdc5d36"]
 
 [ext_resource type="Script" path="res://Classes/Visual/AudioDisplay/AudioDisplayPanel.cs" id="1_oemdp"]
 [ext_resource type="PackedScene" uid="uid://b8325rmwu4cpb" path="res://Classes/Visual/TimingDisplay/VisualTimingPoint.tscn" id="2_rbe4s"]
 [ext_resource type="Script" path="res://Classes/Visual/TimingDisplay/PreviewLine.cs" id="3_v3ucu"]
+[ext_resource type="PackedScene" uid="uid://4kev3x6gycsp" path="res://Classes/Utility/LoopTimer.tscn" id="4_ta6pa"]
 
-[node name="AudioDisplayPanel" type="Control" node_paths=PackedStringArray("Playhead", "waveformSegments", "VisualTimingPointFolder", "GridFolder", "PreviewLine", "SelectedPositionLine", "VisualSelector")]
+[node name="AudioDisplayPanel" type="Control" node_paths=PackedStringArray("Playhead", "waveformSegments", "VisualTimingPointFolder", "GridFolder", "PreviewLine", "SelectedPositionLine", "VisualSelector", "SpamPlaybackLoopTimer")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -20,6 +21,7 @@ GridFolder = NodePath("GridFolder")
 PreviewLine = NodePath("PreviewLine")
 SelectedPositionLine = NodePath("SelectedPositionLine")
 VisualSelector = NodePath("VisualSelector")
+SpamPlaybackLoopTimer = NodePath("SpamPlaybackLoopTimer")
 packedVisualTimingPoint = ExtResource("2_rbe4s")
 
 [node name="WaveformSegments" type="Node2D" parent="."]
@@ -72,3 +74,5 @@ anchor_bottom = 1.0
 grow_vertical = 2
 mouse_filter = 2
 color = Color(0.670588, 0, 0.568627, 0.407843)
+
+[node name="SpamPlaybackLoopTimer" parent="." instance=ExtResource("4_ta6pa")]
