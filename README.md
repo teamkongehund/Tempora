@@ -20,7 +20,7 @@ You can also build and run the project from an IDE such as Visual Studio. For Vi
 
 ## Using Tempora
 ### Audio
-- Open an .mp3 file via `File -> Open...` or by dragging the .mp3 into Tempora from a File Explorer.
+- Open an .mp3 or .ogg file via `File -> Open...` or by dragging the file into Tempora from a File Explorer.
 - Navigate the audio by scrolling and hovering over the audio with the mouse.
 - Playback the audio by right-clicking the audio.
 - Stop playback by pressing space.
