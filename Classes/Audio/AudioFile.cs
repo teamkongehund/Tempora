@@ -72,9 +72,10 @@ public partial class AudioFile : PcmData
     /// <summary>
     /// For MP3 data, We have 1151 samples less than Audacity has for the same data (according to one single test I made)
     /// 1151 samples / 44100 samples/second = 0.0261 seconds.
-    /// This might be down to the differences between Audacity's and NAudio's decoding algorhithms, if I were to guess.
+    /// This might be down to the differences between Audacity's and NAudio's decoding algorithms, if I were to guess.
     /// </summary>
     private float audacityOrigin;
+    public float AudacityOrigin => audacityOrigin;
 
 
     /// <summary>

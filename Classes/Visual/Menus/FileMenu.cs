@@ -24,37 +24,40 @@ using SaveConfig = Tempora.Classes.Utility.ProjectFileManager.SaveConfig;
 namespace Tempora.Classes.Visual;
 public partial class FileMenu : PopupMenu
 {
-    [Export]
-    ExportWindow exportWindow = null!;
+	[Export]
+	ExportWindow exportWindow = null!;
 
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
+	// Called when the node enters the scene tree for the first time.
+	public override void _Ready()
 	{
-        IdPressed += OnIdPressed;
-    }
+		IdPressed += OnIdPressed;
+	}
 
-    private void OnIdPressed(long id)
-    {
-        switch (id)
-        {
-            case 1:
-                ProjectFileManager.Instance.NewProject();
-                break;
-            case 2:
-                ProjectFileManager.Instance.LoadFileDialogPopup();
-                break;
-            case 3:
-                ProjectFileManager.Instance.SaveProjectFileDialogPopup();
-                break;
-            case 4:
-                OsuExporter.Instance.ExportAndOpenOsz();
-                break;
-            case 5:
-                ProjectFileManager.Instance.SaveOszFileDialogPopup();
-                break;
-            case 6:
-                exportWindow.Popup();
-                break;
-        }
-    }
+	private void OnIdPressed(long id)
+	{
+		switch (id)
+		{
+			case 1:
+				ProjectFileManager.Instance.NewProject();
+				break;
+			case 2:
+				ProjectFileManager.Instance.LoadFileDialogPopup();
+				break;
+			case 3:
+				ProjectFileManager.Instance.SaveProjectFileDialogPopup();
+				break;
+			case 4:
+				OsuExporter.Instance.ExportAndOpenOsz();
+				break;
+			case 5:
+				ProjectFileManager.Instance.SaveOszFileDialogPopup();
+				break;
+			case 6:
+				exportWindow.Popup();
+				break;
+			case 7:
+				BeatSaberExporter.Instance.SaveFile();
+				break;
+		}
+	}
 }
