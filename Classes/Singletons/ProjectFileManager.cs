@@ -154,7 +154,6 @@ public partial class ProjectFileManager : Node
                 break;
             case var value when value == projectFileExtension:
                 ProjectFileManager.Instance.LoadProjectFromFilePath(selectedPath);
-                Project.Instance.NotificationMessage = $"Loaded {selectedPath}";
                 string dir = Path.GetDirectoryName(selectedPath) ?? "";
                 Settings.Instance.ProjectFilesDirectory = dir;
                 break;
@@ -379,8 +378,9 @@ public partial class ProjectFileManager : Node
             return;
         if (Project.Instance.AudioFile != null)
             MusicPlayer.Instance.Pause();
-        LoadProjectFromFile(projectFile, filePath);
         Project.Instance.ProjectPath = filePath;
+        LoadProjectFromFile(projectFile, filePath);
+        Project.Instance.NotificationMessage = $"Loaded {filePath}";
     }
 
     private enum ParseMode

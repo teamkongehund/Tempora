@@ -220,6 +220,6 @@ public partial class MusicPlayer : AudioStreamPlayer
         string? fileName = Path.GetFileName(Project.Instance.ProjectPath);
         Project.Instance.NotificationMessage = fileName == null
             ? "Audio loaded!"
-            : $"Audio loaded! You are still editing {fileName}";
+            : $"Audio loaded! You are currently editing {fileName}";
     }
 }
