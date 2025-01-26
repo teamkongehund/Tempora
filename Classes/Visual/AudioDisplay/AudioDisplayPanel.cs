@@ -311,7 +311,7 @@ public partial class AudioDisplayPanel : Control
 
     private void OnTimingChanged(object? sender, EventArgs e)
     {
-        if (!Visible)
+        if (!Visible || Timing.Instance.IsInstantiating)
             return;
         UpdateTimingPointsIndices();
         CreateWaveforms();
