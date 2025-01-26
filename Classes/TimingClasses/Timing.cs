@@ -196,7 +196,7 @@ public partial class Timing : Node, IMementoOriginator
 
         musicPosition = musicPosition % 1;
 
-        float epsilon = 0.00001f;
+        var epsilon = 0.001f;
         bool isDivisible = (musicPosition % divisorLength < epsilon || (divisorLength - musicPosition % divisorLength) < epsilon);
 
         return isDivisible;
