@@ -95,7 +95,7 @@ public partial class ProjectFileManager : Node
                 break;
             case SaveConfig.beatSaber:
                 SaveFileDialog.CurrentDir = Settings.Instance.BeatSaberFilesDirectory;
-                SaveFileDialog.Title = "Export Beat Saber";
+                SaveFileDialog.Title = $"Export Beat Saber (v{Settings.Instance.BeatSaberExportFormat})";
                 break;
         }
         latestSaveConfig = config;
