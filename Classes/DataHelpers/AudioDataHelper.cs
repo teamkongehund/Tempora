@@ -95,7 +95,7 @@ public partial class AudioDataHelper
         int decoderDelaySamples = 528;
 
         //Mp3Frame firstFrame = reader.ReadNextFrame();
-        Mp3Frame xingFrame = reader.XingHeader.Mp3Frame;
+        Mp3Frame? xingFrame = reader.XingHeader?.Mp3Frame;
         if (xingFrame != null)
         {
             byte[] frameData = xingFrame.RawData;
