@@ -15,16 +15,19 @@ public partial class ExportWindow : Window
     CheckBox removePointsThatChangeNothing = null!;
 
     [Export]
-    CheckBox addExtraPointsOnDownbeats= null!;
+    CheckBox addExtraPointsOnDownbeats = null!;
 
     [Export]
-    CheckBox addExtraPointsOnQuarterNotes= null!;
+    CheckBox addExtraPointsOnQuarterNotes = null!;
 
     [Export]
     CheckBox omitBarlines = null!;
 
     [Export]
     CheckBox preventDoubleBarlines = null!;
+
+    [Export]
+    OptionButton beatSaberExportFormat = null!;
 
     [Export]
     Button okButton = null!;
@@ -34,13 +37,13 @@ public partial class ExportWindow : Window
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
-	{
+    {
         okButton.Pressed += OnOkButtonPressed;
         defaultsButton.Pressed += OnResetButtonPressed;
 
         CloseRequested += CloseWithoutSaving;
         AboutToPopup += OnAboutToPopup;
-	}
+    }
 
     private void LoadValuesFromSettings()
     {
@@ -51,6 +54,7 @@ public partial class ExportWindow : Window
         addExtraPointsOnQuarterNotes.ButtonPressed = Settings.Instance.AddExtraPointsOnQuarterNotes;
         omitBarlines.ButtonPressed = Settings.Instance.OmitBarlines;
         preventDoubleBarlines.ButtonPressed = Settings.Instance.PreventDoubleBarlines;
+        beatSaberExportFormat.Select(beatSaberExportFormat.GetItemIndex(Settings.Instance.BeatSaberExportFormat));
     }
 
     private void OnAboutToPopup()
@@ -78,12 +82,14 @@ public partial class ExportWindow : Window
         {
             Settings.Instance.ExportOffsetMs = exportOffset;
         }
+
         Settings.Instance.MeasureResetsOnUnsupportedTimeSignatures = unsupportedTimeSignatures.ButtonPressed;
         Settings.Instance.RemovePointsThatChangeNothing = removePointsThatChangeNothing.ButtonPressed;
         Settings.Instance.AddExtraPointsOnDownbeats = addExtraPointsOnDownbeats.ButtonPressed;
         Settings.Instance.AddExtraPointsOnQuarterNotes = addExtraPointsOnQuarterNotes.ButtonPressed;
         Settings.Instance.OmitBarlines = omitBarlines.ButtonPressed;
         Settings.Instance.PreventDoubleBarlines = preventDoubleBarlines.ButtonPressed;
+        Settings.Instance.BeatSaberExportFormat = beatSaberExportFormat.GetSelectedId();
     }
 
     private void ResetToDefaults()
@@ -95,6 +101,7 @@ public partial class ExportWindow : Window
         addExtraPointsOnQuarterNotes.ButtonPressed = true;
         omitBarlines.ButtonPressed = true;
         preventDoubleBarlines.ButtonPressed = true;
+        beatSaberExportFormat.Selected = 0;
     }
 
     private void CloseWithoutSaving()

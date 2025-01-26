@@ -74,6 +74,16 @@ public partial class Settings : Node
 			SaveSettings();
 		}
 	}
+
+    public string BeatSaberFilesDirectory
+    {
+        get => beatSaberFilesDirectory;
+        set
+        {
+            beatSaberFilesDirectory = value;
+            SaveSettings();
+        }
+    }
 	#endregion
 	#region Timeline
 	public readonly int MaxNumberOfBlocks = 30;
@@ -209,6 +219,16 @@ public partial class Settings : Node
         }
     }
 
+    public int BeatSaberExportFormat
+    {
+        get => beatsaberExportFormat;
+        set
+        {
+            beatsaberExportFormat = value;
+            SaveSettings();
+        }
+    }
+
     private static Settings instance = null!;
 	private static readonly string[] separator = ["\r\n", "\r", "\n"];
 	private int numberOfBlocks = 10;
@@ -220,16 +240,20 @@ public partial class Settings : Node
 	private string settingsPath = "user://settings.txt";
 	private string projectFilesDirectory = "";
 	private string oszFilesDirectory = "";
+    private string beatSaberFilesDirectory = "";
 	private float downbeatPositionOffset = 0.125f;
     private bool seekPlaybackOnTimingPointChanges = true;
     private bool moveSubsequentTimingPointsWhenChangingTimeSignature = true;
     private double musicVolumeNormalized = 0.75f;
     private double metronomeVolumeNormalized = 1f;
     private double masterVolumeNormalized = 0.25f;
+    private int beatsaberExportFormat = 4;
+    
     private enum Setting
     {
         ProjectFilesDirectory,
         OszFilesDirectory,
+        BeatSaberFilesDirectory,
         GridDivisor,
         NumberOfRows,
         MeasureOverlap,
@@ -248,13 +272,14 @@ public partial class Settings : Node
         PreventDoubleBarLines,
         MusicVolumeNormalized,
         MetronomeVolumeNormalized,
-        MasterVolumeNormalized
-
+        MasterVolumeNormalized,
+        BeatSaberExportFormat
     }
     private Dictionary<Setting, string> settingStrings = new ()
     {
         {Setting.ProjectFilesDirectory, "ProjectFilesDirectory"},
         {Setting.OszFilesDirectory, "OszFilesDirectory"},
+        {Setting.BeatSaberFilesDirectory, "BeatSaberFilesDirectory"},
         {Setting.GridDivisor, "GridDivisor"},
         {Setting.NumberOfRows, "NumberOfRows"},
         {Setting.MeasureOverlap, "MeasureOverlap"},
@@ -273,7 +298,8 @@ public partial class Settings : Node
         {Setting.PreventDoubleBarLines, "PreventDoubleBarLines" },
         {Setting.MusicVolumeNormalized, "MusicVolumeNormalized" },
         {Setting.MetronomeVolumeNormalized, "MetronomeVolumeNormalized" },
-        {Setting.MasterVolumeNormalized, "MasterVolumeNormalized" }
+        {Setting.MasterVolumeNormalized, "MasterVolumeNormalized" },
+        {Setting.BeatSaberExportFormat, "BeatSaberExportFormat" }
     };
 
     // Called when the node enters the scene tree for the first time.
@@ -291,6 +317,7 @@ public partial class Settings : Node
 		string settingsFile;
 		try
 		{
+            GD.Print(settingsPath);
 			settingsFile = FileHandler.LoadText(settingsPath);
 		}
 		catch
@@ -314,6 +341,9 @@ public partial class Settings : Node
                 case var value when value == settingStrings[Setting.OszFilesDirectory]:
                     OszFilesDirectory = lineSplit[1];
 					break;
+                case var value when value == settingStrings[Setting.BeatSaberFilesDirectory]:
+                    BeatSaberFilesDirectory = lineSplit[1];
+                    break;
                 case var value when value == settingStrings[Setting.GridDivisor]:
                     _ = int.TryParse(lineSplit[1], out int parsedInt);
                     GridDivisor = parsedInt;
@@ -388,7 +418,10 @@ public partial class Settings : Node
                 case var value when value == settingStrings[Setting.MasterVolumeNormalized]:
                     _ = float.TryParse(lineSplit[1], out parsedFloat);
                     MasterVolumeNormalized = parsedFloat;
-
+                    break;
+                case var value when value == settingStrings[Setting.BeatSaberExportFormat]:
+                    _ = int.TryParse(lineSplit[1], out parsedInt);
+                    BeatSaberExportFormat = parsedInt;
                     break;
             }
 		}
@@ -399,6 +432,7 @@ public partial class Settings : Node
 		string settingsFile = "";
         settingsFile += GetSettingsFileLine(settingStrings[Setting.ProjectFilesDirectory], ProjectFilesDirectory);
         settingsFile += GetSettingsFileLine(settingStrings[Setting.OszFilesDirectory], OszFilesDirectory);
+        settingsFile += GetSettingsFileLine(settingStrings[Setting.BeatSaberFilesDirectory], BeatSaberFilesDirectory);
         settingsFile += GetSettingsFileLine(settingStrings[Setting.GridDivisor], GridDivisor.ToString());
         settingsFile += GetSettingsFileLine(settingStrings[Setting.NumberOfRows], NumberOfRows.ToString());
         settingsFile += GetSettingsFileLine(settingStrings[Setting.MeasureOverlap], MeasureOverlap.ToString());
@@ -418,6 +452,7 @@ public partial class Settings : Node
         settingsFile += GetSettingsFileLine(settingStrings[Setting.MusicVolumeNormalized], MusicVolumeNormalized.ToString());
         settingsFile += GetSettingsFileLine(settingStrings[Setting.MetronomeVolumeNormalized], MetronomeVolumeNormalized.ToString());
         settingsFile += GetSettingsFileLine(settingStrings[Setting.MasterVolumeNormalized], MasterVolumeNormalized.ToString());
+        settingsFile += GetSettingsFileLine(settingStrings[Setting.BeatSaberExportFormat], BeatSaberExportFormat.ToString());
         FileHandler.SaveText(settingsPath, settingsFile);
 	}
 

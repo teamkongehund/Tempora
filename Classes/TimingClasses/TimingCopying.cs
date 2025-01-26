@@ -13,6 +13,7 @@
 
 using System.Collections.Generic;
 using System;
+using System.Linq;
 using Tempora.Classes.DataHelpers;
 using Tempora.Classes.Utility;
 using Tempora.Classes.Audio;
@@ -31,6 +32,15 @@ public partial class Timing
             AddExtraPointsOnQuarterNotes(newTiming, out newTiming);
         if (Settings.Instance.MeasureResetsOnUnsupportedTimeSignatures)
             AddExtraPointsOnUnsupportedSignatures(newTiming, out newTiming, audioFile);
+        return newTiming;
+    }
+
+    public static Timing CloneAndParseForBeatSaber(Timing timing)
+    {
+        var newTiming = CopyTiming(timing);
+        if (Settings.Instance.RemovePointsThatChangeNothing)
+            RemovePointsThatChangeNothing(newTiming, out newTiming);
+        
         return newTiming;
     }
 

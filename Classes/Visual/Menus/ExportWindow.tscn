@@ -2,10 +2,10 @@
 
 [ext_resource type="Script" path="res://Classes/Visual/Menus/ExportWindow.cs" id="1_ad7ek"]
 
-[node name="ExportWindow" type="Window" node_paths=PackedStringArray("exportOffsetEdit", "unsupportedTimeSignatures", "removePointsThatChangeNothing", "addExtraPointsOnDownbeats", "addExtraPointsOnQuarterNotes", "omitBarlines", "preventDoubleBarlines", "okButton", "defaultsButton")]
+[node name="ExportWindow" type="Window" node_paths=PackedStringArray("exportOffsetEdit", "unsupportedTimeSignatures", "removePointsThatChangeNothing", "addExtraPointsOnDownbeats", "addExtraPointsOnQuarterNotes", "omitBarlines", "preventDoubleBarlines", "beatSaberExportFormat", "okButton", "defaultsButton")]
 title = "Export Settings"
 position = Vector2i(0, 36)
-size = Vector2i(500, 400)
+size = Vector2i(500, 450)
 script = ExtResource("1_ad7ek")
 exportOffsetEdit = NodePath("VBoxContainer/ExportOffset/LineEdit")
 unsupportedTimeSignatures = NodePath("VBoxContainer/UnsupportedTimeSignatures/CheckBox")
@@ -14,6 +14,7 @@ addExtraPointsOnDownbeats = NodePath("VBoxContainer/AddExtraPointsOnDownbeats/Ch
 addExtraPointsOnQuarterNotes = NodePath("VBoxContainer/AddExtraPointsOnQuarterNotes/CheckBox")
 omitBarlines = NodePath("VBoxContainer/OmitBarlines/CheckBox")
 preventDoubleBarlines = NodePath("VBoxContainer/PreventDoubleBarlines/CheckBox")
+beatSaberExportFormat = NodePath("VBoxContainer/BeatSaberExportFormat/OptionButton")
 okButton = NodePath("VBoxContainer/HBoxContainer/OkButton")
 defaultsButton = NodePath("VBoxContainer/HBoxContainer/DefaultsButton")
 
@@ -143,6 +144,31 @@ size_flags_horizontal = 2
 text = "Prevent double barlines"
 horizontal_alignment = 2
 vertical_alignment = 1
+
+[node name="SectionBeatSaber" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "Beat Saber Settings"
+
+[node name="BeatSaberExportFormat" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="OptionButton" type="OptionButton" parent="VBoxContainer/BeatSaberExportFormat"]
+layout_mode = 2
+selected = 0
+item_count = 2
+popup/item_0/text = "4.0.0"
+popup/item_0/id = 4
+popup/item_1/text = "2.1.0"
+popup/item_1/id = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/BeatSaberExportFormat"]
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Beat Saber Info.dat export format"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2

@@ -56,7 +56,7 @@ public partial class FileMenu : PopupMenu
 				exportWindow.Popup();
 				break;
 			case 7:
-				BeatSaberExporter.Instance.SaveFile();
+                ProjectFileManager.Instance.SaveBeatSaberFileDialogPopup();
 				break;
 		}
 	}
