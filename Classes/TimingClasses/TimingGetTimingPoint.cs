@@ -18,7 +18,7 @@ using GD = Tempora.Classes.DataHelpers.GD;
 namespace Tempora.Classes.TimingClasses;
 public partial class Timing
 {
-    public TimingPoint? GetNearestTimingPoint(float musicPosition)
+    public TimingPoint? GetNearestTimingPoint(double musicPosition)
     {
         if (TimingPoints.Count == 0)
             return null;
@@ -34,8 +34,8 @@ public partial class Timing
             return nextTimingPoint;
         else if (previousTimingPoint?.MusicPosition != null && nextTimingPoint?.MusicPosition != null)
         {
-            float distanceToNext = Math.Abs((float)nextTimingPoint.MusicPosition - musicPosition);
-            float distanceToPrevious = Math.Abs((float)previousTimingPoint.MusicPosition - musicPosition);
+            double distanceToNext = Math.Abs((float)nextTimingPoint.MusicPosition - musicPosition);
+            double distanceToPrevious = Math.Abs((float)previousTimingPoint.MusicPosition - musicPosition);
             timingPoint = (distanceToPrevious < distanceToNext) ? previousTimingPoint : nextTimingPoint;
         }
 
@@ -46,7 +46,7 @@ public partial class Timing
             : timingPoint;
     }
 
-    public TimingPoint? GetOperatingTimingPoint_ByMusicPosition(float musicPosition)
+    public TimingPoint? GetOperatingTimingPoint_ByMusicPosition(double musicPosition)
     {
         if (TimingPoints.Count == 0)
             return null;
@@ -63,7 +63,7 @@ public partial class Timing
             : timingPoint;
     }
 
-    public TimingPoint? GetOperatingTimingPoint_ByTime(float time)
+    public TimingPoint? GetOperatingTimingPoint_ByTime(double time)
     {
         // Ensures the method can be used while a TimingPoint is being created.
         var validTimingPoints = TimingPoints.Where(point => point.MusicPosition != null).ToList<TimingPoint>();

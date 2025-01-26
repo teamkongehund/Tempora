@@ -24,12 +24,12 @@ public partial class Timing
     /// </summary>
     /// <param name="timingPoint"></param>
     /// <param name="musicPosition"></param>
-    public void SnapTimingPoint(TimingPoint timingPoint, float musicPosition)
+    public void SnapTimingPoint(TimingPoint timingPoint, double musicPosition)
     {
         if (timingPoint == null)
             return;
 
-        float snappedMusicPosition = SnapMusicPosition(musicPosition);
+        double snappedMusicPosition = SnapMusicPosition(musicPosition);
 
         timingPoint.MusicPosition = snappedMusicPosition;
     }
@@ -120,23 +120,23 @@ public partial class Timing
         if (opIndex == -1)
             return;
 
-        float getNewMusicPosition(TimingPoint? timingPoint)
+        double getNewMusicPosition(TimingPoint? timingPoint)
         {
             if (timingPoint?.MusicPosition == null)
                 throw new NullReferenceException(nameof(timingPoint));
 
             // Get number of beats from time signature change to timingPoint's old musicPosition using previous timing
             // This should be kept constant
-            float beatDifference_OldTiming
+            double beatDifference_OldTiming
                 = GetBeatsBetweenMusicPositions(oldTiming, timeSignaturePoint.MusicPosition, (float)timingPoint.MusicPosition);
 
-            float beatDifference_NewTiming
+            double beatDifference_NewTiming
                 = GetBeatsBetweenMusicPositions(this, timeSignaturePoint.MusicPosition, (float)timingPoint.MusicPosition);
 
-            float beatsToAdd = beatDifference_OldTiming - beatDifference_NewTiming;
+            double beatsToAdd = beatDifference_OldTiming - beatDifference_NewTiming;
 
             // Get new music position for this timing point
-            float newMusicPosition = GetMusicPositionAfterAddingBeats(this, (float)timingPoint.MusicPosition, beatsToAdd);
+            double newMusicPosition = GetMusicPositionAfterAddingBeats(this, (float)timingPoint.MusicPosition, beatsToAdd);
 
             return newMusicPosition;
         }
@@ -147,7 +147,7 @@ public partial class Timing
     /// <summary>
     /// Delegate that defines what a new music position should be for a timing point.
     /// </summary>
-    public delegate float GetNewMusicPosition(TimingPoint? timingPoint);
+    public delegate double GetNewMusicPosition(TimingPoint? timingPoint);
 
     /// <summary>
     /// Changes the music positions of all <see cref="TimingPoint"/>s from <see cref="TimingPoints"/>[lowerIndex] to and including <see cref="TimingPoints"/>[higherIndex].
@@ -198,34 +198,34 @@ public partial class Timing
         if (!ValidateIndices(lowerIndex, higherIndex, out lowerIndex, out higherIndex))
             return;
 
-        float lowerPosition = (float)TimingPoints[lowerIndex].MusicPosition!; // Indices have been validated 
-        float higherPosition = (float)TimingPoints[higherIndex].MusicPosition!; // Indices have been validated 
+        double lowerPosition = (float)TimingPoints[lowerIndex].MusicPosition!; // Indices have been validated 
+        double higherPosition = (float)TimingPoints[higherIndex].MusicPosition!; // Indices have been validated 
 
-        float getPositionForSelectedPoints(TimingPoint? timingPoint)
+        double getPositionForSelectedPoints(TimingPoint? timingPoint)
         {
             if (timingPoint?.MusicPosition == null)
                 throw new NullReferenceException(nameof(timingPoint));
 
-            float oldPositionDifference = (float)(timingPoint.MusicPosition - lowerPosition);
-            float newPositionDifference = oldPositionDifference * multiplier;
+            double oldPositionDifference = (float)(timingPoint.MusicPosition - lowerPosition);
+            double newPositionDifference = oldPositionDifference * multiplier;
             return lowerPosition + newPositionDifference;
         }
 
-        float positionOffsetForSubsequentPoints = 0;
+        double positionOffsetForSubsequentPoints = 0;
         bool areThereAnySubsequentTimingPoints = (higherIndex + 1 < TimingPoints.Count);
         if (areThereAnySubsequentTimingPoints)
         {
-            float spanForChangedPointsBefore = (float)(TimingPoints[higherIndex + 1].MusicPosition - lowerPosition)!;
-            float spanForChangedPointsAfter = spanForChangedPointsBefore * multiplier;
+            double spanForChangedPointsBefore = (double)(TimingPoints[higherIndex + 1].MusicPosition - lowerPosition)!;
+            double spanForChangedPointsAfter = spanForChangedPointsBefore * multiplier;
             positionOffsetForSubsequentPoints = spanForChangedPointsAfter - spanForChangedPointsBefore;
         }
 
-        float getPositionForSubsequentPoints(TimingPoint? timingPoint)
+        double getPositionForSubsequentPoints(TimingPoint? timingPoint)
         {
             if (timingPoint?.MusicPosition == null)
                 throw new NullReferenceException(nameof(timingPoint));
 
-            return (float)(timingPoint.MusicPosition + positionOffsetForSubsequentPoints);
+            return ((double)timingPoint.MusicPosition + positionOffsetForSubsequentPoints);
         }
 
         if (multiplier > 1)
@@ -268,7 +268,7 @@ public partial class Timing
         ScaleTempo(index, index, multiplier);
     }
 
-    public void BatchChangeOffset(int lowerIndex, int higherIndex, float offsetChange)
+    public void BatchChangeOffset(int lowerIndex, int higherIndex, double offsetChange)
     {
         if (!ValidateIndices(lowerIndex, higherIndex, out lowerIndex, out higherIndex))
             return;

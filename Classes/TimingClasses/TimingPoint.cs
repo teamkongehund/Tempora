@@ -57,12 +57,12 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 	#endregion
 
 	#region Offset
-	private float offset;
+	private double offset;
 
 	/// <summary>
 	/// The timestamp in the audio which this <see cref="TimingPoint"/> is attached to. 
 	/// </summary>
-	public float Offset
+	public double Offset
 	{
 		get => offset;
 		set
@@ -75,7 +75,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
                 return;
             }
 
-            float oldValue = offset;
+            double oldValue = offset;
 			offset = value;
 
             PropertyChanged?.Invoke(this, new PropertyChangeArgument(PropertyType.Offset, oldValue, value));
@@ -84,7 +84,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 	#endregion
 
 	#region MusicPosition
-	private float? musicPosition;
+	private double? musicPosition;
 	/// <summary>
 	/// The <see cref="TimingPoint"/>'s position on the musical timeline. 
 	/// The value is defined in terms of measures (integer part) from the musical timeline origin.
@@ -92,7 +92,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 	/// As an example, if a measure has a 4/4 <see cref="TimeSignature"/>, 
 	/// the value 0.75 means "Measure 0, Quarter note 4"
 	/// </summary>
-	public float? MusicPosition
+	public double? MusicPosition
 	{
 		get => musicPosition;
 		set
@@ -100,7 +100,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 			if (musicPosition == value)
 				return;
 
-            float? oldValue = musicPosition;
+            double? oldValue = musicPosition;
             musicPosition = value;
 
             PropertyChanged?.Invoke(this, new PropertyChangeArgument(PropertyType.MusicPosition, oldValue, value));
@@ -109,14 +109,14 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 	#endregion
 
 	#region MeasuresPerSecond
-	private float measuresPerSecond = 0.5f;
+	private double measuresPerSecond = 0.5;
 	/// <summary>
 	/// Musical measures per second. 
 	/// Directly correlated with <see cref="Bpm"/> and <see cref="TimeSignature"/>
 	/// via the formulas <see cref="BpmToMps(float)"/> and <see cref="MpsToBpm(float)"/>.
 	/// Cannot be changed directly, as it is a calculated property via <see cref="MeasuresPerSecond_Set(Timing)"/>
 	/// </summary>
-	public float MeasuresPerSecond
+	public double MeasuresPerSecond
 	{
 		get => measuresPerSecond;
 		set
@@ -124,7 +124,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 			if (measuresPerSecond == value)
 				return;
 
-            float oldValue = measuresPerSecond;
+            double oldValue = measuresPerSecond;
 			measuresPerSecond = value;
 
             PropertyChanged?.Invoke(this, new PropertyChangeArgument(PropertyType.MeasuresPerSecond, oldValue, value));
@@ -133,13 +133,13 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 	#endregion
 
 	#region Bpm
-	private float bpm;
+	private double bpm;
 	/// <summary>
 	/// Beats per minute. Directly correlated with <see cref="MeasuresPerSecond"/> and <see cref="TimeSignature"/>
 	/// via the formulas <see cref="BpmToMps(float)"/> and <see cref="MpsToBpm(float)"/>.
 	/// Changes are only accepted if <see cref="Timing"/> validates the change.
 	/// </summary>
-	public float Bpm
+	public double Bpm
 	{
 		get
 		{
@@ -152,7 +152,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 			if (bpm == value)
 				return;
 			
-			float oldValue = bpm;
+			double oldValue = bpm;
 			bpm = Settings.Instance.RoundBPM ? (float)Math.Round(value*10, MidpointRounding.ToEven) / 10f : value;
 
             PropertyChanged?.Invoke(this, new PropertyChangeArgument(PropertyType.Bpm, oldValue, value));
@@ -162,20 +162,20 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 
 	#endregion
 	#region Constructors
-	public TimingPoint(float time, int[] timeSignature)
+	public TimingPoint(double time, int[] timeSignature)
 	{
 		this.offset = time;
 		this.timeSignature = timeSignature;
 		SystemTimeWhenCreatedMsec = Time.GetTicksMsec();
 	}
 
-	public TimingPoint(float musicPosition)
+	public TimingPoint(double musicPosition)
 	{
 		this.musicPosition = musicPosition;
 		SystemTimeWhenCreatedMsec = Time.GetTicksMsec();
 	}
 
-	public TimingPoint(float time, float musicPosition, float measuresPerSecond)
+	public TimingPoint(double time, double musicPosition, double measuresPerSecond)
 	{
 		this.offset = time;
 		this.musicPosition = musicPosition;
@@ -183,7 +183,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 		SystemTimeWhenCreatedMsec = Time.GetTicksMsec();
 	}
 
-	public TimingPoint(float time, float musicPosition, int[] timeSignature)
+	public TimingPoint(double time, double musicPosition, int[] timeSignature)
 	{
 		this.offset = time;
 		this.musicPosition = musicPosition;
@@ -191,7 +191,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 		SystemTimeWhenCreatedMsec = Time.GetTicksMsec();
 	}
 
-	public TimingPoint(float time, float musicPosition, int[] timeSignature, float measuresPerSecond)
+	public TimingPoint(double time, double musicPosition, int[] timeSignature, double measuresPerSecond)
 	{
 		this.offset = time;
 		this.musicPosition = musicPosition;
@@ -204,7 +204,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 	/// <summary>
 	/// Constructor used only for cloning
 	/// </summary>
-	private TimingPoint(float time, float? musicPosition, int[] timeSignature, float measuresPerSecond, float bpm, bool isInstantiating)
+	private TimingPoint(double time, double? musicPosition, int[] timeSignature, double measuresPerSecond, double bpm, bool isInstantiating)
 	{
 		this.offset = time;
 		this.musicPosition = musicPosition;
@@ -273,10 +273,10 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
     }
     #endregion
     #region Calculators
-    public float BpmToMps(float bpm) => bpm / (60 * (TimeSignature[0] * 4f / TimeSignature[1]));
+    public double BpmToMps(double bpm) => bpm / (60 * (TimeSignature[0] * 4f / TimeSignature[1]));
 
-	public float MpsToBpm(float mps) => mps * 60 * (TimeSignature[0] * 4f / TimeSignature[1]);
+	public double MpsToBpm(double mps) => mps * 60 * (TimeSignature[0] * 4f / TimeSignature[1]);
 
-	public float BeatLengthSec => 1 / (Bpm / 60);
+	public double BeatLengthSec => 1 / (Bpm / 60);
 	#endregion
 }

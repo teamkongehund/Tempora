@@ -89,7 +89,7 @@ public partial class AudioFile : PcmData
     /// All MP3 decodes add 528 samples of delay as mentioned in <see href="https://lame.sourceforge.io/tech-FAQ.txt"/>.
     /// Add 1 sample, which is also mentioned in the link. This gets us to 1105 for click-quick.mp3, which is what we observe.</para>
     /// </summary>
-    private float playbackOrigin_Seconds => startSilenceSamples / (float)sampleRate;
+    private double playbackOrigin_Seconds => startSilenceSamples / sampleRate;
 
     private string extension = "";
     public string Extension
@@ -137,8 +137,8 @@ public partial class AudioFile : PcmData
         FileBuffer = audioStreamMP3.Data;
     }
 
-    public int SampleTimeToSampleIndex(float seconds) => (int)Math.Floor(seconds * SampleRate);
-    public float SampleIndexToSampleTime(int sampleIndex) => (sampleIndex / (float)SampleRate);
+    public int SampleTimeToSampleIndex(double seconds) => (int)Math.Floor(seconds * SampleRate);
+    public double SampleIndexToSampleTime(int sampleIndex) => (sampleIndex / (float)SampleRate);
 
     /// <summary>
     /// Sample Time is the number of seconds from the very first sample, in seconds.
@@ -146,20 +146,20 @@ public partial class AudioFile : PcmData
     /// </summary>
     /// <param name="sampleTime"></param>
     /// <returns></returns>
-    public float SampleTimeToPlaybackTime(float sampleTime) => sampleTime - playbackOrigin_Seconds;
+    public double SampleTimeToPlaybackTime(double sampleTime) => sampleTime - playbackOrigin_Seconds;
     /// <summary>
     /// Sample Time is the number of seconds from the very first sample, in seconds.
     /// Playback Time is the number of seconds from the Playback origin.
     /// </summary>
     /// <param name="playbackTime"></param>
     /// <returns></returns>
-    public float PlaybackTimeToSampleTime(float playbackTime) => playbackTime + playbackOrigin_Seconds;
+    public double PlaybackTimeToSampleTime(double playbackTime) => playbackTime + playbackOrigin_Seconds;
 
     /// <summary>
     /// Return audio duration in seconds
     /// </summary>
     /// <returns></returns>
-    public float GetAudioLength() => SampleIndexToSampleTime(PcmLeft.Length - 1);
+    public double GetAudioLength() => SampleIndexToSampleTime(PcmLeft.Length - 1);
 
     public void CalculatePer10s()
     {

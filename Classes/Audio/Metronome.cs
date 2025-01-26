@@ -117,8 +117,8 @@ public partial class Metronome : Node
     private double currentBufferMusicSample;
     private int numClickFramesLeftToAdd;
     private bool isPrimaryClick;
-    private float triggerPosition;
-    private float triggerTime;
+    private double triggerPosition;
+    private double triggerTime;
 
     private float timeBetweenCurrentFrameSyncs = 3;
 
@@ -175,8 +175,8 @@ public partial class Metronome : Node
 
     private void UpdateTriggerTime(double currentPlaybackTime)
     {
-        float currentSampleTime = Project.Instance.AudioFile.PlaybackTimeToSampleTime((float)currentPlaybackTime);
-        float musicPosition = Timing.Instance.SampleTimeToMusicPosition((float)currentSampleTime);
+        double currentSampleTime = Project.Instance.AudioFile.PlaybackTimeToSampleTime(currentPlaybackTime);
+        double musicPosition = Timing.Instance.SampleTimeToMusicPosition(currentSampleTime);
         triggerPosition = GetTriggerPosition(musicPosition);
         var triggerSampleTime = Timing.Instance.MusicPositionToSampleTime(triggerPosition);
         triggerTime = triggerSampleTime;
@@ -197,7 +197,7 @@ public partial class Metronome : Node
     private void SeekPlayback(double playbackTime)
     {
         currentBufferMusicSample = Project.Instance.AudioFile.PlaybackTimeToSampleTime((float)playbackTime) * musicSampleRate;
-        UpdateTriggerTime((float)playbackTime);
+        UpdateTriggerTime(playbackTime);
         if (playback is null) return;
         StopPlayback();
         StartPlayback();
@@ -244,7 +244,7 @@ public partial class Metronome : Node
     #endregion
 
 
-    private static float GetTriggerPosition(float musicPosition)
+    private static double GetTriggerPosition(double musicPosition)
     {
         return Settings.Instance.MetronomeFollowsGrid
             ? Timing.Instance.GetNextOperatingGridPosition(musicPosition)

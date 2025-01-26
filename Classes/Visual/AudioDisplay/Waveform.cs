@@ -223,9 +223,9 @@ public partial class Waveform : Node2D
         set => audioDataRange = value;
     }
 
-    private float[] timeRange = null!;
+    private double[] timeRange = null!;
 
-    public float[] TimeRange
+    public double[] TimeRange
     {
         get => timeRange;
         set
@@ -281,7 +281,7 @@ public partial class Waveform : Node2D
         QueueRedraw();
     }
 
-    public Waveform(AudioFile audioFile, float length, float height, float[] timeRange)
+    public Waveform(AudioFile audioFile, float length, float height, double[] timeRange)
     {
         AudioFile = audioFile;
         AudioDataRange = [0, AudioFile.PcmLeft.Length];

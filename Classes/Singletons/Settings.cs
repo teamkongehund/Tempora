@@ -96,7 +96,7 @@ public partial class Settings : Node
 	/// <summary>
 	///     How many measures of overlapping time is added to the beginning and end of each waveform block
 	/// </summary>
-	public float MeasureOverlap
+	public double MeasureOverlap
 	{
 		get => measureOverlap;
 		set
@@ -108,7 +108,7 @@ public partial class Settings : Node
             SaveSettings();
         }
 	}
-	public float DownbeatPositionOffset
+	public double DownbeatPositionOffset
 	{
 		get => downbeatPositionOffset;
 		set
@@ -212,7 +212,7 @@ public partial class Settings : Node
     private static Settings instance = null!;
 	private static readonly string[] separator = ["\r\n", "\r", "\n"];
 	private int numberOfBlocks = 10;
-	private float measureOverlap;
+	private double measureOverlap;
 	private bool metronomeFollowsGrid;
 	private bool roundBPM;
 	private int divisor = 1;
@@ -220,7 +220,7 @@ public partial class Settings : Node
 	private string settingsPath = "user://settings.txt";
 	private string projectFilesDirectory = "";
 	private string oszFilesDirectory = "";
-	private float downbeatPositionOffset = 0.125f;
+	private double downbeatPositionOffset = 0.125;
     private bool seekPlaybackOnTimingPointChanges = true;
     private bool moveSubsequentTimingPointsWhenChangingTimeSignature = true;
     private double musicVolumeNormalized = 0.75f;

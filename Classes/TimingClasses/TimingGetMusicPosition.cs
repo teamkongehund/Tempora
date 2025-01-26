@@ -20,12 +20,12 @@ public partial class Timing
 {
     public bool IsTimingPointOnGrid(TimingPoint? point)
     {
-        float? position = point?.MusicPosition;
+        double? position = point?.MusicPosition;
         if (position == null) return false;
         return position == SnapMusicPosition((float)position);
     }
 
-    public int[] GetTimeSignature(float musicPosition)
+    public int[] GetTimeSignature(double musicPosition)
     {
         //TimingPoint timingPoint = GetOperatingTimingPoint(musicPosition);
         //if (timingPoint == null) return new int[] { 4, 4 };
@@ -34,7 +34,7 @@ public partial class Timing
         TimeSignaturePoint? timeSignaturePoint = TimeSignaturePoints.FindLast(point => point.MusicPosition <= musicPosition);
         return timeSignaturePoint == null ? ([4, 4]) : timeSignaturePoint.TimeSignature;
     }
-    public float SampleTimeToMusicPosition(float time)
+    public double SampleTimeToMusicPosition(double time)
     {
         TimingPoint? operatingTimingPoint = GetOperatingTimingPoint_ByTime(time);
 
@@ -52,7 +52,7 @@ public partial class Timing
     /// </summary>
     /// <param name="musicPosition"></param>
     /// <returns></returns>
-    public float GetDistancePerBeat(float musicPosition)
+    public double GetDistancePerBeat(double musicPosition)
     {
         int[] timeSignature = GetTimeSignature(musicPosition);
         return timeSignature[1] / 4f / timeSignature[0];
@@ -63,15 +63,15 @@ public partial class Timing
     /// </summary>
     /// <param name="musicPosition"></param>
     /// <returns></returns>
-    public float GetOperatingBeatPosition(float musicPosition)
+    public double GetOperatingBeatPosition(double musicPosition)
     {
-        float beatLength = GetDistancePerBeat(musicPosition);
+        double beatLength = GetDistancePerBeat(musicPosition);
         int downbeatPosition = (musicPosition >= 0) ? (int)musicPosition : (int)musicPosition - 1;
-        float relativePosition = (musicPosition >= 0)
+        double relativePosition = (musicPosition >= 0)
             ? musicPosition % 1
             : 1 + (musicPosition % 1);
         int beatsFromDownbeat = (int)(relativePosition / beatLength);
-        float position = (beatsFromDownbeat * beatLength) + downbeatPosition;
+        double position = (beatsFromDownbeat * beatLength) + downbeatPosition;
         return position;
     }
 
@@ -80,39 +80,39 @@ public partial class Timing
     /// </summary>
     /// <param name="musicPosition"></param>
     /// <returns></returns>
-    public float GetNextOperatingBeatPosition(float musicPosition)
+    public double GetNextOperatingBeatPosition(double musicPosition)
     {
-        float beatLength = GetDistancePerBeat(musicPosition);
+        double beatLength = GetDistancePerBeat(musicPosition);
         int downbeatPosition = (musicPosition >= 0) ? (int)musicPosition : (int)musicPosition - 1;
-        float relativePosition = (musicPosition >= 0)
+        double relativePosition = (musicPosition >= 0)
             ? musicPosition % 1
             : 1 + (musicPosition % 1);
-        int beatsFromDownbeat = (int)MathF.Ceiling(relativePosition / beatLength);
+        int beatsFromDownbeat = (int)Math.Ceiling(relativePosition / beatLength);
 
-        float position = (relativePosition + beatLength) <= 1
+        double position = (relativePosition + beatLength) <= 1
             ? (beatsFromDownbeat * beatLength) + downbeatPosition
             : downbeatPosition + 1;
         return position;
     }
 
-    public float GetNextOperatingGridPosition(float musicPosition)
+    public double GetNextOperatingGridPosition(double musicPosition)
     {
         int downbeatPosition = (musicPosition >= 0) ? (int)musicPosition : (int)musicPosition - 1;
         int[] timeSignature = GetTimeSignature(musicPosition);
         int divisor = Settings.Instance.GridDivisor;
-        float divisionLength = GetRelativeNotePosition(timeSignature, divisor, 1);
-        float relativePosition = (musicPosition >= 0)
+        double divisionLength = GetRelativeNotePosition(timeSignature, divisor, 1);
+        double relativePosition = (musicPosition >= 0)
             ? musicPosition % 1
             : 1 + (musicPosition % 1);
-        int divisionsFromDownbeat = (int)MathF.Ceiling(relativePosition / divisionLength);
+        int divisionsFromDownbeat = (int)Math.Ceiling(relativePosition / divisionLength);
 
-        float position = (relativePosition + divisionLength) <= 1
+        double position = (relativePosition + divisionLength) <= 1
             ? (divisionsFromDownbeat * divisionLength) + downbeatPosition
             : downbeatPosition + 1;
         return position;
     }
 
-    public float GetOperatingGridPosition(float musicPosition)
+    public double GetOperatingGridPosition(double musicPosition)
     {
         //TimingPoint? operatingTimingPoint = 
         //    GetOperatingTimingPoint_ByMusicPosition(musicPosition) 
@@ -123,11 +123,11 @@ public partial class Timing
         int gridDivisor = Settings.Instance.GridDivisor;
 
         int nextMeasure = (int)(musicPosition + 1);
-        float previousAbsolutePosition = GetRelativeNotePosition(timeSignature, gridDivisor, 0) + (int)musicPosition;
+        double previousAbsolutePosition = GetRelativeNotePosition(timeSignature, gridDivisor, 0) + (int)musicPosition;
         for (int index = 0; index < 30; index++)
         {
-            float relativePosition = GetRelativeNotePosition(timeSignature, gridDivisor, index);
-            float absolutePosition = (int)musicPosition + relativePosition;
+            double relativePosition = GetRelativeNotePosition(timeSignature, gridDivisor, index);
+            double absolutePosition = (int)musicPosition + relativePosition;
 
             if (absolutePosition > musicPosition)
                 return previousAbsolutePosition;
@@ -142,33 +142,7 @@ public partial class Timing
         return 0;
     }
 
-    //public float GetNextOperatingGridPosition(float musicPosition)
-    //{
-    //    //TimingPoint? operatingTimingPoint =
-    //    //    GetOperatingTimingPoint_ByMusicPosition(musicPosition)
-    //    //    ?? throw new NullReferenceException("This doesn't work unless there's a timing point yet. Fix me so it works always.");
-    //    //int[] timeSignature = operatingTimingPoint.TimeSignature;
-
-    //    int[] timeSignature = GetTimeSignature(musicPosition);
-    //    int gridDivisor = Settings.Instance.GridDivisor;
-
-    //    int nextMeasure = (int)(musicPosition + 1);
-    //    for (int index = 0; index < 30; index++)
-    //    {
-    //        float relativePosition = GetRelativeNotePosition(timeSignature, gridDivisor, index);
-    //        float absolutePosition = (int)musicPosition + relativePosition;
-
-    //        if (absolutePosition > musicPosition)
-    //            return absolutePosition;
-
-    //        if (absolutePosition >= nextMeasure)
-    //            throw new Exception("No operating grid position found");
-    //    }
-
-    //    return 0;
-    //}
-
-    public static float GetRelativeNotePosition(int[] timeSignature, int gridDivisor, int index)
+    public static double GetRelativeNotePosition(int[] timeSignature, int gridDivisor, int index)
     {
         // For a quarter-note:
         // 4/4: 0, 1/4, 2/4, 3/4
@@ -181,27 +155,27 @@ public partial class Timing
         // 7/4: 0, 1/21, 2/21, 3/21, etc.
         // 7/8: 0, 2/21, 4/21, 6/21, etc.
 
-        float position = index * timeSignature[1] / (float)(timeSignature[0] * gridDivisor);
+        double position = index * timeSignature[1] / (double)(timeSignature[0] * gridDivisor);
         return position;
     }
 
-    public float GetNearestGridPosition(float musicPosition)
+    public double GetNearestGridPosition(double musicPosition)
     {
-        float previous = GetOperatingGridPosition(musicPosition);
-        float next = GetNextOperatingGridPosition(musicPosition);
-        float distanceToPrevious = Math.Abs(musicPosition - previous);
-        float distanceToNext = Math.Abs(next - musicPosition);
+        double previous = GetOperatingGridPosition(musicPosition);
+        double next = GetNextOperatingGridPosition(musicPosition);
+        double distanceToPrevious = Math.Abs(musicPosition - previous);
+        double distanceToNext = Math.Abs(next - musicPosition);
         return (distanceToPrevious < distanceToNext) ? previous : next;
     }
 
     public int GetLastMeasure()
     {
-        float lengthInSeconds = Project.Instance.AudioFile?.GetAudioLength() ?? 0;
-        float lastMeasure = SampleTimeToMusicPosition(lengthInSeconds);
+        double lengthInSeconds = Project.Instance.AudioFile?.GetAudioLength() ?? 0;
+        double lastMeasure = SampleTimeToMusicPosition(lengthInSeconds);
         return (int)lastMeasure;
     }
 
-    private float GetBeatsBetweenMusicPositions(float musicPositionFrom, float musicPositionTo)
+    private double GetBeatsBetweenMusicPositions(double musicPositionFrom, double musicPositionTo)
     {
         return GetBeatsBetweenMusicPositions(this, musicPositionFrom, musicPositionTo);
     }
@@ -211,20 +185,20 @@ public partial class Timing
     /// I.e. clone the timing first and parse it as <see cref="timing"/> to use the method without worrying that the timing has changed meanwhile.
     /// </summary>
     /// <returns></returns>
-    private static float GetBeatsBetweenMusicPositions(Timing timing, float musicPositionFrom, float musicPositionTo)
+    private static double GetBeatsBetweenMusicPositions(Timing timing, double musicPositionFrom, double musicPositionTo)
     {
         if (musicPositionFrom > musicPositionTo)
             (musicPositionTo, musicPositionFrom) = (musicPositionFrom, musicPositionTo);
 
-        float sum = 0;
-        float currentMusicPosition = musicPositionFrom;
+        double sum = 0;
+        double currentMusicPosition = musicPositionFrom;
         // Go through every measure between them and add up the number of beats
         for (int measure = (int)musicPositionFrom; measure < (int)(musicPositionTo + 1); measure++)
         {
-            float distancePerBeat = timing.GetDistancePerBeat(measure);
-            float nextPosition = (musicPositionTo < measure + 1) ? musicPositionTo : (measure + 1);
-            float distanceToNextPosition = nextPosition - currentMusicPosition;
-            float beatsToNextPosition = distanceToNextPosition / distancePerBeat;
+            double distancePerBeat = timing.GetDistancePerBeat(measure);
+            double nextPosition = (musicPositionTo < measure + 1) ? musicPositionTo : (measure + 1);
+            double distanceToNextPosition = nextPosition - currentMusicPosition;
+            double beatsToNextPosition = distanceToNextPosition / distancePerBeat;
             sum += beatsToNextPosition;
 
             if (nextPosition == musicPositionTo)
@@ -236,20 +210,20 @@ public partial class Timing
         return sum;
     }
 
-    private float GetMusicPositionAfterAddingBeats(float musicPosition, float numberOfBeats)
+    private double GetMusicPositionAfterAddingBeats(double musicPosition, double numberOfBeats)
     {
         return GetMusicPositionAfterAddingBeats(this, musicPosition, numberOfBeats);
     }
 
-    private static float GetMusicPositionAfterAddingBeats(Timing timing, float musicPositionFrom, float numberOfBeatsToAdd)
+    private static double GetMusicPositionAfterAddingBeats(Timing timing, double musicPositionFrom, double numberOfBeatsToAdd)
     {
         if (numberOfBeatsToAdd == 0)
             return musicPositionFrom;
 
         int lastMeasure = timing.GetLastMeasure();
 
-        float currentMusicPosition = musicPositionFrom;
-        float beatsLeftToAdd = numberOfBeatsToAdd;
+        double currentMusicPosition = musicPositionFrom;
+        double beatsLeftToAdd = numberOfBeatsToAdd;
 
         bool isAdding = numberOfBeatsToAdd > 0;
 
@@ -258,10 +232,10 @@ public partial class Timing
 
         while (isAdding ? beatsLeftToAdd > 0 : beatsLeftToAdd < 0) 
         {
-            float distancePerBeat = timing.GetDistancePerBeat(measure);
+            double distancePerBeat = timing.GetDistancePerBeat(measure);
             int nextMeasure = (measure = isAdding ? measure + 1 : measure - 1);
-            float distanceToNextMeasure = nextMeasure - currentMusicPosition;
-            float beatsToNextPosition = distanceToNextMeasure / distancePerBeat;
+            double distanceToNextMeasure = nextMeasure - currentMusicPosition;
+            double beatsToNextPosition = distanceToNextMeasure / distancePerBeat;
 
             if (Math.Abs(beatsLeftToAdd) <= Math.Abs(beatsToNextPosition))
             {
@@ -280,7 +254,7 @@ public partial class Timing
         return currentMusicPosition;
     }
 
-    public float SnapMusicPosition(float musicPosition)
+    public double SnapMusicPosition(double musicPosition)
     {
         if (!Settings.Instance.SnapToGridEnabled)
             return musicPosition;

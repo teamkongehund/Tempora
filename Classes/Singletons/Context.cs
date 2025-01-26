@@ -26,8 +26,8 @@ public partial class Context : Node
 
     public bool ShouldDeleteHeldPointIfNotOnGrid = false;
     public bool HeldPointIsJustBeingAdded = false;
-    private float? heldTimingPoint_PreviousMusicPosition = null!;
-    private float? heldTimingPoint_PreviousOffset = null!;
+    private double? heldTimingPoint_PreviousMusicPosition = null!;
+    private double? heldTimingPoint_PreviousOffset = null!;
     private TimingPoint? heldTimingPoint = null!;
     public TimingPoint? HeldTimingPoint
     {
@@ -86,9 +86,9 @@ public partial class Context : Node
 
     public bool IsSelectedMusicPositionMoving = false;
 
-    private float selectedPosition;
+    private double selectedPosition;
 
-    public float SelectedMusicPosition
+    public double SelectedMusicPosition
     {
         get => selectedPosition;
         set

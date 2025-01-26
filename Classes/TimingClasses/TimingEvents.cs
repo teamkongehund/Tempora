@@ -68,9 +68,9 @@ public partial class Timing
     /// <returns></returns>
     /// <exception cref="NullReferenceException"></exception>
     /// <exception cref="Exception"></exception>
-    private float? CalculateMPSBasedOnAdjacentPoints(TimingPoint timingPoint)
+    private double? CalculateMPSBasedOnAdjacentPoints(TimingPoint timingPoint)
     {
-        float? correctValue = null;
+        double? correctValue = null;
         TimingPoint? previousTimingPoint = GetPreviousTimingPoint(timingPoint);
         TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
 
@@ -82,7 +82,7 @@ public partial class Timing
         if (nextTimingPoint?.MusicPosition != null)
         {
             correctValue =
-                ((float)nextTimingPoint.MusicPosition - (float)timingPoint.MusicPosition)
+                (nextTimingPoint.MusicPosition - timingPoint.MusicPosition)
                 / (nextTimingPoint.Offset - timingPoint.Offset);
         }
         else if (previousTimingPoint?.MusicPosition != null)
@@ -198,11 +198,11 @@ public partial class Timing
         switch (propertyType) // Reset to old values if change is denied
         {
             case TimingPoint.PropertyType.Offset:
-                float oldOffset = (float)oldValue!;
+                double oldOffset = (double)oldValue!;
                 timingPoint.Offset = oldOffset;
                 break;
             case TimingPoint.PropertyType.MeasuresPerSecond:
-                float oldMPS = (float)oldValue!;
+                double oldMPS = (double)oldValue!;
                 timingPoint.MeasuresPerSecond = oldMPS;
                 break;
             case TimingPoint.PropertyType.TimeSignature:
@@ -210,14 +210,14 @@ public partial class Timing
                 timingPoint.TimeSignature = oldTimeSignature;
                 break;
             case TimingPoint.PropertyType.Bpm:
-                float oldBpm = (float)oldValue!;
+                double oldBpm = (double)oldValue!;
                 timingPoint.Bpm = oldBpm;
                 break;
             case TimingPoint.PropertyType.MusicPosition:
-                float? oldMusicPosition = (float?)oldValue;
+                double? oldMusicPosition = (double?)oldValue;
                 timingPoint.MusicPosition = oldMusicPosition;
                 TimingPoint? rejectingTimingPoint = null;
-                CanTimingPointGoHere(timingPoint, (float)newValue!, out rejectingTimingPoint);
+                CanTimingPointGoHere(timingPoint, (double)newValue!, out rejectingTimingPoint);
                 if (rejectingTimingPoint != null)
                     GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.MusicPositionChangeRejected), new GlobalEvents.ObjectArgument<TimingPoint>(rejectingTimingPoint));
                 break;
@@ -233,7 +233,7 @@ public partial class Timing
         switch (propertyType)
         {
             case TimingPoint.PropertyType.Offset:
-                var newOffset = (float)newValue!;
+                var newOffset = (double)newValue!;
                 bool previousPointBlocksChange = previousTimingPoint != null && previousTimingPoint.Offset >= newOffset;
                 bool nextPointBlockschange = nextTimingPoint != null && nextTimingPoint.Offset <= newOffset;
                 if (previousPointBlocksChange || nextPointBlockschange)
@@ -247,9 +247,9 @@ public partial class Timing
                 if (nextTimingPoint == null)
                     return true;
 
-                float? calculatedMPS = CalculateMPSBasedOnAdjacentPoints(timingPoint);
+                double? calculatedMPS = CalculateMPSBasedOnAdjacentPoints(timingPoint);
 
-                return (float)newValue! == calculatedMPS!;
+                return (double?)newValue! == calculatedMPS!;
 
             case TimingPoint.PropertyType.Bpm:
                 if (nextTimingPoint == null)
@@ -260,8 +260,8 @@ public partial class Timing
                 if (calculatedMPS == null)
                     return true;
 
-                float newBpm = (float)newValue!;
-                float calculatedBpm = timingPoint.MpsToBpm((float)calculatedMPS);
+                double newBpm = (float)newValue!;
+                double calculatedBpm = timingPoint.MpsToBpm((float)calculatedMPS);
 
                 if (Math.Abs(calculatedBpm - newBpm) < 0.0001)
                     return true;
@@ -269,7 +269,7 @@ public partial class Timing
                 return false;
 
             case TimingPoint.PropertyType.MusicPosition:
-                return CanTimingPointGoHere(timingPoint, (float?)newValue, out _);
+                return CanTimingPointGoHere(timingPoint, (double?)newValue, out _);
 
             default:
                 return false;

@@ -143,16 +143,16 @@ SliderTickRate:1
             if (previousTimingPoint == null) 
                 continue;
 
-            float previousOffsetMsRounded = (int)(previousTimingPoint.Offset * 1000);
-            float measureDifference = (float)(timingPoint.MusicPosition! - previousTimingPoint.MusicPosition!);
-            float timeDifference = measureDifference / previousTimingPoint.MeasuresPerSecond;
-            float previousWhiteLineOffsetMsRounded = (int)(previousOffsetMsRounded + timeDifference * 1000);
-            float offsetMsRounded = (int)(timingPoint.Offset * 1000);
+            double previousOffsetMsRounded = (int)(previousTimingPoint.Offset * 1000);
+            double measureDifference = (double)(timingPoint.MusicPosition! - previousTimingPoint.MusicPosition!);
+            double timeDifference = measureDifference / previousTimingPoint.MeasuresPerSecond;
+            double previousWhiteLineOffsetMsRounded = (int)(previousOffsetMsRounded + timeDifference * 1000);
+            double offsetMsRounded = (int)(timingPoint.Offset * 1000);
             if (offsetMsRounded <= previousWhiteLineOffsetMsRounded)
                 continue;
 
-            float requiredTimeDifference = timeDifference + (0.001f - timeDifference % 0.001f + 0.0001f);
-            float requiredMeasuresPerSecond = measureDifference / requiredTimeDifference;
+            double requiredTimeDifference = timeDifference + (0.001 - timeDifference % 0.001 + 0.0001);
+            double requiredMeasuresPerSecond = measureDifference / requiredTimeDifference;
             previousTimingPoint.MeasuresPerSecond = requiredMeasuresPerSecond;
             previousTimingPoint.Bpm = previousTimingPoint.MpsToBpm(requiredMeasuresPerSecond);
         }

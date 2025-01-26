@@ -103,7 +103,7 @@ public partial class MusicPlayer : AudioStreamPlayer
 
     private void OnSelectedPositionChanged(object? _sender, EventArgs e)
     {
-        float time = Timing.Instance.MusicPositionToSampleTime(Context.Instance.SelectedMusicPosition);
+        double time = Timing.Instance.MusicPositionToSampleTime(Context.Instance.SelectedMusicPosition);
         PauseTime = time >= 0 ? (double)time : 0;
     }
 
@@ -120,7 +120,7 @@ public partial class MusicPlayer : AudioStreamPlayer
         if (!Settings.Instance.SeekPlaybackOnTimingPointChanges)
             return;
         var timingPoint = timingPointArg.Value;
-        SeekPlay(timingPoint.Offset - 0.05f);
+        SeekPlay(timingPoint.Offset - 0.05);
     }
 
     public void Pause()
@@ -147,14 +147,14 @@ public partial class MusicPlayer : AudioStreamPlayer
             Resume();
     }
 
-    public void SeekPlay(float sampleTime)
+    public void SeekPlay(double sampleTime)
     {
-        float playbackTime = Project.Instance.AudioFile.SampleTimeToPlaybackTime(sampleTime);
+        double playbackTime = Project.Instance.AudioFile.SampleTimeToPlaybackTime(sampleTime);
         if (!Playing)
             Play();
         if (playbackTime < 0)
             playbackTime = 0;
-        Seek(playbackTime);
+        Seek((float)playbackTime);
         Seeked?.Invoke(playbackTime);
         PlaybackStarted?.Invoke();
     }

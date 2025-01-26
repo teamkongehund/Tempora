@@ -116,9 +116,9 @@ public partial class Main : Control
 
 	private void OnSeekPlaybackTime(object? sender, EventArgs e)
 	{
-		if (e is not GlobalEvents.ObjectArgument<float> floatArgument)
-			throw new Exception($"{nameof(e)} was not of type {nameof(GlobalEvents.ObjectArgument<float>)}");
-		float playbackTime = floatArgument.Value;
+		if (e is not GlobalEvents.ObjectArgument<double> doubleArgument)
+			throw new Exception($"{nameof(e)} was not of type {nameof(GlobalEvents.ObjectArgument<double>)}");
+        double playbackTime = doubleArgument.Value;
 		MusicPlayer.SeekPlay(playbackTime);
 	}
 

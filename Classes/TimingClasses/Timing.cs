@@ -108,7 +108,7 @@ public partial class Timing : Node, IMementoOriginator
     /// <param name="musicPosition"></param>
     /// <param name="rejectingTimingPoint"></param>
     /// <returns></returns>
-    public bool CanTimingPointGoHere(TimingPoint? timingPoint, float? musicPosition, out TimingPoint? rejectingTimingPoint)
+    public bool CanTimingPointGoHere(TimingPoint? timingPoint, double? musicPosition, out TimingPoint? rejectingTimingPoint)
     {
         if (musicPosition == null)
         {
@@ -135,7 +135,7 @@ public partial class Timing : Node, IMementoOriginator
         return true;
     }
 
-    public float? GetTimeDifference(int timingPointIndex1, int timingPointIndex2)
+    public double? GetTimeDifference(int timingPointIndex1, int timingPointIndex2)
     {
         return timingPointIndex1 < 0 || timingPointIndex2 < 0 || timingPointIndex1 > TimingPoints.Count || timingPointIndex2 > TimingPoints.Count
             ? null
@@ -150,7 +150,7 @@ public partial class Timing : Node, IMementoOriginator
     /// <returns></returns>
     /// <exception cref="NullReferenceException"></exception>
     /// <exception cref="Exception"></exception>
-    public float MusicPositionToSampleTime(float musicPosition)
+    public double MusicPositionToSampleTime(double musicPosition)
     {
         TimingPoint? timingPoint = GetOperatingTimingPoint_ByMusicPosition(musicPosition);
         if (timingPoint == null)
@@ -177,7 +177,7 @@ public partial class Timing : Node, IMementoOriginator
     public static bool IsDivisionOnDivisor(int divisor, int index, int otherDivisor)
     {
         int[] timeSignature = [4,4]; // The time signature doesn't matter in this case.
-        float relativePosition = GetRelativeNotePosition(timeSignature, divisor, index);
+        double relativePosition = GetRelativeNotePosition(timeSignature, divisor, index);
 
         return IsPositionOnDivisor(relativePosition, timeSignature, otherDivisor);
     }
@@ -190,13 +190,13 @@ public partial class Timing : Node, IMementoOriginator
     /// <param name="timeSignature"></param>
     /// <param name="divisor"></param>
     /// <returns></returns>
-    public static bool IsPositionOnDivisor(float musicPosition, int[] timeSignature, int divisor)
+    public static bool IsPositionOnDivisor(double musicPosition, int[] timeSignature, int divisor)
     {
-        float divisorLength = GetRelativeNotePosition(timeSignature, divisor, 1);
+        double divisorLength = GetRelativeNotePosition(timeSignature, divisor, 1);
 
         musicPosition = musicPosition % 1;
 
-        var epsilon = 0.001f;
+        var epsilon = 0.001;
         bool isDivisible = (musicPosition % divisorLength < epsilon || (divisorLength - musicPosition % divisorLength) < epsilon);
 
         return isDivisible;

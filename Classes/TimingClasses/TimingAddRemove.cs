@@ -24,7 +24,7 @@ public partial class Timing
     /// </summary>
     /// <param name="musicPosition"></param>
     /// <param name="time"></param>
-    public void AddTimingPoint(float musicPosition, float time)
+    public void AddTimingPoint(double musicPosition, double time)
     {
         var timingPoint = new TimingPoint(time, musicPosition, GetTimeSignature(musicPosition));
         TimingPoints.Add(timingPoint);
@@ -59,7 +59,7 @@ public partial class Timing
     /// </summary>
     /// <param name="musicPosition"></param>
     /// <param name="time"></param>
-    public void AddTimingPoint(float musicPosition)
+    public void AddTimingPoint(double musicPosition)
     {
         var timingPoint = new TimingPoint(musicPosition);
         timingPoint.Offset = MusicPositionToSampleTime(musicPosition);
@@ -79,7 +79,7 @@ public partial class Timing
     /// <summary>
     /// Add a timing point and force a given <see cref="TimingPoint.MeasuresPerSecond"/> value without checking validity.
     /// </summary>
-    public void AddTimingPoint(float musicPosition, float time, float measuresPerSecond)
+    public void AddTimingPoint(double musicPosition, double time, double measuresPerSecond)
     {
         var timingPoint = new TimingPoint(time, musicPosition, GetTimeSignature(musicPosition), measuresPerSecond);
         TimingPoints.Add(timingPoint);
@@ -107,7 +107,7 @@ public partial class Timing
     ///     The <see cref="TimingPoint.MusicPosition"/> is defined via the existing timing.
     /// </summary>
     /// <param name="time"></param>
-    public void AddTimingPoint(float time, out TimingPoint? timingPoint)
+    public void AddTimingPoint(double time, out TimingPoint? timingPoint)
     {
         timingPoint = new TimingPoint(time, GetTimeSignature(SampleTimeToMusicPosition(time)));
         TimingPoints.Add(timingPoint);
@@ -123,8 +123,8 @@ public partial class Timing
         if (timingPoint.MusicPosition == null
             || previousTimingPoint?.MusicPosition == timingPoint.MusicPosition
             || nextTimingPoint?.MusicPosition == timingPoint.MusicPosition
-            || (previousTimingPoint?.MusicPosition is float previousMusicPosition && Mathf.Abs(previousMusicPosition - (float)timingPoint.MusicPosition) < 0.015f) // Too close to previous timing point
-            || (nextTimingPoint?.MusicPosition is float nextMusicPosition && Mathf.Abs(nextMusicPosition - (float)timingPoint.MusicPosition) < 0.015f) // Too close to next timing point
+            || (previousTimingPoint?.MusicPosition is double previousMusicPosition && Mathf.Abs(previousMusicPosition - (float)timingPoint.MusicPosition) < 0.015f) // Too close to previous timing point
+            || (nextTimingPoint?.MusicPosition is double nextMusicPosition && Mathf.Abs(nextMusicPosition - (float)timingPoint.MusicPosition) < 0.015f) // Too close to next timing point
            )
         {
             TimingPoints.Remove(timingPoint);

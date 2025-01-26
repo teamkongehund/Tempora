@@ -105,8 +105,8 @@ public partial class AudioVisualsContainer : VBoxContainer
     private void UpdatePlayHeads()
     {
         double playbackTime = MusicPlayer.GetPlaybackTime();
-        float sampleTime = Project.Instance.AudioFile.PlaybackTimeToSampleTime((float)playbackTime);
-        float musicPosition = Timing.Instance.SampleTimeToMusicPosition((float)sampleTime);
+        double sampleTime = Project.Instance.AudioFile.PlaybackTimeToSampleTime((float)playbackTime);
+        double musicPosition = Timing.Instance.SampleTimeToMusicPosition((float)sampleTime);
         foreach (AudioBlock audioBlock in GetChildren().OfType<AudioBlock>())
         {
             AudioDisplayPanel audioDisplayPanel = audioBlock.AudioDisplayPanel;
@@ -191,17 +191,17 @@ public partial class AudioVisualsContainer : VBoxContainer
 
     private void OnSeekPlaybackTime(object? sender, EventArgs e)
     {
-        if (e is not GlobalEvents.ObjectArgument<float> floatArgument)
-            throw new Exception($"{nameof(e)} was not of type {nameof(GlobalEvents.ObjectArgument<float>)}");
-        float playbackTime = floatArgument.Value;
-        SeekPlaybackTime?.Invoke(this, new GlobalEvents.ObjectArgument<float>(playbackTime));
+        if (e is not GlobalEvents.ObjectArgument<double> doubleArgument)
+            throw new Exception($"{nameof(e)} was not of type {nameof(GlobalEvents.ObjectArgument<double>)}");
+        double playbackTime = doubleArgument.Value;
+        SeekPlaybackTime?.Invoke(this, new GlobalEvents.ObjectArgument<double>(playbackTime));
     }
 
     private void OnAttemptToAddTimingPoint(object? sender, EventArgs e)
     {
-        if (e is not GlobalEvents.ObjectArgument<float> floatArgument)
-            throw new Exception($"{nameof(e)} was not of type {nameof(GlobalEvents.ObjectArgument<float>)}");
-        float time = floatArgument.Value;
+        if (e is not GlobalEvents.ObjectArgument<double> doubleArgument)
+            throw new Exception($"{nameof(e)} was not of type {nameof(GlobalEvents.ObjectArgument<double>)}");
+        double time = doubleArgument.Value;
 
         Timing.Instance.AddTimingPoint(time, out TimingPoint? timingPoint);
         if (timingPoint == null)
@@ -209,7 +209,7 @@ public partial class AudioVisualsContainer : VBoxContainer
         if (timingPoint.MusicPosition == null)
             throw new NullReferenceException($"{nameof(timingPoint.MusicPosition)} was null");
 
-        float musicPosition = (float)timingPoint.MusicPosition;
+        double musicPosition = (float)timingPoint.MusicPosition;
         Timing.Instance.SnapTimingPoint(timingPoint, musicPosition);
         Context.Instance.HeldTimingPoint = timingPoint;
         Context.Instance.HeldPointIsJustBeingAdded = true;
@@ -230,7 +230,7 @@ public partial class AudioVisualsContainer : VBoxContainer
         var timingPoint = timingPointArgument.Value;
         if (timingPoint.MusicPosition == null) 
             return;
-        float musicPosition = (float)timingPoint.MusicPosition!;
+        double musicPosition = (float)timingPoint.MusicPosition!;
 
         SetTopBlockToPosition(musicPosition);
     }
@@ -240,13 +240,13 @@ public partial class AudioVisualsContainer : VBoxContainer
     /// If more than one block contains the music position due to timeline offset settings, select the last one that does.
     /// </summary>
     /// <param name="musicPosition"></param>
-    private void SetTopBlockToPosition(float musicPosition)
+    private void SetTopBlockToPosition(double musicPosition)
     {
         // Get the last ActualMusicPositionStart which is smaller than musicPosition. This way, we account for Timeline overlap.
         int bestNominalMeasureStart = (int)(musicPosition - 1);
         for (int measure = bestNominalMeasureStart; measure <= bestNominalMeasureStart + 2; measure++)
         {
-            float actualStartForThisMeasure = AudioDisplayPanel.ActualMusicPositionStart(measure);
+            double actualStartForThisMeasure = AudioDisplayPanel.ActualMusicPositionStart(measure);
             if (actualStartForThisMeasure > musicPosition)
             {
                 NominalMusicPositionStartForTopBlock = bestNominalMeasureStart;

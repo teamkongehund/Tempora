@@ -248,7 +248,7 @@ public partial class ProjectFileManager : Node
             string timingPointLine = "";
             timingPointLine += timingPoint.Offset.ToString(CultureInfo.InvariantCulture);
             timingPointLine += ";";
-            timingPointLine += ((float)timingPoint.MusicPosition).ToString(CultureInfo.InvariantCulture);
+            timingPointLine += ((double)timingPoint.MusicPosition).ToString(CultureInfo.InvariantCulture);
             timingPointLine += ";";
             timingPointLine += timingPoint.TimeSignature[0].ToString();
             timingPointLine += ";";
@@ -338,9 +338,9 @@ public partial class ProjectFileManager : Node
                     timeSignatureLowerParsed = int.TryParse(lineData[3], out _);
 
                     bool measuresPerSecondParsed = true;
-                    float measuresPerSecond = 2f;
+                    double measuresPerSecond = 2f;
                     if (lineData.Length == 5)
-                        measuresPerSecondParsed = float.TryParse(lineData[4], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out measuresPerSecond);
+                        measuresPerSecondParsed = double.TryParse(lineData[4], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out measuresPerSecond);
 
                     if (timeParsed == false
                         || tpMusicPositionParsed == false

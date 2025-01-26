@@ -65,7 +65,7 @@ public partial class Timing
     {
         newTiming = timing;
         // Add extra quarter-note timing points
-        var quaterNotePositions = new List<float>();
+        var quaterNotePositions = new List<double>();
         foreach (TimingPoint timingPoint in newTiming.TimingPoints)
         {
             if (timingPoint == null)
@@ -73,15 +73,15 @@ public partial class Timing
             if (timingPoint.MusicPosition == null)
                 break;
 
-            float beatLength = newTiming.GetDistancePerBeat((float)timingPoint.MusicPosition);
-            float beatPosition = newTiming.GetOperatingBeatPosition((float)timingPoint.MusicPosition);
+            double beatLength = newTiming.GetDistancePerBeat((float)timingPoint.MusicPosition);
+            double beatPosition = newTiming.GetOperatingBeatPosition((float)timingPoint.MusicPosition);
             TimingPoint? nextTimingPoint = newTiming.GetNextTimingPoint(timingPoint);
-            float? nextPointPosition = nextTimingPoint?.MusicPosition;
+            double? nextPointPosition = nextTimingPoint?.MusicPosition;
 
             //float epsilon = 0.00001f;
             //bool isOnQuarterNote = (timingPoint.MusicPosition % beatLength < epsilon || (beatLength - timingPoint.MusicPosition % beatLength) < epsilon);
 
-            bool isOnQuarterNote = IsPositionOnDivisor((float)timingPoint.MusicPosition, timingPoint.TimeSignature, 4);
+            bool isOnQuarterNote = IsPositionOnDivisor((double)timingPoint.MusicPosition, timingPoint.TimeSignature, 4);
 
             bool nextPointIsOnOrBeforeNextQuarterNote = (nextTimingPoint != null
                 && nextPointPosition <= beatPosition + beatLength);

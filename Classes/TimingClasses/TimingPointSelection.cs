@@ -52,11 +52,11 @@ public partial class TimingPointSelection : Node
     }
 
     #region Selector
-    public float? SelectorStaticPosition = null;
+    public double? SelectorStaticPosition = null;
 
-    public float? SelectorDynamicPosition = null;
+    public double? SelectorDynamicPosition = null;
 
-    public float? SelectorStartPosition
+    public double? SelectorStartPosition
     {
         get
         {
@@ -66,7 +66,7 @@ public partial class TimingPointSelection : Node
         }
     }
 
-    public float? SelectorEndPosition
+    public double? SelectorEndPosition
     {
         get
         {
@@ -85,7 +85,7 @@ public partial class TimingPointSelection : Node
         }
     }
 
-    public void StartSelector(float position)
+    public void StartSelector(double position)
     {
         if (SelectionIndices == null)
         {
@@ -98,7 +98,7 @@ public partial class TimingPointSelection : Node
         ApplySelector();
     }
 
-    public void UpdateSelector(float position)
+    public void UpdateSelector(double position)
     {
         if (SelectorStartPosition == null || SelectorEndPosition == null)
             return;
@@ -176,10 +176,10 @@ public partial class TimingPointSelection : Node
         }
     }
 
-    private float? firstPosition => FirstPoint?.MusicPosition;
-    private float? lastPostion => LastPoint?.MusicPosition;
+    private double? firstPosition => FirstPoint?.MusicPosition;
+    private double? lastPostion => LastPoint?.MusicPosition;
 
-    public float? CenterPosition
+    public double? CenterPosition
     {
         get
         {
@@ -326,15 +326,15 @@ public partial class TimingPointSelection : Node
         SelectionIndices = null;
     }
 
-    public void MoveSelection(float? referencePosition, float newPosition)
+    public void MoveSelection(double? referencePosition, double newPosition)
     {
         if (SelectionIndices == null || referencePosition == null) return;
 
         newPosition = Timing.Instance.SnapMusicPosition(newPosition);
 
-        float positionDifference = newPosition - (float)referencePosition;
+        double positionDifference = newPosition - (double)referencePosition;
 
-        float getNewPosition(TimingPoint? point) => (point?.MusicPosition ?? 0) + positionDifference;
+        double getNewPosition(TimingPoint? point) => (point?.MusicPosition ?? 0) + positionDifference;
 
         timing.BatchChangeMusicPosition(SelectionIndices[0], SelectionIndices[1], getNewPosition);
     }
@@ -342,7 +342,7 @@ public partial class TimingPointSelection : Node
     /// <summary>
     /// If the point is in selection, offset the entire selection. Otherwise, offset the point.
     /// </summary>
-    public void OffsetSelectionOrPoint(TimingPoint? point, float offset)
+    public void OffsetSelectionOrPoint(TimingPoint? point, double offset)
     {
         if (point == null) return;
         if (IsPointInSelection(point))
@@ -354,7 +354,7 @@ public partial class TimingPointSelection : Node
         }
     }
 
-    public void OffsetSelection(float offset)
+    public void OffsetSelection(double offset)
     {
         if (SelectionIndices == null) return;
         timing.BatchChangeOffset(SelectionIndices[0], SelectionIndices[1], offset);

@@ -22,7 +22,7 @@ public partial class GridLine : Line2D
     public int DivisionIndex;
     public int Divisor;
     public int[] TimeSignature;
-    public float RelativeMusicPosition;
+    public double RelativeMusicPosition;
 
     private float audioHeight;
 
