@@ -53,10 +53,10 @@ public partial class FileMenu : PopupMenu
 				ProjectFileManager.Instance.SaveOszFileDialogPopup();
 				break;
 			case 6:
-				exportWindow.Popup();
+                ProjectFileManager.Instance.SaveBeatSaberFileDialogPopup();
 				break;
 			case 7:
-                ProjectFileManager.Instance.SaveBeatSaberFileDialogPopup();
+				exportWindow.Popup();
 				break;
 		}
 	}

@@ -65,7 +65,7 @@ popupMenu = NodePath("File")
 
 [node name="File" type="PopupMenu" parent="VSplitContainer/TopMenuHBox/FileButton" node_paths=PackedStringArray("exportWindow")]
 title = "File"
-size = Vector2i(138, 113)
+size = Vector2i(138, 155)
 theme_override_font_sizes/font_size = 12
 theme_override_font_sizes/font_separator_size = 0
 item_count = 7
@@ -77,11 +77,11 @@ item_2/text = "Save As..."
 item_2/id = 3
 item_3/text = "Export & Open .osz"
 item_3/id = 4
-item_4/text = "Export..."
+item_4/text = "Export .osz..."
 item_4/id = 5
-item_5/text = "Export Settings"
+item_5/text = "Export Beat Saber..."
 item_5/id = 6
-item_6/text = "Export Beat Saber"
+item_6/text = "Export Settings"
 item_6/id = 7
 script = ExtResource("5_kcxfp")
 exportWindow = NodePath("../../../../ExportWindow")
