@@ -317,7 +317,6 @@ public partial class Settings : Node
 		string settingsFile;
 		try
 		{
-            GD.Print(settingsPath);
 			settingsFile = FileHandler.LoadText(settingsPath);
 		}
 		catch
