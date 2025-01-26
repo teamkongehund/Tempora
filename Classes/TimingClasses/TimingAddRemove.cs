@@ -147,7 +147,7 @@ public partial class Timing
         timingPoint.QueueFree();
         TimingPoints.Remove(timingPoint);
 
-        if (previousTimingPoint != null)
+        if (previousTimingPoint != null && TimingPoints.IndexOf(previousTimingPoint) != TimingPoints.Count - 1)
             UpdateMPS(previousTimingPoint);
 
         GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointCountChanged));
