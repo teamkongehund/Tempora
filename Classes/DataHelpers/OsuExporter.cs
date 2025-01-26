@@ -96,8 +96,6 @@ SliderTickRate:1
         var newTiming = Timing.CloneAndParseForOsu(timing, audioFile);
         if (Settings.Instance.PreventDoubleBarlines)
             FixBpmsToEnsureProperLineups(newTiming);
-        List<TimingPoint> timingPoints = newTiming.TimingPoints;
-        //string timingPointsData = TimingPointToText(timingPoints);
         string timingPointsData = TimingToDotOsuTimingPoints(newTiming);
         string extension = audioFile.Extension;
         string dotOsuUnformatted = $"{DefaultDotOsuFormer}{timingPointsData}{DefaultDotOsuLatter}";
