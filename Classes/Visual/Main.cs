@@ -17,6 +17,7 @@ using Godot;
 using Tempora.Classes.Audio;
 using Tempora.Classes.Utility;
 using Tempora.Classes.TimingClasses;
+using System.IO;
 
 // Tempora
 
@@ -43,11 +44,16 @@ public partial class Main : Control
 	{
         projectFileManager = ProjectFileManager.Instance;
 
-		// This works in Debug if we use i.e. audioPath = "res://Audio/UMO.mp3",
-		// but won't work in production, as resources are converted to different file formats.
-		//Project.Instance.AudioFile = new AudioFile(audioPath);
+        // This works in Debug if we use i.e. audioPath = "res://Audio/UMO.mp3",
+        // but won't work in production, as resources are converted to different file formats.
+        //Project.Instance.AudioFile = new AudioFile(audioPath);
 
-		Project.Instance.AudioFile = new AudioFile(defaultMP3);
+        string autoSavePathLocal = $"{ProjectFileManager.AutoSavePath}{ProjectFileManager.ProjectFileExtension}";
+        string autoSavePathGlobal = ProjectSettings.GlobalizePath(autoSavePathLocal);
+        if (Godot.FileAccess.FileExists(autoSavePathGlobal))
+            ProjectFileManager.Instance.LoadProjectFromFilePath(autoSavePathGlobal);
+        else
+		    Project.Instance.AudioFile = new AudioFile(defaultMP3);
 
 		GlobalEvents.Instance.SettingsChanged += OnSettingsChanged;
 		audioVisualsContainer.SeekPlaybackTime += OnSeekPlaybackTime;

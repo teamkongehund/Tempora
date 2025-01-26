@@ -41,6 +41,8 @@ public partial class ProjectFileManager : Node
     private Settings settings => Settings.Instance;
     private static readonly string[] separator = ["\r\n", "\r", "\n"];
 
+    public const string AutoSavePath = "user://autosave";
+
     public static ProjectFileManager Instance { get => instance; set => instance = value; } 
     #endregion
 
@@ -51,6 +53,7 @@ public partial class ProjectFileManager : Node
 
         SaveFileDialog.FileSelected += OnSaveFilePathSelected;
         LoadFileDialog.FileSelected += OnLoadFilePathSelected;
+        GlobalEvents.Instance.TimingChanged += OnTimingChanged;
     }
 
     public override void _Input(InputEvent inputEvent)
@@ -109,6 +112,13 @@ public partial class ProjectFileManager : Node
                 break;
         }
     }
+
+    private void OnTimingChanged(object? sender, EventArgs e)
+    {
+        if (Timing.Instance.IsInstantiating)
+            return;
+        AutoSave();
+    }
     #endregion
 
     #region Load Dialog
@@ -122,7 +132,7 @@ public partial class ProjectFileManager : Node
     {
         string extension = Path.GetExtension(selectedPath).ToLower();
 
-        string projectFileExtension = ProjectFileManager.ProjectFileExtension;
+        string projectFileExtension = ProjectFileExtension;
         string mp3Extension = ".mp3";
         string oggExtension = ".ogg";
 
@@ -161,6 +171,14 @@ public partial class ProjectFileManager : Node
             return;
         }
 
+        SaveProject(filePath);
+
+        Project.Instance.ProjectPath = filePath;
+        Project.Instance.NotificationMessage = $"Saved to {filePath}";
+    }
+
+    private static void SaveProject(string filePath)
+    {
         string extension = Path.GetExtension(filePath).ToLower();
         string correctExtension = ProjectFileManager.ProjectFileExtension;
 
@@ -170,17 +188,19 @@ public partial class ProjectFileManager : Node
 
         string audioFileExtension = Project.Instance.AudioFile.Extension;
         string audioFilePathShort = $"{fileName}{audioFileExtension}";
-        string audioFilePathLong = Path.Combine(fileDir, audioFilePathShort);
-
+        string audioFilePathLong = fileDir == "user:" 
+            ? fileDir + "//" + audioFilePathShort 
+            : Path.Combine(fileDir, audioFilePathShort);
+        
         using var audioFile = Godot.FileAccess.Open(audioFilePathLong, Godot.FileAccess.ModeFlags.Write);
+        var error = Godot.FileAccess.GetOpenError();
         audioFile.StoreBuffer(Project.Instance.AudioFile.FileBuffer);
 
         string file = CreateProjectFileString(audioFilePathShort);
         FileHandler.SaveText(filePath, file);
-
-        Project.Instance.ProjectPath = filePath;
-        Project.Instance.NotificationMessage = $"Saved to {filePath}";
     }
+
+    public static void AutoSave() => SaveProject(AutoSavePath);
 
     public static string CreateProjectFileString() => CreateProjectFileString(Project.Instance.AudioFile.FilePath);
 
@@ -357,7 +377,8 @@ public partial class ProjectFileManager : Node
         string projectFile = FileHandler.LoadText(filePath);
         if (string.IsNullOrEmpty(projectFile))
             return;
-        MusicPlayer.Instance.Pause();
+        if (Project.Instance.AudioFile != null)
+            MusicPlayer.Instance.Pause();
         LoadProjectFromFile(projectFile, filePath);
         Project.Instance.ProjectPath = filePath;
     }
