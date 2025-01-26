@@ -179,7 +179,7 @@ public partial class AudioFile : PcmData
         AudioDataPer10Max[length - 1] = PcmLeft[((length - 1) * 10-1)..^1].Max();
     }
 
-    private bool IsAudioFileExtensionValid(string path, out string extension)
+    public static bool IsAudioFileExtensionValid(string path, out string extension)
     {
         extension = Path.GetExtension(path).ToLower();
         if (extension != ".mp3" && extension != ".ogg")

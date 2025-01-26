@@ -95,9 +95,17 @@ public partial class Main : Control
 		if (filePaths.Length != 1)
 			return;
 		string path = filePaths[0];
+        bool isAudioFile = AudioFile.IsAudioFileExtensionValid(path, out string extension);
 
-		var audioFile = new AudioFile(path);
-		Project.Instance.AudioFile = audioFile;
+        switch (extension) {
+            case var value when value == ProjectFileManager.ProjectFileExtension:
+                projectFileManager.LoadProjectFromFilePath(path);
+                break;
+            case var value when isAudioFile:
+		        var audioFile = new AudioFile(path);
+		        Project.Instance.AudioFile = audioFile;
+                break;
+        }
 	}
 
 	private void OnSeekPlaybackTime(object? sender, EventArgs e)
