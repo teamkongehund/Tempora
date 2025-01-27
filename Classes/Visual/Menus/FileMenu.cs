@@ -22,14 +22,14 @@ using System.IO;
 using SaveConfig = Tempora.Classes.Utility.ProjectFileManager.SaveConfig;
 
 namespace Tempora.Classes.Visual;
+
 public partial class FileMenu : PopupMenu
 {
-    [Export]
-    ExportWindow exportWindow = null!;
+    [Export] ExportWindow exportWindow = null!;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
-	{
+    {
         IdPressed += OnIdPressed;
     }
 
@@ -53,6 +53,9 @@ public partial class FileMenu : PopupMenu
                 ProjectFileManager.Instance.SaveOszFileDialogPopup();
                 break;
             case 6:
+                ProjectFileManager.Instance.SaveBeatSaberFileDialogPopup();
+                break;
+            case 7:
                 exportWindow.Popup();
                 break;
         }

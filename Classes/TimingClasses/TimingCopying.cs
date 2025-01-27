@@ -34,6 +34,15 @@ public partial class Timing
         return newTiming;
     }
 
+    public static Timing CloneAndParseForBeatSaber(Timing timing)
+    {
+        var newTiming = CopyTiming(timing);
+        if (Settings.Instance.RemovePointsThatChangeNothing)
+            RemovePointsThatChangeNothing(newTiming, out newTiming);
+        
+        return newTiming;
+    }
+
     private static void AddExtraPointsOnDownbeats(Timing timing, out Timing newTiming)
     {
         newTiming = timing;

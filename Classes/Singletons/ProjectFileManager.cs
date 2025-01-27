@@ -74,12 +74,16 @@ public partial class ProjectFileManager : Node
     public enum SaveConfig
     {
         project,
-        osz
+        osz,
+        beatSaber
     }
 
     private SaveConfig latestSaveConfig = SaveConfig.project;
+
     public void SaveOszFileDialogPopup() => SaveFileDialogPopup(SaveConfig.osz);
     public void SaveProjectFileDialogPopup() => SaveFileDialogPopup(SaveConfig.project);
+    public void SaveBeatSaberFileDialogPopup() => SaveFileDialogPopup(SaveConfig.beatSaber);
+
     private void SaveFileDialogPopup(SaveConfig config)
     {
         switch (config)
@@ -91,6 +95,10 @@ public partial class ProjectFileManager : Node
             case SaveConfig.osz:
                 SaveFileDialog.CurrentDir = Settings.Instance.OszFilesDirectory;
                 SaveFileDialog.Title = "Export osz";
+                break;
+            case SaveConfig.beatSaber:
+                SaveFileDialog.CurrentDir = Settings.Instance.BeatSaberFilesDirectory;
+                SaveFileDialog.Title = $"Export Beat Saber (v{Settings.Instance.BeatSaberExportFormat})";
                 break;
         }
         latestSaveConfig = config;
@@ -109,6 +117,11 @@ public partial class ProjectFileManager : Node
                 OsuExporter.Instance.SaveOszAs_AndShowInFileExplorer(selectedPath);
                 dir = Path.GetDirectoryName(selectedPath) ?? "";
                 Settings.Instance.OszFilesDirectory = dir;
+                break;
+            case SaveConfig.beatSaber:
+                BeatSaberExporter.Instance.SaveFilesToPath(selectedPath);
+                dir = Path.GetDirectoryName(selectedPath) ?? "";
+                Settings.Instance.BeatSaberFilesDirectory = dir;
                 break;
         }
     }
