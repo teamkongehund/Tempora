@@ -211,7 +211,7 @@ public partial class Timing
     /// I.e. clone the timing first and parse it as <see cref="timing"/> to use the method without worrying that the timing has changed meanwhile.
     /// </summary>
     /// <returns></returns>
-    private static float GetBeatsBetweenMusicPositions(Timing timing, float musicPositionFrom, float musicPositionTo)
+    public static float GetBeatsBetweenMusicPositions(Timing timing, float musicPositionFrom, float musicPositionTo)
     {
         if (musicPositionFrom > musicPositionTo)
             (musicPositionTo, musicPositionFrom) = (musicPositionFrom, musicPositionTo);

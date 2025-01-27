@@ -35,7 +35,7 @@ public partial class BeatSaberExporter : Node
 		int audioSamples = audioFile.PcmLeft.Length - 1;
 
         Timing timing = Timing.CloneAndParseForBeatSaber(Timing.Instance);
-        AddDefaultTimingPointsIfRequired(timing.TimingPoints, audioFile.AudacityOrigin);
+        AddAdditionalTimingPointsIfRequired(timing, audioFile.AudacityOrigin);
 
         List<BpmDataPoint> bpmData = GetBpmDataPoints(timing.TimingPoints, audioFile);
         
@@ -157,27 +157,41 @@ public partial class BeatSaberExporter : Node
         return bpmDataPoints;
     }
 
-    // Beat Saber bpm changes must start from beat 0 
-    private static void AddDefaultTimingPointsIfRequired(List<TimingPoint> timingPoints, float timeOffset)
+    // Beat Saber does not support offset and so always considers beat 0 as the start of the audio
+    //  This method ensures we always have a timing point at 0 and an additional point to account for offset if present
+    private static void AddAdditionalTimingPointsIfRequired(Timing timing, float timeOffset)
     {
-        TimingPoint? firstTimingPoint = timingPoints.FirstOrDefault();
+        TimingPoint? firstTimingPoint = timing.TimingPoints.FirstOrDefault();
         if (firstTimingPoint != null)
         {
             if (firstTimingPoint.Offset == 0) return;
 
-            // Don't think MusicPosition can be null at this point
-            float beats = firstTimingPoint.TimeSignature[1] / firstTimingPoint.MusicPosition.Value; 
-            float secondsPerBeat = (firstTimingPoint.Offset + timeOffset) / beats;
-            float bpm = 60f / secondsPerBeat;
-                
-            var initialTimingPoint = new TimingPoint(-timeOffset, 0, [4, 4]) { Bpm = bpm };
-            timingPoints.Insert(0, initialTimingPoint);
+            if (firstTimingPoint.MusicPosition == 0)
+            {
+                // Add timing point to simulate a "beat" before the first timing point
+                float beats = Timing.GetBeatsBetweenMusicPositions(timing, -0.25f, 0);
+                float secondsPerBeat = (firstTimingPoint.Offset + timeOffset) / beats;
+                float bpm = 60f / secondsPerBeat;
+                    
+                var offsetTimingPoint = new TimingPoint(-timeOffset, -0.25f, [4, 4]) { Bpm = bpm };
+                timing.TimingPoints.Insert(0, offsetTimingPoint);
+            }
+            else
+            {
+                // Add a timing point at beat 0 
+                float beats = Timing.GetBeatsBetweenMusicPositions(timing, 0, firstTimingPoint.MusicPosition.Value);
+                float secondsPerBeat = (firstTimingPoint.Offset + timeOffset) / beats;
+                float bpm = 60f / secondsPerBeat;
+
+                var zeroTimingPoint = new TimingPoint(-timeOffset, 0, [4, 4]) { Bpm = bpm };
+                timing.TimingPoints.Insert(0, zeroTimingPoint);
+            }
         }
         else
         {
             // Audio is miraculously already aligned at default 120 bpm
             var initialTimingPoint = new TimingPoint(-timeOffset, 0, [4, 4]) { Bpm = 120 };
-            timingPoints.Insert(0, initialTimingPoint);
+            timing.TimingPoints.Insert(0, initialTimingPoint);
         }
     }
     
