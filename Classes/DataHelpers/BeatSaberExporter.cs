@@ -169,9 +169,8 @@ public partial class BeatSaberExporter : Node
             if (firstTimingPoint.MusicPosition == 0)
             {
                 // Add timing point to simulate a "beat" before the first timing point
-                float beats = Timing.GetBeatsBetweenMusicPositions(timing, -0.25f, 0);
-                float secondsPerBeat = (firstTimingPoint.Offset + timeOffset) / beats;
-                float bpm = 60f / secondsPerBeat;
+                float secondsInFirstBeat = firstTimingPoint.Offset + timeOffset;
+                float bpm = 60f / secondsInFirstBeat;
                     
                 var offsetTimingPoint = new TimingPoint(-timeOffset, -0.25f, [4, 4]) { Bpm = bpm };
                 timing.TimingPoints.Insert(0, offsetTimingPoint);
