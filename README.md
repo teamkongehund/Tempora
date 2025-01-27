@@ -1,8 +1,13 @@
 # Tempora
 
-An application designed to simplify and increase the speed of synchronizing a recorded piece of music to a digital metronome. Unlike quantization, the program does not alter the music file, but instead makes the metronome follow the music.
+An application designed to simplify and increase the speed of synchronizing a recorded piece of music to a digital metronome via a simple GUI. 
 
-The program is mainly made for osu! but may have a use case for other rhythm games as well as music production.
+The program does not alter the audio file like quantization or warping - instead the GUI allows you to make the metronome dynamically follow the music by manipulating timing points.
+
+The program is mainly designed for rhythm games but may have other use cases such as music production. 
+## Supports
+- osu! (.mp3 and .ogg)
+- Beat Saber (.ogg)
 
 ## Running Debug from source
 - Download Godot (.Net verson): https://godotengine.org/download/windows/
