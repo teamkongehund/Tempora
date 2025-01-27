@@ -1,10 +1,7 @@
 # Tempora
+An application designed to simplify and speed up the process of synchronizing a recorded piece of music to a digital metronome. 
 
-An application designed to simplify and increase the speed of synchronizing a recorded piece of music to a digital metronome via a simple GUI. 
-
-The program does not alter the audio file like quantization or warping - instead the GUI allows you to make the metronome dynamically follow the music by manipulating timing points.
-
-The program is mainly designed for rhythm games but may have other use cases such as music production. 
+This is achieved via a simple-to-use GUI that lets you manipulate timing points and visualize how the audio aligns with the current timing. The program does not alter the audio file like when you use quantization/warping. The program is mainly designed for rhythm games but may have other use cases such as music production. 
 ## Supports
 - osu! (.mp3 and .ogg)
 - Beat Saber (.ogg)
