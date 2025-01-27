@@ -7,33 +7,28 @@ title = "Export Settings"
 position = Vector2i(0, 36)
 size = Vector2i(460, 360)
 script = ExtResource("1_ad7ek")
-exportOffsetEdit = NodePath("VBoxContainer/TabContainer/Osu/ExportOffset/LineEdit")
-unsupportedTimeSignatures = NodePath("VBoxContainer/TabContainer/Osu/UnsupportedTimeSignatures/CheckBox")
-removePointsThatChangeNothing = NodePath("VBoxContainer/TabContainer/General/RemovePointsThatChangeNothing/CheckBox")
-addExtraPointsOnDownbeats = NodePath("VBoxContainer/TabContainer/Osu/AddExtraPointsOnDownbeats/CheckBox")
-addExtraPointsOnQuarterNotes = NodePath("VBoxContainer/TabContainer/Osu/AddExtraPointsOnQuarterNotes/CheckBox")
-omitBarlines = NodePath("VBoxContainer/TabContainer/Osu/OmitBarlines/CheckBox")
-preventDoubleBarlines = NodePath("VBoxContainer/TabContainer/Osu/PreventDoubleBarlines/CheckBox")
-beatSaberExportFormat = NodePath("VBoxContainer/TabContainer/Beat Saber/BeatSaberExportFormat/OptionButton")
-okButton = NodePath("VBoxContainer/HBoxContainer/OkButton")
-defaultsButton = NodePath("VBoxContainer/HBoxContainer/DefaultsButton")
+exportOffsetEdit = NodePath("TabContainer/Osu/ExportOffset/LineEdit")
+unsupportedTimeSignatures = NodePath("TabContainer/Osu/UnsupportedTimeSignatures/CheckBox")
+removePointsThatChangeNothing = NodePath("TabContainer/General/RemovePointsThatChangeNothing/CheckBox")
+addExtraPointsOnDownbeats = NodePath("TabContainer/Osu/AddExtraPointsOnDownbeats/CheckBox")
+addExtraPointsOnQuarterNotes = NodePath("TabContainer/Osu/AddExtraPointsOnQuarterNotes/CheckBox")
+omitBarlines = NodePath("TabContainer/Osu/OmitBarlines/CheckBox")
+preventDoubleBarlines = NodePath("TabContainer/Osu/PreventDoubleBarlines/CheckBox")
+beatSaberExportFormat = NodePath("TabContainer/Beat Saber/BeatSaberExportFormat/OptionButton")
+okButton = NodePath("BottomButtonsHBox/OkButton")
+defaultsButton = NodePath("BottomButtonsHBox/DefaultsButton")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-offset_right = 40.0
-offset_bottom = 40.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="TabContainer" type="TabContainer" parent="VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
+[node name="TabContainer" type="TabContainer" parent="."]
+offset_right = 460.0
+offset_bottom = 87.0
+size_flags_vertical = 0
 current_tab = 0
 
-[node name="General" type="VBoxContainer" parent="VBoxContainer/TabContainer"]
+[node name="General" type="VBoxContainer" parent="TabContainer"]
 layout_mode = 2
 metadata/_tab_index = 0
 
-[node name="SectionEfficiency" type="Label" parent="VBoxContainer/TabContainer/General"]
+[node name="SectionEfficiency" type="Label" parent="TabContainer/General"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 3
@@ -42,25 +37,25 @@ theme_override_font_sizes/font_size = 20
 text = "Timing Point Efficiency
 "
 
-[node name="RemovePointsThatChangeNothing" type="HBoxContainer" parent="VBoxContainer/TabContainer/General"]
+[node name="RemovePointsThatChangeNothing" type="HBoxContainer" parent="TabContainer/General"]
 layout_mode = 2
 
-[node name="CheckBox" type="CheckBox" parent="VBoxContainer/TabContainer/General/RemovePointsThatChangeNothing"]
+[node name="CheckBox" type="CheckBox" parent="TabContainer/General/RemovePointsThatChangeNothing"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/General/RemovePointsThatChangeNothing"]
+[node name="Label" type="Label" parent="TabContainer/General/RemovePointsThatChangeNothing"]
 layout_mode = 2
 size_flags_horizontal = 2
 text = "Remove points that change nothing"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="Osu" type="VBoxContainer" parent="VBoxContainer/TabContainer"]
+[node name="Osu" type="VBoxContainer" parent="TabContainer"]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="SectionOverall" type="Label" parent="VBoxContainer/TabContainer/Osu"]
+[node name="SectionOverall" type="Label" parent="TabContainer/Osu"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 3
@@ -68,31 +63,31 @@ theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 20
 text = "Main"
 
-[node name="ExportOffset" type="HBoxContainer" parent="VBoxContainer/TabContainer/Osu"]
+[node name="ExportOffset" type="HBoxContainer" parent="TabContainer/Osu"]
 layout_mode = 2
 
-[node name="LineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/Osu/ExportOffset"]
+[node name="LineEdit" type="LineEdit" parent="TabContainer/Osu/ExportOffset"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/Osu/ExportOffset"]
+[node name="Label" type="Label" parent="TabContainer/Osu/ExportOffset"]
 layout_mode = 2
 size_flags_horizontal = 8
 text = "Export offset [ms] (Default: -29)"
 
-[node name="UnsupportedTimeSignatures" type="HBoxContainer" parent="VBoxContainer/TabContainer/Osu"]
+[node name="UnsupportedTimeSignatures" type="HBoxContainer" parent="TabContainer/Osu"]
 layout_mode = 2
 
-[node name="CheckBox" type="CheckBox" parent="VBoxContainer/TabContainer/Osu/UnsupportedTimeSignatures"]
+[node name="CheckBox" type="CheckBox" parent="TabContainer/Osu/UnsupportedTimeSignatures"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/Osu/UnsupportedTimeSignatures"]
+[node name="Label" type="Label" parent="TabContainer/Osu/UnsupportedTimeSignatures"]
 layout_mode = 2
 size_flags_horizontal = 2
 text = "Add metronome resets on unsupported time signatures"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="SectionNightcoreMainMenu" type="Label" parent="VBoxContainer/TabContainer/Osu"]
+[node name="SectionNightcoreMainMenu" type="Label" parent="TabContainer/Osu"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 6
@@ -101,46 +96,46 @@ theme_override_font_sizes/font_size = 20
 text = "Nightcore & main menu compatibility
 "
 
-[node name="AddExtraPointsOnDownbeats" type="HBoxContainer" parent="VBoxContainer/TabContainer/Osu"]
+[node name="AddExtraPointsOnDownbeats" type="HBoxContainer" parent="TabContainer/Osu"]
 layout_mode = 2
 
-[node name="CheckBox" type="CheckBox" parent="VBoxContainer/TabContainer/Osu/AddExtraPointsOnDownbeats"]
+[node name="CheckBox" type="CheckBox" parent="TabContainer/Osu/AddExtraPointsOnDownbeats"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/Osu/AddExtraPointsOnDownbeats"]
+[node name="Label" type="Label" parent="TabContainer/Osu/AddExtraPointsOnDownbeats"]
 layout_mode = 2
 size_flags_horizontal = 2
 text = "Add extra points on downbeats"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="AddExtraPointsOnQuarterNotes" type="HBoxContainer" parent="VBoxContainer/TabContainer/Osu"]
+[node name="AddExtraPointsOnQuarterNotes" type="HBoxContainer" parent="TabContainer/Osu"]
 layout_mode = 2
 
-[node name="CheckBox" type="CheckBox" parent="VBoxContainer/TabContainer/Osu/AddExtraPointsOnQuarterNotes"]
+[node name="CheckBox" type="CheckBox" parent="TabContainer/Osu/AddExtraPointsOnQuarterNotes"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/Osu/AddExtraPointsOnQuarterNotes"]
+[node name="Label" type="Label" parent="TabContainer/Osu/AddExtraPointsOnQuarterNotes"]
 layout_mode = 2
 size_flags_horizontal = 2
 text = "Add extra points on quarter notes"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="OmitBarlines" type="HBoxContainer" parent="VBoxContainer/TabContainer/Osu"]
+[node name="OmitBarlines" type="HBoxContainer" parent="TabContainer/Osu"]
 layout_mode = 2
 
-[node name="CheckBox" type="CheckBox" parent="VBoxContainer/TabContainer/Osu/OmitBarlines"]
+[node name="CheckBox" type="CheckBox" parent="TabContainer/Osu/OmitBarlines"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/Osu/OmitBarlines"]
+[node name="Label" type="Label" parent="TabContainer/Osu/OmitBarlines"]
 layout_mode = 2
 size_flags_horizontal = 2
 text = "Omit barlines on non-downbeats"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="SectionEfficiency2" type="Label" parent="VBoxContainer/TabContainer/Osu"]
+[node name="SectionEfficiency2" type="Label" parent="TabContainer/Osu"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 6
@@ -148,25 +143,25 @@ theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 20
 text = "Taiko & Mania Compatibility"
 
-[node name="PreventDoubleBarlines" type="HBoxContainer" parent="VBoxContainer/TabContainer/Osu"]
+[node name="PreventDoubleBarlines" type="HBoxContainer" parent="TabContainer/Osu"]
 layout_mode = 2
 
-[node name="CheckBox" type="CheckBox" parent="VBoxContainer/TabContainer/Osu/PreventDoubleBarlines"]
+[node name="CheckBox" type="CheckBox" parent="TabContainer/Osu/PreventDoubleBarlines"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/Osu/PreventDoubleBarlines"]
+[node name="Label" type="Label" parent="TabContainer/Osu/PreventDoubleBarlines"]
 layout_mode = 2
 size_flags_horizontal = 2
 text = "Prevent double barlines"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="Beat Saber" type="VBoxContainer" parent="VBoxContainer/TabContainer"]
+[node name="Beat Saber" type="VBoxContainer" parent="TabContainer"]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 2
 
-[node name="SectionBeatSaber" type="Label" parent="VBoxContainer/TabContainer/Beat Saber"]
+[node name="SectionBeatSaber" type="Label" parent="TabContainer/Beat Saber"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 6
@@ -174,10 +169,10 @@ theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 20
 text = "Beat Saber Settings"
 
-[node name="BeatSaberExportFormat" type="HBoxContainer" parent="VBoxContainer/TabContainer/Beat Saber"]
+[node name="BeatSaberExportFormat" type="HBoxContainer" parent="TabContainer/Beat Saber"]
 layout_mode = 2
 
-[node name="OptionButton" type="OptionButton" parent="VBoxContainer/TabContainer/Beat Saber/BeatSaberExportFormat"]
+[node name="OptionButton" type="OptionButton" parent="TabContainer/Beat Saber/BeatSaberExportFormat"]
 layout_mode = 2
 selected = 0
 item_count = 2
@@ -186,22 +181,24 @@ popup/item_0/id = 4
 popup/item_1/text = "2.1.0"
 popup/item_1/id = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/Beat Saber/BeatSaberExportFormat"]
+[node name="Label" type="Label" parent="TabContainer/Beat Saber/BeatSaberExportFormat"]
 layout_mode = 2
 size_flags_horizontal = 8
 text = "Beat Saber Info.dat export format"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
-layout_mode = 2
+[node name="BottomButtonsHBox" type="HBoxContainer" parent="."]
+offset_right = 460.0
+offset_bottom = 360.0
+mouse_filter = 2
 
-[node name="OkButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+[node name="OkButton" type="Button" parent="BottomButtonsHBox"]
 layout_mode = 2
-size_flags_horizontal = 6
-size_flags_vertical = 3
+size_flags_horizontal = 3
+size_flags_vertical = 8
 text = "Ok"
 
-[node name="DefaultsButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+[node name="DefaultsButton" type="Button" parent="BottomButtonsHBox"]
 layout_mode = 2
-size_flags_horizontal = 6
-size_flags_vertical = 3
+size_flags_horizontal = 3
+size_flags_vertical = 8
 text = "Reset to Defaults"
