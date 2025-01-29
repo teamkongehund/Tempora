@@ -176,8 +176,8 @@ public partial class TimingPointSelection : Node
         }
     }
 
-    private float? firstPosition => FirstPoint?.MusicPosition;
-    private float? lastPostion => LastPoint?.MusicPosition;
+    private float? firstPosition => FirstPoint?.MeasurePosition;
+    private float? lastPostion => LastPoint?.MeasurePosition;
 
     public float? CenterPosition
     {
@@ -185,7 +185,7 @@ public partial class TimingPointSelection : Node
         {
             if (SelectionIndices == null || FirstPoint == null || LastPoint == null)
                 return null;
-            return (LastPoint.MusicPosition - FirstPoint.MusicPosition) / 2 + FirstPoint.MusicPosition;
+            return (LastPoint.MeasurePosition - FirstPoint.MeasurePosition) / 2 + FirstPoint.MeasurePosition;
         }
     }
 
@@ -242,8 +242,8 @@ public partial class TimingPointSelection : Node
     {
         if (positionFirst > positionLast)
             (positionFirst, positionLast) = (positionLast, positionFirst);
-        int firstIndex = timing.TimingPoints.FindIndex(point => point.MusicPosition >= positionFirst && point.MusicPosition <= positionLast);
-        int lastIndex = timing.TimingPoints.FindLastIndex(point => point.MusicPosition >= positionFirst && point.MusicPosition <= positionLast);
+        int firstIndex = timing.TimingPoints.FindIndex(point => point.MeasurePosition >= positionFirst && point.MeasurePosition <= positionLast);
+        int lastIndex = timing.TimingPoints.FindLastIndex(point => point.MeasurePosition >= positionFirst && point.MeasurePosition <= positionLast);
         Select(firstIndex, lastIndex);
     }
 
@@ -311,7 +311,7 @@ public partial class TimingPointSelection : Node
             return;
         }
 
-        bool isPointBeforeSelectionCenter = point.MusicPosition < CenterPosition;
+        bool isPointBeforeSelectionCenter = point.MeasurePosition < CenterPosition;
         
         SelectionIndices = isPointBeforeSelectionCenter
             ? [isPointInSelection ? index + 1 : index, SelectionIndices[1]]
@@ -330,13 +330,13 @@ public partial class TimingPointSelection : Node
     {
         if (SelectionIndices == null || referencePosition == null) return;
 
-        newPosition = Timing.Instance.SnapMusicPosition(newPosition);
+        newPosition = Timing.Instance.SnapMeasurePosition(newPosition);
 
         float positionDifference = newPosition - (float)referencePosition;
 
-        float getNewPosition(TimingPoint? point) => (point?.MusicPosition ?? 0) + positionDifference;
+        float getNewPosition(TimingPoint? point) => (point?.MeasurePosition ?? 0) + positionDifference;
 
-        timing.BatchChangeMusicPosition(SelectionIndices[0], SelectionIndices[1], getNewPosition);
+        timing.BatchChangeMeasurePosition(SelectionIndices[0], SelectionIndices[1], getNewPosition);
     }
 
     /// <summary>

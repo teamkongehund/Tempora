@@ -38,7 +38,7 @@ public partial class GlobalEvents : Node
     /// <summary>
     /// Event argument should be an <see cref="ObjectArgument{TimingPoint}"/> of the point rejecting the change
     /// </summary>
-    public event EventHandler? MusicPositionChangeRejected;
+    public event EventHandler? MeasurePositionChangeRejected;
     public event EventHandler? TimingPointNearestCursorChanged;
     public event EventHandler? ContextMenuRequested;
     public event EventHandler? TimingPointAdded;

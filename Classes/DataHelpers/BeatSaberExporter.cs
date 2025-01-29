@@ -114,8 +114,8 @@ public partial class BeatSaberExporter : Node
             TimingPoint nextTimingPoint = timingPoints[i + 1];
 
             // Beat Saber doesn't work with measures. Convert to "beats"
-            float musicPositionDiff = nextTimingPoint.MusicPosition!.Value - timingPoint.MusicPosition!.Value;
-            float beatsDiff = musicPositionDiff * timingPoint.TimeSignature[0];
+            float measurePositionDiff = nextTimingPoint.MeasurePosition!.Value - timingPoint.MeasurePosition!.Value;
+            float beatsDiff = measurePositionDiff * timingPoint.TimeSignature[0];
 
             float startBeat = currentBeat;
             float endBeat = startBeat + beatsDiff;
@@ -166,7 +166,7 @@ public partial class BeatSaberExporter : Node
         {
             if (firstTimingPoint.Offset == 0) return;
 
-            if (firstTimingPoint.MusicPosition == 0)
+            if (firstTimingPoint.MeasurePosition == 0)
             {
                 // Add timing point to simulate a "beat" before the first timing point
                 float secondsInFirstBeat = firstTimingPoint.Offset + timeOffset;
@@ -178,7 +178,7 @@ public partial class BeatSaberExporter : Node
             else
             {
                 // Add a timing point at beat 0 
-                float beats = Timing.GetBeatsBetweenMusicPositions(timing, 0, firstTimingPoint.MusicPosition.Value);
+                float beats = Timing.GetBeatsBetweenMeasurePositions(timing, 0, firstTimingPoint.MeasurePosition.Value);
                 float secondsPerBeat = (firstTimingPoint.Offset + timeOffset) / beats;
                 float bpm = 60f / secondsPerBeat;
 

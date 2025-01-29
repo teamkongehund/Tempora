@@ -19,7 +19,7 @@ namespace Tempora.Classes.TimingClasses;
 
 /// <summary>
 /// A data class which asserts that a specific point in time (<see cref="Offset"/>)
-/// should be attached to a musical timeline at (<see cref="MusicPosition"/>).
+/// should be attached to a musical timeline at (<see cref="MeasurePosition"/>).
 /// The Bpm (<see cref="Bpm"/>) is calculated via the subsequent <see cref="TimingPoint"/> 
 /// in <see cref="Timing.TimingPoints"/> if the subsequent point exists.
 /// </summary>
@@ -83,8 +83,8 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 	}
 	#endregion
 
-	#region MusicPosition
-	private float? musicPosition;
+	#region MeasurePosition
+	private float? measurePosition;
 	/// <summary>
 	/// The <see cref="TimingPoint"/>'s position on the musical timeline. 
 	/// The value is defined in terms of measures (integer part) from the musical timeline origin.
@@ -92,18 +92,18 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 	/// As an example, if a measure has a 4/4 <see cref="TimeSignature"/>, 
 	/// the value 0.75 means "Measure 0, Quarter note 4"
 	/// </summary>
-	public float? MusicPosition
+	public float? MeasurePosition
 	{
-		get => musicPosition;
+		get => measurePosition;
 		set
 		{
-			if (musicPosition == value)
+			if (measurePosition == value)
 				return;
 
-            float? oldValue = musicPosition;
-            musicPosition = value;
+            float? oldValue = measurePosition;
+            measurePosition = value;
 
-            PropertyChanged?.Invoke(this, new PropertyChangeArgument(PropertyType.MusicPosition, oldValue, value));
+            PropertyChanged?.Invoke(this, new PropertyChangeArgument(PropertyType.MeasurePosition, oldValue, value));
         }
 	}
 	#endregion
@@ -169,32 +169,32 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 		SystemTimeWhenCreatedMsec = Time.GetTicksMsec();
 	}
 
-	public TimingPoint(float musicPosition)
+	public TimingPoint(float measurePosition)
 	{
-		this.musicPosition = musicPosition;
+		this.measurePosition = measurePosition;
 		SystemTimeWhenCreatedMsec = Time.GetTicksMsec();
 	}
 
-	public TimingPoint(float time, float musicPosition, float measuresPerSecond)
+	public TimingPoint(float time, float measurePosition, float measuresPerSecond)
 	{
 		this.offset = time;
-		this.musicPosition = musicPosition;
+		this.measurePosition = measurePosition;
 		this.measuresPerSecond = measuresPerSecond;
 		SystemTimeWhenCreatedMsec = Time.GetTicksMsec();
 	}
 
-	public TimingPoint(float time, float musicPosition, int[] timeSignature)
+	public TimingPoint(float time, float measurePosition, int[] timeSignature)
 	{
 		this.offset = time;
-		this.musicPosition = musicPosition;
+		this.measurePosition = measurePosition;
 		this.timeSignature = timeSignature;
 		SystemTimeWhenCreatedMsec = Time.GetTicksMsec();
 	}
 
-	public TimingPoint(float time, float musicPosition, int[] timeSignature, float measuresPerSecond)
+	public TimingPoint(float time, float measurePosition, int[] timeSignature, float measuresPerSecond)
 	{
 		this.offset = time;
-		this.musicPosition = musicPosition;
+		this.measurePosition = measurePosition;
 		this.timeSignature = timeSignature;
 		this.measuresPerSecond = measuresPerSecond;
 		bpm = MpsToBpm(measuresPerSecond);
@@ -204,10 +204,10 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 	/// <summary>
 	/// Constructor used only for cloning
 	/// </summary>
-	private TimingPoint(float time, float? musicPosition, int[] timeSignature, float measuresPerSecond, float bpm, bool isInstantiating)
+	private TimingPoint(float time, float? measurePosition, int[] timeSignature, float measuresPerSecond, float bpm, bool isInstantiating)
 	{
 		this.offset = time;
-		this.musicPosition = musicPosition;
+		this.measurePosition = measurePosition;
 		this.timeSignature = timeSignature;
 		this.measuresPerSecond = measuresPerSecond;
 		this.bpm = bpm;
@@ -220,7 +220,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 
 	public object Clone()
 	{
-		var timingPoint = new TimingPoint(Offset, MusicPosition, TimeSignature, MeasuresPerSecond, Bpm, IsInstantiating);
+		var timingPoint = new TimingPoint(Offset, MeasurePosition, TimeSignature, MeasuresPerSecond, Bpm, IsInstantiating);
 
 		return timingPoint;
 	}
@@ -248,7 +248,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
     {
         TimeSignature,
         Offset,
-        MusicPosition,
+        MeasurePosition,
         MeasuresPerSecond,
         Bpm,
     }

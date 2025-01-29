@@ -47,7 +47,7 @@ public partial class VisualTimingPoint : Control
     private Color colorInvisible = new("ff990000");
 
     private Color lineColorRed = new("ff0000");
-    private Color lineColorDefault = new("ff9900");
+    private Color lineColorDefault = GlobalConstants.TemporaYellow;
     private Color lineColorSelection = new("ab0091");
     //private Color lineColorNearestCursor = new("00d49c");
     private Color lineColorNearestCursor = new("ff9900");
@@ -94,7 +94,7 @@ public partial class VisualTimingPoint : Control
 
         //VisibilityChanged += OnVisibilityChanged;
 
-        GlobalEvents.Instance.MusicPositionChangeRejected += OnMusicPositionChangeRejected;
+        GlobalEvents.Instance.MeasurePositionChangeRejected += OnMeasurePositionChangeRejected;
         GlobalEvents.Instance.TimingPointNearestCursorChanged += OnTimingPointNearestCursorChanged;
         TimingPointSelection.Instance.SelectionChanged += OnSelectionChanged;
 
@@ -246,7 +246,7 @@ public partial class VisualTimingPoint : Control
         }
     }
 
-    private void OnMusicPositionChangeRejected(object? sender, EventArgs e)
+    private void OnMeasurePositionChangeRejected(object? sender, EventArgs e)
     {
         if (!Visible) 
             return;
@@ -274,7 +274,7 @@ public partial class VisualTimingPoint : Control
     #region Change Looks
     private void FlashRed()
     {
-        //GD.Print($"VisualTimingPoint with {TimingPoint.MusicPosition}: Flashing Red!");
+        //GD.Print($"VisualTimingPoint with {TimingPoint.MeasurePosition}: Flashing Red!");
         if (isFlashActive) return;
         flashTimer.Start();
         isRed = true;

@@ -26,7 +26,7 @@ public partial class Context : Node
 
     public bool ShouldDeleteHeldPointIfNotOnGrid = false;
     public bool HeldPointIsJustBeingAdded = false;
-    private float? heldTimingPoint_PreviousMusicPosition = null!;
+    private float? heldTimingPoint_PreviousMeasurePosition = null!;
     private float? heldTimingPoint_PreviousOffset = null!;
     private TimingPoint? heldTimingPoint = null!;
     public TimingPoint? HeldTimingPoint
@@ -41,7 +41,7 @@ public partial class Context : Node
                 if (HeldPointIsJustBeingAdded && !Timing.Instance.IsTimingPointOnGrid(heldTimingPoint))
                 {
                     TimingPoint? timingPointToDelete = heldTimingPoint;
-                    heldTimingPoint_PreviousMusicPosition = null;
+                    heldTimingPoint_PreviousMeasurePosition = null;
                     heldTimingPoint_PreviousOffset = null;
                     heldTimingPoint = null;
                     timingPointToDelete?.Delete();
@@ -50,23 +50,23 @@ public partial class Context : Node
                     return;
                 }
                 bool doesTimingPointStillExist = heldTimingPoint != null;
-                bool hasMusicPositionChanged = heldTimingPoint?.MusicPosition != heldTimingPoint_PreviousMusicPosition;
+                bool hasMeasurePositionChanged = heldTimingPoint?.MeasurePosition != heldTimingPoint_PreviousMeasurePosition;
                 bool hasOffsetChanged = heldTimingPoint?.Offset != heldTimingPoint_PreviousOffset;
-                if ((hasMusicPositionChanged || hasOffsetChanged) && doesTimingPointStillExist)
+                if ((hasMeasurePositionChanged || hasOffsetChanged) && doesTimingPointStillExist)
                 {
                     MementoHandler.Instance.AddTimingMemento();
                 }
                 if (HeldPointIsJustBeingAdded && doesTimingPointStillExist)
                     GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.Instance.TimingPointAdded), this, new GlobalEvents.ObjectArgument<TimingPoint>(heldTimingPoint!));
                 HeldPointIsJustBeingAdded = false;
-                heldTimingPoint_PreviousMusicPosition = null;
+                heldTimingPoint_PreviousMeasurePosition = null;
                 heldTimingPoint_PreviousOffset = null;
                 heldTimingPoint = value;
                 GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.Instance.TimingChanged), this, EventArgs.Empty); // Updates visuals to ensure no waveform sections are darkened.
                 return;
             }
             heldTimingPoint = value;
-            heldTimingPoint_PreviousMusicPosition = value?.MusicPosition;
+            heldTimingPoint_PreviousMeasurePosition = value?.MeasurePosition;
             heldTimingPoint_PreviousOffset = value?.Offset;
         }
     }
@@ -84,11 +84,11 @@ public partial class Context : Node
         }
     }
 
-    public bool IsSelectedMusicPositionMoving = false;
+    public bool IsSelectedMeasurePositionMoving = false;
 
     private float selectedPosition;
 
-    public float SelectedMusicPosition
+    public float SelectedMeasurePosition
     {
         get => selectedPosition;
         set
@@ -110,7 +110,7 @@ public partial class Context : Node
 
         GlobalEvents.Instance.TimingPointHolding += OnTimingPointHolding;
         GlobalEvents.Instance.MouseLeftReleased += OnMouseLeftReleased;
-        GlobalEvents.Instance.MusicPositionChangeRejected += OnTimingPointMusicPositionRejected;
+        GlobalEvents.Instance.MeasurePositionChangeRejected += OnTimingPointMeasurePositionRejected;
 
         GetViewport().GuiFocusChanged += OnGuiFocusChanged;
     }
@@ -129,7 +129,7 @@ public partial class Context : Node
         FocusedControl = focusedControl;
     }
 
-    private void OnTimingPointMusicPositionRejected(object? sender, EventArgs e)
+    private void OnTimingPointMeasurePositionRejected(object? sender, EventArgs e)
     {
         if (e is not GlobalEvents.ObjectArgument<TimingPoint> timingPointArgument)
             return;

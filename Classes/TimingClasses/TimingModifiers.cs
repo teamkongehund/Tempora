@@ -23,18 +23,18 @@ public partial class Timing
     ///     <see cref="Settings.SnapToGridEnabled" />
     /// </summary>
     /// <param name="timingPoint"></param>
-    /// <param name="musicPosition"></param>
-    public void SnapTimingPoint(TimingPoint timingPoint, float musicPosition)
+    /// <param name="measurePosition"></param>
+    public void SnapTimingPoint(TimingPoint timingPoint, float measurePosition)
     {
         if (timingPoint == null)
             return;
 
-        float snappedMusicPosition = SnapMusicPosition(musicPosition);
+        float snappedMeasurePosition = SnapMeasurePosition(measurePosition);
 
-        timingPoint.MusicPosition = snappedMusicPosition;
+        timingPoint.MeasurePosition = snappedMeasurePosition;
     }
 
-    public void UpdateTimeSignature(int[] timeSignature, int musicPosition)
+    public void UpdateTimeSignature(int[] timeSignature, int measurePosition)
     {
         if (timeSignature[1] is not 4 and not 8 and not 16)
             timeSignature[1] = 4;
@@ -43,7 +43,9 @@ public partial class Timing
         else if (timeSignature[0] < 0)
             timeSignature[0] = -timeSignature[0];
 
-        int foundTsPointIndex = TimeSignaturePoints.FindIndex(point => point.MusicPosition == musicPosition);
+        //int foundTsPointIndex = TimeSignaturePoints.FindIndex(point => point.MeasurePosition == measurePosition);
+        // epsilon necessary due to time sig moving points. Better long-term fix is to snap to best possible gridline upon time sig changes.
+        int foundTsPointIndex = TimeSignaturePoints.FindIndex(point => MathF.Abs(point.Measure - measurePosition) < 0.005); 
 
         Timing oldTiming = CopyTiming(this);
 
@@ -51,10 +53,10 @@ public partial class Timing
 
         if (foundTsPointIndex == -1) // None found at same position
         {
-            timeSignaturePoint = new TimeSignaturePoint(timeSignature, musicPosition);
+            timeSignaturePoint = new TimeSignaturePoint(timeSignature, measurePosition);
             TimeSignaturePoints.Add(timeSignaturePoint);
             TimeSignaturePoints.Sort();
-            foundTsPointIndex = TimeSignaturePoints.FindIndex(point => point.MusicPosition == musicPosition);
+            foundTsPointIndex = TimeSignaturePoints.FindIndex(point => point.Measure == measurePosition);
         }
         else // Update found point at position
         {
@@ -76,11 +78,11 @@ public partial class Timing
 
         if (foundTsPointIndex < TimeSignaturePoints.Count - 1)
         {
-            int nextMusicPositionWithDifferentTimeSignature = TimeSignaturePoints[foundTsPointIndex + 1].MusicPosition;
-            maxIndex = TimingPoints.FindLastIndex(point => point.MusicPosition < nextMusicPositionWithDifferentTimeSignature);
+            int nextMeasurePositionWithDifferentTimeSignature = TimeSignaturePoints[foundTsPointIndex + 1].Measure;
+            maxIndex = TimingPoints.FindLastIndex(point => point.MeasurePosition < nextMeasurePositionWithDifferentTimeSignature);
         }
 
-        int indexForFirstTimingPointWithThisTimeSignature = TimingPoints.FindIndex(point => point.MusicPosition >= musicPosition);
+        int indexForFirstTimingPointWithThisTimeSignature = TimingPoints.FindIndex(point => point.MeasurePosition >= measurePosition);
 
         for (int i = indexForFirstTimingPointWithThisTimeSignature; i <= maxIndex; i++)
         {
@@ -90,8 +92,8 @@ public partial class Timing
             TimingPoints[i].TimeSignature = timeSignature;
         }
 
-        if (TimingPoints.Find(point => point.MusicPosition == musicPosition) == null && TimingPoints.Count > 0)
-            AddTimingPoint(musicPosition, MusicPositionToSampleTime(musicPosition));
+        if (TimingPoints.Find(point => point.MeasurePosition == measurePosition) == null && TimingPoints.Count > 0)
+            AddTimingPoint(measurePosition, MeasurePositionToSampleTime(measurePosition));
 
         ShiftTimingPointsUponTimeSignatureChange(oldTiming, timeSignaturePoint);
 
@@ -112,7 +114,7 @@ public partial class Timing
             return;
 
         ArgumentNullException.ThrowIfNull(timeSignaturePoint);
-        TimingPoint? operatingTimingPoint = GetOperatingTimingPoint_ByMusicPosition(timeSignaturePoint.MusicPosition);
+        TimingPoint? operatingTimingPoint = GetOperatingTimingPoint_ByMeasurePosition(timeSignaturePoint.Measure);
         if (operatingTimingPoint == null)
             return;
 
@@ -120,63 +122,63 @@ public partial class Timing
         if (opIndex == -1)
             return;
 
-        float getNewMusicPosition(TimingPoint? timingPoint)
+        float getNewMeasurePosition(TimingPoint? timingPoint)
         {
-            if (timingPoint?.MusicPosition == null)
+            if (timingPoint?.MeasurePosition == null)
                 throw new NullReferenceException(nameof(timingPoint));
 
-            // Get number of beats from time signature change to timingPoint's old musicPosition using previous timing
+            // Get number of beats from time signature change to timingPoint's old measurePosition using previous timing
             // This should be kept constant
             float beatDifference_OldTiming
-                = GetBeatsBetweenMusicPositions(oldTiming, timeSignaturePoint.MusicPosition, (float)timingPoint.MusicPosition);
+                = GetBeatsBetweenMeasurePositions(oldTiming, timeSignaturePoint.Measure, (float)timingPoint.MeasurePosition);
 
             float beatDifference_NewTiming
-                = GetBeatsBetweenMusicPositions(this, timeSignaturePoint.MusicPosition, (float)timingPoint.MusicPosition);
+                = GetBeatsBetweenMeasurePositions(this, timeSignaturePoint.Measure, (float)timingPoint.MeasurePosition);
 
             float beatsToAdd = beatDifference_OldTiming - beatDifference_NewTiming;
 
             // Get new music position for this timing point
-            float newMusicPosition = GetMusicPositionAfterAddingBeats(this, (float)timingPoint.MusicPosition, beatsToAdd);
+            float newMeasurePosition = GetMeasurePositionAfterAddingBeats(this, (float)timingPoint.MeasurePosition, beatsToAdd);
 
-            return newMusicPosition;
+            return newMeasurePosition;
         }
 
-        BatchChangeMusicPosition(opIndex, TimingPoints.Count - 1, getNewMusicPosition);
+        BatchChangeMeasurePosition(opIndex, TimingPoints.Count - 1, getNewMeasurePosition);
     }
 
     /// <summary>
     /// Delegate that defines what a new music position should be for a timing point.
     /// </summary>
-    public delegate float GetNewMusicPosition(TimingPoint? timingPoint);
+    public delegate float GetNewMeasurePosition(TimingPoint? timingPoint);
 
     /// <summary>
     /// Changes the music positions of all <see cref="TimingPoint"/>s from <see cref="TimingPoints"/>[lowerIndex] to and including <see cref="TimingPoints"/>[higherIndex].
     /// </summary>
-    /// <param name="getNewMusicPosition">Delegate method used to calculate the new music position</param>
+    /// <param name="getNewMeasurePosition">Delegate method used to calculate the new music position</param>
     /// <exception cref="NullReferenceException"></exception>
-    public void BatchChangeMusicPosition(int lowerIndex, int higherIndex, GetNewMusicPosition getNewMusicPosition)
+    public void BatchChangeMeasurePosition(int lowerIndex, int higherIndex, GetNewMeasurePosition getNewMeasurePosition)
     {
         if (!ValidateIndices(lowerIndex, higherIndex, out lowerIndex, out higherIndex))
             return;
 
         IsBatchOperationInProgress = true;
 
-        bool willMusicPositionsIncrease = true;
+        bool willMeasurePositionsIncrease = true;
         if (higherIndex >= lowerIndex + 1)
-            willMusicPositionsIncrease = getNewMusicPosition(TimingPoints[lowerIndex + 1]) > TimingPoints[lowerIndex + 1].MusicPosition;
+            willMeasurePositionsIncrease = getNewMeasurePosition(TimingPoints[lowerIndex + 1]) > TimingPoints[lowerIndex + 1].MeasurePosition;
 
         // If the change decreases the music position, iterate forwards (less likely to trigger rejections).
         // Vice versa for increases
-        int startIndex = willMusicPositionsIncrease ? higherIndex : lowerIndex;
+        int startIndex = willMeasurePositionsIncrease ? higherIndex : lowerIndex;
         for (int i = startIndex
-            ; willMusicPositionsIncrease ? i >= lowerIndex : i <= higherIndex
-            ; i = willMusicPositionsIncrease ? i - 1 : i + 1)
+            ; willMeasurePositionsIncrease ? i >= lowerIndex : i <= higherIndex
+            ; i = willMeasurePositionsIncrease ? i - 1 : i + 1)
         {
             TimingPoint? timingPoint = TimingPoints[i];
-            if (timingPoint?.MusicPosition == null)
+            if (timingPoint?.MeasurePosition == null)
                 throw new NullReferenceException(nameof(timingPoint));
 
-            timingPoint.MusicPosition = getNewMusicPosition(timingPoint);
+            timingPoint.MeasurePosition = getNewMeasurePosition(timingPoint);
 
             if (ShouldCancelBatchOperation)
             {
@@ -198,15 +200,15 @@ public partial class Timing
         if (!ValidateIndices(lowerIndex, higherIndex, out lowerIndex, out higherIndex))
             return;
 
-        float lowerPosition = (float)TimingPoints[lowerIndex].MusicPosition!; // Indices have been validated 
-        float higherPosition = (float)TimingPoints[higherIndex].MusicPosition!; // Indices have been validated 
+        float lowerPosition = (float)TimingPoints[lowerIndex].MeasurePosition!; // Indices have been validated 
+        float higherPosition = (float)TimingPoints[higherIndex].MeasurePosition!; // Indices have been validated 
 
         float getPositionForSelectedPoints(TimingPoint? timingPoint)
         {
-            if (timingPoint?.MusicPosition == null)
+            if (timingPoint?.MeasurePosition == null)
                 throw new NullReferenceException(nameof(timingPoint));
 
-            float oldPositionDifference = (float)(timingPoint.MusicPosition - lowerPosition);
+            float oldPositionDifference = (float)(timingPoint.MeasurePosition - lowerPosition);
             float newPositionDifference = oldPositionDifference * multiplier;
             return lowerPosition + newPositionDifference;
         }
@@ -215,26 +217,26 @@ public partial class Timing
         bool areThereAnySubsequentTimingPoints = (higherIndex + 1 < TimingPoints.Count);
         if (areThereAnySubsequentTimingPoints)
         {
-            float spanForChangedPointsBefore = (float)(TimingPoints[higherIndex + 1].MusicPosition - lowerPosition)!;
+            float spanForChangedPointsBefore = (float)(TimingPoints[higherIndex + 1].MeasurePosition - lowerPosition)!;
             float spanForChangedPointsAfter = spanForChangedPointsBefore * multiplier;
             positionOffsetForSubsequentPoints = spanForChangedPointsAfter - spanForChangedPointsBefore;
         }
 
         float getPositionForSubsequentPoints(TimingPoint? timingPoint)
         {
-            if (timingPoint?.MusicPosition == null)
+            if (timingPoint?.MeasurePosition == null)
                 throw new NullReferenceException(nameof(timingPoint));
 
-            return (float)(timingPoint.MusicPosition + positionOffsetForSubsequentPoints);
+            return (float)(timingPoint.MeasurePosition + positionOffsetForSubsequentPoints);
         }
 
         if (multiplier > 1)
-            BatchChangeMusicPosition(higherIndex + 1, TimingPoints.Count - 1, getPositionForSubsequentPoints);
+            BatchChangeMeasurePosition(higherIndex + 1, TimingPoints.Count - 1, getPositionForSubsequentPoints);
 
-        BatchChangeMusicPosition(lowerIndex, higherIndex, getPositionForSelectedPoints);
+        BatchChangeMeasurePosition(lowerIndex, higherIndex, getPositionForSelectedPoints);
 
         if (multiplier <= 1)
-            BatchChangeMusicPosition(higherIndex + 1, TimingPoints.Count - 1, getPositionForSubsequentPoints);
+            BatchChangeMeasurePosition(higherIndex + 1, TimingPoints.Count - 1, getPositionForSubsequentPoints);
 
         if (!areThereAnySubsequentTimingPoints)
         {

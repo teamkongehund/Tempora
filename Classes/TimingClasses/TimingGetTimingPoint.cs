@@ -18,55 +18,55 @@ using GD = Tempora.Classes.DataHelpers.GD;
 namespace Tempora.Classes.TimingClasses;
 public partial class Timing
 {
-    public TimingPoint? GetNearestTimingPoint(float musicPosition)
+    public TimingPoint? GetNearestTimingPoint(float measurePosition)
     {
         if (TimingPoints.Count == 0)
             return null;
 
-        TimingPoint? previousTimingPoint = TimingPoints.FindLast(point => point.MusicPosition <= musicPosition);
-        TimingPoint? nextTimingPoint = TimingPoints.Find(point => point.MusicPosition > musicPosition);
+        TimingPoint? previousTimingPoint = TimingPoints.FindLast(point => point.MeasurePosition <= measurePosition);
+        TimingPoint? nextTimingPoint = TimingPoints.Find(point => point.MeasurePosition > measurePosition);
 
         TimingPoint? timingPoint = null;
 
-        if (previousTimingPoint?.MusicPosition != null && nextTimingPoint == null)
+        if (previousTimingPoint?.MeasurePosition != null && nextTimingPoint == null)
             return previousTimingPoint;
-        else if (previousTimingPoint == null && nextTimingPoint?.MusicPosition != null)
+        else if (previousTimingPoint == null && nextTimingPoint?.MeasurePosition != null)
             return nextTimingPoint;
-        else if (previousTimingPoint?.MusicPosition != null && nextTimingPoint?.MusicPosition != null)
+        else if (previousTimingPoint?.MeasurePosition != null && nextTimingPoint?.MeasurePosition != null)
         {
-            float distanceToNext = Math.Abs((float)nextTimingPoint.MusicPosition - musicPosition);
-            float distanceToPrevious = Math.Abs((float)previousTimingPoint.MusicPosition - musicPosition);
+            float distanceToNext = Math.Abs((float)nextTimingPoint.MeasurePosition - measurePosition);
+            float distanceToPrevious = Math.Abs((float)previousTimingPoint.MeasurePosition - measurePosition);
             timingPoint = (distanceToPrevious < distanceToNext) ? previousTimingPoint : nextTimingPoint;
         }
 
         return timingPoint == null
             ? throw new NullReferenceException("Timing point does not exist")
-            : timingPoint.MusicPosition == null
-            ? throw new NullReferenceException($"Nearest TimingPoint does not have a non-null {nameof(TimingPoint.MusicPosition)}")
+            : timingPoint.MeasurePosition == null
+            ? throw new NullReferenceException($"Nearest TimingPoint does not have a non-null {nameof(TimingPoint.MeasurePosition)}")
             : timingPoint;
     }
 
-    public TimingPoint? GetOperatingTimingPoint_ByMusicPosition(float musicPosition)
+    public TimingPoint? GetOperatingTimingPoint_ByMeasurePosition(float measurePosition)
     {
         if (TimingPoints.Count == 0)
             return null;
 
-        TimingPoint? timingPoint = TimingPoints.FindLast(point => point.MusicPosition <= musicPosition);
+        TimingPoint? timingPoint = TimingPoints.FindLast(point => point.MeasurePosition <= measurePosition);
 
-        // If there's only TimingPoints AFTER MusicPositionStart
-        timingPoint ??= TimingPoints.Find(point => point.MusicPosition > musicPosition);
+        // If there's only TimingPoints AFTER MeasurePositionStart
+        timingPoint ??= TimingPoints.Find(point => point.MeasurePosition > measurePosition);
 
         return timingPoint == null
             ? throw new NullReferenceException("Timing point does not exist")
-            : timingPoint.MusicPosition == null
-            ? throw new NullReferenceException($"Operating TimingPoint does not have a non-null {nameof(TimingPoint.MusicPosition)}")
+            : timingPoint.MeasurePosition == null
+            ? throw new NullReferenceException($"Operating TimingPoint does not have a non-null {nameof(TimingPoint.MeasurePosition)}")
             : timingPoint;
     }
 
     public TimingPoint? GetOperatingTimingPoint_ByTime(float time)
     {
         // Ensures the method can be used while a TimingPoint is being created.
-        var validTimingPoints = TimingPoints.Where(point => point.MusicPosition != null).ToList<TimingPoint>();
+        var validTimingPoints = TimingPoints.Where(point => point.MeasurePosition != null).ToList<TimingPoint>();
 
         if (validTimingPoints == null)
             return null;

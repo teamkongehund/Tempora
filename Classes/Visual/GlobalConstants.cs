@@ -1,4 +1,4 @@
-// Copyright 2024 https://github.com/kongehund
+// Copyright 2025 https://github.com/kongehund
 // 
 // This file is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0).
 // You are free to:
@@ -11,20 +11,12 @@
 //
 // Full license text is available at: https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
 
-using System;
 using Godot;
 
-namespace Tempora.Classes.TimingClasses;
+namespace Tempora.Classes.Visual;
 
-public partial class TimeSignaturePoint(int[] timeSignature, int measure) : Node, IComparable<TimeSignaturePoint>, ICloneable
+public readonly struct GlobalConstants
 {
-    public int Measure = measure;
-    public int[] TimeSignature = timeSignature;
-
-    public int CompareTo(TimeSignaturePoint? other) => Measure.CompareTo(other?.Measure);
-
-    public object Clone() => new TimeSignaturePoint(TimeSignature, Measure);
-
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready() { }
+    public GlobalConstants() { }
+    public static readonly Color TemporaYellow = new("ff9900");
 }

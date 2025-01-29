@@ -22,7 +22,7 @@ public partial class GridLine : Line2D
     public int DivisionIndex;
     public int Divisor;
     public int[] TimeSignature;
-    public float RelativeMusicPosition;
+    public float RelativeMeasurePosition;
 
     private float audioHeight;
 
@@ -40,7 +40,7 @@ public partial class GridLine : Line2D
         Divisor = divisor;
         DivisionIndex = index;
         this.audioHeight = audioHeight;
-        RelativeMusicPosition = Timing.GetRelativeNotePosition(timeSignature, divisor, index);
+        RelativeMeasurePosition = Timing.GetRelativeNotePosition(timeSignature, divisor, index);
         //new ColorConverter();
 
         DefaultColor = color_Unspecified;
@@ -54,7 +54,7 @@ public partial class GridLine : Line2D
 
     private void UpdateColor()
     {
-        bool isOnDownbeat = RelativeMusicPosition == 0;
+        bool isOnDownbeat = RelativeMeasurePosition == 0;
         bool isOn16 = Timing.IsDivisionOnDivisor(Divisor, DivisionIndex, 16);
         bool isOn12 = Timing.IsDivisionOnDivisor(Divisor, DivisionIndex, 12);
 

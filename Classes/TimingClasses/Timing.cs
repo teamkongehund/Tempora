@@ -102,15 +102,15 @@ public partial class Timing : Node, IMementoOriginator
     // These methods can be moved to separate scripts if necessary.
 
     /// <summary>
-    /// Checks if a new <see cref="TimingPoint.MusicPosition"/> is valid, by checking whether it crosses the position of other points.
+    /// Checks if a new <see cref="TimingPoint.MeasurePosition"/> is valid, by checking whether it crosses the position of other points.
     /// </summary>
     /// <param name="timingPoint"></param>
-    /// <param name="musicPosition"></param>
+    /// <param name="measurePosition"></param>
     /// <param name="rejectingTimingPoint"></param>
     /// <returns></returns>
-    public bool CanTimingPointGoHere(TimingPoint? timingPoint, float? musicPosition, out TimingPoint? rejectingTimingPoint)
+    public bool CanTimingPointGoHere(TimingPoint? timingPoint, float? measurePosition, out TimingPoint? rejectingTimingPoint)
     {
-        if (musicPosition == null)
+        if (measurePosition == null)
         {
             rejectingTimingPoint = null;
             return true;
@@ -120,12 +120,12 @@ public partial class Timing : Node, IMementoOriginator
         TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
 
         // validity checks
-        if (previousTimingPoint != null && previousTimingPoint.MusicPosition >= musicPosition)
+        if (previousTimingPoint != null && previousTimingPoint.MeasurePosition >= measurePosition)
         {
             rejectingTimingPoint = previousTimingPoint;
             return false;
         }
-        if (nextTimingPoint != null && nextTimingPoint.MusicPosition <= musicPosition)
+        if (nextTimingPoint != null && nextTimingPoint.MeasurePosition <= measurePosition)
         {
             rejectingTimingPoint = nextTimingPoint;
             return false;
@@ -146,22 +146,22 @@ public partial class Timing : Node, IMementoOriginator
     /// Converts a music position to number of seconds from first sample. 
     /// Note that mp3 playback does not start at first sample, so must be transformed if used in a playback context.
     /// </summary>
-    /// <param name="musicPosition"></param>
+    /// <param name="measurePosition"></param>
     /// <returns></returns>
     /// <exception cref="NullReferenceException"></exception>
     /// <exception cref="Exception"></exception>
-    public float MusicPositionToSampleTime(float musicPosition)
+    public float MeasurePositionToSampleTime(float measurePosition)
     {
-        TimingPoint? timingPoint = GetOperatingTimingPoint_ByMusicPosition(musicPosition);
+        TimingPoint? timingPoint = GetOperatingTimingPoint_ByMeasurePosition(measurePosition);
         if (timingPoint == null)
-            return musicPosition / 0.5f; // default 120 bpm from time=0
-        if (timingPoint.MusicPosition == null)
-            throw new NullReferenceException($"Operating TimingPoint does not have a non-null {nameof(TimingPoint.MusicPosition)}");
+            return measurePosition / 0.5f; // default 120 bpm from time=0
+        if (timingPoint.MeasurePosition == null)
+            throw new NullReferenceException($"Operating TimingPoint does not have a non-null {nameof(TimingPoint.MeasurePosition)}");
 
         if (timingPoint.MeasuresPerSecond <= 0)
             throw new Exception("Operating timing point has MeasuresPerSecond <= 0");
 
-        float time = (float)(timingPoint.Offset + ((musicPosition - timingPoint.MusicPosition) / timingPoint.MeasuresPerSecond));
+        float time = (float)(timingPoint.Offset + ((measurePosition - timingPoint.MeasurePosition) / timingPoint.MeasuresPerSecond));
 
         return time;
     }
@@ -186,18 +186,18 @@ public partial class Timing : Node, IMementoOriginator
     /// Checks whether a music position is divisible by a different divisor for a given time signature.
     /// Example: For a 4/4 time signature, music position 0.5 and divisor 4 should return true, as that position is on the 3rd quarter note.
     /// </summary>
-    /// <param name="musicPosition"></param>
+    /// <param name="measurePosition"></param>
     /// <param name="timeSignature"></param>
     /// <param name="divisor"></param>
     /// <returns></returns>
-    public static bool IsPositionOnDivisor(float musicPosition, int[] timeSignature, int divisor)
+    public static bool IsPositionOnDivisor(float measurePosition, int[] timeSignature, int divisor)
     {
         float divisorLength = GetRelativeNotePosition(timeSignature, divisor, 1);
 
-        musicPosition = musicPosition % 1;
+        measurePosition = measurePosition % 1;
 
         var epsilon = 0.001f;
-        bool isDivisible = (musicPosition % divisorLength < epsilon || (divisorLength - musicPosition % divisorLength) < epsilon);
+        bool isDivisible = (measurePosition % divisorLength < epsilon || (divisorLength - measurePosition % divisorLength) < epsilon);
 
         return isDivisible;
     }

@@ -44,7 +44,7 @@ public partial class BlockScrollBar : VScrollBar
     private void UpdateScrollBar()
     {
         UpdateLimits();
-        Value = audioVisualsContainer.NominalMusicPositionStartForTopBlock;
+        Value = audioVisualsContainer.NominalMeasurePositionStartForTopBlock;
     }
 
     private void UpdateAudioVisualsContainer(double value)
@@ -55,14 +55,12 @@ public partial class BlockScrollBar : VScrollBar
             return; // If not in place, inadvertent scrolling occurs due to MinValue or MaxValue changing Value.
         }
 
-        audioVisualsContainer.NominalMusicPositionStartForTopBlock = (int)value;
+        audioVisualsContainer.NominalMeasurePositionStartForTopBlock = (int)value;
     }
 
     public void UpdateLimits()
     {
-        //int firstMeasure = audioVisualsContainer.FirstTopMeasure;
-        //int lastMeasure = audioVisualsContainer.LastTopMeasure;
-        int firstMeasure = (int)Timing.Instance.SampleTimeToMusicPosition(0);
+        int firstMeasure = audioVisualsContainer.FirstTopMeasure;
         int lastMeasure = Timing.Instance.GetLastMeasure() - (Settings.Instance.NumberOfRows - 1);
         if (MinValue != firstMeasure)
         {
@@ -80,6 +78,6 @@ public partial class BlockScrollBar : VScrollBar
 
     private void OnScrolled(object? sender, EventArgs e)
     {
-        Value = audioVisualsContainer.NominalMusicPositionStartForTopBlock;
+        Value = audioVisualsContainer.NominalMeasurePositionStartForTopBlock;
     }
 }

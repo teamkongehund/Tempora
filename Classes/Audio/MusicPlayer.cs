@@ -103,7 +103,7 @@ public partial class MusicPlayer : AudioStreamPlayer
 
     private void OnSelectedPositionChanged(object? _sender, EventArgs e)
     {
-        float time = Timing.Instance.MusicPositionToSampleTime(Context.Instance.SelectedMusicPosition);
+        float time = Timing.Instance.MeasurePositionToSampleTime(Context.Instance.SelectedMeasurePosition);
         PauseTime = time >= 0 ? (double)time : 0;
     }
 

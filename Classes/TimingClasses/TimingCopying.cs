@@ -49,22 +49,22 @@ public partial class Timing
         var downbeatPositions = new List<int>();
         foreach (TimingPoint timingPoint in newTiming.TimingPoints)
         {
-            if (timingPoint?.MusicPosition == null)
+            if (timingPoint?.MeasurePosition == null)
                 break;
-            if (timingPoint.MusicPosition % 1 == 0)
+            if (timingPoint.MeasurePosition % 1 == 0)
                 continue; // downbeat point on next is unnecessary
             TimingPoint? nextTimingPoint = newTiming.GetNextTimingPoint(timingPoint);
-            bool isNextPointInSameMeasure = nextTimingPoint?.MusicPosition != null 
-                && (int)nextTimingPoint.MusicPosition == (int)timingPoint.MusicPosition;
-            bool isThereAPointOnNextDownbeat = nextTimingPoint?.MusicPosition != null
-                && nextTimingPoint.MusicPosition == (int)timingPoint.MusicPosition + 1;
+            bool isNextPointInSameMeasure = nextTimingPoint?.MeasurePosition != null 
+                && (int)nextTimingPoint.MeasurePosition == (int)timingPoint.MeasurePosition;
+            bool isThereAPointOnNextDownbeat = nextTimingPoint?.MeasurePosition != null
+                && nextTimingPoint.MeasurePosition == (int)timingPoint.MeasurePosition + 1;
             if (isNextPointInSameMeasure || isThereAPointOnNextDownbeat)
                 continue;
-            downbeatPositions.Add((int)timingPoint.MusicPosition + 1);
+            downbeatPositions.Add((int)timingPoint.MeasurePosition + 1);
         }
         foreach (int downbeat in downbeatPositions)
         {
-            //float time = newTiming.MusicPositionToTime(downbeat);
+            //float time = newTiming.MeasurePositionToTime(downbeat);
             //newTiming.AddTimingPoint(downbeat, time);
             newTiming.AddTimingPoint(downbeat);
         }
@@ -79,18 +79,18 @@ public partial class Timing
         {
             if (timingPoint == null)
                 break;
-            if (timingPoint.MusicPosition == null)
+            if (timingPoint.MeasurePosition == null)
                 break;
 
-            float beatLength = newTiming.GetDistancePerBeat((float)timingPoint.MusicPosition);
-            float beatPosition = newTiming.GetOperatingBeatPosition((float)timingPoint.MusicPosition);
+            float beatLength = newTiming.GetDistancePerBeat((float)timingPoint.MeasurePosition);
+            float beatPosition = newTiming.GetOperatingBeatPosition((float)timingPoint.MeasurePosition);
             TimingPoint? nextTimingPoint = newTiming.GetNextTimingPoint(timingPoint);
-            float? nextPointPosition = nextTimingPoint?.MusicPosition;
+            float? nextPointPosition = nextTimingPoint?.MeasurePosition;
 
             //float epsilon = 0.00001f;
-            //bool isOnQuarterNote = (timingPoint.MusicPosition % beatLength < epsilon || (beatLength - timingPoint.MusicPosition % beatLength) < epsilon);
+            //bool isOnQuarterNote = (timingPoint.MeasurePosition % beatLength < epsilon || (beatLength - timingPoint.MeasurePosition % beatLength) < epsilon);
 
-            bool isOnQuarterNote = IsPositionOnDivisor((float)timingPoint.MusicPosition, timingPoint.TimeSignature, 4);
+            bool isOnQuarterNote = IsPositionOnDivisor((float)timingPoint.MeasurePosition, timingPoint.TimeSignature, 4);
 
             bool nextPointIsOnOrBeforeNextQuarterNote = (nextTimingPoint != null
                 && nextPointPosition <= beatPosition + beatLength);
@@ -101,7 +101,7 @@ public partial class Timing
         }
         foreach (float quarterNote in quaterNotePositions)
         {
-            //float time = newTiming.MusicPositionToTime(quarterNote);
+            //float time = newTiming.MeasurePositionToTime(quarterNote);
             //newTiming.AddTimingPoint(quarterNote, time);
             newTiming.AddTimingPoint(quarterNote);
         }
@@ -113,17 +113,17 @@ public partial class Timing
 
         // Maybe add exceptions later like 4/8 and 8/8 
 
-        int firstMeasure = (int)newTiming.SampleTimeToMusicPosition(0f);
-        int lastMeasure = (int)newTiming.SampleTimeToMusicPosition((float)audioFile.Stream.GetLength());
+        int firstMeasure = (int)newTiming.SampleTimeToMeasurePosition(0f);
+        int lastMeasure = (int)newTiming.SampleTimeToMeasurePosition((float)audioFile.Stream.GetLength());
 
         for (int measure = firstMeasure;  measure < lastMeasure + 1; measure++)
         {
             int[] timeSignature = newTiming.GetTimeSignature(measure);
             if (timeSignature[1] == 4) continue;
 
-            TimingPoint? operatingPoint = newTiming.GetOperatingTimingPoint_ByMusicPosition(measure);
+            TimingPoint? operatingPoint = newTiming.GetOperatingTimingPoint_ByMeasurePosition(measure);
 
-            if (operatingPoint?.MusicPosition == measure)
+            if (operatingPoint?.MeasurePosition == measure)
                 continue;
 
             newTiming.AddTimingPoint(measure);

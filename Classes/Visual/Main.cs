@@ -77,7 +77,7 @@ public partial class Main : Control
 					{
 						// Ensure a mouse release is always captured.
 						GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.MouseLeftReleased));
-						Context.Instance.IsSelectedMusicPositionMoving = false;
+						Context.Instance.IsSelectedMeasurePositionMoving = false;
 					}
 					break;
 				}
