@@ -2,30 +2,41 @@
 
 [ext_resource type="Script" path="res://Classes/Visual/Buttons/Stepper.cs" id="1_1cxms"]
 
-[node name="Stepper" type="CenterContainer" node_paths=PackedStringArray("incrementButton", "valueLabel", "decrementButton")]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+[node name="Stepper" type="HBoxContainer" node_paths=PackedStringArray("incrementButton", "valueLabel", "decrementButton", "mouseAreaControl")]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -11.5
+offset_top = -33.0
+offset_right = 11.5
+offset_bottom = 33.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/separation = 0
+alignment = 2
 script = ExtResource("1_1cxms")
 incrementButton = NodePath("VBoxContainer/IncrementButton")
-valueLabel = NodePath("VBoxContainer/ValueLabel")
+valueLabel = NodePath("ValueLabel")
 decrementButton = NodePath("VBoxContainer/DecrementButton")
+mouseAreaControl = NodePath(".")
+
+[node name="ValueLabel" type="Label" parent="."]
+layout_mode = 2
+vertical_alignment = 1
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
 size_flags_horizontal = 4
+size_flags_vertical = 4
 
 [node name="IncrementButton" type="Button" parent="VBoxContainer"]
+visible = false
 layout_mode = 2
 text = "+"
 
-[node name="ValueLabel" type="Label" parent="VBoxContainer"]
-layout_mode = 2
-horizontal_alignment = 1
-vertical_alignment = 1
-
 [node name="DecrementButton" type="Button" parent="VBoxContainer"]
+visible = false
 layout_mode = 2
 text = "-"

@@ -1,26 +1,26 @@
 using Godot;
 using System;
 
-public partial class Stepper : CenterContainer
+public partial class Stepper : Control
 
 {
     [Export]
     Button incrementButton = null!;
 
     [Export]
-    Label valueLabel = null!;
+    protected Label valueLabel = null!;
     
     [Export]
     Button decrementButton = null!;
 
     [Export]
-    VBoxContainer vBoxContainer = null!;
+    Control mouseAreaControl = null!;
 
     [Export]
     protected int increment = 1;
 
     [Export]
-    protected int value = 0;
+    public int value = 0;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -28,8 +28,18 @@ public partial class Stepper : CenterContainer
         UpdateValue(value);
         incrementButton.Pressed += OnIncrementButtonPressed;
         decrementButton.Pressed += OnDecrementButtonPressed;
-        //vBoxContainer.MouseExited += OnMouseExited;
-        //vBoxContainer.MouseEntered += OnMouseEntered;
+    }
+
+    public override void _Input(InputEvent @event)
+    {
+        base._Input(@event);
+
+        Vector2 localMousePosition = GetLocalMousePosition();
+        Rect2 rectangle = mouseAreaControl.GetRect();
+        bool hasMouseInside = rectangle.HasPoint(localMousePosition + Position);
+
+        decrementButton.Visible = hasMouseInside;
+        incrementButton.Visible = hasMouseInside;
     }
 
     protected virtual void OnIncrementButtonPressed()
@@ -39,18 +49,6 @@ public partial class Stepper : CenterContainer
     protected virtual void OnDecrementButtonPressed()
     {
         UpdateValueAndTarget(value - 1);
-    }
-
-    protected virtual void OnMouseExited()
-    {
-        incrementButton.Visible = false;
-        decrementButton.Visible = false;
-    }
-
-    protected virtual void OnMouseEntered()
-    {
-        incrementButton.Visible = true;
-        decrementButton.Visible = true;
     }
 
     protected void UpdateValueAndTarget(int value)
