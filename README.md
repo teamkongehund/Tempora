@@ -2,6 +2,9 @@
 An application designed to simplify and speed up the process of synchronizing a recorded piece of music to a digital metronome. 
 
 This is achieved via a simple-to-use GUI that lets you manipulate timing points and visualize how the audio aligns with the current timing. The program does not alter the audio file like when you use quantization/warping. The program is mainly designed for rhythm games but may have other use cases such as music production. 
+
+For now, downloadable releases are found at https://kongehund.github.io/tempora/
+
 ## Supports
 - osu! (.mp3 and .ogg)
 - Beat Saber (.ogg)
