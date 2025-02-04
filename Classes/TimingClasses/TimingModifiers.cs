@@ -36,12 +36,7 @@ public partial class Timing
 
     public void UpdateTimeSignature(int[] timeSignature, int measurePosition)
     {
-        if (timeSignature[1] is not 4 and not 8 and not 16)
-            timeSignature[1] = 4;
-        if (timeSignature[0] == 0)
-            timeSignature[0] = 4;
-        else if (timeSignature[0] < 0)
-            timeSignature[0] = -timeSignature[0];
+        CorrectTimeSignature(timeSignature, out timeSignature);
 
         //int foundTsPointIndex = TimeSignaturePoints.FindIndex(point => point.MeasurePosition == measurePosition);
         // epsilon necessary due to time sig moving points. Better long-term fix is to snap to best possible gridline upon time sig changes.
@@ -100,6 +95,17 @@ public partial class Timing
         MementoHandler.Instance.AddTimingMemento();
 
         GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
+    }
+
+    public void CorrectTimeSignature(int[] timeSignature, out int[] correctedTimeSignature)
+    {
+        if (timeSignature[1] is not 4 and not 8 and not 16)
+            timeSignature[1] = 4;
+        if (timeSignature[0] == 0)
+            timeSignature[0] = 4;
+        else if (timeSignature[0] < 0)
+            timeSignature[0] = -timeSignature[0];
+        correctedTimeSignature = timeSignature;
     }
 
     /// <summary>

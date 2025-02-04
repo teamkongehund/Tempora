@@ -1,10 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://bvygjbp5egfcl"]
+[gd_scene load_steps=3 format=3 uid="uid://bvygjbp5egfcl"]
 
+[ext_resource type="Script" path="res://Classes/Visual/Buttons/TimeSignatureStepper.cs" id="1_3b47l"]
 [ext_resource type="PackedScene" uid="uid://dj7d0bg4br3h0" path="res://Classes/Visual/Buttons/Stepper.tscn" id="1_luw76"]
-[ext_resource type="Script" path="res://Classes/Visual/Buttons/TimeSignatureNumeratorStepper.cs" id="2_5ec5q"]
-[ext_resource type="Script" path="res://Classes/Visual/Buttons/TimeSignatureDenominatorStepper.cs" id="3_jnop5"]
 
-[node name="TimeSignatureControl" type="HBoxContainer"]
+[node name="TimeSignatureControl" type="HBoxContainer" node_paths=PackedStringArray("NumeratorStepper", "DenominatorStepper")]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -17,18 +16,19 @@ offset_bottom = 33.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 0
+script = ExtResource("1_3b47l")
+NumeratorStepper = NodePath("NumeratorStepper")
+DenominatorStepper = NodePath("DenominatorStepper")
 
-[node name="NumeratorStepper" parent="." node_paths=PackedStringArray("timeSignatureDenominatorStepper") instance=ExtResource("1_luw76")]
+[node name="NumeratorStepper" parent="." instance=ExtResource("1_luw76")]
 layout_mode = 2
-script = ExtResource("2_5ec5q")
-timeSignatureDenominatorStepper = NodePath("../DenominatorStepper")
+script = null
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 2
 text = "/"
 vertical_alignment = 1
 
-[node name="DenominatorStepper" parent="." node_paths=PackedStringArray("timeSignatureNumeratorStepper") instance=ExtResource("1_luw76")]
+[node name="DenominatorStepper" parent="." instance=ExtResource("1_luw76")]
 layout_mode = 2
-script = ExtResource("3_jnop5")
-timeSignatureNumeratorStepper = NodePath("../NumeratorStepper")
+script = null

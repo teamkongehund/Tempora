@@ -1,8 +1,8 @@
 using Godot;
 using System;
+using Tempora.Classes.Utility;
 
 public partial class Stepper : Control
-
 {
     [Export]
     Button incrementButton = null!;
@@ -20,12 +20,24 @@ public partial class Stepper : Control
     protected int increment = 1;
 
     [Export]
-    public int value = 0;
+    public virtual int DisplayedValue
+    {
+        get => displayedValue;
+        set
+        {
+            displayedValue = value;
+            DisplayValue(value);
+        }
+    }
+
+    public event EventHandler? ValueModified = null;
+
+    private int displayedValue = 0;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{
-        UpdateValue(value);
+        DisplayValue(displayedValue);
         incrementButton.Pressed += OnIncrementButtonPressed;
         decrementButton.Pressed += OnDecrementButtonPressed;
     }
@@ -44,24 +56,21 @@ public partial class Stepper : Control
 
     protected virtual void OnIncrementButtonPressed()
     {
-        UpdateValueAndTarget(value + 1);
+        int newValue = displayedValue + 1;
+        ModifyValue(newValue);
+        
     }
     protected virtual void OnDecrementButtonPressed()
     {
-        UpdateValueAndTarget(value - 1);
+        int newValue = displayedValue - 1;
+        ModifyValue(newValue);
     }
 
-    protected void UpdateValueAndTarget(int value)
+    protected void ModifyValue(int value)
     {
-        UpdateValue(value);
-        UpdateTarget();
+        DisplayedValue = value;
+        ValueModified?.Invoke(this, new GlobalEvents.ObjectArgument<int>(value));
     }
 
-    protected virtual void UpdateValue(int value)
-    {
-        this.value = value;
-        valueLabel.Text = value.ToString();
-    }
-
-    protected virtual void UpdateTarget() => GD.Print("No value updated. UpdateValue() must be overridden.");
+    protected virtual void DisplayValue(int value) => valueLabel.Text = value.ToString();
 }

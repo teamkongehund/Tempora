@@ -19,31 +19,31 @@ public partial class TimeSignatureDenominatorStepper : Stepper
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-        value = allowedValues[currentValueIndex];
+        DisplayedValue = allowedValues[currentValueIndex];
         base._Ready();
 
-        GlobalEvents.Instance.AudioVisualsContainerScrolled += OnScrolled;
+        //GlobalEvents.Instance.AudioVisualsContainerScrolled += OnScrolled;
     }
 
     protected override void OnIncrementButtonPressed()
     {
         currentValueIndex = currentValueIndex < allowedValues.Length - 1 ? currentValueIndex + 1 : currentValueIndex;
-        UpdateValueAndTarget(allowedValues[currentValueIndex]);
+        ModifyValue(allowedValues[currentValueIndex]);
     }
 
     protected override void OnDecrementButtonPressed()
     {
         currentValueIndex = currentValueIndex > 0 ? currentValueIndex - 1 : currentValueIndex;
-        UpdateValueAndTarget(allowedValues[currentValueIndex]);
+        ModifyValue(allowedValues[currentValueIndex]);
     }
 
     protected override void UpdateTarget()
     {
-        Timing.Instance.UpdateTimeSignature([timeSignatureNumeratorStepper.value, value], audioBlock.NominalMeasurePosition);
+        Timing.Instance.UpdateTimeSignature([timeSignatureNumeratorStepper.DisplayedValue, DisplayedValue], audioBlock.NominalMeasurePosition);
     }
 
-    private void OnScrolled(object? sender, EventArgs e)
-    {
-        UpdateValue(Timing.Instance.GetTimeSignature(audioBlock.NominalMeasurePosition)[1]);
-    }
+    //private void OnScrolled(object? sender, EventArgs e)
+    //{
+    //    UpdateValue(Timing.Instance.GetTimeSignature(audioBlock.NominalMeasurePosition)[1]);
+    //}
 }
