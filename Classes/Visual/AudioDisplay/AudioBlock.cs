@@ -26,6 +26,8 @@ public partial class AudioBlock : Control
     private Label measureLabel = null!;
     [Export]
     private TimeSignatureLineEdit timeSignatureLineEdit = null!;
+    [Export]
+    private TimeSignatureStepper timeSignatureStepper = null!;
 
     private Color defaultFontColor = new("ffffff");
 
@@ -50,11 +52,12 @@ public partial class AudioBlock : Control
         VisibilityChanged += OnVisibilityChanged;
 
         timeSignatureLineEdit.TimeSignatureSubmitted += OnTimingSignatureSubmitted;
+        timeSignatureStepper.TimeSignatureSubmitted += OnTimingSignatureSubmitted;
     }
 
     private void OnTimingChanged(object? sender, EventArgs e)
     {
-        if (!Visible)
+        if (!Visible || Timing.Instance.IsBatchOperationInProgress)
             return;
         UpdateLabels();
     }
@@ -77,10 +80,17 @@ public partial class AudioBlock : Control
         int[] timeSignature = Timing.Instance.GetTimeSignature(NominalMeasurePosition);
         measureLabel.Text = NominalMeasurePosition.ToString();
         timeSignatureLineEdit.Text = $"{timeSignature[0]}/{timeSignature[1]}";
+        timeSignatureStepper.TimeSignature = timeSignature;
         bool isTimeSigPointHere = Timing.Instance.TimeSignaturePoints.Exists(point => point.Measure == nominalMeasurePosition);
-        if (isTimeSigPointHere) 
+        if (isTimeSigPointHere)
+        {
             timeSignatureLineEdit.AddThemeColorOverride("font_color", GlobalConstants.TemporaYellow);
+            timeSignatureStepper.UpdateLabelColor(GlobalConstants.TemporaYellow);
+        }
         else
+        {
             timeSignatureLineEdit.AddThemeColorOverride("font_color", defaultFontColor);
+            timeSignatureStepper.UpdateLabelColor(defaultFontColor);
+        }
     }
 }

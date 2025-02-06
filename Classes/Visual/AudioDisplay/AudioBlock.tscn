@@ -3,9 +3,9 @@
 [ext_resource type="Script" path="res://Classes/Visual/AudioDisplay/AudioBlock.cs" id="1_4j3p3"]
 [ext_resource type="Script" path="res://Classes/Visual/TimingDisplay/TimeSignatureLineEdit.cs" id="2_agy5w"]
 [ext_resource type="PackedScene" uid="uid://xf0kngdc5d36" path="res://Classes/Visual/AudioDisplay/AudioDisplayPanel.tscn" id="2_sidll"]
-[ext_resource type="PackedScene" uid="uid://bvygjbp5egfcl" path="res://Classes/Visual/Buttons/TimeSignatureControl.tscn" id="3_hq75k"]
+[ext_resource type="PackedScene" uid="uid://bvygjbp5egfcl" path="res://Classes/Visual/TimingDisplay/TimeSignatureStepper.tscn" id="3_hq75k"]
 
-[node name="AudioBlock" type="Control" node_paths=PackedStringArray("AudioDisplayPanel", "measureLabel", "timeSignatureLineEdit")]
+[node name="AudioBlock" type="Control" node_paths=PackedStringArray("AudioDisplayPanel", "measureLabel", "timeSignatureLineEdit", "timeSignatureStepper")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -17,6 +17,7 @@ script = ExtResource("1_4j3p3")
 AudioDisplayPanel = NodePath("BlockHBoxContainer/AudioDisplayMargins/AudioDisplayPanel")
 measureLabel = NodePath("BlockHBoxContainer/LabelHBoxContainer/MeasureLabel")
 timeSignatureLineEdit = NodePath("BlockHBoxContainer/LabelHBoxContainer/TimeSignatureLineEdit")
+timeSignatureStepper = NodePath("BlockHBoxContainer/LabelHBoxContainer/TimeSignatureControl")
 
 [node name="BlockHBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1
@@ -55,12 +56,6 @@ script = ExtResource("2_agy5w")
 
 [node name="TimeSignatureControl" parent="BlockHBoxContainer/LabelHBoxContainer" instance=ExtResource("3_hq75k")]
 layout_mode = 2
-
-[node name="NumeratorStepper" parent="BlockHBoxContainer/LabelHBoxContainer/TimeSignatureControl" index="0" node_paths=PackedStringArray("audioBlock")]
-audioBlock = NodePath("../../../..")
-
-[node name="DenominatorStepper" parent="BlockHBoxContainer/LabelHBoxContainer/TimeSignatureControl" index="2" node_paths=PackedStringArray("audioBlock")]
-audioBlock = NodePath("../../../..")
 
 [node name="AudioDisplayMargins" type="MarginContainer" parent="BlockHBoxContainer"]
 layout_mode = 2

@@ -54,7 +54,7 @@ public partial class Timing : Node, IMementoOriginator
             isInstantiating = value;
         }
     }
-    private bool IsBatchOperationInProgress = false;
+    public bool IsBatchOperationInProgress = false;
 
     private bool ShouldCancelBatchOperation = false;
 

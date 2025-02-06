@@ -2,13 +2,13 @@ using Godot;
 using System;
 using Tempora.Classes.Utility;
 
-public partial class Stepper : Control
+public partial class Stepper : HBoxContainer
 {
     [Export]
     Button incrementButton = null!;
 
     [Export]
-    protected Label valueLabel = null!;
+    public Label ValueLabel = null!;
     
     [Export]
     Button decrementButton = null!;
@@ -30,9 +30,32 @@ public partial class Stepper : Control
         }
     }
 
+    public bool HasMouseInside
+    {
+        get => hasMouseInside;
+        set
+        {
+            if (hasMouseInside == value)
+                return;
+            hasMouseInside = value;
+            if (!value) 
+                MouseExitedStepper?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
     public event EventHandler? ValueModified = null;
 
+    public event EventHandler? ValueIncremented = null;
+
+    public event EventHandler? ValueDecremented = null;
+
     private int displayedValue = 0;
+
+    private bool hasMouseInside = false;
+
+    public event EventHandler? MouseExitedStepper = null;
+
+    public bool HandleChangesElsewhere = false;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -48,29 +71,31 @@ public partial class Stepper : Control
 
         Vector2 localMousePosition = GetLocalMousePosition();
         Rect2 rectangle = mouseAreaControl.GetRect();
-        bool hasMouseInside = rectangle.HasPoint(localMousePosition + Position);
+        HasMouseInside = rectangle.HasPoint(localMousePosition + Position);
 
-        decrementButton.Visible = hasMouseInside;
-        incrementButton.Visible = hasMouseInside;
+        decrementButton.Visible = HasMouseInside;
+        incrementButton.Visible = HasMouseInside;
     }
 
     protected virtual void OnIncrementButtonPressed()
     {
-        int newValue = displayedValue + 1;
-        ModifyValue(newValue);
-        
+        if (!HandleChangesElsewhere)
+        {
+            int newValue = displayedValue + 1;
+            DisplayedValue = newValue;
+        }
+        ValueIncremented?.Invoke(this, EventArgs.Empty);
+
     }
     protected virtual void OnDecrementButtonPressed()
     {
-        int newValue = displayedValue - 1;
-        ModifyValue(newValue);
+        if (!HandleChangesElsewhere)
+        {
+            int newValue = displayedValue - 1;
+            DisplayedValue = newValue;
+        }
+        ValueDecremented?.Invoke(this, EventArgs.Empty);
     }
 
-    protected void ModifyValue(int value)
-    {
-        DisplayedValue = value;
-        ValueModified?.Invoke(this, new GlobalEvents.ObjectArgument<int>(value));
-    }
-
-    protected virtual void DisplayValue(int value) => valueLabel.Text = value.ToString();
+    protected virtual void DisplayValue(int value) => ValueLabel.Text = value.ToString();
 }

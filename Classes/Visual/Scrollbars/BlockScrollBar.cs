@@ -35,7 +35,12 @@ public partial class BlockScrollBar : VScrollBar
         UpdateScrollBar();
     }
 
-    private void OnTimingChanged(object? sender, EventArgs e) => UpdateScrollBar();
+    private void OnTimingChanged(object? sender, EventArgs e)
+    {
+        if (Timing.Instance.IsBatchOperationInProgress)
+            return;
+        UpdateScrollBar();
+    }
 
     private void OnAudioFileChanged(object? sender, EventArgs e) => UpdateScrollBar();
 

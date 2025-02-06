@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3 uid="uid://bvygjbp5egfcl"]
+
+[ext_resource type="Script" path="res://Classes/Visual/TimingDisplay/TimeSignatureStepper.cs" id="1_awnig"]
+[ext_resource type="PackedScene" path="res://Classes/Visual/Buttons/Stepper.tscn" id="2_mn1vu"]
+
+[node name="TimeSignatureStepper" type="HBoxContainer" node_paths=PackedStringArray("NumeratorStepper", "DenominatorStepper")]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -25.0
+offset_top = -33.0
+offset_right = 25.0
+offset_bottom = 33.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+script = ExtResource("1_awnig")
+NumeratorStepper = NodePath("NumeratorStepper")
+DenominatorStepper = NodePath("DenominatorStepper")
+
+[node name="NumeratorStepper" parent="." instance=ExtResource("2_mn1vu")]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+text = "/"
+vertical_alignment = 1
+
+[node name="DenominatorStepper" parent="." instance=ExtResource("2_mn1vu")]
+layout_mode = 2

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Classes/Visual/Buttons/Stepper.cs" id="1_1cxms"]
 
-[node name="Stepper" type="HBoxContainer" node_paths=PackedStringArray("incrementButton", "valueLabel", "decrementButton", "mouseAreaControl")]
+[node name="Stepper" type="HBoxContainer" node_paths=PackedStringArray("incrementButton", "ValueLabel", "decrementButton", "mouseAreaControl")]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -18,7 +18,7 @@ theme_override_constants/separation = 0
 alignment = 2
 script = ExtResource("1_1cxms")
 incrementButton = NodePath("VBoxContainer/IncrementButton")
-valueLabel = NodePath("ValueLabel")
+ValueLabel = NodePath("ValueLabel")
 decrementButton = NodePath("VBoxContainer/DecrementButton")
 mouseAreaControl = NodePath(".")
 

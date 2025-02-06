@@ -12,6 +12,7 @@
 // Full license text is available at: https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
 
 using System;
+using System.Linq;
 using Tempora.Classes.Utility;
 using GD = Tempora.Classes.DataHelpers.GD;
 
@@ -38,13 +39,19 @@ public partial class Timing
     {
         CorrectTimeSignature(timeSignature, out timeSignature);
 
-        //int foundTsPointIndex = TimeSignaturePoints.FindIndex(point => point.MeasurePosition == measurePosition);
-        // epsilon necessary due to time sig moving points. Better long-term fix is to snap to best possible gridline upon time sig changes.
+        if (GetTimeSignature(measurePosition).SequenceEqual(timeSignature))
+            return;
+
+        // epsilon necessary due to time sig moving points. To-do: Better long-term fix is to snap to best possible gridline upon time sig changes.
         int foundTsPointIndex = TimeSignaturePoints.FindIndex(point => MathF.Abs(point.Measure - measurePosition) < 0.005); 
 
         Timing oldTiming = CopyTiming(this);
 
         TimeSignaturePoint timeSignaturePoint;
+
+        // Logic decisions:
+        // We always have 4/4 at mp = -infinity
+        // If the value submitted is 4/4 and it's the first time sig point, remove it from list
 
         if (foundTsPointIndex == -1) // None found at same position
         {
@@ -59,14 +66,18 @@ public partial class Timing
             timeSignaturePoint.TimeSignature = timeSignature;
         }
 
-        if (foundTsPointIndex > 0 && TimeSignaturePoints[foundTsPointIndex - 1].TimeSignature == timeSignature)
+        bool isEqualToPrevious = foundTsPointIndex > 0 && TimeSignaturePoints[foundTsPointIndex - 1].TimeSignature.SequenceEqual(timeSignature);
+        bool isFirstAndDefault = foundTsPointIndex == 0 && timeSignaturePoint.TimeSignature.SequenceEqual([4, 4]);
+
+        if (isEqualToPrevious || isFirstAndDefault)
         {
             TimeSignaturePoints.Remove(timeSignaturePoint);
-            return;
         }
 
-        if (foundTsPointIndex < TimeSignaturePoints.Count - 1 && TimeSignaturePoints[foundTsPointIndex + 1].TimeSignature == timeSignature)
-            TimeSignaturePoints.RemoveAt(foundTsPointIndex + 1);
+        bool isEqualToNext = foundTsPointIndex<TimeSignaturePoints.Count -1 && TimeSignaturePoints[foundTsPointIndex + 1].TimeSignature.SequenceEqual(timeSignature);
+       
+        if (isEqualToNext) // To-do: Fix this. Try having a 5/4 a 6/4 and 5/4, then change the 6/4 to 5/4. Doesn't work as expected. Maybe this one before the other?
+            TimeSignaturePoints.Remove(TimeSignaturePoints[foundTsPointIndex + 1]);
 
         // Go through all timing points until the next TimeSignaturePoint and update TimeSignature
         int maxIndex = TimingPoints.Count - 1;
@@ -79,6 +90,7 @@ public partial class Timing
 
         int indexForFirstTimingPointWithThisTimeSignature = TimingPoints.FindIndex(point => point.MeasurePosition >= measurePosition);
 
+        IsBatchOperationInProgress = true;
         for (int i = indexForFirstTimingPointWithThisTimeSignature; i <= maxIndex; i++)
         {
             if (i == -1)
@@ -86,6 +98,7 @@ public partial class Timing
             TimingPoint timingPoint = TimingPoints[i];
             TimingPoints[i].TimeSignature = timeSignature;
         }
+        IsBatchOperationInProgress = false;
 
         if (TimingPoints.Find(point => point.MeasurePosition == measurePosition) == null && TimingPoints.Count > 0)
             AddTimingPoint(measurePosition, MeasurePositionToSampleTime(measurePosition));
@@ -97,12 +110,12 @@ public partial class Timing
         GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
     }
 
-    public void CorrectTimeSignature(int[] timeSignature, out int[] correctedTimeSignature)
+    public static void CorrectTimeSignature(int[] timeSignature, out int[] correctedTimeSignature)
     {
         if (timeSignature[1] is not 4 and not 8 and not 16)
             timeSignature[1] = 4;
         if (timeSignature[0] == 0)
-            timeSignature[0] = 4;
+            timeSignature[0] = 1;
         else if (timeSignature[0] < 0)
             timeSignature[0] = -timeSignature[0];
         correctedTimeSignature = timeSignature;
