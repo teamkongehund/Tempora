@@ -11,7 +11,9 @@
 //
 // Full license text is available at: https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
 
+using System.Collections.Generic;
 using Godot;
+using Tempora.Classes.Audio;
 using Tempora.Classes.Utility;
 
 namespace Tempora.Classes.TimingClasses;
@@ -35,6 +37,11 @@ public partial class Timing
 
         int index = TimingPoints.IndexOf(timingPoint);
 
+        bool isIncompatibleWithPrevious = index > 0 && TimingPoints[index - 1].Offset > timingPoint.Offset;
+        bool isIncompatibleWithNext = index < TimingPoints.Count - 1 && TimingPoints[index + 1].Offset < timingPoint.Offset;
+        if (isIncompatibleWithPrevious || isIncompatibleWithNext)
+            throw new System.Exception("Timing point was incompatible with neighboring timing points.");
+
         if (index >= 1) // Update previous timing point
         {
             UpdateMPS(TimingPoints[index - 1]);
@@ -42,15 +49,6 @@ public partial class Timing
             if (!IsInstantiating)
                 GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointCountChanged));
         }
-        //if (index < TimingPoints.Count - 1)
-        //{
-        //    timingPoint.MeasuresPerSecond_Set(this);
-
-        //    if (!IsInstantiating)
-        //        Signals.Instance.EmitEvent(Signals.Events.TimingChanged);
-        //}
-
-        //ActionsHandler.Instance.AddTimingMemento();
     }
 
     /// <summary>
