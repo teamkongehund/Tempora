@@ -150,7 +150,7 @@ public partial class Timing : Node, IMementoOriginator
     /// <returns></returns>
     /// <exception cref="NullReferenceException"></exception>
     /// <exception cref="Exception"></exception>
-    public float MeasurePositionToSampleTime(float measurePosition)
+    public float MeasurePositionToOffset(float measurePosition)
     {
         TimingPoint? timingPoint = GetOperatingTimingPoint_ByMeasurePosition(measurePosition);
         if (timingPoint == null)

@@ -62,7 +62,7 @@ public partial class Timing
     public void AddTimingPoint(float measurePosition)
     {
         var timingPoint = new TimingPoint(measurePosition);
-        timingPoint.Offset = MeasurePositionToSampleTime(measurePosition);
+        timingPoint.Offset = MeasurePositionToOffset(measurePosition);
         TimingPoints.Add(timingPoint);
         SubscribeToEvents(timingPoint);
         TimingPoints.Sort();

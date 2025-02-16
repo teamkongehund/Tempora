@@ -146,7 +146,7 @@ public partial class AudioDisplayPanel : Control
 
         Vector2 mousePos = mouseEvent.Position;
         float measurePosition = GetMouseMeasurePosition(mousePos);
-        float sampletime = Timing.Instance.MeasurePositionToSampleTime(measurePosition);
+        float sampletime = Timing.Instance.MeasurePositionToOffset(measurePosition);
 
         TimingPoint? nearestTimingPoint = Timing.Instance.GetNearestTimingPoint(measurePosition);
         Context.Instance.TimingPointNearestCursor = nearestTimingPoint;
@@ -360,8 +360,8 @@ public partial class AudioDisplayPanel : Control
 
         float margin = Settings.Instance.MeasureOverlap;
 
-        float timeWherePanelStarts = Timing.Instance.MeasurePositionToSampleTime(ActualMeasurePositionStartForPanel);
-        float timeWherePanelEnds = Timing.Instance.MeasurePositionToSampleTime(ActualMeasurePositionEndForPanel);
+        float timeWherePanelStarts = Timing.Instance.MeasurePositionToOffset(ActualMeasurePositionStartForPanel);
+        float timeWherePanelEnds = Timing.Instance.MeasurePositionToOffset(ActualMeasurePositionEndForPanel);
 
         TimingPoint? previousTimingPoint = Timing.Instance.GetOperatingTimingPoint_ByMeasurePosition(ActualMeasurePositionStartForPanel);
 
@@ -641,7 +641,7 @@ public partial class AudioDisplayPanel : Control
 
         PreviewLine.Position = new Vector2(MeasurePositionToXPosition(measurePosition), 0);
 
-        float time = Timing.Instance.MeasurePositionToSampleTime(measurePosition);
+        float time = Timing.Instance.MeasurePositionToOffset(measurePosition);
         var musicTime = TimeSpan.FromSeconds(time);
         PreviewLine.TimeLabel.Text = (time < 0 ? "-" : "") + musicTime.ToString(@"mm\:ss\:fff");
     }

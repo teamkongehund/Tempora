@@ -101,7 +101,7 @@ public partial class Timing
         IsBatchOperationInProgress = false;
 
         if (TimingPoints.Find(point => point.MeasurePosition == measurePosition) == null && TimingPoints.Count > 0)
-            AddTimingPoint(measurePosition, MeasurePositionToSampleTime(measurePosition));
+            AddTimingPoint(measurePosition, MeasurePositionToOffset(measurePosition));
 
         ShiftTimingPointsUponTimeSignatureChange(oldTiming, timeSignaturePoint);
 
