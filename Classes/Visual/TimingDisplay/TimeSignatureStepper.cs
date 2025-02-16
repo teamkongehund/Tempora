@@ -39,6 +39,7 @@ public partial class TimeSignatureStepper : HBoxContainer
         DenominatorStepper.ValueIncremented += OnDenominatorIncremented;
         DenominatorStepper.ValueDecremented += OnDenominatorDecremented;
         NumeratorStepper.MouseExitedStepper += OnMouseExitedStepper;
+        DenominatorStepper.MouseExitedStepper += OnMouseExitedStepper;
     }
 
     public void UpdateLabelColor(Color color)

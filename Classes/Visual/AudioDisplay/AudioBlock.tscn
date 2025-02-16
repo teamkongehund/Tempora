@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://Classes/Visual/AudioDisplay/AudioBlock.cs" id="1_4j3p3"]
 [ext_resource type="Script" path="res://Classes/Visual/TimingDisplay/TimeSignatureLineEdit.cs" id="2_agy5w"]
 [ext_resource type="PackedScene" uid="uid://xf0kngdc5d36" path="res://Classes/Visual/AudioDisplay/AudioDisplayPanel.tscn" id="2_sidll"]
-[ext_resource type="PackedScene" uid="uid://bvygjbp5egfcl" path="res://Classes/Visual/TimingDisplay/TimeSignatureStepper.tscn" id="3_hq75k"]
+[ext_resource type="PackedScene" path="res://Classes/Visual/TimingDisplay/TimeSignatureStepper.tscn" id="3_4xoi4"]
 
 [node name="AudioBlock" type="Control" node_paths=PackedStringArray("AudioDisplayPanel", "measureLabel", "timeSignatureLineEdit", "timeSignatureStepper")]
 layout_mode = 3
@@ -17,7 +17,7 @@ script = ExtResource("1_4j3p3")
 AudioDisplayPanel = NodePath("BlockHBoxContainer/AudioDisplayMargins/AudioDisplayPanel")
 measureLabel = NodePath("BlockHBoxContainer/LabelHBoxContainer/MeasureLabel")
 timeSignatureLineEdit = NodePath("BlockHBoxContainer/LabelHBoxContainer/TimeSignatureLineEdit")
-timeSignatureStepper = NodePath("BlockHBoxContainer/LabelHBoxContainer/TimeSignatureControl")
+timeSignatureStepper = NodePath("BlockHBoxContainer/LabelHBoxContainer/TimeSignatureStepper")
 
 [node name="BlockHBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1
@@ -54,7 +54,7 @@ theme_override_font_sizes/font_size = 12
 alignment = 2
 script = ExtResource("2_agy5w")
 
-[node name="TimeSignatureControl" parent="BlockHBoxContainer/LabelHBoxContainer" instance=ExtResource("3_hq75k")]
+[node name="TimeSignatureStepper" parent="BlockHBoxContainer/LabelHBoxContainer" instance=ExtResource("3_4xoi4")]
 layout_mode = 2
 
 [node name="AudioDisplayMargins" type="MarginContainer" parent="BlockHBoxContainer"]
@@ -64,5 +64,3 @@ size_flags_horizontal = 3
 [node name="AudioDisplayPanel" parent="BlockHBoxContainer/AudioDisplayMargins" instance=ExtResource("2_sidll")]
 layout_mode = 2
 size_flags_horizontal = 3
-
-[editable path="BlockHBoxContainer/LabelHBoxContainer/TimeSignatureControl"]
