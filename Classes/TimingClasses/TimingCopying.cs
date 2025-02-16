@@ -24,13 +24,13 @@ public partial class Timing
     {
         var newTiming = CopyTiming(timing);
         if (Settings.Instance.RemovePointsThatChangeNothing)
-            RemovePointsThatChangeNothing(newTiming, out newTiming);
+            newTiming.RemovePointsThatChangeNothing();
         if (Settings.Instance.AddExtraPointsOnDownbeats)
-            AddExtraPointsOnDownbeats(newTiming, out newTiming);
+            newTiming.AddExtraPointsOnDownbeats();
         if (Settings.Instance.AddExtraPointsOnQuarterNotes)
-            AddExtraPointsOnQuarterNotes(newTiming, out newTiming);
+            newTiming.AddExtraPointsOnQuarterNotes();
         if (Settings.Instance.MeasureResetsOnUnsupportedTimeSignatures)
-            AddExtraPointsOnUnsupportedSignatures(newTiming, out newTiming, audioFile);
+            newTiming.AddExtraPointsOnUnsupportedSignatures(audioFile);
         return newTiming;
     }
 
@@ -38,119 +38,9 @@ public partial class Timing
     {
         var newTiming = CopyTiming(timing);
         if (Settings.Instance.RemovePointsThatChangeNothing)
-            RemovePointsThatChangeNothing(newTiming, out newTiming);
+            newTiming.RemovePointsThatChangeNothing();
         
         return newTiming;
-    }
-
-    private static void AddExtraPointsOnDownbeats(Timing timing, out Timing newTiming)
-    {
-        newTiming = timing;
-        var downbeatPositions = new List<int>();
-        foreach (TimingPoint timingPoint in newTiming.TimingPoints)
-        {
-            if (timingPoint?.MeasurePosition == null)
-                break;
-            if (timingPoint.MeasurePosition % 1 == 0)
-                continue; // downbeat point on next is unnecessary
-            TimingPoint? nextTimingPoint = newTiming.GetNextTimingPoint(timingPoint);
-            bool isNextPointInSameMeasure = nextTimingPoint?.MeasurePosition != null 
-                && (int)nextTimingPoint.MeasurePosition == (int)timingPoint.MeasurePosition;
-            bool isThereAPointOnNextDownbeat = nextTimingPoint?.MeasurePosition != null
-                && nextTimingPoint.MeasurePosition == (int)timingPoint.MeasurePosition + 1;
-            if (isNextPointInSameMeasure || isThereAPointOnNextDownbeat)
-                continue;
-            downbeatPositions.Add((int)timingPoint.MeasurePosition + 1);
-        }
-        foreach (int downbeat in downbeatPositions)
-        {
-            //float time = newTiming.MeasurePositionToTime(downbeat);
-            //newTiming.AddTimingPoint(downbeat, time);
-            newTiming.AddTimingPoint(downbeat);
-        }
-    }
-
-    private static void AddExtraPointsOnQuarterNotes(Timing timing, out Timing newTiming)
-    {
-        newTiming = timing;
-        // Add extra quarter-note timing points
-        var quaterNotePositions = new List<float>();
-        foreach (TimingPoint timingPoint in newTiming.TimingPoints)
-        {
-            if (timingPoint == null)
-                break;
-            if (timingPoint.MeasurePosition == null)
-                break;
-
-            float beatLength = newTiming.GetDistancePerBeat((float)timingPoint.MeasurePosition);
-            float beatPosition = newTiming.GetOperatingBeatPosition((float)timingPoint.MeasurePosition);
-            TimingPoint? nextTimingPoint = newTiming.GetNextTimingPoint(timingPoint);
-            float? nextPointPosition = nextTimingPoint?.MeasurePosition;
-
-            //float epsilon = 0.00001f;
-            //bool isOnQuarterNote = (timingPoint.MeasurePosition % beatLength < epsilon || (beatLength - timingPoint.MeasurePosition % beatLength) < epsilon);
-
-            bool isOnQuarterNote = IsPositionOnDivisor((float)timingPoint.MeasurePosition, timingPoint.TimeSignature, 4);
-
-            bool nextPointIsOnOrBeforeNextQuarterNote = (nextTimingPoint != null
-                && nextPointPosition <= beatPosition + beatLength);
-            if (isOnQuarterNote || nextPointIsOnOrBeforeNextQuarterNote)
-                continue;
-
-            quaterNotePositions.Add(beatPosition + beatLength);
-        }
-        foreach (float quarterNote in quaterNotePositions)
-        {
-            //float time = newTiming.MeasurePositionToTime(quarterNote);
-            //newTiming.AddTimingPoint(quarterNote, time);
-            newTiming.AddTimingPoint(quarterNote);
-        }
-    }
-
-    private static void AddExtraPointsOnUnsupportedSignatures(Timing timing, out Timing newTiming, AudioFile audioFile)
-    {
-        newTiming = timing;
-
-        // Maybe add exceptions later like 4/8 and 8/8 
-
-        int firstMeasure = (int)newTiming.SampleTimeToMeasurePosition(0f);
-        int lastMeasure = (int)newTiming.SampleTimeToMeasurePosition((float)audioFile.Stream.GetLength());
-
-        for (int measure = firstMeasure;  measure < lastMeasure + 1; measure++)
-        {
-            int[] timeSignature = newTiming.GetTimeSignature(measure);
-            if (timeSignature[1] == 4) continue;
-
-            TimingPoint? operatingPoint = newTiming.GetOperatingTimingPoint_ByMeasurePosition(measure);
-
-            if (operatingPoint?.MeasurePosition == measure)
-                continue;
-
-            newTiming.AddTimingPoint(measure);
-        }
-    }
-
-    private static void RemovePointsThatChangeNothing(Timing timing, out Timing newTiming)
-    {
-        newTiming = timing;
-
-        var pointsToDelete = new List<TimingPoint>();
-
-        foreach(TimingPoint timingPoint in newTiming.TimingPoints)
-        {
-            var previous = newTiming.GetPreviousTimingPoint(timingPoint);
-            bool mpsIsSame = previous?.MeasuresPerSecond == timingPoint.MeasuresPerSecond;
-            bool ts0IsSame = previous?.TimeSignature[0] == timingPoint.TimeSignature[0];
-            bool ts1IsSame = previous?.TimeSignature[1] == timingPoint.TimeSignature[1];
-
-            if (mpsIsSame && ts0IsSame && ts1IsSame)
-                pointsToDelete.Add(timingPoint);
-        }
-
-        foreach(TimingPoint timingPoint in pointsToDelete)
-        {
-            newTiming.DeleteTimingPoint(timingPoint);
-        }
     }
 
     public static Timing CopyTiming(Timing timing)

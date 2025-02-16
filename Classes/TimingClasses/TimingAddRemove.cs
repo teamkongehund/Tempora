@@ -199,4 +199,106 @@ public partial class Timing
     {
         DeleteTimingPoints(0, TimingPoints.Count);
     }
+
+    private void RemovePointsThatChangeNothing()
+    {
+        var pointsToDelete = new List<TimingPoint>();
+
+        foreach (TimingPoint timingPoint in TimingPoints)
+        {
+            var previous = GetPreviousTimingPoint(timingPoint);
+            bool mpsIsSame = previous?.MeasuresPerSecond == timingPoint.MeasuresPerSecond;
+            bool ts0IsSame = previous?.TimeSignature[0] == timingPoint.TimeSignature[0];
+            bool ts1IsSame = previous?.TimeSignature[1] == timingPoint.TimeSignature[1];
+
+            if (mpsIsSame && ts0IsSame && ts1IsSame)
+                pointsToDelete.Add(timingPoint);
+        }
+
+        foreach (TimingPoint timingPoint in pointsToDelete)
+        {
+            DeleteTimingPoint(timingPoint);
+        }
+    }
+
+    private void AddExtraPointsOnDownbeats()
+    {
+        var downbeatPositions = new List<int>();
+        foreach (TimingPoint timingPoint in TimingPoints)
+        {
+            if (timingPoint?.MeasurePosition == null)
+                break;
+            if (timingPoint.MeasurePosition % 1 == 0)
+                continue; // downbeat point on next is unnecessary
+            TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
+            bool isNextPointInSameMeasure = nextTimingPoint?.MeasurePosition != null
+                && (int)nextTimingPoint.MeasurePosition == (int)timingPoint.MeasurePosition;
+            bool isThereAPointOnNextDownbeat = nextTimingPoint?.MeasurePosition != null
+                && nextTimingPoint.MeasurePosition == (int)timingPoint.MeasurePosition + 1;
+            if (isNextPointInSameMeasure || isThereAPointOnNextDownbeat)
+                continue;
+            downbeatPositions.Add((int)timingPoint.MeasurePosition + 1);
+        }
+        foreach (int downbeat in downbeatPositions)
+        {
+            //float time = newTiming.MeasurePositionToTime(downbeat);
+            //newTiming.AddTimingPoint(downbeat, time);
+            AddTimingPoint(downbeat);
+        }
+    }
+    private void AddExtraPointsOnQuarterNotes()
+    {
+        var quaterNotePositions = new List<float>();
+        foreach (TimingPoint timingPoint in TimingPoints)
+        {
+            if (timingPoint == null)
+                break;
+            if (timingPoint.MeasurePosition == null)
+                break;
+
+            float beatLength = GetDistancePerBeat((float)timingPoint.MeasurePosition);
+            float beatPosition = GetOperatingBeatPosition((float)timingPoint.MeasurePosition);
+            TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
+            float? nextPointPosition = nextTimingPoint?.MeasurePosition;
+
+            //float epsilon = 0.00001f;
+            //bool isOnQuarterNote = (timingPoint.MeasurePosition % beatLength < epsilon || (beatLength - timingPoint.MeasurePosition % beatLength) < epsilon);
+
+            bool isOnQuarterNote = IsPositionOnDivisor((float)timingPoint.MeasurePosition, timingPoint.TimeSignature, 4);
+
+            bool nextPointIsOnOrBeforeNextQuarterNote = (nextTimingPoint != null
+                && nextPointPosition <= beatPosition + beatLength);
+            if (isOnQuarterNote || nextPointIsOnOrBeforeNextQuarterNote)
+                continue;
+
+            quaterNotePositions.Add(beatPosition + beatLength);
+        }
+        foreach (float quarterNote in quaterNotePositions)
+        {
+            //float time = newTiming.MeasurePositionToTime(quarterNote);
+            //newTiming.AddTimingPoint(quarterNote, time);
+            AddTimingPoint(quarterNote);
+        }
+    }
+
+    private void AddExtraPointsOnUnsupportedSignatures(AudioFile audioFile)
+    {
+        // Maybe add exceptions later like 4/8 and 8/8 
+
+        int firstMeasure = (int)SampleTimeToMeasurePosition(0f);
+        int lastMeasure = (int)SampleTimeToMeasurePosition((float)audioFile.Stream.GetLength());
+
+        for (int measure = firstMeasure; measure < lastMeasure + 1; measure++)
+        {
+            int[] timeSignature = GetTimeSignature(measure);
+            if (timeSignature[1] == 4) continue;
+
+            TimingPoint? operatingPoint = GetOperatingTimingPoint_ByMeasurePosition(measure);
+
+            if (operatingPoint?.MeasurePosition == measure)
+                continue;
+
+            AddTimingPoint(measure);
+        }
+    }
 }
