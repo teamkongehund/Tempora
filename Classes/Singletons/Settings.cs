@@ -165,7 +165,7 @@ public partial class Settings : Node
             SaveSettings();
         }
     }
-    public bool MoveSubsequentTimingPointsWhenChangingTimeSignature
+    public bool PreserveBPMWhenChangingTimeSignature
     {
         get => moveSubsequentTimingPointsWhenChangingTimeSignature;
         set
@@ -369,7 +369,7 @@ public partial class Settings : Node
                     break;
                 case var value when value == settingStrings[Setting.MoveSubsequentTimingPointsWhenChangingTimeSignature]:
                     _ = bool.TryParse(lineSplit[1], out parsedBool);
-                    MoveSubsequentTimingPointsWhenChangingTimeSignature = parsedBool;
+                    PreserveBPMWhenChangingTimeSignature = parsedBool;
                     break;
                 case var value when value == settingStrings[Setting.AutoScroll]:
                     _ = bool.TryParse(lineSplit[1], out parsedBool);
@@ -438,7 +438,7 @@ public partial class Settings : Node
         settingsFile += GetSettingsFileLine(settingStrings[Setting.DownbeatVisualOffset], DownbeatPositionOffset.ToString());
         settingsFile += GetSettingsFileLine(settingStrings[Setting.MetronomeFollowsGrid], MetronomeFollowsGrid.ToString());
         settingsFile += GetSettingsFileLine(settingStrings[Setting.RoundBPM], RoundBPM.ToString());
-        settingsFile += GetSettingsFileLine(settingStrings[Setting.MoveSubsequentTimingPointsWhenChangingTimeSignature], MoveSubsequentTimingPointsWhenChangingTimeSignature.ToString());
+        settingsFile += GetSettingsFileLine(settingStrings[Setting.MoveSubsequentTimingPointsWhenChangingTimeSignature], PreserveBPMWhenChangingTimeSignature.ToString());
         settingsFile += GetSettingsFileLine(settingStrings[Setting.AutoScroll], AutoScrollWhenAddingTimingPoints.ToString());
         settingsFile += GetSettingsFileLine(settingStrings[Setting.SeekPlaybackOnTimingPointChanges], SeekPlaybackOnTimingPointChanges.ToString());
         settingsFile += GetSettingsFileLine(settingStrings[Setting.ExportOffsetMs], ExportOffsetMs.ToString());
