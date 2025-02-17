@@ -256,21 +256,30 @@ public partial class Timing
         int measure = (int) measurePositionFrom;
         int iteration = 0;
 
-        while (isAdding ? beatsLeftToAdd > 0 : beatsLeftToAdd < 0) 
+        // Iterate measures
+        while (isAdding ? beatsLeftToAdd > 0 : beatsLeftToAdd < 0)
         {
-            float distancePerBeat = timing.GetDistancePerBeat(measure);
-            int nextMeasure = (measure = isAdding ? measure + 1 : measure - 1);
-            float distanceToNextMeasure = nextMeasure - currentMeasurePosition;
-            float beatsToNextPosition = distanceToNextMeasure / distancePerBeat;
+            bool usePreviousMeasure = !isAdding && (int)currentMeasurePosition == currentMeasurePosition;
 
-            if (Math.Abs(beatsLeftToAdd) <= Math.Abs(beatsToNextPosition))
+            float signedDistanceToNextDownbeat = isAdding 
+                ? (int)(currentMeasurePosition + 1) - currentMeasurePosition
+                : usePreviousMeasure
+                ? -1
+                : -(currentMeasurePosition - (int)currentMeasurePosition);
+
+            var distancePerBeat = timing.GetDistancePerBeat(currentMeasurePosition - (usePreviousMeasure ? 1 : 0));
+            var potentialBeatsToAdd = signedDistanceToNextDownbeat / distancePerBeat;
+
+            if (MathF.Abs(potentialBeatsToAdd) < MathF.Abs(beatsLeftToAdd))
+            {
+                currentMeasurePosition += potentialBeatsToAdd * distancePerBeat;
+                beatsLeftToAdd -= potentialBeatsToAdd;
+            }
+            else
             {
                 currentMeasurePosition += beatsLeftToAdd * distancePerBeat;
                 break;
             }
-
-            beatsLeftToAdd -= beatsToNextPosition;
-            currentMeasurePosition += distanceToNextMeasure;
 
             iteration++;
             if (iteration > 10000)
