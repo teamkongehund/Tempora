@@ -125,15 +125,15 @@ public partial class Timing
     /// Takes all TimingPoints after the measure of the time signature change 
     /// and alter their music positions such that the number of beats to them is kept the same.
     /// </summary>
-    /// <param name="timeSignaturePoint"></param>
+    /// <param name="changedTimeSignaturePoint"></param>
     /// <param name="oldTiming">Timing instance before the change occured</param>
-    private void ShiftTimingPointsUponTimeSignatureChange(Timing oldTiming, TimeSignaturePoint timeSignaturePoint)
+    private void ShiftTimingPointsUponTimeSignatureChange(Timing oldTiming, TimeSignaturePoint changedTimeSignaturePoint)
     {
         if (!Settings.Instance.MoveSubsequentTimingPointsWhenChangingTimeSignature)
             return;
 
-        ArgumentNullException.ThrowIfNull(timeSignaturePoint);
-        TimingPoint? operatingTimingPoint = GetOperatingTimingPoint_ByMeasurePosition(timeSignaturePoint.Measure);
+        ArgumentNullException.ThrowIfNull(changedTimeSignaturePoint);
+        TimingPoint? operatingTimingPoint = GetOperatingTimingPoint_ByMeasurePosition(changedTimeSignaturePoint.Measure);
         if (operatingTimingPoint == null)
             return;
 
@@ -149,10 +149,10 @@ public partial class Timing
             // Get number of beats from time signature change to timingPoint's old measurePosition using previous timing
             // This should be kept constant
             float beatDifference_OldTiming
-                = GetBeatsBetweenMeasurePositions(oldTiming, timeSignaturePoint.Measure, (float)timingPoint.MeasurePosition);
+                = GetBeatsBetweenMeasurePositions(oldTiming, changedTimeSignaturePoint.Measure, (float)timingPoint.MeasurePosition);
 
             float beatDifference_NewTiming
-                = GetBeatsBetweenMeasurePositions(this, timeSignaturePoint.Measure, (float)timingPoint.MeasurePosition);
+                = GetBeatsBetweenMeasurePositions(this, changedTimeSignaturePoint.Measure, (float)timingPoint.MeasurePosition);
 
             float beatsToAdd = beatDifference_OldTiming - beatDifference_NewTiming;
 
@@ -163,6 +163,33 @@ public partial class Timing
         }
 
         BatchChangeMeasurePosition(opIndex, TimingPoints.Count - 1, getNewMeasurePosition);
+
+        int timeSignaturePointIndex = TimeSignaturePoints.FindIndex(point => point.Measure > changedTimeSignaturePoint.Measure);
+
+        if (timeSignaturePointIndex != -1) // Ensure subsequent time signature changes have timing points on downbeats.
+        {
+            IsBatchOperationInProgress = true;
+
+            for (int i = timeSignaturePointIndex; i < TimeSignaturePoints.Count; i++)
+            {
+                TimeSignaturePoint timeSignaturePoint = TimeSignaturePoints[i];
+
+                TimingPoint? operatingPoint = GetOperatingTimingPoint_ByMeasurePosition(timeSignaturePoint.Measure);
+                if (operatingPoint?.MeasurePosition == null || MathF.Abs((float)operatingPoint.MeasurePosition - timeSignaturePoint.Measure) < 0.001)
+                    continue;
+
+                var operatingPointOldPosition = oldTiming.OffsetToMeasurePosition(operatingPoint.Offset);
+                var beatsSinceOperatingPoint = GetBeatsBetweenMeasurePositions(this, (float)operatingPoint.MeasurePosition, timeSignaturePoint.Measure);
+                var downbeatPositionInOldTiming = GetMeasurePositionAfterAddingBeats(oldTiming, operatingPointOldPosition, beatsSinceOperatingPoint);
+                var downbeatOffset = oldTiming.MeasurePositionToOffset(downbeatPositionInOldTiming);
+
+                AddTimingPoint(timeSignaturePoint.Measure, downbeatOffset);
+            }
+
+            IsBatchOperationInProgress = false;
+        }
+
+        RemovePointsThatChangeNothing();
     }
 
     /// <summary>
@@ -198,6 +225,7 @@ public partial class Timing
                 throw new NullReferenceException(nameof(timingPoint));
 
             timingPoint.MeasurePosition = getNewMeasurePosition(timingPoint);
+            timingPoint.TimeSignature = GetTimeSignature((float)timingPoint.MeasurePosition); // Necessary because batch operation blocks automatic calculation
 
             if (ShouldCancelBatchOperation)
             {

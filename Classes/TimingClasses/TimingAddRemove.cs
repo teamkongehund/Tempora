@@ -11,6 +11,7 @@
 //
 // Full license text is available at: https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
 
+using System;
 using System.Collections.Generic;
 using Godot;
 using Tempora.Classes.Audio;
@@ -20,7 +21,6 @@ namespace Tempora.Classes.TimingClasses;
 
 public partial class Timing
 {
-   
     /// <summary>
     /// Add a timing point. Primary constructor for loading timing points with a file.
     /// </summary>
@@ -32,6 +32,8 @@ public partial class Timing
         TimingPoints.Add(timingPoint);
         SubscribeToEvents(timingPoint);
         TimingPoints.Sort();
+        float? mps = CalculateMPSBasedOnAdjacentPoints(timingPoint);
+        timingPoint.MeasuresPerSecond = mps == null ? timingPoint.MeasuresPerSecond : (float)mps;
 
         timingPoint.IsInstantiating = false;
 
@@ -45,10 +47,13 @@ public partial class Timing
         if (index >= 1) // Update previous timing point
         {
             UpdateMPS(TimingPoints[index - 1]);
-
-            if (!IsInstantiating)
-                GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointCountChanged));
         }
+        if (index < TimingPoints.Count - 1) // Update next timing point
+        {
+            UpdateMPS(TimingPoints[index + 1]);
+        }
+        if (!IsInstantiating)
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointCountChanged));
     }
 
     /// <summary>
@@ -205,7 +210,9 @@ public partial class Timing
         foreach (TimingPoint timingPoint in TimingPoints)
         {
             var previous = GetPreviousTimingPoint(timingPoint);
-            bool mpsIsSame = previous?.MeasuresPerSecond == timingPoint.MeasuresPerSecond;
+            if (previous == null)
+                continue;
+            bool mpsIsSame = MathF.Abs(previous.MeasuresPerSecond - (float)timingPoint.MeasuresPerSecond) < 0.0001;
             bool ts0IsSame = previous?.TimeSignature[0] == timingPoint.TimeSignature[0];
             bool ts1IsSame = previous?.TimeSignature[1] == timingPoint.TimeSignature[1];
 
