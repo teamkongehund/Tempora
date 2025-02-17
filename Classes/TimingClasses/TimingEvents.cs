@@ -114,8 +114,6 @@ public partial class Timing
 
     private void UpdateAllDependentProperties(TimingPoint timingPoint, TimingPoint.PropertyType propertyType, object? value)
     {
-        TimingPoint? previousTimingPoint = GetPreviousTimingPoint(timingPoint);
-        TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
         switch (propertyType)
         {
             case TimingPoint.PropertyType.Offset:
@@ -148,7 +146,8 @@ public partial class Timing
         UpdateAdjacentTempo(timingPoint);
     }
 
-    private void UpdateMPS(TimingPoint timingPoint) => timingPoint.MeasuresPerSecond = CalculateMPSBasedOnAdjacentPoints(timingPoint) ?? timingPoint.MeasuresPerSecond;
+    private void UpdateMPS(TimingPoint timingPoint) => timingPoint.MeasuresPerSecond = CalculateMPSBasedOnAdjacentPoints(timingPoint)
+        ?? (Settings.Instance.PreserveBPMWhenChangingTimeSignature ? timingPoint.BpmToMps(timingPoint.Bpm) : timingPoint.MeasuresPerSecond);
 
     /// <summary>
     /// When the <see cref="Timing"/> decides that changes to a timing point have been finalized, invoke an event that other classes can respond to.

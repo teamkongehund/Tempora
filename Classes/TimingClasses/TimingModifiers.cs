@@ -42,8 +42,7 @@ public partial class Timing
         if (GetTimeSignature(measurePosition).SequenceEqual(timeSignature))
             return;
 
-        // epsilon necessary due to time sig moving points. To-do: Better long-term fix is to snap to best possible gridline upon time sig changes.
-        int foundTsPointIndex = TimeSignaturePoints.FindIndex(point => MathF.Abs(point.Measure - measurePosition) < 0.005); 
+        int foundTsPointIndex = TimeSignaturePoints.FindIndex(point => point.Measure == measurePosition); 
 
         Timing oldTiming = CopyTiming(this);
 
@@ -129,7 +128,7 @@ public partial class Timing
     /// <param name="oldTiming">Timing instance before the change occured</param>
     private void ShiftTimingPointsUponTimeSignatureChange(Timing oldTiming, TimeSignaturePoint changedTimeSignaturePoint)
     {
-        if (!Settings.Instance.MoveSubsequentTimingPointsWhenChangingTimeSignature)
+        if (!Settings.Instance.PreserveBPMWhenChangingTimeSignature)
             return;
 
         ArgumentNullException.ThrowIfNull(changedTimeSignaturePoint);
@@ -187,6 +186,11 @@ public partial class Timing
             }
 
             IsBatchOperationInProgress = false;
+        }
+
+        if (opIndex == 0 && TimingPoints.Count == 1)
+        {
+            //operatingTimingPoint.MeasuresPerSecond = operatingTimingPoint.BpmToMps(operatingTimingPoint.Bpm);
         }
 
         RemovePointsThatChangeNothing();
