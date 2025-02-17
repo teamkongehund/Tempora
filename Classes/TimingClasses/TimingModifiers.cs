@@ -67,16 +67,13 @@ public partial class Timing
 
         bool isEqualToPrevious = foundTsPointIndex > 0 && TimeSignaturePoints[foundTsPointIndex - 1].TimeSignature.SequenceEqual(timeSignature);
         bool isFirstAndDefault = foundTsPointIndex == 0 && timeSignaturePoint.TimeSignature.SequenceEqual([4, 4]);
-
-        if (isEqualToPrevious || isFirstAndDefault)
-        {
-            TimeSignaturePoints.Remove(timeSignaturePoint);
-        }
-
         bool isEqualToNext = foundTsPointIndex<TimeSignaturePoints.Count -1 && TimeSignaturePoints[foundTsPointIndex + 1].TimeSignature.SequenceEqual(timeSignature);
        
-        if (isEqualToNext) // To-do: Fix this. Try having a 5/4 a 6/4 and 5/4, then change the 6/4 to 5/4. Doesn't work as expected. Maybe this one before the other?
+        if (isEqualToNext)
             TimeSignaturePoints.Remove(TimeSignaturePoints[foundTsPointIndex + 1]);
+
+        if (isEqualToPrevious || isFirstAndDefault)
+            TimeSignaturePoints.Remove(timeSignaturePoint);
 
         // Go through all timing points until the next TimeSignaturePoint and update TimeSignature
         int maxIndex = TimingPoints.Count - 1;
