@@ -397,8 +397,8 @@ public partial class AudioDisplayPanel : Control
 
     private void AddWaveformSegment(float waveSegmentStartTime, float waveSegmentEndTime)
     {
-        float measurePositionStart = Timing.Instance.SampleTimeToMeasurePosition(waveSegmentStartTime);
-        float measurePositionEnd = Timing.Instance.SampleTimeToMeasurePosition(waveSegmentEndTime);
+        float measurePositionStart = Timing.Instance.OffsetToMeasurePosition(waveSegmentStartTime);
+        float measurePositionEnd = Timing.Instance.OffsetToMeasurePosition(waveSegmentEndTime);
 
         float margin = Settings.Instance.MeasureOverlap;
         TimingPoint? heldTimingPoint = Context.Instance.HeldTimingPoint;

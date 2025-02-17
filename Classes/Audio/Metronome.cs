@@ -176,7 +176,7 @@ public partial class Metronome : Node
     private void UpdateTriggerTime(double currentPlaybackTime)
     {
         float currentSampleTime = Project.Instance.AudioFile.PlaybackTimeToSampleTime((float)currentPlaybackTime);
-        float measurePosition = Timing.Instance.SampleTimeToMeasurePosition((float)currentSampleTime);
+        float measurePosition = Timing.Instance.OffsetToMeasurePosition((float)currentSampleTime);
         triggerPosition = GetTriggerPosition(measurePosition);
         var triggerSampleTime = Timing.Instance.MeasurePositionToOffset(triggerPosition);
         triggerTime = triggerSampleTime;

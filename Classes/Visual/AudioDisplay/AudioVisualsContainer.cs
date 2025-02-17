@@ -42,8 +42,8 @@ public partial class AudioVisualsContainer : VBoxContainer
     public List<AudioBlock> AudioBlocks = [];
 
     public int FirstTopMeasure => Timing.Instance.TimeSignaturePoints.Count > 0
-            ? Math.Min((int)Timing.Instance.SampleTimeToMeasurePosition(0), Timing.Instance.TimeSignaturePoints[0].Measure)
-            : (int)Timing.Instance.SampleTimeToMeasurePosition(0);
+            ? Math.Min((int)Timing.Instance.OffsetToMeasurePosition(0), Timing.Instance.TimeSignaturePoints[0].Measure)
+            : (int)Timing.Instance.OffsetToMeasurePosition(0);
     public int LastTopMeasure => Timing.Instance.GetLastMeasure() - (Settings.Instance.NumberOfRows - 1);
 
     public int NominalMeasurePositionStartForTopBlock
@@ -108,7 +108,7 @@ public partial class AudioVisualsContainer : VBoxContainer
     {
         double playbackTime = MusicPlayer.GetPlaybackTime();
         float sampleTime = Project.Instance.AudioFile.PlaybackTimeToSampleTime((float)playbackTime);
-        float measurePosition = Timing.Instance.SampleTimeToMeasurePosition((float)sampleTime);
+        float measurePosition = Timing.Instance.OffsetToMeasurePosition((float)sampleTime);
         foreach (AudioBlock audioBlock in GetChildren().OfType<AudioBlock>())
         {
             AudioDisplayPanel audioDisplayPanel = audioBlock.AudioDisplayPanel;

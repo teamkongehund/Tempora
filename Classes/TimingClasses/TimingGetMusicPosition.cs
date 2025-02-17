@@ -34,7 +34,7 @@ public partial class Timing
         TimeSignaturePoint? timeSignaturePoint = TimeSignaturePoints.FindLast(point => point.Measure <= measurePosition);
         return timeSignaturePoint == null ? ([4, 4]) : timeSignaturePoint.TimeSignature;
     }
-    public float SampleTimeToMeasurePosition(float time)
+    public float OffsetToMeasurePosition(float time)
     {
         TimingPoint? operatingTimingPoint = GetOperatingTimingPoint_ByTime(time);
 
@@ -197,7 +197,7 @@ public partial class Timing
     public int GetLastMeasure()
     {
         float lengthInSeconds = Project.Instance.AudioFile?.GetAudioLength() ?? 0;
-        float lastMeasure = SampleTimeToMeasurePosition(lengthInSeconds);
+        float lastMeasure = OffsetToMeasurePosition(lengthInSeconds);
         return (int)lastMeasure;
     }
 

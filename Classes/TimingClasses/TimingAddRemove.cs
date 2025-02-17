@@ -107,7 +107,7 @@ public partial class Timing
     /// <param name="time"></param>
     public void AddTimingPoint(float time, out TimingPoint? timingPoint)
     {
-        timingPoint = new TimingPoint(time, GetTimeSignature(SampleTimeToMeasurePosition(time)));
+        timingPoint = new TimingPoint(time, GetTimeSignature(OffsetToMeasurePosition(time)));
         TimingPoints.Add(timingPoint);
         TimingPoints.Sort();
 
@@ -116,7 +116,7 @@ public partial class Timing
         TimingPoint? previousTimingPoint = GetPreviousTimingPoint(timingPoint);
         TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
 
-        timingPoint.MeasurePosition = SampleTimeToMeasurePosition(time);
+        timingPoint.MeasurePosition = OffsetToMeasurePosition(time);
 
         if (timingPoint.MeasurePosition == null
             || previousTimingPoint?.MeasurePosition == timingPoint.MeasurePosition
@@ -283,8 +283,8 @@ public partial class Timing
     {
         // Maybe add exceptions later like 4/8 and 8/8 
 
-        int firstMeasure = (int)SampleTimeToMeasurePosition(0f);
-        int lastMeasure = (int)SampleTimeToMeasurePosition((float)audioFile.Stream.GetLength());
+        int firstMeasure = (int)OffsetToMeasurePosition(0f);
+        int lastMeasure = (int)OffsetToMeasurePosition((float)audioFile.Stream.GetLength());
 
         for (int measure = firstMeasure; measure < lastMeasure + 1; measure++)
         {
