@@ -262,10 +262,9 @@ public partial class Timing
                 float newBpm = (float)newValue!;
                 float calculatedBpm = timingPoint.MpsToBpm((float)calculatedMPS);
 
-                if (Math.Abs(calculatedBpm - newBpm) < 0.0001)
-                    return true;
-
-                return false;
+                return Settings.Instance.RoundBPM 
+                    ? Math.Abs(calculatedBpm - newBpm) < 0.1 
+                    : Math.Abs(calculatedBpm - newBpm) < 0.0001;
 
             case TimingPoint.PropertyType.MeasurePosition:
                 return CanTimingPointGoHere(timingPoint, (float?)newValue, out _);

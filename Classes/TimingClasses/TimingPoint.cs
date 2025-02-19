@@ -155,7 +155,7 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 			float oldValue = bpm;
 			bpm = Settings.Instance.RoundBPM ? (float)Math.Round(value*10, MidpointRounding.ToEven) / 10f : value;
 
-            PropertyChanged?.Invoke(this, new PropertyChangeArgument(PropertyType.Bpm, oldValue, value));
+            PropertyChanged?.Invoke(this, new PropertyChangeArgument(PropertyType.Bpm, oldValue, bpm));
 		}
 	}
 	#endregion
