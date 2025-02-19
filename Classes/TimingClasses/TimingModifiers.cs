@@ -96,7 +96,7 @@ public partial class Timing
         }
         IsBatchOperationInProgress = false;
 
-        if (TimingPoints.Find(point => point.MeasurePosition == measurePosition) == null && TimingPoints.Count > 0)
+        if (TimingPoints.Find(point => AreMeasurePositionsEqual(point.MeasurePosition, measurePosition)) == null && TimingPoints.Count > 0)
             AddTimingPoint(measurePosition, MeasurePositionToOffset(measurePosition));
 
         ShiftTimingPointsUponTimeSignatureChange(oldTiming, timeSignaturePoint);
@@ -171,7 +171,7 @@ public partial class Timing
                 TimeSignaturePoint timeSignaturePoint = TimeSignaturePoints[i];
 
                 TimingPoint? operatingPoint = GetOperatingTimingPoint_ByMeasurePosition(timeSignaturePoint.Measure);
-                if (operatingPoint?.MeasurePosition == null || MathF.Abs((float)operatingPoint.MeasurePosition - timeSignaturePoint.Measure) < 0.001)
+                if (operatingPoint?.MeasurePosition == null || AreMeasurePositionsEqual(operatingPoint.MeasurePosition, timeSignaturePoint.Measure))
                     continue;
 
                 var operatingPointOldPosition = oldTiming.OffsetToMeasurePosition(operatingPoint.Offset);

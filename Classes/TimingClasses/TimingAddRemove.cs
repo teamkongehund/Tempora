@@ -246,10 +246,11 @@ public partial class Timing
             if (timingPoint.MeasurePosition % 1 == 0)
                 continue; // downbeat point on next is unnecessary
             TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
+            
             bool isNextPointInSameMeasure = nextTimingPoint?.MeasurePosition != null
                 && (int)nextTimingPoint.MeasurePosition == (int)timingPoint.MeasurePosition;
             bool isThereAPointOnNextDownbeat = nextTimingPoint?.MeasurePosition != null
-                && nextTimingPoint.MeasurePosition == (int)timingPoint.MeasurePosition + 1;
+                && AreMeasurePositionsEqual(nextTimingPoint.MeasurePosition, (int)timingPoint.MeasurePosition + 1);
             if (isNextPointInSameMeasure || isThereAPointOnNextDownbeat)
                 continue;
             downbeatPositions.Add((int)timingPoint.MeasurePosition + 1);
@@ -310,7 +311,7 @@ public partial class Timing
 
             TimingPoint? operatingPoint = GetOperatingTimingPoint_ByMeasurePosition(measure);
 
-            if (operatingPoint?.MeasurePosition == measure)
+            if (AreMeasurePositionsEqual(operatingPoint?.MeasurePosition, measure))
                 continue;
 
             AddTimingPoint(measure);

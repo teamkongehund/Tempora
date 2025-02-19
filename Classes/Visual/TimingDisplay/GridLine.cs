@@ -54,7 +54,7 @@ public partial class GridLine : Line2D
 
     private void UpdateColor()
     {
-        bool isOnDownbeat = RelativeMeasurePosition == 0;
+        bool isOnDownbeat = Timing.AreMeasurePositionsEqual(RelativeMeasurePosition, 0);
         bool isOn16 = Timing.IsDivisionOnDivisor(Divisor, DivisionIndex, 16);
         bool isOn12 = Timing.IsDivisionOnDivisor(Divisor, DivisionIndex, 12);
 

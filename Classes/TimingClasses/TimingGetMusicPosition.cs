@@ -22,7 +22,7 @@ public partial class Timing
     {
         float? position = point?.MeasurePosition;
         if (position == null) return false;
-        return position == SnapMeasurePosition((float)position);
+        return AreMeasurePositionsEqual(position, SnapMeasurePosition((float)position));
     }
 
     public int[] GetTimeSignature(float measurePosition)
@@ -227,7 +227,7 @@ public partial class Timing
             float beatsToNextPosition = distanceToNextPosition / distancePerBeat;
             sum += beatsToNextPosition;
 
-            if (nextPosition == measurePositionTo)
+            if (AreMeasurePositionsEqual(nextPosition, measurePositionTo))
                 break;
 
             currentMeasurePosition = nextPosition;
@@ -259,7 +259,7 @@ public partial class Timing
         // Iterate measures
         while (isAdding ? beatsLeftToAdd > 0 : beatsLeftToAdd < 0)
         {
-            bool usePreviousMeasure = !isAdding && (int)currentMeasurePosition == currentMeasurePosition;
+            bool usePreviousMeasure = !isAdding && AreMeasurePositionsEqual((int)currentMeasurePosition, currentMeasurePosition);
 
             float signedDistanceToNextDownbeat = isAdding 
                 ? (int)(currentMeasurePosition + 1) - currentMeasurePosition

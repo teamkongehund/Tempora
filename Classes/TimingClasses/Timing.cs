@@ -201,6 +201,16 @@ public partial class Timing : Node, IMementoOriginator
 
         return isDivisible;
     }
+
+    public static bool AreMeasurePositionsEqual(TimingPoint? timingPoint1, TimingPoint? timingPoint2) 
+        => AreMeasurePositionsEqual(timingPoint1?.MeasurePosition, timingPoint2?.MeasurePosition);
+
+    public static bool AreMeasurePositionsEqual(float? measurePosition1, float? measurePosition2)
+    {
+        if (measurePosition1 == null || measurePosition2 == null) 
+            return false;
+        return MathF.Abs((float)measurePosition1 - (float)measurePosition2) < 0.001;
+    }
     #endregion
 
 }

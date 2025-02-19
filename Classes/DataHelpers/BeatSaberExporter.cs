@@ -162,7 +162,7 @@ public partial class BeatSaberExporter : Node
     private static void AddAdditionalTimingPointsIfRequired(Timing timing, float timeOffset)
     {
         TimingPoint? firstTimingPoint = timing.TimingPoints.FirstOrDefault();
-        if (firstTimingPoint != null)
+        if (firstTimingPoint?.MeasurePosition != null)
         {
             if (firstTimingPoint.Offset == 0) return;
 
@@ -178,7 +178,7 @@ public partial class BeatSaberExporter : Node
             else
             {
                 // Add a timing point at beat 0 
-                float beats = Timing.GetBeatsBetweenMeasurePositions(timing, 0, firstTimingPoint.MeasurePosition.Value);
+                float beats = Timing.GetBeatsBetweenMeasurePositions(timing, 0, (float)firstTimingPoint.MeasurePosition);
                 float secondsPerBeat = (firstTimingPoint.Offset + timeOffset) / beats;
                 float bpm = 60f / secondsPerBeat;
 

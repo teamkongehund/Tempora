@@ -76,7 +76,7 @@ public partial class Timing
 
         if (timingPoint.MeasurePosition == null)
             return null;
-        if (nextTimingPoint?.MeasurePosition == timingPoint.MeasurePosition || previousTimingPoint?.MeasurePosition == timingPoint.MeasurePosition)
+        if (AreMeasurePositionsEqual(nextTimingPoint, timingPoint) || AreMeasurePositionsEqual(previousTimingPoint, timingPoint))
             throw new Exception("Neighboring Timing Point has same Music Position.");
 
         if (nextTimingPoint?.MeasurePosition != null)
