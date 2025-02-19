@@ -176,9 +176,9 @@ public partial class Metronome : Node
     private void UpdateTriggerTime(double currentPlaybackTime)
     {
         float currentSampleTime = Project.Instance.AudioFile.PlaybackTimeToSampleTime((float)currentPlaybackTime);
-        float musicPosition = Timing.Instance.SampleTimeToMusicPosition((float)currentSampleTime);
-        triggerPosition = GetTriggerPosition(musicPosition);
-        var triggerSampleTime = Timing.Instance.MusicPositionToSampleTime(triggerPosition);
+        float measurePosition = Timing.Instance.OffsetToMeasurePosition((float)currentSampleTime);
+        triggerPosition = GetTriggerPosition(measurePosition);
+        var triggerSampleTime = Timing.Instance.MeasurePositionToOffset(triggerPosition);
         triggerTime = triggerSampleTime;
         //triggerTime = Project.Instance.AudioFile.SampleTimeToPlaybackTime(triggerSampleTime);
     }
@@ -244,11 +244,11 @@ public partial class Metronome : Node
     #endregion
 
 
-    private static float GetTriggerPosition(float musicPosition)
+    private static float GetTriggerPosition(float measurePosition)
     {
         return Settings.Instance.MetronomeFollowsGrid
-            ? Timing.Instance.GetNextOperatingGridPosition(musicPosition)
-            : Timing.Instance.GetNextOperatingBeatPosition(musicPosition);
+            ? Timing.Instance.GetNextOperatingGridPosition(measurePosition)
+            : Timing.Instance.GetNextOperatingBeatPosition(measurePosition);
     }
 
 

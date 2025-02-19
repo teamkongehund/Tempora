@@ -219,12 +219,12 @@ public partial class ProjectFileManager : Node
     public static string CreateProjectFileString(string audioPath)
     {
         // TimeSignaturePoint
-        // MusicPosition;TimeSignatureUpper;TimeSignatureLower
+        // MeasurePosition;TimeSignatureUpper;TimeSignatureLower
         string timeSignaturePointsLines = "";
         foreach (TimeSignaturePoint timeSignaturePoint in Timing.Instance.TimeSignaturePoints)
         {
             string timeSignaturePointLine = "";
-            timeSignaturePointLine += timeSignaturePoint.MusicPosition.ToString(CultureInfo.InvariantCulture);
+            timeSignaturePointLine += timeSignaturePoint.Measure.ToString(CultureInfo.InvariantCulture);
             timeSignaturePointLine += ";";
             timeSignaturePointLine += timeSignaturePoint.TimeSignature[0].ToString();
             timeSignaturePointLine += ";";
@@ -251,17 +251,17 @@ public partial class ProjectFileManager : Node
 
     private static string GetTimingPointsAsString()
     {
-        // Time;MusicPosition;TimeSignatureUpper;TimeSignatureLower
+        // Time;MeasurePosition;TimeSignatureUpper;TimeSignatureLower
         string timingPointsLines = "";
         TimingPoint lastTimingPoint = Timing.Instance.TimingPoints[^1];
         foreach (TimingPoint timingPoint in Timing.Instance.TimingPoints)
         {
-            if (timingPoint?.MusicPosition == null)
+            if (timingPoint?.MeasurePosition == null)
                 continue;
             string timingPointLine = "";
             timingPointLine += timingPoint.Offset.ToString(CultureInfo.InvariantCulture);
             timingPointLine += ";";
-            timingPointLine += ((float)timingPoint.MusicPosition).ToString(CultureInfo.InvariantCulture);
+            timingPointLine += ((float)timingPoint.MeasurePosition).ToString(CultureInfo.InvariantCulture);
             timingPointLine += ";";
             timingPointLine += timingPoint.TimeSignature[0].ToString();
             timingPointLine += ";";
@@ -280,7 +280,7 @@ public partial class ProjectFileManager : Node
     public void NewProject()
     {
         Project.Instance.ProjectPath = null;
-        Project.Instance.NotificationMessage = "You are now editing a new project.";
+        //Project.Instance.NotificationMessage = "You are now editing a new project.";
     }
 
     private void LoadProjectFromFile(string projectFile, string filePath)
@@ -325,10 +325,10 @@ public partial class ProjectFileManager : Node
                     if (lineData.Length != 3)
                         continue;
 
-                    bool tsMusicPositionParsed = int.TryParse(lineData[0], out int tsMusicPosition);
+                    bool tsMeasurePositionParsed = int.TryParse(lineData[0], out int tsMeasurePosition);
                     bool timeSignatureUpperParsed = int.TryParse(lineData[1], out int timeSignatureUpper);
                     bool timeSignatureLowerParsed = int.TryParse(lineData[2], out int timeSignatureLower);
-                    if (tsMusicPositionParsed == false
+                    if (tsMeasurePositionParsed == false
                         || timeSignatureUpperParsed == false
                         || timeSignatureLowerParsed == false
                        )
@@ -336,7 +336,7 @@ public partial class ProjectFileManager : Node
                         continue;
                     }
 
-                    Timing.Instance.UpdateTimeSignature([timeSignatureUpper, timeSignatureLower], tsMusicPosition);
+                    Timing.Instance.UpdateTimeSignature([timeSignatureUpper, timeSignatureLower], tsMeasurePosition);
 
                     break;
                 case ParseMode.TimingPoints:
@@ -345,8 +345,8 @@ public partial class ProjectFileManager : Node
 
                     bool timeParsed = float.TryParse(
                         lineData[0], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float time);
-                    bool tpMusicPositionParsed = float.TryParse(
-                        lineData[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float tpMusicPosition);
+                    bool tpMeasurePositionParsed = float.TryParse(
+                        lineData[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float tpMeasurePosition);
                     timeSignatureUpperParsed = int.TryParse(lineData[2], out _);
                     timeSignatureLowerParsed = int.TryParse(lineData[3], out _);
 
@@ -356,7 +356,7 @@ public partial class ProjectFileManager : Node
                         measuresPerSecondParsed = float.TryParse(lineData[4], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out measuresPerSecond);
 
                     if (timeParsed == false
-                        || tpMusicPositionParsed == false
+                        || tpMeasurePositionParsed == false
                         || timeSignatureUpperParsed == false
                         || timeSignatureLowerParsed == false
                         || measuresPerSecondParsed == false
@@ -368,10 +368,10 @@ public partial class ProjectFileManager : Node
                     switch (lineData.Length)
                     {
                         case 4:
-                            Timing.Instance.AddTimingPoint(tpMusicPosition, time);
+                            Timing.Instance.AddTimingPoint(tpMeasurePosition, time);
                             break;
                         case 5:
-                            Timing.Instance.AddTimingPoint(tpMusicPosition, time, measuresPerSecond);
+                            Timing.Instance.AddTimingPoint(tpMeasurePosition, time, measuresPerSecond);
                             break;
                     }
 

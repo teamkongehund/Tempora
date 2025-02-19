@@ -27,6 +27,9 @@ public partial class FileMenu : PopupMenu
 {
     [Export] ExportWindow exportWindow = null!;
 
+    [Export]
+    ConfirmationDialog clearAllConfirmationDialog = null!;
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -39,6 +42,7 @@ public partial class FileMenu : PopupMenu
         {
             case 1:
                 ProjectFileManager.Instance.NewProject();
+                clearAllConfirmationDialog.Show();
                 break;
             case 2:
                 ProjectFileManager.Instance.LoadFileDialogPopup();

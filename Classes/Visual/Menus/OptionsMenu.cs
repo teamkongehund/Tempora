@@ -30,7 +30,7 @@ public partial class OptionsMenu : PopupMenu
 	public override void _Ready()
 	{
 		IdPressed += OnIdPressed;
-		SetItemChecked(id_PreserveBpm, Settings.Instance.MoveSubsequentTimingPointsWhenChangingTimeSignature);
+		SetItemChecked(id_PreserveBpm, Settings.Instance.PreserveBPMWhenChangingTimeSignature);
 		SetItemChecked(id_MetronopmeFollowsGrid, Settings.Instance.MetronomeFollowsGrid);
 		SetItemChecked(id_AutoScroll, Settings.Instance.AutoScrollWhenAddingTimingPoints);
 		SetItemChecked(id_RoundBPM, Settings.Instance.RoundBPM);
@@ -51,7 +51,7 @@ public partial class OptionsMenu : PopupMenu
 		{
 			case var expression when (id == id_PreserveBpm):
 				ToggleCheckBox(id_PreserveBpm, out bool newStatus);
-				Settings.Instance.MoveSubsequentTimingPointsWhenChangingTimeSignature = newStatus;
+				Settings.Instance.PreserveBPMWhenChangingTimeSignature = newStatus;
 				break;
 			case var expression when (id == id_MetronopmeFollowsGrid):
 				ToggleCheckBox(id_MetronopmeFollowsGrid, out newStatus);

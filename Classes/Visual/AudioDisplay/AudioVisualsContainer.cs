@@ -37,21 +37,23 @@ public partial class AudioVisualsContainer : VBoxContainer
 
     //public float FirstBlockStartTime = 0;
 
-    private int nominalMusicPositionStartForTopBlock;
+    private int nominalMeasurePositionStartForTopBlock;
 
     public List<AudioBlock> AudioBlocks = [];
 
-    public int FirstTopMeasure => (int)Timing.Instance.SampleTimeToMusicPosition(0);
+    public int FirstTopMeasure => Timing.Instance.TimeSignaturePoints.Count > 0
+            ? Math.Min((int)Timing.Instance.OffsetToMeasurePosition(0), Timing.Instance.TimeSignaturePoints[0].Measure)
+            : (int)Timing.Instance.OffsetToMeasurePosition(0);
     public int LastTopMeasure => Timing.Instance.GetLastMeasure() - (Settings.Instance.NumberOfRows - 1);
 
-    public int NominalMusicPositionStartForTopBlock
+    public int NominalMeasurePositionStartForTopBlock
     {
-        get => nominalMusicPositionStartForTopBlock;
+        get => nominalMeasurePositionStartForTopBlock;
         set
         {
-            if (value == nominalMusicPositionStartForTopBlock)
+            if (value == nominalMeasurePositionStartForTopBlock)
                 return;
-            nominalMusicPositionStartForTopBlock = value;
+            nominalMeasurePositionStartForTopBlock = value;
             UpdateBlocksScroll();
         }
     }
@@ -62,14 +64,14 @@ public partial class AudioVisualsContainer : VBoxContainer
         {
             if (mouseEvent.ButtonIndex == MouseButton.WheelDown && mouseEvent.Pressed && !Input.IsKeyPressed(Key.Ctrl) && !Input.IsKeyPressed(Key.Alt))
             {
-                int distanceToLast = LastTopMeasure - NominalMusicPositionStartForTopBlock;
-                NominalMusicPositionStartForTopBlock += Math.Min(Input.IsKeyPressed(Key.Shift) ? 5 : 1, distanceToLast);
+                int distanceToLast = LastTopMeasure - NominalMeasurePositionStartForTopBlock;
+                NominalMeasurePositionStartForTopBlock += Math.Min(Input.IsKeyPressed(Key.Shift) ? 5 : 1, distanceToLast);
                 GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.AudioVisualsContainerScrolled));
             }
             else if (mouseEvent.ButtonIndex == MouseButton.WheelUp && mouseEvent.Pressed && !Input.IsKeyPressed(Key.Ctrl) && !Input.IsKeyPressed(Key.Alt))
             {
-                int distanceToFirst = NominalMusicPositionStartForTopBlock - FirstTopMeasure;
-                NominalMusicPositionStartForTopBlock -= Math.Min(Input.IsKeyPressed(Key.Shift) ? 5 : 1, distanceToFirst);
+                int distanceToFirst = NominalMeasurePositionStartForTopBlock - FirstTopMeasure;
+                NominalMeasurePositionStartForTopBlock -= Math.Min(Input.IsKeyPressed(Key.Shift) ? 5 : 1, distanceToFirst);
                 GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.AudioVisualsContainerScrolled));
             }
         }
@@ -106,11 +108,11 @@ public partial class AudioVisualsContainer : VBoxContainer
     {
         double playbackTime = MusicPlayer.GetPlaybackTime();
         float sampleTime = Project.Instance.AudioFile.PlaybackTimeToSampleTime((float)playbackTime);
-        float musicPosition = Timing.Instance.SampleTimeToMusicPosition((float)sampleTime);
+        float measurePosition = Timing.Instance.OffsetToMeasurePosition((float)sampleTime);
         foreach (AudioBlock audioBlock in GetChildren().OfType<AudioBlock>())
         {
             AudioDisplayPanel audioDisplayPanel = audioBlock.AudioDisplayPanel;
-            float x = audioDisplayPanel.MusicPositionToXPosition(musicPosition);
+            float x = audioDisplayPanel.MeasurePositionToXPosition(measurePosition);
             audioDisplayPanel.Playhead.Position = new Vector2(x, 0.0f);
             audioDisplayPanel.Playhead.Visible = x >= 0 && x <= audioDisplayPanel.Size.X && MusicPlayer.Playing;
         }
@@ -129,7 +131,7 @@ public partial class AudioVisualsContainer : VBoxContainer
             child.QueueFree();
         AudioBlocks.Clear();
 
-        int musicPositionStart = NominalMusicPositionStartForTopBlock;
+        int measurePositionStart = NominalMeasurePositionStartForTopBlock;
 
         // Instantiate block scenes and add as children
         for (int i = 0; i < Settings.Instance.MaxNumberOfBlocks; i++)
@@ -138,8 +140,8 @@ public partial class AudioVisualsContainer : VBoxContainer
             {
                 throw new NullReferenceException(nameof(audioBlock));
             }
-            audioBlock.NominalMusicPositionStartForWindow = musicPositionStart;
-            musicPositionStart++;
+            audioBlock.NominalMeasurePosition = measurePositionStart;
+            measurePositionStart++;
             AddChild(audioBlock);
             AudioBlocks.Add(audioBlock);
         }
@@ -173,7 +175,7 @@ public partial class AudioVisualsContainer : VBoxContainer
 
     public void UpdateBlocksScroll()
     {
-        int musicPositionStart = NominalMusicPositionStartForTopBlock;
+        int measurePositionStart = NominalMeasurePositionStartForTopBlock;
 
         Godot.Collections.Array<Node> children = GetChildren();
 
@@ -184,8 +186,8 @@ public partial class AudioVisualsContainer : VBoxContainer
                 continue;
             }
             var audioBlock = (AudioBlock)child;
-            audioBlock.NominalMusicPositionStartForWindow = musicPositionStart;
-            musicPositionStart++;
+            audioBlock.NominalMeasurePosition = measurePositionStart;
+            measurePositionStart++;
         }
     }
 
@@ -206,11 +208,11 @@ public partial class AudioVisualsContainer : VBoxContainer
         Timing.Instance.AddTimingPoint(time, out TimingPoint? timingPoint);
         if (timingPoint == null)
             return;
-        if (timingPoint.MusicPosition == null)
-            throw new NullReferenceException($"{nameof(timingPoint.MusicPosition)} was null");
+        if (timingPoint.MeasurePosition == null)
+            throw new NullReferenceException($"{nameof(timingPoint.MeasurePosition)} was null");
 
-        float musicPosition = (float)timingPoint.MusicPosition;
-        Timing.Instance.SnapTimingPoint(timingPoint, musicPosition);
+        float measurePosition = (float)timingPoint.MeasurePosition;
+        Timing.Instance.SnapTimingPoint(timingPoint, measurePosition);
         Context.Instance.HeldTimingPoint = timingPoint;
         Context.Instance.HeldPointIsJustBeingAdded = true;
 
@@ -228,28 +230,28 @@ public partial class AudioVisualsContainer : VBoxContainer
             return;
 
         var timingPoint = timingPointArgument.Value;
-        if (timingPoint.MusicPosition == null) 
+        if (timingPoint.MeasurePosition == null) 
             return;
-        float musicPosition = (float)timingPoint.MusicPosition!;
+        float measurePosition = (float)timingPoint.MeasurePosition!;
 
-        SetTopBlockToPosition(musicPosition);
+        SetTopBlockToPosition(measurePosition);
     }
 
     /// <summary>
     /// Changes the Block scroll such that the top block contains the music position. 
     /// If more than one block contains the music position due to timeline offset settings, select the last one that does.
     /// </summary>
-    /// <param name="musicPosition"></param>
-    private void SetTopBlockToPosition(float musicPosition)
+    /// <param name="measurePosition"></param>
+    private void SetTopBlockToPosition(float measurePosition)
     {
-        // Get the last ActualMusicPositionStart which is smaller than musicPosition. This way, we account for Timeline overlap.
-        int bestNominalMeasureStart = (int)(musicPosition - 1);
+        // Get the last ActualMeasurePositionStart which is smaller than measurePosition. This way, we account for Timeline overlap.
+        int bestNominalMeasureStart = (int)(measurePosition - 1);
         for (int measure = bestNominalMeasureStart; measure <= bestNominalMeasureStart + 2; measure++)
         {
-            float actualStartForThisMeasure = AudioDisplayPanel.ActualMusicPositionStart(measure);
-            if (actualStartForThisMeasure > musicPosition)
+            float actualStartForThisMeasure = AudioDisplayPanel.ActualMeasurePositionStart(measure);
+            if (actualStartForThisMeasure > measurePosition)
             {
-                NominalMusicPositionStartForTopBlock = bestNominalMeasureStart;
+                NominalMeasurePositionStartForTopBlock = bestNominalMeasureStart;
                 break;
             }
             bestNominalMeasureStart = measure;

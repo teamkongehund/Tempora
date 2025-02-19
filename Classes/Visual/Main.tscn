@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://bk0ofb078cvgm"]
+[gd_scene load_steps=22 format=3 uid="uid://bk0ofb078cvgm"]
 
 [ext_resource type="Script" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
 [ext_resource type="AudioStream" uid="uid://2gpllbqn0qef" path="res://Audio/clickedy.mp3" id="2_k0owh"]
@@ -18,6 +18,7 @@
 [ext_resource type="Script" path="res://Classes/Visual/VersionLabel.cs" id="16_j6b0h"]
 [ext_resource type="PackedScene" uid="uid://bac4n7j15cns7" path="res://Classes/Visual/AudioDisplay/AudioBlock.tscn" id="16_mlqa0"]
 [ext_resource type="Script" path="res://Classes/Visual/Menus/ContextMenu.cs" id="18_ra0tt"]
+[ext_resource type="Script" path="res://Classes/Visual/Menus/ClearAllConfirmationDialog.cs" id="19_ktb8l"]
 [ext_resource type="Script" path="res://Classes/Visual/MessageLabel.cs" id="20_c3wmk"]
 [ext_resource type="PackedScene" uid="uid://dsfi6js7yjf8n" path="res://Classes/Visual/Menus/ExportWindow.tscn" id="20_ruqaf"]
 
@@ -63,7 +64,7 @@ theme_override_font_sizes/font_size = 12
 text = "File"
 popupMenu = NodePath("File")
 
-[node name="File" type="PopupMenu" parent="VSplitContainer/TopMenuHBox/FileButton" node_paths=PackedStringArray("exportWindow")]
+[node name="File" type="PopupMenu" parent="VSplitContainer/TopMenuHBox/FileButton" node_paths=PackedStringArray("exportWindow", "clearAllConfirmationDialog")]
 title = "File"
 size = Vector2i(138, 155)
 theme_override_font_sizes/font_size = 12
@@ -85,6 +86,7 @@ item_6/text = "Export Settings"
 item_6/id = 7
 script = ExtResource("5_kcxfp")
 exportWindow = NodePath("../../../../ExportWindow")
+clearAllConfirmationDialog = NodePath("../../../../ClearAllConfirmationDialog")
 
 [node name="OptionsButton" parent="VSplitContainer/TopMenuHBox" node_paths=PackedStringArray("popupMenu") instance=ExtResource("3_mrr0o")]
 layout_mode = 2
@@ -99,7 +101,7 @@ theme_override_constants/v_separation = 0
 theme_override_font_sizes/font_size = 12
 theme_override_font_sizes/font_separator_size = 0
 item_count = 6
-item_0/text = "Time Signature Changes Move Points"
+item_0/text = "Preserve BPM on new time signature"
 item_0/checkable = 1
 item_1/text = "Metronome Follows Grid"
 item_1/checkable = 1
@@ -376,9 +378,10 @@ size = Vector2i(1002, 587)
 access = 2
 
 [node name="ClearAllConfirmationDialog" type="ConfirmationDialog" parent="."]
-title = "Delete all timing points?"
+title = "Reset timing?"
 initial_position = 1
 size = Vector2i(295, 80)
+script = ExtResource("19_ktb8l")
 
 [node name="LoadFileDialog" type="FileDialog" parent="."]
 title = "Open a File"

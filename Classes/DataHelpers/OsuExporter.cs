@@ -120,7 +120,7 @@ SliderTickRate:1
         return result;
     }
 
-    private static bool ShouldOmitBarline(TimingPoint timingPoint) => Settings.Instance.OmitBarlines ? timingPoint.MusicPosition % 1 != 0 : false;
+    private static bool ShouldOmitBarline(TimingPoint timingPoint) => Settings.Instance.OmitBarlines ? timingPoint.MeasurePosition % 1 != 0 : false;
 
     private string TimingPointToDotOsuLine(TimingPoint timingPoint)
     {
@@ -144,7 +144,7 @@ SliderTickRate:1
                 continue;
 
             float previousOffsetMsRounded = (int)(previousTimingPoint.Offset * 1000);
-            float measureDifference = (float)(timingPoint.MusicPosition! - previousTimingPoint.MusicPosition!);
+            float measureDifference = (float)(timingPoint.MeasurePosition! - previousTimingPoint.MeasurePosition!);
             float timeDifference = measureDifference / previousTimingPoint.MeasuresPerSecond;
             float previousWhiteLineOffsetMsRounded = (int)(previousOffsetMsRounded + timeDifference * 1000);
             float offsetMsRounded = (int)(timingPoint.Offset * 1000);

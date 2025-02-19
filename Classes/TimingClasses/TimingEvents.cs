@@ -55,7 +55,7 @@ public partial class Timing
         DeleteTimingPoint(timingPoint);
     }
 
-    private void OnTimingPointMusicPositionChangeRejected(object? sender, EventArgs e)
+    private void OnTimingPointMeasurePositionChangeRejected(object? sender, EventArgs e)
     {
         if (IsBatchOperationInProgress)
             ShouldCancelBatchOperation = true;
@@ -74,23 +74,23 @@ public partial class Timing
         TimingPoint? previousTimingPoint = GetPreviousTimingPoint(timingPoint);
         TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
 
-        if (timingPoint.MusicPosition == null)
+        if (timingPoint.MeasurePosition == null)
             return null;
-        if (nextTimingPoint?.MusicPosition == timingPoint.MusicPosition || previousTimingPoint?.MusicPosition == timingPoint.MusicPosition)
+        if (nextTimingPoint?.MeasurePosition == timingPoint.MeasurePosition || previousTimingPoint?.MeasurePosition == timingPoint.MeasurePosition)
             throw new Exception("Neighboring Timing Point has same Music Position.");
 
-        if (nextTimingPoint?.MusicPosition != null)
+        if (nextTimingPoint?.MeasurePosition != null)
         {
             correctValue =
-                ((float)nextTimingPoint.MusicPosition - (float)timingPoint.MusicPosition)
+                ((float)nextTimingPoint.MeasurePosition - (float)timingPoint.MeasurePosition)
                 / (nextTimingPoint.Offset - timingPoint.Offset);
         }
-        else if (previousTimingPoint?.MusicPosition != null)
+        else if (previousTimingPoint?.MeasurePosition != null)
         {
             float timeSignatureCorrection = ((float)previousTimingPoint.TimeSignature[0] / previousTimingPoint.TimeSignature[1]) / ((float)timingPoint.TimeSignature[0] / timingPoint.TimeSignature[1]);
 
             correctValue =
-                ((float)timingPoint.MusicPosition - (float)previousTimingPoint.MusicPosition)
+                ((float)timingPoint.MeasurePosition - (float)previousTimingPoint.MeasurePosition)
                 / (timingPoint.Offset - previousTimingPoint.Offset)
                 * timeSignatureCorrection;
         }
@@ -114,14 +114,12 @@ public partial class Timing
 
     private void UpdateAllDependentProperties(TimingPoint timingPoint, TimingPoint.PropertyType propertyType, object? value)
     {
-        TimingPoint? previousTimingPoint = GetPreviousTimingPoint(timingPoint);
-        TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
         switch (propertyType)
         {
             case TimingPoint.PropertyType.Offset:
                 UpdateTempoIncludingAdjacent(timingPoint);
                 break;
-            case TimingPoint.PropertyType.MusicPosition:
+            case TimingPoint.PropertyType.MeasurePosition:
                 UpdateTempoIncludingAdjacent(timingPoint);
                 break;
             case TimingPoint.PropertyType.MeasuresPerSecond:
@@ -148,7 +146,8 @@ public partial class Timing
         UpdateAdjacentTempo(timingPoint);
     }
 
-    private void UpdateMPS(TimingPoint timingPoint) => timingPoint.MeasuresPerSecond = CalculateMPSBasedOnAdjacentPoints(timingPoint) ?? timingPoint.MeasuresPerSecond;
+    private void UpdateMPS(TimingPoint timingPoint) => timingPoint.MeasuresPerSecond = CalculateMPSBasedOnAdjacentPoints(timingPoint)
+        ?? (Settings.Instance.PreserveBPMWhenChangingTimeSignature ? timingPoint.BpmToMps(timingPoint.Bpm) : timingPoint.MeasuresPerSecond);
 
     /// <summary>
     /// When the <see cref="Timing"/> decides that changes to a timing point have been finalized, invoke an event that other classes can respond to.
@@ -213,13 +212,13 @@ public partial class Timing
                 float oldBpm = (float)oldValue!;
                 timingPoint.Bpm = oldBpm;
                 break;
-            case TimingPoint.PropertyType.MusicPosition:
-                float? oldMusicPosition = (float?)oldValue;
-                timingPoint.MusicPosition = oldMusicPosition;
+            case TimingPoint.PropertyType.MeasurePosition:
+                float? oldMeasurePosition = (float?)oldValue;
+                timingPoint.MeasurePosition = oldMeasurePosition;
                 TimingPoint? rejectingTimingPoint = null;
                 CanTimingPointGoHere(timingPoint, (float)newValue!, out rejectingTimingPoint);
                 if (rejectingTimingPoint != null)
-                    GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.MusicPositionChangeRejected), new GlobalEvents.ObjectArgument<TimingPoint>(rejectingTimingPoint));
+                    GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.MeasurePositionChangeRejected), new GlobalEvents.ObjectArgument<TimingPoint>(rejectingTimingPoint));
                 break;
             default:
                 break;
@@ -268,7 +267,7 @@ public partial class Timing
 
                 return false;
 
-            case TimingPoint.PropertyType.MusicPosition:
+            case TimingPoint.PropertyType.MeasurePosition:
                 return CanTimingPointGoHere(timingPoint, (float?)newValue, out _);
 
             default:

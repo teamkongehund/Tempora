@@ -1,10 +1,11 @@
-[gd_scene load_steps=4 format=3 uid="uid://bac4n7j15cns7"]
+[gd_scene load_steps=5 format=3 uid="uid://bac4n7j15cns7"]
 
 [ext_resource type="Script" path="res://Classes/Visual/AudioDisplay/AudioBlock.cs" id="1_4j3p3"]
 [ext_resource type="Script" path="res://Classes/Visual/TimingDisplay/TimeSignatureLineEdit.cs" id="2_agy5w"]
 [ext_resource type="PackedScene" uid="uid://xf0kngdc5d36" path="res://Classes/Visual/AudioDisplay/AudioDisplayPanel.tscn" id="2_sidll"]
+[ext_resource type="PackedScene" uid="uid://cm0x5v2pdp00t" path="res://Classes/Visual/TimingDisplay/TimeSignatureStepper.tscn" id="3_4xoi4"]
 
-[node name="AudioBlock" type="Control" node_paths=PackedStringArray("AudioDisplayPanel", "measureLabel", "timeSignatureLineEdit")]
+[node name="AudioBlock" type="Control" node_paths=PackedStringArray("AudioDisplayPanel", "measureLabel", "timeSignatureLineEdit", "timeSignatureStepper")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -16,6 +17,7 @@ script = ExtResource("1_4j3p3")
 AudioDisplayPanel = NodePath("BlockHBoxContainer/AudioDisplayMargins/AudioDisplayPanel")
 measureLabel = NodePath("BlockHBoxContainer/LabelHBoxContainer/MeasureLabel")
 timeSignatureLineEdit = NodePath("BlockHBoxContainer/LabelHBoxContainer/TimeSignatureLineEdit")
+timeSignatureStepper = NodePath("BlockHBoxContainer/LabelHBoxContainer/TimeSignatureStepper")
 
 [node name="BlockHBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1
@@ -41,21 +43,23 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="TimeSignatureLineEdit" type="LineEdit" parent="BlockHBoxContainer/LabelHBoxContainer"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 4
-theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_constants/minimum_character_width = 3
 theme_override_font_sizes/font_size = 12
 alignment = 2
 script = ExtResource("2_agy5w")
 
+[node name="TimeSignatureStepper" parent="BlockHBoxContainer/LabelHBoxContainer" instance=ExtResource("3_4xoi4")]
+layout_mode = 2
+
 [node name="AudioDisplayMargins" type="MarginContainer" parent="BlockHBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/margin_top = 5
-theme_override_constants/margin_bottom = 5
 
 [node name="AudioDisplayPanel" parent="BlockHBoxContainer/AudioDisplayMargins" instance=ExtResource("2_sidll")]
 layout_mode = 2

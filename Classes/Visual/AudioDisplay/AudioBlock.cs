@@ -26,16 +26,20 @@ public partial class AudioBlock : Control
     private Label measureLabel = null!;
     [Export]
     private TimeSignatureLineEdit timeSignatureLineEdit = null!;
+    [Export]
+    private TimeSignatureStepper timeSignatureStepper = null!;
 
-    private int musicPositionStart;
-    public int NominalMusicPositionStartForWindow
+    private Color defaultFontColor = new("ffffff");
+
+    private int nominalMeasurePosition;
+    public int NominalMeasurePosition
     {
-        get => musicPositionStart;
+        get => nominalMeasurePosition;
         set
         {
-            musicPositionStart = value;
+            nominalMeasurePosition = value;
 
-            AudioDisplayPanel.NominalMusicPositionStartForWindow = NominalMusicPositionStartForWindow;
+            AudioDisplayPanel.NominalMeasurePosition = NominalMeasurePosition;
             UpdateLabels();
         }
     }
@@ -48,11 +52,12 @@ public partial class AudioBlock : Control
         VisibilityChanged += OnVisibilityChanged;
 
         timeSignatureLineEdit.TimeSignatureSubmitted += OnTimingSignatureSubmitted;
+        timeSignatureStepper.TimeSignatureSubmitted += OnTimingSignatureSubmitted;
     }
 
     private void OnTimingChanged(object? sender, EventArgs e)
     {
-        if (!Visible)
+        if (!Visible || Timing.Instance.IsBatchOperationInProgress)
             return;
         UpdateLabels();
     }
@@ -67,13 +72,25 @@ public partial class AudioBlock : Control
         if (e is not GlobalEvents.ObjectArgument<int[]> intArrayArgument)
             throw new Exception($"{nameof(e)} was not of type {nameof(GlobalEvents.ObjectArgument<int[]>)}");
         int[] timeSignature = intArrayArgument.Value;
-        Timing.Instance.UpdateTimeSignature(timeSignature, NominalMusicPositionStartForWindow);
+        Timing.Instance.UpdateTimeSignature(timeSignature, NominalMeasurePosition);
     }
 
     public void UpdateLabels()
     {
-        int[] timeSignature = Timing.Instance.GetTimeSignature(NominalMusicPositionStartForWindow);
-        measureLabel.Text = NominalMusicPositionStartForWindow.ToString();
+        int[] timeSignature = Timing.Instance.GetTimeSignature(NominalMeasurePosition);
+        measureLabel.Text = NominalMeasurePosition.ToString();
         timeSignatureLineEdit.Text = $"{timeSignature[0]}/{timeSignature[1]}";
+        timeSignatureStepper.TimeSignature = timeSignature;
+        bool isTimeSigPointHere = Timing.Instance.TimeSignaturePoints.Exists(point => point.Measure == nominalMeasurePosition);
+        if (isTimeSigPointHere)
+        {
+            timeSignatureLineEdit.AddThemeColorOverride("font_color", GlobalConstants.TemporaYellow);
+            timeSignatureStepper.UpdateLabelColor(GlobalConstants.TemporaYellow);
+        }
+        else
+        {
+            timeSignatureLineEdit.AddThemeColorOverride("font_color", defaultFontColor);
+            timeSignatureStepper.UpdateLabelColor(defaultFontColor);
+        }
     }
 }
