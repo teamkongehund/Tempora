@@ -198,10 +198,20 @@ public partial class Timing
         MementoHandler.Instance.AddTimingMemento();
     }
 
+
     public void DeleteAllTimingPoints()
     {
         DeleteTimingPoints(0, TimingPoints.Count);
     }
+    
+    /// <summary>
+    /// Delete all time signature points without changing any timing points.
+    /// </summary>
+    public void DeleteAllTimeSignaturePoints()
+    {
+        TimeSignaturePoints.Clear();
+        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingChanged));
+    }   
 
     private void RemovePointsThatChangeNothing()
     {

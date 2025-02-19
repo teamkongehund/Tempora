@@ -280,7 +280,7 @@ public partial class ProjectFileManager : Node
     public void NewProject()
     {
         Project.Instance.ProjectPath = null;
-        Project.Instance.NotificationMessage = "You are now editing a new project.";
+        //Project.Instance.NotificationMessage = "You are now editing a new project.";
     }
 
     private void LoadProjectFromFile(string projectFile, string filePath)
