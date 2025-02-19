@@ -60,14 +60,14 @@ layout_mode = 2
 
 [node name="FileButton" parent="VSplitContainer/TopMenuHBox" node_paths=PackedStringArray("popupMenu") instance=ExtResource("3_mrr0o")]
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 text = "File"
 popupMenu = NodePath("File")
 
 [node name="File" type="PopupMenu" parent="VSplitContainer/TopMenuHBox/FileButton" node_paths=PackedStringArray("exportWindow", "clearAllConfirmationDialog")]
 title = "File"
 size = Vector2i(138, 155)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 theme_override_font_sizes/font_separator_size = 0
 item_count = 7
 item_0/text = "New Project"
@@ -90,7 +90,7 @@ clearAllConfirmationDialog = NodePath("../../../../ClearAllConfirmationDialog")
 
 [node name="OptionsButton" parent="VSplitContainer/TopMenuHBox" node_paths=PackedStringArray("popupMenu") instance=ExtResource("3_mrr0o")]
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 text = "Options"
 popupMenu = NodePath("Options")
 
@@ -98,7 +98,7 @@ popupMenu = NodePath("Options")
 title = "Options"
 size = Vector2i(268, 100)
 theme_override_constants/v_separation = 0
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 theme_override_font_sizes/font_separator_size = 0
 item_count = 6
 item_0/text = "Preserve BPM on new time signature"
@@ -126,7 +126,7 @@ overlapScrollBar = NodePath("../../SettingsHBox/OverlapScrollBar")
 [node name="MenuBar" type="MenuBar" parent="VSplitContainer/TopMenuHBox"]
 layout_mode = 2
 theme_override_constants/outline_size = 0
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 
 [node name="SettingsHBox" type="HBoxContainer" parent="VSplitContainer/TopMenuHBox"]
 layout_mode = 2
@@ -221,7 +221,7 @@ offset_right = 20.5
 offset_bottom = 8.5
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 text = "Music
 "
 horizontal_alignment = 1
@@ -249,7 +249,7 @@ offset_right = 20.5
 offset_bottom = 8.5
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 text = "Metronome
 "
 horizontal_alignment = 1
@@ -277,7 +277,7 @@ offset_right = 20.5
 offset_bottom = 8.5
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 text = "Master"
 horizontal_alignment = 1
 vertical_alignment = 1
