@@ -120,12 +120,14 @@ public partial class Timing : Node, IMementoOriginator
         TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
 
         // validity checks
-        if (previousTimingPoint != null && previousTimingPoint.MeasurePosition >= measurePosition)
+        if (previousTimingPoint != null 
+            && (previousTimingPoint.MeasurePosition >= measurePosition || AreMeasurePositionsEqual(previousTimingPoint.MeasurePosition, measurePosition)))
         {
             rejectingTimingPoint = previousTimingPoint;
             return false;
         }
-        if (nextTimingPoint != null && nextTimingPoint.MeasurePosition <= measurePosition)
+        if (nextTimingPoint != null 
+            && (nextTimingPoint.MeasurePosition <= measurePosition || AreMeasurePositionsEqual(nextTimingPoint.MeasurePosition, measurePosition)))
         {
             rejectingTimingPoint = nextTimingPoint;
             return false;
