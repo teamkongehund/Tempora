@@ -296,8 +296,8 @@ public partial class AudioDisplayPanel : Control
             case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } mouseButtonEvent
             when !Input.IsKeyPressed(Key.Alt) && !Context.Instance.AreAnySubwindowsVisible && mouseIsInside:
                 mousePos = GetLocalMousePosition();
-                musicPosition = GetMouseMusicPosition(mousePos);
-                float sampletime = Timing.Instance.MusicPositionToSampleTime(musicPosition);
+                measurePosition = GetMouseMeasurePosition(mousePos);
+                float sampletime = Timing.Instance.MeasurePositionToOffset(measurePosition);
                 AttemptToAddTimingPoint?.Invoke(this, new GlobalEvents.ObjectArgument<float>(sampletime));
                 break;
 
@@ -358,8 +358,8 @@ public partial class AudioDisplayPanel : Control
     private void SeekPlaybackOnMousePosition()
     {
         var mousePos = GetLocalMousePosition();
-        float musicPosition = GetMouseMusicPosition(mousePos);
-        float sampletime = Timing.Instance.MusicPositionToSampleTime(musicPosition);
+        float measurePosition = GetMouseMeasurePosition(mousePos);
+        float sampletime = Timing.Instance.MeasurePositionToOffset(measurePosition);
 
         var heldTimingPoint = Context.Instance?.HeldTimingPoint;
         var seekTime = heldTimingPoint != null ? heldTimingPoint.Offset - 0.05f : sampletime;

@@ -40,7 +40,7 @@ public partial class Timing
 
         if (operatingTimingPoint?.MeasurePosition == null)
         {
-            return time * 0.5f; // default 120 bpm from musicposition origin
+            return time * 0.5f; // default 120 bpm from measurePosition origin
         }
         else
             return (float)(((time - operatingTimingPoint.Offset) * operatingTimingPoint.MeasuresPerSecond) + operatingTimingPoint.MeasurePosition);

@@ -420,7 +420,7 @@ public partial class TimingPointSelection : Node
     /// 
     /// Clicking a timing point outside of selection: Deselect all and select this point instead
     /// 
-    /// Left-click-dragging anywhere in selection: change musicposition of all timing points in selection
+    /// Left-click-dragging anywhere in selection: change measurePosition of all timing points in selection
     ///
     /// Alt-left-clicking in selection: based on the middle music position of selection, 
     /// make the SelectorBar visible and reduce selection to this music position
