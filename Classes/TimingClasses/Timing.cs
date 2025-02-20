@@ -213,6 +213,15 @@ public partial class Timing : Node, IMementoOriginator
             return false;
         return MathF.Abs((float)measurePosition1 - (float)measurePosition2) < 0.001;
     }
+    
+    public bool CanBpmBeChangedManually(TimingPoint timingPoint)
+    {
+        var timingPoints = Timing.Instance.TimingPoints;
+        if (timingPoints.Count == 0)
+            throw new ArgumentException($"{nameof(TimingPoint)} was not a part of {nameof(Timing)}");
+
+        return timingPoints[timingPoints.Count - 1] == timingPoint;
+    }
     #endregion
 
 }

@@ -527,6 +527,7 @@ public partial class AudioDisplayPanel : Control
             visualTimingPoint.GrabArea.Position = new Vector2(-visualTimingPoint.GrabWidth / 2, -Size.Y / 2);
             visualTimingPoint.BpmLabel.Position = new Vector2(0, -Size.Y / 2);
             visualTimingPoint.BpmLabel.Position = new Vector2(0, -Size.Y / 2); // This is dumb, but it's the easiest way to fix Position being wrong when scrolling.
+            visualTimingPoint.BpmEdit.Position = new Vector2(0, -Size.Y / 2);
             visualTimingPoint.OffsetLine.Points = [
                 new(0, -Size.Y * 1 / 4f),
                 new(0, Size.Y * 1 / 4f)

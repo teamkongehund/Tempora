@@ -25,13 +25,15 @@ public partial class VisualTimingPoint : Control
 {
     #region Properties & Fields
     [Export]
-    public Label BpmLabel = null!;
+    public BpmLabel BpmLabel = null!;
     [Export]
     public Line2D OffsetLine = null!;
     [Export]
     private Timer flashTimer = null!;
     [Export]
     public Control GrabArea = null!;
+    [Export]
+    public BpmEdit BpmEdit = null!;
 
     private bool isFlashActive => !flashTimer.IsStopped();
     private bool isRed = false;
@@ -97,59 +99,15 @@ public partial class VisualTimingPoint : Control
         GlobalEvents.Instance.MeasurePositionChangeRejected += OnMeasurePositionChangeRejected;
         GlobalEvents.Instance.TimingPointNearestCursorChanged += OnTimingPointNearestCursorChanged;
         TimingPointSelection.Instance.SelectionChanged += OnSelectionChanged;
-
+        BpmLabel.DoubleClicked += OnBPMLabelDoubleClicked;
+        BpmEdit.BpmSubmitted += OnBpmSubmitted;
+        
         VisibilityChanged += OnVisibilityChanged;
 
         flashTimer.Timeout += OnFlashTimerTimeout;
         lineColorDefault = OffsetLine.DefaultColor;
         lineDefaultWidth = OffsetLine.Width;
     }
-    
-    //public override void _Input(InputEvent @event)
-    //{
-    //    if (!Visible)
-    //        return;
-    //    Vector2 mousePosition = GetLocalMousePosition();
-    //    Rect2 rectangle = GetRect();
-    //    bool hasMouseInside = rectangle.HasPoint(mousePosition);
-
-    //    if (@event is not InputEventMouseButton mouseEvent)
-    //        return;
-    //    if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased())
-    //    {
-    //        //Signals.Instance.EmitEvent(Signals.Events.MouseLeftReleased);
-    //        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.MouseLeftReleased), this, EventArgs.Empty);
-    //        return;
-    //    }
-    //    if (!hasMouseInside)
-    //        return;
-
-    //    if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick && Input.IsKeyPressed(Key.Alt))
-    //    {
-    //        TimingPointSelection.Instance.DeselectAll();
-    //    }
-    //    else if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.DoubleClick)
-    //    {
-    //        TimingPointSelection.Instance.DeleteSelection();
-    //    }
-    //    else if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed && Input.IsKeyPressed(Key.Alt))
-    //    {
-    //        TimingPointSelection.Instance.RescopeSelection(TimingPoint);
-    //    }
-    //    else if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed)
-    //    {
-    //        TimingPointSelection.Instance.SelectTimingPoint(TimingPoint);
-    //        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointHolding), new GlobalEvents.ObjectArgument<TimingPoint>(TimingPoint));
-    //    }
-    //    else if (mouseEvent.ButtonIndex == MouseButton.Right && mouseEvent.Pressed && Input.IsKeyPressed(Key.Alt))
-    //    {
-    //        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.ContextMenuRequested), new GlobalEvents.ObjectArgument<VisualTimingPoint>(this));
-    //    }
-    //    else
-    //        return;
-
-    //    GetViewport().SetInputAsHandled();
-    //}
 
     public override void _Input(InputEvent @event)
     {
@@ -164,7 +122,7 @@ public partial class VisualTimingPoint : Control
 
         if (!hasMouseInside)
         {
-            BpmLabel.Visible = true;
+            BpmLabel.Visible = BpmEdit.Visible ? false : true;
             return;
         }
 
@@ -269,6 +227,23 @@ public partial class VisualTimingPoint : Control
     private void OnSelectionChanged(object? sender, EventArgs e) => UpdateLooks();
 
     private void OnVisibilityChanged() => UpdateLooks();
+
+    private void OnBPMLabelDoubleClicked(object? sender, EventArgs e)
+    {
+        if (!Timing.Instance.CanBpmBeChangedManually(timingPoint))
+        {
+            Project.Instance.NotificationMessage = "Can only change BPM of last timing point.";
+            return;
+        }
+        BpmEdit.ShowAndEdit();
+        BpmLabel.Visible = false;
+    }
+
+    private void OnBpmSubmitted(object? sender, EventArgs e)
+    {
+        timingPoint.Bpm = BpmEdit.Text.ToFloat();
+        BpmLabel.Visible = true;
+    }
     #endregion
 
     #region Change Looks
