@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Tempora"
-run/main_scene="res://Classes/Visual/Main.tscn"
+run/main_scene="res://Classes/Visual/AudioDisplay/SpectrogramTest.tscn"
 config/features=PackedStringArray("4.3", "C#", "Forward Plus")
 boot_splash/show_image=false
 config/icon="res://Images/Tempora2.png"
