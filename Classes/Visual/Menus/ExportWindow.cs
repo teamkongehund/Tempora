@@ -94,7 +94,7 @@ public partial class ExportWindow : Window
 
     private void ResetToDefaults()
     {
-        exportOffsetEdit.Text = (-29).ToString();
+        exportOffsetEdit.Text = (-14).ToString();
         unsupportedTimeSignatures.ButtonPressed = true;
         removePointsThatChangeNothing.ButtonPressed = true;
         addExtraPointsOnDownbeats.ButtonPressed = true;

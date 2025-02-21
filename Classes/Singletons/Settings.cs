@@ -183,7 +183,7 @@ public partial class Settings : Node
             SaveSettings();
         }
     }
-    public int ExportOffsetMs = -29;
+    public int ExportOffsetMs = -14; // previously -29
     public bool MeasureResetsOnUnsupportedTimeSignatures = true;
     public bool RemovePointsThatChangeNothing = true;
     public bool AddExtraPointsOnDownbeats = true;
