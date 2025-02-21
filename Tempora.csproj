@@ -12,6 +12,7 @@
     </PackageReference>
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
+    <PackageReference Include="Spectrogram" Version="1.6.1" />
   </ItemGroup>
   <ItemGroup>
     <EditorConfigFiles Remove="D:\DOCUMENTS\CODE\REPOS\TEMPORA\.editorconfig" />

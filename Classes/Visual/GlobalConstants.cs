@@ -19,4 +19,5 @@ public readonly struct GlobalConstants
 {
     public GlobalConstants() { }
     public static readonly Color TemporaYellow = new("ff9900");
+    public static readonly Color TemporaBlue = new("002630");
 }

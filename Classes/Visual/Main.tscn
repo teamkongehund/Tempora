@@ -22,7 +22,7 @@
 [ext_resource type="Script" uid="uid://mw86i63feiar" path="res://Classes/Visual/MessageLabel.cs" id="20_c3wmk"]
 [ext_resource type="PackedScene" uid="uid://dsfi6js7yjf8n" path="res://Classes/Visual/Menus/ExportWindow.tscn" id="20_ruqaf"]
 
-[node name="Main" type="Control" node_paths=PackedStringArray("audioVisualsContainer", "blockScrollBar")]
+[node name="Main" type="Control" node_paths=PackedStringArray("audioVisualsContainer", "blockScrollBar", "backgroundColorRect")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -34,6 +34,7 @@ script = ExtResource("1_n5xe1")
 defaultMP3 = ExtResource("2_k0owh")
 audioVisualsContainer = NodePath("VSplitContainer/AudioMainHSplitContainer/AudioVisualsMarginContainer/AudioVisualsContainer")
 blockScrollBar = NodePath("VSplitContainer/AudioMainHSplitContainer/BlockScrollBarMarginContainer/BlockScrollBar")
+backgroundColorRect = NodePath("ColorRect")
 metadata/_edit_lock_ = true
 
 [node name="ColorRect" type="ColorRect" parent="."]
