@@ -21,7 +21,7 @@ using System.IO;
 
 // Tempora
 
-namespace Tempora.Classes.Visual;
+namespace Tempora.Classes.Visual.AudioDisplay;
 
 public partial class Main : Control
 {

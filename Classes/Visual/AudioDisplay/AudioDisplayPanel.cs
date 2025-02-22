@@ -18,7 +18,7 @@ using GodotPlugins.Game;
 using Tempora.Classes.Utility;
 using Tempora.Classes.TimingClasses;
 
-namespace Tempora.Classes.Visual;
+namespace Tempora.Classes.Visual.AudioDisplay;
 
 /// <summary>
 ///     Parent class for window containing waveform(s), playhead and timing grid
@@ -33,7 +33,7 @@ public partial class AudioDisplayPanel : Control
     [Export]
     public Line2D Playhead = null!;
     [Export]
-    private Node2D waveformSegments = null!;
+    private Node2D audioSegments = null!;
     [Export]
     private Node2D VisualTimingPointFolder = null!;
     [Export]
@@ -312,7 +312,7 @@ public partial class AudioDisplayPanel : Control
         if (!Visible || Timing.Instance.IsInstantiating || Timing.Instance.IsBatchOperationInProgress)
             return;
         UpdateTimingPointsIndices();
-        CreateWaveforms();
+        RenderAudio();
         RenderVisualTimingPoints();
         CreateGridLines();
     }
@@ -369,11 +369,11 @@ public partial class AudioDisplayPanel : Control
 
     #region Render
 
-    public void CreateWaveforms()
+    public void RenderAudio()
     {
-        foreach (Node? child in waveformSegments.GetChildren())
+        foreach (Node? child in audioSegments.GetChildren())
         {
-            if (child is Waveform waveform)
+            if (child is WaveformSegment waveform)
                 waveform.QueueFree();
             else if (child is Sprite2D sprite)
                 sprite.QueueFree();
@@ -391,7 +391,7 @@ public partial class AudioDisplayPanel : Control
         firstTimingPointInPanel = firstTimingPointInPanel?.MeasurePosition > ActualMeasurePositionEndForPanel ? null : firstTimingPointInPanel;
 
         // Create first waveform segment
-        AddWaveformSegment(timeWherePanelStarts, firstTimingPointInPanel?.Offset ?? timeWherePanelEnds);
+        AddAudioSegment(timeWherePanelStarts, firstTimingPointInPanel?.Offset ?? timeWherePanelEnds);
 
         if (firstTimingPointInPanel == null)
             return;
@@ -409,14 +409,14 @@ public partial class AudioDisplayPanel : Control
             float waveSegmentStartTime = Timing.Instance.TimingPoints[i].Offset;
             float waveSegmentEndTime = isNextPointOutsideOfPanel ? timeWherePanelEnds : Timing.Instance.TimingPoints[i + 1].Offset;
 
-            AddWaveformSegment(waveSegmentStartTime, waveSegmentEndTime);
+            AddAudioSegment(waveSegmentStartTime, waveSegmentEndTime);
 
             if (isNextPointOutOfRange)
                 return;
         }
     }
 
-    private void AddWaveformSegment(float waveSegmentStartTime, float waveSegmentEndTime)
+    private void AddAudioSegment(float waveSegmentStartTime, float waveSegmentEndTime)
     {
         float measurePositionStart = Timing.Instance.OffsetToMeasurePosition(waveSegmentStartTime);
         float measurePositionEnd = Timing.Instance.OffsetToMeasurePosition(waveSegmentEndTime);
@@ -437,13 +437,26 @@ public partial class AudioDisplayPanel : Control
                 )
             || (Time.GetTicksMsec() - heldTimingPoint.SystemTimeWhenCreatedMsec) < 30; ;
 
-        var waveform = new Waveform(Project.Instance.AudioFile, length, Size.Y, [waveSegmentStartTime, waveSegmentEndTime])
+        IAudioSegmentDisplay audioSegment;
+        switch (Settings.Instance.RenderAsSpectrogram)
         {
-            Position = new Vector2(xPosition, Size.Y / 2),
-            Color = (canHeldTimingPointBeInSegment ? Waveform.defaultColor : Waveform.darkenedColor)
-        };
+            case false:
+                audioSegment = new WaveformSegment(Project.Instance.AudioFile, length, Size.Y, [waveSegmentStartTime, waveSegmentEndTime])
+                {
+                    Position = new Vector2(xPosition, Size.Y / 2),
+                    Color = (canHeldTimingPointBeInSegment ? WaveformSegment.DefaultColor : WaveformSegment.DarkenedColor)
+                };
+                break;
+            case true:
+                audioSegment = new SpectrogramSegment(Project.Instance.AudioFile, length, Size.Y, [waveSegmentStartTime, waveSegmentEndTime])
+                {
+                    Position = new Vector2(xPosition + Size.X / 2, Size.Y / 2),
+                    Color = (canHeldTimingPointBeInSegment ? SpectrogramSegment.DefaultColor : SpectrogramSegment.DarkenedColor)
+                };
+                break;
+        }
 
-        waveformSegments.AddChild(waveform);
+        audioSegments.AddChild((Node)audioSegment);
     }
 
     /// <summary>
@@ -617,7 +630,7 @@ public partial class AudioDisplayPanel : Control
         UpdatePreviewLineScaling();
         UpdatePreviewLinePosition();
         UpdateSelectedPositionScaling();
-        CreateWaveforms(); // takes 2-5 ms on 30 blocks  loaded
+        RenderAudio(); // takes 2-5 ms on 30 blocks  loaded
         RenderVisualTimingPoints(); // takes 2-3 ms on 30 blocks loaded
         CreateGridLines();
         UpdateVisualSelector();

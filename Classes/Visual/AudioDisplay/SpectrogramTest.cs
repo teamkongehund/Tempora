@@ -58,7 +58,13 @@ public partial class SpectrogramTest : Node2D
         var ffts = sg.GetFFTs();
         var bitmap = Spectrogram.Image.GetBitmap(ffts, defaultColormap, intensity: 5, dB: true);
         spectrogramSprite2D.Texture = ConvertBitmapToImageTextureNew(bitmap);
-        spectrogramSprite2D.Position = new Vector2(spectrogramSprite2D.Texture.GetWidth() / 2, spectrogramSprite2D.Texture.GetHeight() / 2);
+
+        var textureSize = spectrogramSprite2D.Texture.GetSize();
+        Vector2 scale = new Vector2(1f * GetWindow().Size.X / textureSize.X, 1f * GetWindow().Size.Y / textureSize.Y);
+        spectrogramSprite2D.GlobalScale = scale;
+
+        var trueSize = new Vector2(scale.X * textureSize.X, scale.Y * textureSize.Y);
+        spectrogramSprite2D.Position = new Vector2(trueSize.X / 2, trueSize.Y / 2);
     }
 
     public static Godot.Image ConvertBitmapToGodotImage(System.Drawing.Bitmap bitmap)

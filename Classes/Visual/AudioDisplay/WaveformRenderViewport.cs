@@ -15,7 +15,7 @@ using Godot;
 using Tempora.Classes.Audio;
 using GD = Tempora.Classes.DataHelpers.GD;
 
-namespace Tempora.Classes.Visual;
+namespace Tempora.Classes.Visual.AudioDisplay;
 
 public partial class WaveformRenderViewport : SubViewport
 {
@@ -26,7 +26,7 @@ public partial class WaveformRenderViewport : SubViewport
     {
         var audiofile = new AudioFile("res://audio/21csm.mp3");
 
-        var waveform = new Waveform(audiofile, Size.X, Size.Y * 1.2f, [0, audiofile.GetAudioLength()])
+        var waveform = new WaveformSegment(audiofile, Size.X, Size.Y * 1.2f, [0, audiofile.GetAudioLength()])
         {
             Position = new Vector2(0, Size.Y / 2)
         };

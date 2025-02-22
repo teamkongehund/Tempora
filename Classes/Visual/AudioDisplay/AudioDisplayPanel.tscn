@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://Classes/Visual/TimingDisplay/PreviewLine.cs" id="3_v3ucu"]
 [ext_resource type="PackedScene" uid="uid://4kev3x6gycsp" path="res://Classes/Utility/LoopTimer.tscn" id="4_ta6pa"]
 
-[node name="AudioDisplayPanel" type="Control" node_paths=PackedStringArray("Playhead", "waveformSegments", "VisualTimingPointFolder", "GridFolder", "PreviewLine", "SelectedPositionLine", "VisualSelector", "SpamPlaybackLoopTimer")]
+[node name="AudioDisplayPanel" type="Control" node_paths=PackedStringArray("Playhead", "audioSegments", "VisualTimingPointFolder", "GridFolder", "PreviewLine", "SelectedPositionLine", "VisualSelector", "SpamPlaybackLoopTimer")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -15,7 +15,7 @@ grow_vertical = 2
 mouse_filter = 1
 script = ExtResource("1_oemdp")
 Playhead = NodePath("Playhead")
-waveformSegments = NodePath("WaveformSegments")
+audioSegments = NodePath("AudioSegments")
 VisualTimingPointFolder = NodePath("VisualTimingPointFolder")
 GridFolder = NodePath("GridFolder")
 PreviewLine = NodePath("PreviewLine")
@@ -24,7 +24,7 @@ VisualSelector = NodePath("VisualSelector")
 SpamPlaybackLoopTimer = NodePath("SpamPlaybackLoopTimer")
 packedVisualTimingPoint = ExtResource("2_rbe4s")
 
-[node name="WaveformSegments" type="Node2D" parent="."]
+[node name="AudioSegments" type="Node2D" parent="."]
 
 [node name="GridFolder" type="Node2D" parent="."]
 

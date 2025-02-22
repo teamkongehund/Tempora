@@ -19,7 +19,7 @@ using Tempora.Classes.Utility;
 using Tempora.Classes.TimingClasses;
 using Tempora.Classes.Audio;
 
-namespace Tempora.Classes.Visual;
+namespace Tempora.Classes.Visual.AudioDisplay;
 
 public partial class AudioVisualsContainer : VBoxContainer
 {

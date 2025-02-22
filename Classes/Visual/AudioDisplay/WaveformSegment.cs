@@ -14,11 +14,12 @@
 using System.Collections.Generic;
 using Godot;
 using Tempora.Classes.Audio;
+using Tempora.Classes.Visual.AudioDisplay;
 using GD = Tempora.Classes.DataHelpers.GD;
 
-namespace Tempora.Classes.Visual;
+namespace Tempora.Classes.Visual.AudioDisplay;
 
-public partial class Waveform : Node2D
+public partial class WaveformSegment : Node2D, IAudioSegmentDisplay
 {
     #region Methods
 
@@ -28,9 +29,9 @@ public partial class Waveform : Node2D
         int sampleEndIndex = AudioDataRange[1];
 
         int numberOfSamples = sampleEndIndex - sampleIndexStart;
-        float samplesPerPoint = numberOfSamples / Length / PointsPerLengthwisePixel;
+        float samplesPerPoint = numberOfSamples / Width / PointsPerLengthwisePixel;
 
-        int nbPoints = (int)Length * PointsPerLengthwisePixel;
+        int nbPoints = (int)Width * PointsPerLengthwisePixel;
         if (nbPoints <= 0)
             return;
 
@@ -107,8 +108,8 @@ public partial class Waveform : Node2D
             }
             else
             {
-                min = EfficientMin(audioFile.AudioDataPer10Min, sampleIndexBegin / 10, sampleIndexEnd / 10);
-                max = EfficientMax(audioFile.AudioDataPer10Max, sampleIndexBegin / 10, sampleIndexEnd / 10);
+                min = EfficientMin(AudioFile.AudioDataPer10Min, sampleIndexBegin / 10, sampleIndexEnd / 10);
+                max = EfficientMax(AudioFile.AudioDataPer10Max, sampleIndexBegin / 10, sampleIndexEnd / 10);
             }
 
             if (PointsPerLengthwisePixel > 1)
@@ -154,67 +155,28 @@ public partial class Waveform : Node2D
 
     #region Properties
 
-    private float length = 400;
 
-    public float Length
-    {
-        get => length;
-        set
-        {
-            length = value;
-            QueueRedraw();
-        }
-    }
+    public float Width { get; set; } = 400;
 
-    private float height = 100;
+    public float Height { get; set; } = 100;
 
-    public float Height
-    {
-        get => height;
-        set
-        {
-            height = value;
-            QueueRedraw();
-        }
-    }
-
-    private AudioFile audioFile = null!;
-
-    public AudioFile AudioFile
-    {
-        get => audioFile;
-        set
-        {
-            audioFile = value;
-            QueueRedraw();
-        }
-    }
+    public AudioFile AudioFile { get; set; } = null!;
 
     /// <summary>
     ///     Instead of putting one data point in the plot arrays, a larger number may show a better waveform.
     ///     Even numbers should be used, as the plotter alternates between mix and max for each data point
     /// </summary>
-    public int PointsPerLengthwisePixel = 2;
-
-    public bool ShouldDisplayWholeFile = true;
+    private int PointsPerLengthwisePixel = 2;
 
     private int[] audioDataRange = [0, 0];
 
     /// <summary>
     ///     Indices for the first and last audio sample to use from <see cref="Tempora.Classes.Audio.AudioFile.PcmLeft" />
     /// </summary>
-    public int[] AudioDataRange
+    private int[] AudioDataRange
     {
         get
         {
-            if (ShouldDisplayWholeFile)
-            {
-                return [
-                    0,
-                    AudioFile?.PcmLeft.Length ?? 0
-                ];
-            }
-
             int sampleStart = AudioFile?.SampleTimeToSampleIndex(TimeRange[0]) ?? 0;
             int sampleEnd = AudioFile?.SampleTimeToSampleIndex(TimeRange[1]) ?? 0;
 
@@ -235,61 +197,29 @@ public partial class Waveform : Node2D
             }
 
             timeRange = value;
-            ShouldDisplayWholeFile = false;
-            QueueRedraw();
         }
     }
 
-    public static readonly Color defaultColor = new(1f, 1f, 1f);
-    public static readonly Color darkenedColor = new(0.5f, 0.5f, 0.5f);
-    //public enum WaveformColors
-    //{
-    //    Default,
-    //    Darkened
-    //}
-    //public Dictionary<WaveformColors, Color> WaveformColorsDict = new()
-    //{
-    //    { WaveformColors.Default, defaultColor },
-    //    { WaveformColors.Darkened, darkenedColor },
-    //};
-    public Color Color = defaultColor;
+    public Color Color { get => color; set => color = value; }
 
-
+    public static readonly Color DefaultColor = GlobalConstants.AudioFullExposure;
+    public static readonly Color DarkenedColor = GlobalConstants.AudioDarkened;
+    private Color color = DefaultColor;
     #endregion
 
     #region Initialization
 
-    public Waveform(float length, float height)
-    {
-        Height = height;
-        Length = length;
-    }
-
-    public Waveform(AudioFile audioFile)
-    {
-        AudioFile = audioFile;
-        AudioDataRange = [0, AudioFile.PcmLeft.Length];
-        QueueRedraw();
-    }
-
-    public Waveform(AudioFile audioFile, float length, float height)
+    public WaveformSegment(AudioFile audioFile, float length, float height, float[] timeRange)
     {
         AudioFile = audioFile;
         AudioDataRange = [0, AudioFile.PcmLeft.Length];
         Height = height;
-        Length = length;
-        QueueRedraw();
-    }
-
-    public Waveform(AudioFile audioFile, float length, float height, float[] timeRange)
-    {
-        AudioFile = audioFile;
-        AudioDataRange = [0, AudioFile.PcmLeft.Length];
-        Height = height;
-        Length = length;
+        Width = length;
         TimeRange = timeRange;
-        QueueRedraw();
+        Render();
     }
+
+    public void Render() => QueueRedraw();
 
     #endregion
 }

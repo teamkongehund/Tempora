@@ -16,7 +16,7 @@ using Godot;
 using Tempora.Classes.Utility;
 using Tempora.Classes.TimingClasses;
 
-namespace Tempora.Classes.Visual;
+namespace Tempora.Classes.Visual.AudioDisplay;
 
 public partial class AudioBlock : Control
 {
