@@ -129,7 +129,28 @@ public partial class AudioDataHelper
         // Convert Ogg Vorbis to raw 32-bit float n channels PCM.
         numSamplesCombined = reader.Read(floatsMixed, 0, samplesPerChannel * channels);
         
-    } 
+    }
+
+    /// <summary>
+    /// Decodes an audio file and returns its PCM data as a double array for spectrogram analysis.
+    /// </summary>
+    public static void DecodeToDoubleArray(string filePath, out double[] pcmDoubles, out int sampleRate)
+    {
+        string extension = Path.GetExtension(filePath).ToLower();
+        switch (extension)
+        {
+            case ".ogg":
+                DecodeOgg(filePath, out float[] floatsMixed, out _, out sampleRate, out _);
+                pcmDoubles = PCMDataConverter.ConvertToDouble(floatsMixed);
+                break;
+            case ".mp3":
+                DecodeMp3(filePath, out byte[] pcmBytes, out _, out sampleRate, out _, out _);
+                pcmDoubles = PCMDataConverter.ConvertToDouble(pcmBytes);
+                break;
+            default:
+                throw new NotSupportedException($"Audio format '{extension}' is not supported.");
+        }
+    }
     #endregion
     #region Array and sample manipulation
     /// <summary>
@@ -255,5 +276,6 @@ public partial class AudioDataHelper
         }
         return stereoFloats;
     }
+
     #endregion
 }

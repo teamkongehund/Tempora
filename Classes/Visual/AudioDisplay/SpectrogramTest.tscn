@@ -1,11 +1,11 @@
 [gd_scene load_steps=3 format=3 uid="uid://bj31kv17rjr2g"]
 
 [ext_resource type="Script" path="res://Classes/Visual/AudioDisplay/SpectrogramTest.cs" id="1_ld4yu"]
-[ext_resource type="AudioStream" uid="uid://cg5iojv5wlpgg" path="res://Audio/Loop.mp3" id="2_rqpx8"]
+[ext_resource type="AudioStream" uid="uid://bq6r8p2pk6704" path="res://Audio/audio.mp3" id="2_37trs"]
 
 [node name="SpectrogramTest" type="Node2D" node_paths=PackedStringArray("spectrogramSprite2D")]
 script = ExtResource("1_ld4yu")
-audioStreamMP3 = ExtResource("2_rqpx8")
+audioStreamMP3 = ExtResource("2_37trs")
 spectrogramSprite2D = NodePath("SpectrogramSprite2D")
 
 [node name="SpectrogramSprite2D" type="Sprite2D" parent="."]
