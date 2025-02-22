@@ -29,56 +29,61 @@ public partial class OptionsMenu : PopupMenu
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		IdPressed += OnIdPressed;
-		SetItemChecked(id_PreserveBpm, Settings.Instance.PreserveBPMWhenChangingTimeSignature);
-		SetItemChecked(id_MetronopmeFollowsGrid, Settings.Instance.MetronomeFollowsGrid);
-		SetItemChecked(id_AutoScroll, Settings.Instance.AutoScrollWhenAddingTimingPoints);
-		SetItemChecked(id_RoundBPM, Settings.Instance.RoundBPM);
-        SetItemChecked(id_PlaybackOnNewPoints, Settings.Instance.SeekPlaybackOnTimingPointChanges);
-        SetItemChecked(id_MoreSettings, Settings.Instance.ShowMoreSettings);
+        IndexPressed += OnIndexPressed;
+		SetItemChecked(index_PreserveBpm, Settings.Instance.PreserveBPMWhenChangingTimeSignature);
+		SetItemChecked(index_MetronopmeFollowsGrid, Settings.Instance.MetronomeFollowsGrid);
+		SetItemChecked(index_AutoScroll, Settings.Instance.AutoScrollWhenAddingTimingPoints);
+		SetItemChecked(index_RoundBPM, Settings.Instance.RoundBPM);
+        SetItemChecked(index_PlaybackOnNewPoints, Settings.Instance.SeekPlaybackOnTimingPointChanges);
+        SetItemChecked(index_MoreSettings, Settings.Instance.ShowMoreSettings);
+        SetItemChecked(index_Spectrogram, Settings.Instance.RenderAsSpectrogram);
 	}
 
-	int id_PreserveBpm = 0;
-	int id_MetronopmeFollowsGrid = 1;
-	int id_AutoScroll = 2;
-	int id_RoundBPM = 3;
-	int id_MoreSettings = 4;
-    int id_PlaybackOnNewPoints = 5;
+	int index_PreserveBpm = 0;
+	int index_MetronopmeFollowsGrid = 1;
+	int index_AutoScroll = 2;
+	int index_RoundBPM = 3;
+	int index_MoreSettings = 4;
+    int index_PlaybackOnNewPoints = 5;
+    int index_Spectrogram = 6;
 
-	private void OnIdPressed(long id)
+	private void OnIndexPressed(long index)
 	{
-		switch (id)
+		switch (index)
 		{
-			case var expression when (id == id_PreserveBpm):
-				ToggleCheckBox(id_PreserveBpm, out bool newStatus);
+			case var expression when (index == index_PreserveBpm):
+				ToggleCheckBox(index_PreserveBpm, out bool newStatus);
 				Settings.Instance.PreserveBPMWhenChangingTimeSignature = newStatus;
 				break;
-			case var expression when (id == id_MetronopmeFollowsGrid):
-				ToggleCheckBox(id_MetronopmeFollowsGrid, out newStatus);
+			case var expression when (index == index_MetronopmeFollowsGrid):
+				ToggleCheckBox(index_MetronopmeFollowsGrid, out newStatus);
 				Settings.Instance.MetronomeFollowsGrid = newStatus;
 				break;
-			case var expression when (id == id_MoreSettings):
-				ToggleCheckBox(id_MoreSettings, out newStatus);
+			case var expression when (index == index_MoreSettings):
+				ToggleCheckBox(index_MoreSettings, out newStatus);
 				ShowHideMoreSettings(newStatus);
 				break;
-			case var expression when (id == id_AutoScroll):
-				ToggleCheckBox(id_AutoScroll, out newStatus);
+			case var expression when (index == index_AutoScroll):
+				ToggleCheckBox(index_AutoScroll, out newStatus);
 				Settings.Instance.AutoScrollWhenAddingTimingPoints = newStatus;
 				break;
-			case var expression when (id == id_RoundBPM):
-				ToggleCheckBox(id_RoundBPM, out newStatus);
+			case var expression when (index == index_RoundBPM):
+				ToggleCheckBox(index_RoundBPM, out newStatus);
 				Settings.Instance.RoundBPM = newStatus;
 				break;
-            case var expression when (id == id_PlaybackOnNewPoints):
-                ToggleCheckBox(id_PlaybackOnNewPoints, out newStatus);
+            case var expression when (index == index_PlaybackOnNewPoints):
+                ToggleCheckBox(index_PlaybackOnNewPoints, out newStatus);
                 Settings.Instance.SeekPlaybackOnTimingPointChanges = newStatus;
+                break;
+            case var expression when (index == index_Spectrogram):
+                ToggleCheckBox(index_Spectrogram, out newStatus);
+                Settings.Instance.RenderAsSpectrogram = newStatus;
                 break;
         }
 	}
 
-	private void ToggleCheckBox(int id, out bool newStatus)
+	private void ToggleCheckBox(int index, out bool newStatus)
 	{
-		int index = GetItemIndex(id);
 		bool isChecked = IsItemChecked(index);
 		SetItemChecked(index, !isChecked);
 		newStatus = IsItemChecked(index);

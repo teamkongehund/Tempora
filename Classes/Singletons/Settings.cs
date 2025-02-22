@@ -228,6 +228,7 @@ public partial class Settings : Node
             SaveSettings();
         }
     }
+    public bool RenderAsSpectrogram = true;
 
     private static Settings instance = null!;
 	private static readonly string[] separator = ["\r\n", "\r", "\n"];
@@ -273,7 +274,8 @@ public partial class Settings : Node
         MusicVolumeNormalized,
         MetronomeVolumeNormalized,
         MasterVolumeNormalized,
-        BeatSaberExportFormat
+        BeatSaberExportFormat,
+        RenderAsSpectrogram
     }
     private Dictionary<Setting, string> settingStrings = new ()
     {
@@ -299,7 +301,8 @@ public partial class Settings : Node
         {Setting.MusicVolumeNormalized, "MusicVolumeNormalized" },
         {Setting.MetronomeVolumeNormalized, "MetronomeVolumeNormalized" },
         {Setting.MasterVolumeNormalized, "MasterVolumeNormalized" },
-        {Setting.BeatSaberExportFormat, "BeatSaberExportFormat" }
+        {Setting.BeatSaberExportFormat, "BeatSaberExportFormat" },
+        {Setting.RenderAsSpectrogram, "RenderAsSpectrogram" }
     };
 
     // Called when the node enters the scene tree for the first time.
@@ -422,6 +425,10 @@ public partial class Settings : Node
                     _ = int.TryParse(lineSplit[1], out parsedInt);
                     BeatSaberExportFormat = parsedInt;
                     break;
+                case var value when value == settingStrings[Setting.RenderAsSpectrogram]:
+                    _ = bool.TryParse(lineSplit[1], out parsedBool);
+                    RenderAsSpectrogram = parsedBool;
+                    break;
             }
 		}
 	}
@@ -452,6 +459,7 @@ public partial class Settings : Node
         settingsFile += GetSettingsFileLine(settingStrings[Setting.MetronomeVolumeNormalized], MetronomeVolumeNormalized.ToString());
         settingsFile += GetSettingsFileLine(settingStrings[Setting.MasterVolumeNormalized], MasterVolumeNormalized.ToString());
         settingsFile += GetSettingsFileLine(settingStrings[Setting.BeatSaberExportFormat], BeatSaberExportFormat.ToString());
+        settingsFile += GetSettingsFileLine(settingStrings[Setting.RenderAsSpectrogram], RenderAsSpectrogram.ToString());
         FileHandler.SaveText(settingsPath, settingsFile);
 	}
 
