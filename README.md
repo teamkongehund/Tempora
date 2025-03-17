@@ -5,8 +5,6 @@ This is achieved via a simple-to-use GUI that lets you manipulate timing points 
 
 For now, downloadable releases are found at https://kongehund.github.io/tempora/
 
-Video presentation of the project is found at https://www.youtube.com/watch?v=4_UN0Rxjv-w
-
 ## Supports
 - osu! (.mp3 and .ogg)
 - Beat Saber (.ogg)
