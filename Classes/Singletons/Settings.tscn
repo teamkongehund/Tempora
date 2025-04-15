@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://lqj4sjk0celb"]
 
-[ext_resource type="Script" path="res://Classes/Singletons/Settings.cs" id="1_nwddx"]
+[ext_resource type="Script" uid="uid://bchvhltiuma74" path="res://Classes/Singletons/Settings.cs" id="1_nwddx"]
 
 [node name="Settings" type="Node"]
 script = ExtResource("1_nwddx")

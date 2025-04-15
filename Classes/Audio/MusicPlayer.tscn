@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://djvimmuyfu0pu"]
 
-[ext_resource type="Script" path="res://Classes/Audio/MusicPlayer.cs" id="1_g7kbg"]
+[ext_resource type="Script" uid="uid://dxjl6g77mjisv" path="res://Classes/Audio/MusicPlayer.cs" id="1_g7kbg"]
 [ext_resource type="PackedScene" uid="uid://bnbif04ymgk1h" path="res://Classes/Audio/Metronome.tscn" id="2_n8qns"]
 
 [node name="MusicPlayer" type="AudioStreamPlayer"]

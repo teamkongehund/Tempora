@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dj7d0bg4br3h0"]
 
-[ext_resource type="Script" path="res://Classes/Visual/Buttons/Stepper.cs" id="1_1cxms"]
+[ext_resource type="Script" uid="uid://br1kqmql1gsmf" path="res://Classes/Visual/Buttons/Stepper.cs" id="1_1cxms"]
 
 [node name="Stepper" type="HBoxContainer" node_paths=PackedStringArray("incrementButton", "ValueLabel", "decrementButton", "mouseAreaControl")]
 anchors_preset = 8

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dsfi6js7yjf8n"]
 
-[ext_resource type="Script" path="res://Classes/Visual/Menus/ExportWindow.cs" id="1_ad7ek"]
+[ext_resource type="Script" uid="uid://dcydeovs4aanr" path="res://Classes/Visual/Menus/ExportWindow.cs" id="1_ad7ek"]
 
 [node name="ExportWindow" type="Window" node_paths=PackedStringArray("exportOffsetEdit", "unsupportedTimeSignatures", "removePointsThatChangeNothing", "addExtraPointsOnDownbeats", "addExtraPointsOnQuarterNotes", "omitBarlines", "preventDoubleBarlines", "beatSaberExportFormat", "okButton", "defaultsButton")]
 title = "Export Settings"

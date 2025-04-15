@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://bnbif04ymgk1h"]
 
-[ext_resource type="Script" path="res://Classes/Audio/Metronome.cs" id="1_w6ueg"]
+[ext_resource type="Script" uid="uid://eplx32n3bh5i" path="res://Classes/Audio/Metronome.cs" id="1_w6ueg"]
 [ext_resource type="AudioStream" uid="uid://7swfyecj0f3b" path="res://Audio/Stick1.wav" id="2_3awrr"]
 [ext_resource type="AudioStream" uid="uid://w36h36ywafda" path="res://Audio/Stick2.wav" id="3_nj1ox"]
 

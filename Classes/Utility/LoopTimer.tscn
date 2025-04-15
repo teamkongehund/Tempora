@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://4kev3x6gycsp"]
 
-[ext_resource type="Script" path="res://Classes/Utility/LoopTimer.cs" id="1_3vhlc"]
+[ext_resource type="Script" uid="uid://cr11ltajjxrit" path="res://Classes/Utility/LoopTimer.cs" id="1_3vhlc"]
 
 [node name="LoopTimer" type="Node" node_paths=PackedStringArray("InitialTimer", "QuickTimer")]
 script = ExtResource("1_3vhlc")

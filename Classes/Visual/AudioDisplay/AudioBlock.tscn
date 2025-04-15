@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://bac4n7j15cns7"]
 
-[ext_resource type="Script" path="res://Classes/Visual/AudioDisplay/AudioBlock.cs" id="1_4j3p3"]
-[ext_resource type="Script" path="res://Classes/Visual/TimingDisplay/TimeSignatureLineEdit.cs" id="2_agy5w"]
+[ext_resource type="Script" uid="uid://b8slnjfkmvhli" path="res://Classes/Visual/AudioDisplay/AudioBlock.cs" id="1_4j3p3"]
+[ext_resource type="Script" uid="uid://bjmtfgmbqeyl6" path="res://Classes/Visual/TimingDisplay/TimeSignatureLineEdit.cs" id="2_agy5w"]
 [ext_resource type="PackedScene" uid="uid://xf0kngdc5d36" path="res://Classes/Visual/AudioDisplay/AudioDisplayPanel.tscn" id="2_sidll"]
 [ext_resource type="PackedScene" uid="uid://cm0x5v2pdp00t" path="res://Classes/Visual/TimingDisplay/TimeSignatureStepper.tscn" id="3_4xoi4"]
 

@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://cm0x5v2pdp00t"]
 
-[ext_resource type="Script" path="res://Classes/Visual/TimingDisplay/TimeSignatureStepper.cs" id="1_awnig"]
+[ext_resource type="Script" uid="uid://b7v6k2ijf21q0" path="res://Classes/Visual/TimingDisplay/TimeSignatureStepper.cs" id="1_awnig"]
 [ext_resource type="PackedScene" uid="uid://dj7d0bg4br3h0" path="res://Classes/Visual/Buttons/Stepper.tscn" id="2_mn1vu"]
 
 [node name="TimeSignatureStepper" type="HBoxContainer" node_paths=PackedStringArray("NumeratorStepper", "DenominatorStepper")]

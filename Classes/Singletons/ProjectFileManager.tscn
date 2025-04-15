@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bx641nf4oa828"]
 
-[ext_resource type="Script" path="res://Classes/Singletons/ProjectFileManager.cs" id="1_hekhv"]
+[ext_resource type="Script" uid="uid://b8ooqler5ml5l" path="res://Classes/Singletons/ProjectFileManager.cs" id="1_hekhv"]
 
 [node name="ProjectFileManager" type="Node" node_paths=PackedStringArray("SaveFileDialog", "LoadFileDialog")]
 script = ExtResource("1_hekhv")

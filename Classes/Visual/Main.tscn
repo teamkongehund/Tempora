@@ -1,25 +1,25 @@
 [gd_scene load_steps=22 format=3 uid="uid://bk0ofb078cvgm"]
 
-[ext_resource type="Script" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
+[ext_resource type="Script" uid="uid://dusnn5jykij57" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
 [ext_resource type="AudioStream" uid="uid://2gpllbqn0qef" path="res://Audio/clickedy.mp3" id="2_k0owh"]
-[ext_resource type="Script" path="res://Classes/Visual/AudioDisplay/AudioVisualsContainer.cs" id="3_bj8ok"]
+[ext_resource type="Script" uid="uid://5oa54r8jmw66" path="res://Classes/Visual/AudioDisplay/AudioVisualsContainer.cs" id="3_bj8ok"]
 [ext_resource type="PackedScene" uid="uid://bk2vtyro5t8k" path="res://Classes/Visual/Buttons/PopupMenuButton.tscn" id="3_mrr0o"]
-[ext_resource type="Script" path="res://Classes/Visual/Scrollbars/BlockScrollBar.cs" id="5_aqu3i"]
-[ext_resource type="Script" path="res://Classes/Visual/Menus/FileMenu.cs" id="5_kcxfp"]
-[ext_resource type="Script" path="res://Classes/Visual/Scrollbars/VolumeSlider.cs" id="6_w0n8n"]
-[ext_resource type="Script" path="res://Classes/Visual/Menus/OptionsMenu.cs" id="7_1c6ke"]
-[ext_resource type="Script" path="res://Classes/Visual/Scrollbars/GridScrollBar.cs" id="7_i2h88"]
+[ext_resource type="Script" uid="uid://cnwrkr36leku1" path="res://Classes/Visual/Scrollbars/BlockScrollBar.cs" id="5_aqu3i"]
+[ext_resource type="Script" uid="uid://b21cup1cc3md6" path="res://Classes/Visual/Menus/FileMenu.cs" id="5_kcxfp"]
+[ext_resource type="Script" uid="uid://cpunk8qer5c2n" path="res://Classes/Visual/Scrollbars/VolumeSlider.cs" id="6_w0n8n"]
+[ext_resource type="Script" uid="uid://bfw73tg26ghoq" path="res://Classes/Visual/Menus/OptionsMenu.cs" id="7_1c6ke"]
+[ext_resource type="Script" uid="uid://dc5qs5mnui2ft" path="res://Classes/Visual/Scrollbars/GridScrollBar.cs" id="7_i2h88"]
 [ext_resource type="PackedScene" uid="uid://dy4lywdntdohe" path="res://Classes/Visual/Scrollbars/LabeledScrollbarHorizontal.tscn" id="8_6ej7c"]
-[ext_resource type="Script" path="res://Classes/Visual/Scrollbars/PlaybackRateScrollBar.cs" id="8_6jrsb"]
-[ext_resource type="Script" path="res://Classes/Visual/Scrollbars/BlockAmountScrollBar.cs" id="9_22ufa"]
-[ext_resource type="Script" path="res://Classes/Visual/Scrollbars/OffsetScrollBar.cs" id="10_yfm4l"]
-[ext_resource type="Script" path="res://Classes/Visual/Buttons/HelpButton.cs" id="13_v1cca"]
-[ext_resource type="Script" path="res://Classes/Visual/Scrollbars/OverlapScrollBar.cs" id="13_wubaw"]
-[ext_resource type="Script" path="res://Classes/Visual/VersionLabel.cs" id="16_j6b0h"]
+[ext_resource type="Script" uid="uid://0ndmhnulvhux" path="res://Classes/Visual/Scrollbars/PlaybackRateScrollBar.cs" id="8_6jrsb"]
+[ext_resource type="Script" uid="uid://6vhpr52s8xt4" path="res://Classes/Visual/Scrollbars/BlockAmountScrollBar.cs" id="9_22ufa"]
+[ext_resource type="Script" uid="uid://lfy23k878bjs" path="res://Classes/Visual/Scrollbars/OffsetScrollBar.cs" id="10_yfm4l"]
+[ext_resource type="Script" uid="uid://ep6wccwkv3sv" path="res://Classes/Visual/Buttons/HelpButton.cs" id="13_v1cca"]
+[ext_resource type="Script" uid="uid://dgacnkn4n7oem" path="res://Classes/Visual/Scrollbars/OverlapScrollBar.cs" id="13_wubaw"]
+[ext_resource type="Script" uid="uid://d08u246i57huj" path="res://Classes/Visual/VersionLabel.cs" id="16_j6b0h"]
 [ext_resource type="PackedScene" uid="uid://bac4n7j15cns7" path="res://Classes/Visual/AudioDisplay/AudioBlock.tscn" id="16_mlqa0"]
-[ext_resource type="Script" path="res://Classes/Visual/Menus/ContextMenu.cs" id="18_ra0tt"]
-[ext_resource type="Script" path="res://Classes/Visual/Menus/ClearAllConfirmationDialog.cs" id="19_ktb8l"]
-[ext_resource type="Script" path="res://Classes/Visual/MessageLabel.cs" id="20_c3wmk"]
+[ext_resource type="Script" uid="uid://b3blmm57pgyue" path="res://Classes/Visual/Menus/ContextMenu.cs" id="18_ra0tt"]
+[ext_resource type="Script" uid="uid://ca5jau2j8ynic" path="res://Classes/Visual/Menus/ClearAllConfirmationDialog.cs" id="19_ktb8l"]
+[ext_resource type="Script" uid="uid://mw86i63feiar" path="res://Classes/Visual/MessageLabel.cs" id="20_c3wmk"]
 [ext_resource type="PackedScene" uid="uid://dsfi6js7yjf8n" path="res://Classes/Visual/Menus/ExportWindow.tscn" id="20_ruqaf"]
 
 [node name="Main" type="Control" node_paths=PackedStringArray("audioVisualsContainer", "blockScrollBar")]
@@ -103,6 +103,7 @@ theme_override_font_sizes/font_separator_size = 0
 item_count = 6
 item_0/text = "Preserve BPM on new time signature"
 item_0/checkable = 1
+item_0/id = 0
 item_1/text = "Metronome Follows Grid"
 item_1/checkable = 1
 item_1/id = 1

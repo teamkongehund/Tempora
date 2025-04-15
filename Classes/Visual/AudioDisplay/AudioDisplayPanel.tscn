@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://xf0kngdc5d36"]
 
-[ext_resource type="Script" path="res://Classes/Visual/AudioDisplay/AudioDisplayPanel.cs" id="1_oemdp"]
+[ext_resource type="Script" uid="uid://cs4ld3okxntd6" path="res://Classes/Visual/AudioDisplay/AudioDisplayPanel.cs" id="1_oemdp"]
 [ext_resource type="PackedScene" uid="uid://b8325rmwu4cpb" path="res://Classes/Visual/TimingDisplay/VisualTimingPoint.tscn" id="2_rbe4s"]
-[ext_resource type="Script" path="res://Classes/Visual/TimingDisplay/PreviewLine.cs" id="3_v3ucu"]
+[ext_resource type="Script" uid="uid://wv5m2mfvc84t" path="res://Classes/Visual/TimingDisplay/PreviewLine.cs" id="3_v3ucu"]
 [ext_resource type="PackedScene" uid="uid://4kev3x6gycsp" path="res://Classes/Utility/LoopTimer.tscn" id="4_ta6pa"]
 
 [node name="AudioDisplayPanel" type="Control" node_paths=PackedStringArray("Playhead", "waveformSegments", "VisualTimingPointFolder", "GridFolder", "PreviewLine", "SelectedPositionLine", "VisualSelector", "SpamPlaybackLoopTimer")]

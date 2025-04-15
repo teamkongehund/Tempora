@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bk2vtyro5t8k"]
 
-[ext_resource type="Script" path="res://Classes/Visual/Buttons/PopupMenuButton.cs" id="1_3awal"]
+[ext_resource type="Script" uid="uid://b2gc6b64mp0k5" path="res://Classes/Visual/Buttons/PopupMenuButton.cs" id="1_3awal"]
 
 [node name="PopupMenuButton" type="Button"]
 offset_right = 8.0

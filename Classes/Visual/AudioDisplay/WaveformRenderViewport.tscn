@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://cre6aux3iwum2"]
 
-[ext_resource type="Script" path="res://Classes/Visual/AudioDisplay/WaveformRenderViewport.cs" id="1_6hhnu"]
+[ext_resource type="Script" uid="uid://xjbpj3jb4c0a" path="res://Classes/Visual/AudioDisplay/WaveformRenderViewport.cs" id="1_6hhnu"]
 [ext_resource type="Texture2D" uid="uid://cpvdv75skegy3" path="res://Images/icon.svg" id="2_lfy7j"]
 
 [node name="WaveformRenderViewport" type="SubViewport"]

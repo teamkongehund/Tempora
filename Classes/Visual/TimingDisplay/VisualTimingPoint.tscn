@@ -1,9 +1,9 @@
 [gd_scene load_steps=5 format=3 uid="uid://b8325rmwu4cpb"]
 
-[ext_resource type="Script" path="res://Classes/Visual/TimingDisplay/VisualTimingPoint.cs" id="1_3rehq"]
-[ext_resource type="Script" path="res://Classes/Visual/TimingDisplay/BpmLabel.cs" id="2_gtwp5"]
+[ext_resource type="Script" uid="uid://ce8m0d3oanbbq" path="res://Classes/Visual/TimingDisplay/VisualTimingPoint.cs" id="1_3rehq"]
+[ext_resource type="Script" uid="uid://djk3thus3uguy" path="res://Classes/Visual/TimingDisplay/BpmLabel.cs" id="2_gtwp5"]
 [ext_resource type="PackedScene" uid="uid://c5ghoqiqusvkk" path="res://Classes/Visual/Components/ControlOriginComponent.tscn" id="2_igj6l"]
-[ext_resource type="Script" path="res://Classes/Visual/TimingDisplay/BpmEdit.cs" id="4_r6rb5"]
+[ext_resource type="Script" uid="uid://c7v68wyic6ja5" path="res://Classes/Visual/TimingDisplay/BpmEdit.cs" id="4_r6rb5"]
 
 [node name="VisualTimingPoint" type="Control" node_paths=PackedStringArray("BpmLabel", "OffsetLine", "flashTimer", "GrabArea", "BpmEdit")]
 layout_mode = 3

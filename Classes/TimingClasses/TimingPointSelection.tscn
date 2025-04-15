@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cg2608f2qgg86"]
 
-[ext_resource type="Script" path="res://Classes/TimingClasses/TimingPointSelection.cs" id="1_kpn0n"]
+[ext_resource type="Script" uid="uid://bvjkcr8viwqko" path="res://Classes/TimingClasses/TimingPointSelection.cs" id="1_kpn0n"]
 
 [node name="TimingPointSelection" type="Node"]
 script = ExtResource("1_kpn0n")

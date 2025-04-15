@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bqd6a4eqhpf"]
 
-[ext_resource type="Script" path="res://Classes/Visual/AudioDisplay/Waveform.cs" id="1_32gig"]
+[ext_resource type="Script" uid="uid://ed4bdorj3b8w" path="res://Classes/Visual/AudioDisplay/Waveform.cs" id="1_32gig"]
 
 [node name="Waveform" type="Node2D"]
 script = ExtResource("1_32gig")
