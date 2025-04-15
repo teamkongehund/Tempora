@@ -123,11 +123,11 @@ public partial class Timing
         int gridDivisor = Settings.Instance.GridDivisor;
 
         int nextMeasure = (int)(measurePosition + 1);
-        float previousAbsolutePosition = GetRelativeNotePosition(timeSignature, gridDivisor, 0) + (int)measurePosition;
+        float previousAbsolutePosition = GetRelativeNotePosition(timeSignature, gridDivisor, 0) + MathF.Floor(measurePosition);
         for (int index = 0; index < 30; index++)
         {
             float relativePosition = GetRelativeNotePosition(timeSignature, gridDivisor, index);
-            float absolutePosition = (int)measurePosition + relativePosition;
+            float absolutePosition = MathF.Floor(measurePosition) + relativePosition;
 
             if (absolutePosition > measurePosition)
                 return previousAbsolutePosition;
