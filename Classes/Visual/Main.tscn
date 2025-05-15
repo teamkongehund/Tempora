@@ -223,10 +223,8 @@ offset_bottom = 8.5
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 16
-text = "Music
-"
+text = "Music"
 horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="VolumeSliderMetronome" type="HScrollBar" parent="VSplitContainer/TopMenuHBox/VolumeSlidersHBox"]
 layout_mode = 2
@@ -244,15 +242,14 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -20.5
-offset_top = -8.5
-offset_right = 20.5
-offset_bottom = 8.5
+offset_left = -45.5
+offset_top = -24.5
+offset_right = 46.5
+offset_bottom = 24.5
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 16
-text = "Metronome
-"
+text = "Metronome"
 horizontal_alignment = 1
 vertical_alignment = 1
 
