@@ -155,7 +155,8 @@ public partial class Timing
 
         GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.TimingPointCountChanged));
 
-        MementoHandler.Instance.AddTimingMemento();
+        if (!Context.Instance.HeldPointIsJustBeingAdded)
+           MementoHandler.Instance.AddTimingMemento();
     }
 
     /// <summary>

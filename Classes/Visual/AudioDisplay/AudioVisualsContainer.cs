@@ -218,7 +218,7 @@ public partial class AudioVisualsContainer : VBoxContainer
 
         TimingPointSelection.Instance.SelectTimingPoint(timingPoint);
 
-        MementoHandler.Instance.AddTimingMemento();
+        //MementoHandler.Instance.AddTimingMemento();
     }
 
     private void OnTimingPointAdded(object? sender, EventArgs e)

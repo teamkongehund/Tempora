@@ -140,6 +140,8 @@ public partial class MementoHandler : Node
             throw new NullReferenceException($"{nameof(memento)}");
 
         Timing.Instance.RestoreMemento(memento);
+
+        SelectionBeingChanged = null;
     }
 
     private void Redo()

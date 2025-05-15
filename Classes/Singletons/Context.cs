@@ -52,12 +52,15 @@ public partial class Context : Node
                 bool doesTimingPointStillExist = heldTimingPoint != null;
                 bool hasMeasurePositionChanged = heldTimingPoint?.MeasurePosition != heldTimingPoint_PreviousMeasurePosition;
                 bool hasOffsetChanged = heldTimingPoint?.Offset != heldTimingPoint_PreviousOffset;
-                if ((hasMeasurePositionChanged || hasOffsetChanged) && doesTimingPointStillExist)
+                //if ((hasMeasurePositionChanged || hasOffsetChanged) && doesTimingPointStillExist && !HeldPointIsJustBeingAdded)
+                //{
+                //    MementoHandler.Instance.AddTimingMemento();
+                //}
+                if (HeldPointIsJustBeingAdded && doesTimingPointStillExist)
                 {
+                    GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.Instance.TimingPointAdded), this, new GlobalEvents.ObjectArgument<TimingPoint>(heldTimingPoint!));
                     MementoHandler.Instance.AddTimingMemento();
                 }
-                if (HeldPointIsJustBeingAdded && doesTimingPointStillExist)
-                    GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.Instance.TimingPointAdded), this, new GlobalEvents.ObjectArgument<TimingPoint>(heldTimingPoint!));
                 HeldPointIsJustBeingAdded = false;
                 heldTimingPoint_PreviousMeasurePosition = null;
                 heldTimingPoint_PreviousOffset = null;
