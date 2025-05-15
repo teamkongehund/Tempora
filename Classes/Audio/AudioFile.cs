@@ -58,8 +58,47 @@ public partial class AudioFile : PcmData
     ///     1 = mono , 2 = stereo
     /// </summary>
 
-    public string FilePath = null!; 
+    public string FilePath = null!;
     #endregion
+    /* 
+    Explanation of offsets in Tempora.
+
+    The comments I have elsewhere essentially cover the same information, but I tried to write it up as clearly as possible here.
+    
+    # Tempora uses NAudio's samples as "the truth".
+    The playback time you see when you hover audio in Tempora is exactly equivalent to NAudio, whose data is stored in the variable pcmFloats.
+    This means that if you have a sample rate of 44100, the sample at NAudio's index 88200 (pcmFloats[0][88200]) should always be correctly displayed at 88200/44100 = 2.00 seconds in Tempora.
+    You can verify this by using an audio file whose first audible sound is a quick, short transient. You can then run i.e. Array.FindIndex(pcmFloats[0], x => x > 0.5) to find the sample index.
+    Divide this index by the sampleRate to get the time of this sample. This should be the same as when you hover the transient in Tempora.
+
+    # Godot and NAudio do not always have the same origin when the audio is MP3.
+    This means that the sample which NAudio understands as index 88200 might have a different index in Godot. 
+    We need to figure out where Godot's origin is and take this into account before we start playback of the audio.
+    
+    # The trouble with headers, encoders and decoders
+    My reseach into MP3 files yielded the following conclusions:
+    - The MP3 encoder that was used to originally encode the audio typically adds 576 samples of silence in the beginning of the audio file.
+    While 576 samples is typical, the exact number can be found by reading the MP3 Lame header, as done in AudioDataHelper.ExtractLameHeaderInfo()
+    - All MP3 decodes add 528 samples of delay as mentioned in <see href="https://lame.sourceforge.io/tech-FAQ.txt"
+    - One additional sample of silence is added, mentioned in the above link.
+    
+    So, for a typical MP3 file, there will be 1105 samples of silent samples added to the beginning of the file.
+    - These samples ARE included in NAudio's pcmFloats array.
+    - These samples ARE NOT (typically) included in Godot's playback logic.
+    - The number of silent samples (1105 typically) is stored as the variable startSilenceSamples
+
+    This means that if we want to start playback on NAudio's sample 88200 (visualized as 2:00 in Tempora), 
+    we have to tell Godot to start the playback on sample 88200-1105 = 87095
+
+    Doing what's described above works most of the time
+
+    On 2025-05-15 I discovered that some MP3 files in fact have the same offset as NAudio. 
+    I observed this for an audio file that did not have a Lame header.
+    I assumed that it is the case that if a Lame header is not present, Godot's offset will be the same as NAudio.
+
+    If there are offset issues in the future with MP3 files, maybe step 1 is to challenge this assumption.
+     */
+
 
     public AudioStream Stream = null!;
 
