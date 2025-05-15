@@ -93,6 +93,7 @@ public partial class AudioDataHelper
         /// Number of samples prepended to beginning of audio.
         int encoderDelaySamples = 576;
         int decoderDelaySamples = 528;
+        startSilenceSamples = 0; // This will be used if there is no Xing header, as it seems Godot will use the same origin as NAudio in that case.
 
         //Mp3Frame firstFrame = reader.ReadNextFrame();
         Mp3Frame? xingFrame = reader.XingHeader?.Mp3Frame;
@@ -100,11 +101,11 @@ public partial class AudioDataHelper
         {
             byte[] frameData = xingFrame.RawData;
             ExtractLameHeaderInfo(frameData, out encoderDelaySamples, out _);
+            
+            // Logic: Retrieve encoder delay from Xing header. Assume all decorders add 528 samples.
+            // Add 1 due to discrepancy, which is mentioned in https://lame.sourceforge.io/tech-FAQ.txt
+            startSilenceSamples = encoderDelaySamples + decoderDelaySamples + 1;
         }
-
-        // Logic: Retrieve encoder delay from Xing header. Assume all decorders add 528 samples.
-        // Add 1 due to discrepancy, which is mentioned in https://lame.sourceforge.io/tech-FAQ.txt
-        startSilenceSamples = encoderDelaySamples + decoderDelaySamples + 1;
 
         shortsMixed_byte = new byte[reader.Length];
         numRawBytes = reader.Read(shortsMixed_byte, 0, shortsMixed_byte.Length * channels);
