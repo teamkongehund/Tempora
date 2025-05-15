@@ -15,8 +15,8 @@ For now, downloadable releases are found at https://kongehund.github.io/tempora/
 - Open the Godot launcher and import project.godot from the chosen repository directory
 - Open the project in Godot and run (F5)
 
-You can also build and run the project from an IDE such as Visual Studio. For Visual Studio:
-- In Launch Profile, locate the Godot executable (i.e. "Godot_v4.2-stable_mono_win64.exe")
+You can also build and run the project from an IDE such as Visual Studio. This makes it possible to debug with breakpoints. For Visual Studio:
+- In Launch Profile, locate the Godot executable (i.e. "Godot_v4.4-stable_mono_win64.exe")
 - Use command line arguments "--path . --verbose"
 - Use working directory "."
 
