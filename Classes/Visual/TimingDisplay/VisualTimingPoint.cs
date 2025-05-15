@@ -199,7 +199,7 @@ public partial class VisualTimingPoint : Control
         if (isRed)
         {
             isRed = false;
-            flashTimer.Start(); // period of regular looks before it can flash flash again
+            flashTimer.Start(); // period of regular looks before it can flash flash again.
             UpdateLooks();
         }
     }
@@ -242,6 +242,7 @@ public partial class VisualTimingPoint : Control
     private void OnBpmSubmitted(object? sender, EventArgs e)
     {
         timingPoint.Bpm = BpmEdit.Text.ToFloat();
+        timingPoint.WasBPMManuallySet = true;
         BpmLabel.Visible = true;
     }
     #endregion

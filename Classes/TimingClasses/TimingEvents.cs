@@ -107,8 +107,11 @@ public partial class Timing
         TimingPoint? previousTimingPoint = GetPreviousTimingPoint(timingPoint);
         TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
         if (!timingPoint.IsInstantiating && previousTimingPoint != null)
+        {
             previousTimingPoint.MeasuresPerSecond = CalculateMPSBasedOnAdjacentPoints(previousTimingPoint) ?? previousTimingPoint.MeasuresPerSecond;
-        if (!timingPoint.IsInstantiating && nextTimingPoint == TimingPoints[^1])
+            previousTimingPoint.WasBPMManuallySet = false;
+        }
+        if (!timingPoint.IsInstantiating && nextTimingPoint == TimingPoints[^1] && !nextTimingPoint.WasBPMManuallySet)
             nextTimingPoint.MeasuresPerSecond = CalculateMPSBasedOnAdjacentPoints(nextTimingPoint) ?? nextTimingPoint.MeasuresPerSecond;
     }
 
@@ -141,8 +144,11 @@ public partial class Timing
     /// <param name="timingPoint"></param>
     private void UpdateTempoIncludingAdjacent(TimingPoint timingPoint)
     {
-        UpdateMPS(timingPoint);
-        timingPoint.Bpm = timingPoint.MpsToBpm(timingPoint.MeasuresPerSecond);
+        if (!(timingPoint == TimingPoints[^1] && timingPoint.WasBPMManuallySet))
+        {
+            UpdateMPS(timingPoint);
+            timingPoint.Bpm = timingPoint.MpsToBpm(timingPoint.MeasuresPerSecond);
+        }
         UpdateAdjacentTempo(timingPoint);
     }
 

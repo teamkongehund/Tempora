@@ -79,10 +79,10 @@ public partial class AudioFile : PcmData
     My reseach into MP3 files yielded the following conclusions:
     - The MP3 encoder that was used to originally encode the audio typically adds 576 samples of silence in the beginning of the audio file.
     While 576 samples is typical, the exact number can be found by reading the MP3 Lame header, as done in AudioDataHelper.ExtractLameHeaderInfo()
-    - All MP3 decodes add 528 samples of delay as mentioned in <see href="https://lame.sourceforge.io/tech-FAQ.txt"
+    - All MP3 decoders add 528 samples of delay as mentioned in <see href="https://lame.sourceforge.io/tech-FAQ.txt"
     - One additional sample of silence is added, mentioned in the above link.
     
-    So, for a typical MP3 file, there will be 1105 samples of silent samples added to the beginning of the file.
+    So, for a typical MP3 file, there will be 1105 silent samples added to the beginning of the file.
     - These samples ARE included in NAudio's pcmFloats array.
     - These samples ARE NOT (typically) included in Godot's playback logic.
     - The number of silent samples (1105 typically) is stored as the variable startSilenceSamples
@@ -90,7 +90,7 @@ public partial class AudioFile : PcmData
     This means that if we want to start playback on NAudio's sample 88200 (visualized as 2:00 in Tempora), 
     we have to tell Godot to start the playback on sample 88200-1105 = 87095
 
-    Doing what's described above works most of the time
+    Doing what's described above works most of the time.
 
     On 2025-05-15 I discovered that some MP3 files in fact have the same offset as NAudio. 
     I observed this for an audio file that did not have a Lame header.

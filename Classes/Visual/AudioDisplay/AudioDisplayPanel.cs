@@ -198,6 +198,7 @@ public partial class AudioDisplayPanel : Control
                     newBpm = previousBpm - 0.1f;
 
                 nearestTimingPoint.Bpm = newBpm;
+                nearestTimingPoint.WasBPMManuallySet = true;
 
                 MementoHandler.Instance.AddTimingMemento(nearestTimingPoint);
                 break;
@@ -214,6 +215,7 @@ public partial class AudioDisplayPanel : Control
                     newBpm = previousBpm + 0.1f;
 
                 nearestTimingPoint.Bpm = newBpm;
+                nearestTimingPoint.WasBPMManuallySet = true;
 
                 MementoHandler.Instance.AddTimingMemento(nearestTimingPoint);
                 break;
@@ -283,6 +285,7 @@ public partial class AudioDisplayPanel : Control
                     float bpmPerPixel = 0.02f;
                     float bpmDifference = xMovement * bpmPerPixel;
                     Context.Instance.HeldTimingPoint.Bpm = Context.Instance.HeldTimingPoint.Bpm + bpmDifference;
+                    Context.Instance.HeldTimingPoint.WasBPMManuallySet = true;
                     return;
                 }
 

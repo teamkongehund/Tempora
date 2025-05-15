@@ -33,6 +33,8 @@ public partial class TimingPoint : Node, IComparable<TimingPoint>, ICloneable
 
 	public ulong SystemTimeWhenCreatedMsec;
 
+    public bool WasBPMManuallySet = false;
+
 	#region Time Signature
 	private int[] timeSignature = [4, 4];
 
