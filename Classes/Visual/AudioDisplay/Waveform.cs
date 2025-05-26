@@ -90,7 +90,7 @@ public partial class Waveform : Node2D
 
         if (pointIsBeforeAudioData || pointIsAfterAudioData)
         {
-            pickedValue = 0;
+            throw new System.Exception("Attempted to retrieve a non-existent audio sample.");
         }
         else if (sampleIndexEnd - sampleIndexBegin == 0)
         {
