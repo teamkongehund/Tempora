@@ -30,7 +30,8 @@ namespace Tempora.Classes.DataHelpers;
 /// <para>Explanation and terminology:</para>
 /// <para>MP3: This codec stores audio as 16-bit integer. It must be converted to floats to be useful in Tempora. 
 /// The MP3 codec usually has silence added to the beginning and end of the file. 
-/// See the overloads for <see cref="DecodeMp3"/> for how the exact amount of silence is determined.</para>
+/// See the overloads for <see cref="DecodeMp3"/> for how the exact amount of silence is determined. 
+/// See also my comment in <see cref="AudioFile"/> to read about how I take the difference between i.e. NAudio and Godot's audio playback origins into acocunt.</para>
 /// <para>OGG: This codec stores audio as 32-bit float, which is what Tempora already works with</para>
 /// <para>"PCM": Pulse-code modulation. Any format to store audio where the audio is split up into evenly-spaced samples at i.e. 41000 samples/second.
 /// The number for each sample is the amplitude of the sample. For floats, the range is -1 to 1.</para>
