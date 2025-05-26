@@ -92,6 +92,7 @@ public partial class AudioVisualsContainer : VBoxContainer
     {
         MouseExited += OnMouseExited;
         MusicPlayer.Paused += OnMusicPaused;
+        MusicPlayer.Finished += OnMusicFinished;
         GlobalEvents.Instance.TimingPointAdded += OnTimingPointAdded;
     }
 
@@ -124,6 +125,8 @@ public partial class AudioVisualsContainer : VBoxContainer
     }
 
     private void OnMusicPaused() => UpdatePlayHeads();
+
+    private void OnMusicFinished() => UpdatePlayHeads();
 
     public void CreateBlocks()
     {
