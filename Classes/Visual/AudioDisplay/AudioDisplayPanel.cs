@@ -17,6 +17,7 @@ using Godot;
 using GodotPlugins.Game;
 using Tempora.Classes.Utility;
 using Tempora.Classes.TimingClasses;
+using Tempora.Classes.Audio;
 
 namespace Tempora.Classes.Visual;
 
@@ -384,8 +385,10 @@ public partial class AudioDisplayPanel : Control
 
         float margin = Settings.Instance.MeasureOverlap;
 
-        float timeWherePanelStarts = Timing.Instance.MeasurePositionToOffset(ActualMeasurePositionStartForPanel);
-        float timeWherePanelEnds = Timing.Instance.MeasurePositionToOffset(ActualMeasurePositionEndForPanel);
+        float offsetOfFirstSampleInThisPanel = MathF.Max(Timing.Instance.MeasurePositionToOffset(ActualMeasurePositionStartForPanel), 0);
+        float offsetOfLastSampleInThisPanel = MathF.Min(Timing.Instance.MeasurePositionToOffset(ActualMeasurePositionEndForPanel), Project.Instance.AudioFile.GetAudioLength());
+
+        
 
         TimingPoint? previousTimingPoint = Timing.Instance.GetOperatingTimingPoint_ByMeasurePosition(ActualMeasurePositionStartForPanel);
 
@@ -394,7 +397,7 @@ public partial class AudioDisplayPanel : Control
         firstTimingPointInPanel = firstTimingPointInPanel?.MeasurePosition > ActualMeasurePositionEndForPanel ? null : firstTimingPointInPanel;
 
         // Create first waveform segment
-        AddWaveformSegment(timeWherePanelStarts, firstTimingPointInPanel?.Offset ?? timeWherePanelEnds);
+        AddWaveformSegment(offsetOfFirstSampleInThisPanel, firstTimingPointInPanel?.Offset ?? offsetOfLastSampleInThisPanel);
 
         if (firstTimingPointInPanel == null)
             return;
@@ -410,7 +413,7 @@ public partial class AudioDisplayPanel : Control
                 || (Timing.Instance.TimingPoints[i + 1].MeasurePosition > ActualMeasurePositionEndForPanel);
 
             float waveSegmentStartTime = Timing.Instance.TimingPoints[i].Offset;
-            float waveSegmentEndTime = isNextPointOutsideOfPanel ? timeWherePanelEnds : Timing.Instance.TimingPoints[i + 1].Offset;
+            float waveSegmentEndTime = isNextPointOutsideOfPanel ? offsetOfLastSampleInThisPanel : Timing.Instance.TimingPoints[i + 1].Offset;
 
             AddWaveformSegment(waveSegmentStartTime, waveSegmentEndTime);
 
