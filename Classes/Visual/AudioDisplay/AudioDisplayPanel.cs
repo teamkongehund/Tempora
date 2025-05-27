@@ -397,7 +397,7 @@ public partial class AudioDisplayPanel : Control
         firstTimingPointInPanel = firstTimingPointInPanel?.MeasurePosition > ActualMeasurePositionEndForPanel ? null : firstTimingPointInPanel;
 
         // Create first waveform segment
-        AddWaveformSegment(offsetOfFirstSampleInThisPanel, firstTimingPointInPanel?.Offset ?? offsetOfLastSampleInThisPanel);
+        AddAudioSegment(offsetOfFirstSampleInThisPanel, firstTimingPointInPanel?.Offset ?? offsetOfLastSampleInThisPanel);
 
         if (firstTimingPointInPanel == null)
             return;
