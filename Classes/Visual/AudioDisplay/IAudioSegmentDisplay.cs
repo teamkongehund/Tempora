@@ -9,5 +9,6 @@ internal interface IAudioSegmentDisplay
     public AudioFile AudioFile { get; set; }
     public float[] TimeRange { get; set; }
     public Color Color { get; set; }
+    public bool Visible { get; set; }
     public void Render();
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Security.AccessControl;
 using Godot;
 using Spectrogram;
 using Tempora.Classes.Audio;
@@ -53,19 +54,26 @@ public partial class SpectrogramSegment : Sprite2D, IAudioSegmentDisplay
     public static readonly Color DarkenedColor = GlobalConstants.AudioDarkened;
     private Color color = DefaultColor;
 
-    //private int fftSize = 16384;
-    private int fftSize = 256;
-
-    private int maxFreq = 5000;
+    private SpectrogramContext spectrogramContext;
 
     public override void _Ready()
     {
         Render();
     }
 
-    public SpectrogramSegment(AudioFile audioFile, float length, float height, float[] timeRange)
+    public SpectrogramSegment(AudioFile audioFile, SpectrogramContext spectrogramContext, float length, float height, float[] timeRange)
+    {
+        this.spectrogramContext = spectrogramContext;
+        InstantiateAndRender(audioFile, spectrogramContext, length, height, timeRange);
+    }
+
+    /// <summary>
+    /// Useful when the object is already in the scene tree and needs to be re-instantiated with new data.
+    /// </summary>
+    public void InstantiateAndRender(AudioFile audioFile, SpectrogramContext spectrogramContext, float length, float height, float[] timeRange)
     {
         AudioFile = audioFile;
+        this.spectrogramContext = spectrogramContext;
         AudioDataRange = [0, AudioFile.PcmLeft.Length];
         Height = height;
         Width = length;
@@ -75,66 +83,11 @@ public partial class SpectrogramSegment : Sprite2D, IAudioSegmentDisplay
 
     public void Render()
     {
-        //// This is the old code that was used to generate the spectrogram.
-
-        //int sampleIndexStart = AudioDataRange[0];
-        //int sampleEndIndex = AudioDataRange[1];
-
-        //double[] full_audio = AudioFile.GetPcmAsDoubles(16_000);
-        //double[] audio = full_audio[sampleIndexStart..sampleEndIndex];
-
-        //int stepSize = audio.Length / (int)Width;
-
-        //var sg = new SpectrogramGenerator(AudioFile.SampleRate, fftSize, stepSize, maxFreq: maxFreq);
-        //sg.Add(audio);
-        //sg.Colormap = defaultColormap;
-        ////sg.SaveImage("song.png", intensity: 5, dB: true);
-        //var ffts = sg.GetFFTs();
-        //try
-        //{
-        //    var bitmap = Spectrogram.Image.GetBitmap(ffts, defaultColormap, intensity: 5, dB: true);
-        //    Texture = SpectrogramHelper.ConvertBitmapToImageTextureNew(bitmap);
-
-        //    var textureSize = Texture.GetSize();
-        //    Vector2 scale = new Vector2(1f * Width / textureSize.X, 1f * Height / textureSize.Y);
-        //    GlobalScale = scale;
-
-        //    var trueSize = new Vector2(scale.X * textureSize.X, scale.Y * textureSize.Y);
-        //}
-        //catch
-        //{
-
-        //}
-        ////Position = new Vector2(trueSize.X / 2, trueSize.Y / 2);
-
         int sampleIndexStart = AudioDataRange[0];
         int sampleEndIndex = AudioDataRange[1];
 
-        double[] full_audio = AudioFile.GetPcmAsDoubles(16_000);
-        double[] audio = full_audio[sampleIndexStart..sampleEndIndex];
+        Texture = spectrogramContext.GetSpectrogramSlice(sampleIndexStart, sampleEndIndex, (int)Height, (int)Width);
 
-        int stepSize = audio.Length / (int)Width;
-
-        var sg = new SpectrogramGenerator(AudioFile.SampleRate, fftSize, stepSize, maxFreq: maxFreq);
-        sg.Add(audio);
-        sg.Colormap = defaultColormap;
-        //sg.SaveImage("song.png", intensity: 5, dB: true);
-        var ffts = sg.GetFFTs();
-        try
-        {
-            var bitmap = Spectrogram.Image.GetBitmap(ffts, defaultColormap, intensity: 5, dB: true);
-            Texture = SpectrogramHelper.GetSpectrogramSlice(sg.GetImage(), 0, (int)Width, (int)Height);
-
-            var textureSize = Texture.GetSize();
-            Vector2 scale = new Vector2(1f * Width / textureSize.X, 1f * Height / textureSize.Y);
-            GlobalScale = scale;
-
-            var trueSize = new Vector2(scale.X * textureSize.X, scale.Y * textureSize.Y);
-        }
-        catch
-        {
-            
-        }
-        //Position = new Vector2(trueSize.X / 2, trueSize.Y / 2);
+        var textureSize = Texture.GetSize();
     }
 }

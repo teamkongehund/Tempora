@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Tempora"
-run/main_scene="uid://nmqfh17770a"
+run/main_scene="uid://bk0ofb078cvgm"
 config/features=PackedStringArray("4.4", "C#", "Forward Plus")
 boot_splash/show_image=false
 config/icon="res://Images/Tempora2.png"

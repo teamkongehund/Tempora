@@ -211,11 +211,17 @@ public partial class WaveformSegment : Node2D, IAudioSegmentDisplay
 
     public WaveformSegment(AudioFile audioFile, float length, float height, float[] timeRange)
     {
+        Instantiate(audioFile, length, height, timeRange);
+    }
+
+    public void Instantiate(AudioFile audioFile, float length, float height, float[] timeRange)
+    {
         AudioFile = audioFile;
         AudioDataRange = [0, AudioFile.PcmLeft.Length];
         Height = height;
         Width = length;
         TimeRange = timeRange;
+        Color = DefaultColor;
         Render();
     }
 

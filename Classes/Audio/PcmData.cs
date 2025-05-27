@@ -200,17 +200,15 @@ public class PcmData
     /// </summary>
     public double[] GetPcmAsDoubles(double multiplier = 16_000)
     {
-        if (pcmFloats.Length > 0)
+        if (pcmFloats[0].Length > 0)
         {
-            return pcmFloats
-                .SelectMany(PCMDataConverter.ConvertToDouble)
-                .Select(x => x * multiplier)
+            return pcmFloats[0]
+                .Select(x => (double)x * multiplier)
                 .ToArray();
         }
         else
         {
-            return pcmBytes
-                .SelectMany(PCMDataConverter.ConvertToDouble)
+            return PCMDataConverter.ConvertToDouble(pcmBytes[0])
                 .Select(x => x * multiplier)
                 .ToArray();
         }
