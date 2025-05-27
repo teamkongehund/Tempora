@@ -1,4 +1,3 @@
-[gd_scene load_steps=3 format=3 uid="uid://nmqfh17770a"]
 
 [ext_resource type="Script" uid="uid://y3dbfymwqgl7" path="res://Classes/Visual/AudioDisplay/SpectrogramTest.cs" id="1_ld4yu"]
 [ext_resource type="AudioStream" uid="uid://cg5iojv5wlpgg" path="res://Audio/Loop.mp3" id="2_rqpx8"]

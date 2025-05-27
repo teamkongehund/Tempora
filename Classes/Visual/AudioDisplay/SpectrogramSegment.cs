@@ -133,7 +133,7 @@ public partial class SpectrogramSegment : Sprite2D, IAudioSegmentDisplay
         }
         catch
         {
-
+            
         }
         //Position = new Vector2(trueSize.X / 2, trueSize.Y / 2);
     }
