@@ -15,6 +15,7 @@ using System;
 using System.IO;
 using Godot;
 using Tempora.Classes.Audio;
+using Tempora.Classes.DataHelpers;
 
 namespace Tempora.Classes.Utility;
 
@@ -46,6 +47,8 @@ public partial class Project : Node
 
     public event EventHandler NotificationMessageChanged = null!;
     private string notificationMessage = null!;
+    private Image? cachedSpectrogram;
+
     public string NotificationMessage
     {
         get => notificationMessage;
@@ -68,6 +71,20 @@ public partial class Project : Node
             audioFile = value;
             GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.Instance.AudioFileChanged), this, EventArgs.Empty);
         }
+    }
+
+    public Godot.Image? CachedSpectrogram
+    {
+        get
+        {
+            if (cachedSpectrogram == null)
+            {
+                SpectrogramHelper.
+            }
+            return cachedSpectrogram;
+        }
+
+        set => cachedSpectrogram = value;
     }
 
     // Called when the node enters the scene tree for the first time.

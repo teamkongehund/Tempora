@@ -75,6 +75,38 @@ public partial class SpectrogramSegment : Sprite2D, IAudioSegmentDisplay
 
     public void Render()
     {
+        //// This is the old code that was used to generate the spectrogram.
+
+        //int sampleIndexStart = AudioDataRange[0];
+        //int sampleEndIndex = AudioDataRange[1];
+
+        //double[] full_audio = AudioFile.GetPcmAsDoubles(16_000);
+        //double[] audio = full_audio[sampleIndexStart..sampleEndIndex];
+
+        //int stepSize = audio.Length / (int)Width;
+
+        //var sg = new SpectrogramGenerator(AudioFile.SampleRate, fftSize, stepSize, maxFreq: maxFreq);
+        //sg.Add(audio);
+        //sg.Colormap = defaultColormap;
+        ////sg.SaveImage("song.png", intensity: 5, dB: true);
+        //var ffts = sg.GetFFTs();
+        //try
+        //{
+        //    var bitmap = Spectrogram.Image.GetBitmap(ffts, defaultColormap, intensity: 5, dB: true);
+        //    Texture = SpectrogramHelper.ConvertBitmapToImageTextureNew(bitmap);
+
+        //    var textureSize = Texture.GetSize();
+        //    Vector2 scale = new Vector2(1f * Width / textureSize.X, 1f * Height / textureSize.Y);
+        //    GlobalScale = scale;
+
+        //    var trueSize = new Vector2(scale.X * textureSize.X, scale.Y * textureSize.Y);
+        //}
+        //catch
+        //{
+
+        //}
+        ////Position = new Vector2(trueSize.X / 2, trueSize.Y / 2);
+
         int sampleIndexStart = AudioDataRange[0];
         int sampleEndIndex = AudioDataRange[1];
 
@@ -91,7 +123,7 @@ public partial class SpectrogramSegment : Sprite2D, IAudioSegmentDisplay
         try
         {
             var bitmap = Spectrogram.Image.GetBitmap(ffts, defaultColormap, intensity: 5, dB: true);
-            Texture = SpectrogramHelper.ConvertBitmapToImageTextureNew(bitmap);
+            Texture = SpectrogramHelper.GetSpectrogramSlice(sg.GetImage(), 0, (int)Width, (int)Height);
 
             var textureSize = Texture.GetSize();
             Vector2 scale = new Vector2(1f * Width / textureSize.X, 1f * Height / textureSize.Y);
@@ -101,7 +133,7 @@ public partial class SpectrogramSegment : Sprite2D, IAudioSegmentDisplay
         }
         catch
         {
-            
+
         }
         //Position = new Vector2(trueSize.X / 2, trueSize.Y / 2);
     }

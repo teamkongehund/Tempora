@@ -397,7 +397,7 @@ public partial class AudioDisplayPanel : Control
         firstTimingPointInPanel = firstTimingPointInPanel?.MeasurePosition > ActualMeasurePositionEndForPanel ? null : firstTimingPointInPanel;
 
         // Create first waveform segment
-        AddAudioSegment(offsetOfFirstSampleInThisPanel, firstTimingPointInPanel?.Offset ?? offsetOfLastSampleInThisPanel);
+        AddAudioSegment(offsetOfFirstSampleInThisPanel, firstTimingPointInPanel?.Offset ?? offsetOfLastSampleInThisPanel, Settings.Instance.RenderAsSpectrogram);
 
         if (firstTimingPointInPanel == null)
             return;
@@ -415,14 +415,14 @@ public partial class AudioDisplayPanel : Control
             float waveSegmentStartTime = Timing.Instance.TimingPoints[i].Offset;
             float waveSegmentEndTime = isNextPointOutsideOfPanel ? offsetOfLastSampleInThisPanel : Timing.Instance.TimingPoints[i + 1].Offset;
 
-            AddAudioSegment(waveSegmentStartTime, waveSegmentEndTime);
+            AddAudioSegment(waveSegmentStartTime, waveSegmentEndTime, Settings.Instance.RenderAsSpectrogram);
 
             if (isNextPointOutOfRange)
                 return;
         }
     }
 
-    private void AddAudioSegment(float waveSegmentStartTime, float waveSegmentEndTime)
+    private void AddAudioSegment(float waveSegmentStartTime, float waveSegmentEndTime, bool renderAsSpectrogram)
     {
         float measurePositionStart = Timing.Instance.OffsetToMeasurePosition(waveSegmentStartTime);
         float measurePositionEnd = Timing.Instance.OffsetToMeasurePosition(waveSegmentEndTime);
@@ -444,7 +444,7 @@ public partial class AudioDisplayPanel : Control
             || (Time.GetTicksMsec() - heldTimingPoint.SystemTimeWhenCreatedMsec) < 30; ;
 
         IAudioSegmentDisplay audioSegment;
-        switch (Settings.Instance.RenderAsSpectrogram)
+        switch (renderAsSpectrogram)
         {
             case false:
                 audioSegment = new WaveformSegment(Project.Instance.AudioFile, length, Size.Y, [waveSegmentStartTime, waveSegmentEndTime])
