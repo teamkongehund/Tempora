@@ -69,12 +69,20 @@ public partial class Project : Node
             if (audioFile == value)
                 return;
             audioFile = value;
-            SpectrogramContext = new(SpectrogramHelper.GetSpectrogramGenerator(AudioFile, 64, 256, 500, 16000));
+            UpdateSpectrogramContextFromSettings();
             GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.Instance.AudioFileChanged), this, EventArgs.Empty);
         }
     }
 
     public SpectrogramContext SpectrogramContext { get; set; } = null!;
+
+    private void UpdateSpectrogramContextFromSettings()
+    {
+        int stepSize = 64;
+        int fftSize = 256;
+        int maxFreq = 2200;
+        SpectrogramContext = new(SpectrogramHelper.GetSpectrogramGenerator(AudioFile, stepSize, fftSize, maxFreq, 16000));
+    }
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()

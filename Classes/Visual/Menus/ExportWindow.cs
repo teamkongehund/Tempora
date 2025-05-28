@@ -45,26 +45,26 @@ public partial class ExportWindow : Window
         AboutToPopup += OnAboutToPopup;
     }
 
-    private void LoadValuesFromSettings()
+    private void LoadValuesFromSettings(Settings settings)
     {
-        exportOffsetEdit.Text = Settings.Instance.ExportOffsetMs.ToString();
-        unsupportedTimeSignatures.ButtonPressed = Settings.Instance.MeasureResetsOnUnsupportedTimeSignatures;
-        removePointsThatChangeNothing.ButtonPressed = Settings.Instance.RemovePointsThatChangeNothing;
-        addExtraPointsOnDownbeats.ButtonPressed = Settings.Instance.AddExtraPointsOnDownbeats;
-        addExtraPointsOnQuarterNotes.ButtonPressed = Settings.Instance.AddExtraPointsOnQuarterNotes;
-        omitBarlines.ButtonPressed = Settings.Instance.OmitBarlines;
-        preventDoubleBarlines.ButtonPressed = Settings.Instance.PreventDoubleBarlines;
-        beatSaberExportFormat.Select(beatSaberExportFormat.GetItemIndex(Settings.Instance.BeatSaberExportFormat));
+        exportOffsetEdit.Text = settings.ExportOffsetMs.ToString();
+        unsupportedTimeSignatures.ButtonPressed = settings.MeasureResetsOnUnsupportedTimeSignatures;
+        removePointsThatChangeNothing.ButtonPressed = settings.RemovePointsThatChangeNothing;
+        addExtraPointsOnDownbeats.ButtonPressed = settings.AddExtraPointsOnDownbeats;
+        addExtraPointsOnQuarterNotes.ButtonPressed = settings.AddExtraPointsOnQuarterNotes;
+        omitBarlines.ButtonPressed = settings.OmitBarlines;
+        preventDoubleBarlines.ButtonPressed = settings.PreventDoubleBarlines;
+        beatSaberExportFormat.Select(beatSaberExportFormat.GetItemIndex(settings.BeatSaberExportFormat));
     }
 
     private void OnAboutToPopup()
     {
-        LoadValuesFromSettings();
+        LoadValuesFromSettings(Settings.Instance);
     }
 
     private void OnOkButtonPressed()
     {
-        SaveSettings();
+        SaveSettings(Settings.Instance);
         Hide();
         Settings.Instance.SaveSettings();
         Project.Instance.NotificationMessage = "Saved export options.";
@@ -75,21 +75,21 @@ public partial class ExportWindow : Window
         ResetToDefaults();
     }
 
-    private void SaveSettings()
+    private void SaveSettings(Settings settings)
     {
         bool exportOffsetParsed = int.TryParse(exportOffsetEdit.Text, out int exportOffset);
         if (exportOffsetParsed)
         {
-            Settings.Instance.ExportOffsetMs = exportOffset;
+            settings.ExportOffsetMs = exportOffset;
         }
 
-        Settings.Instance.MeasureResetsOnUnsupportedTimeSignatures = unsupportedTimeSignatures.ButtonPressed;
-        Settings.Instance.RemovePointsThatChangeNothing = removePointsThatChangeNothing.ButtonPressed;
-        Settings.Instance.AddExtraPointsOnDownbeats = addExtraPointsOnDownbeats.ButtonPressed;
-        Settings.Instance.AddExtraPointsOnQuarterNotes = addExtraPointsOnQuarterNotes.ButtonPressed;
-        Settings.Instance.OmitBarlines = omitBarlines.ButtonPressed;
-        Settings.Instance.PreventDoubleBarlines = preventDoubleBarlines.ButtonPressed;
-        Settings.Instance.BeatSaberExportFormat = beatSaberExportFormat.GetSelectedId();
+        settings.MeasureResetsOnUnsupportedTimeSignatures = unsupportedTimeSignatures.ButtonPressed;
+        settings.RemovePointsThatChangeNothing = removePointsThatChangeNothing.ButtonPressed;
+        settings.AddExtraPointsOnDownbeats = addExtraPointsOnDownbeats.ButtonPressed;
+        settings.AddExtraPointsOnQuarterNotes = addExtraPointsOnQuarterNotes.ButtonPressed;
+        settings.OmitBarlines = omitBarlines.ButtonPressed;
+        settings.PreventDoubleBarlines = preventDoubleBarlines.ButtonPressed;
+        settings.BeatSaberExportFormat = beatSaberExportFormat.GetSelectedId();
     }
 
     private void ResetToDefaults()

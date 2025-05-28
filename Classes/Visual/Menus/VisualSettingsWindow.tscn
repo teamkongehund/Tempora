@@ -1,0 +1,130 @@
+[gd_scene load_steps=2 format=3 uid="uid://wi7ri7bbxla8"]
+
+[ext_resource type="Script" uid="uid://dcydeovs4aanr" path="res://Classes/Visual/Menus/ExportWindow.cs" id="1_irav1"]
+
+[node name="VisualSettingsWindow" type="Window" node_paths=PackedStringArray("exportOffsetEdit", "unsupportedTimeSignatures", "removePointsThatChangeNothing", "addExtraPointsOnDownbeats", "addExtraPointsOnQuarterNotes", "omitBarlines", "preventDoubleBarlines", "beatSaberExportFormat", "okButton", "defaultsButton")]
+title = "Visual Settings"
+position = Vector2i(0, 36)
+size = Vector2i(460, 380)
+script = ExtResource("1_irav1")
+exportOffsetEdit = NodePath("TabContainer/Spectrogram/Intensity/LineEdit")
+unsupportedTimeSignatures = NodePath("TabContainer/Spectrogram/dB/CheckBox")
+removePointsThatChangeNothing = NodePath("")
+addExtraPointsOnDownbeats = NodePath("")
+addExtraPointsOnQuarterNotes = NodePath("")
+omitBarlines = NodePath("")
+preventDoubleBarlines = NodePath("")
+beatSaberExportFormat = NodePath("")
+okButton = NodePath("BottomButtonsHBox/OkButton")
+defaultsButton = NodePath("TabContainer/Spectrogram/DefaultsButton")
+
+[node name="TabContainer" type="TabContainer" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -230.0
+offset_right = 230.0
+offset_bottom = 329.0
+grow_horizontal = 2
+size_flags_vertical = 0
+current_tab = 0
+
+[node name="Spectrogram" type="VBoxContainer" parent="TabContainer"]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="DefaultsButton" type="Button" parent="TabContainer/Spectrogram"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+text = "Reset to Defaults"
+
+[node name="SectionOverall" type="Label" parent="TabContainer/Spectrogram"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "Main"
+
+[node name="stepSize" type="HBoxContainer" parent="TabContainer/Spectrogram"]
+layout_mode = 2
+
+[node name="LineEdit" type="LineEdit" parent="TabContainer/Spectrogram/stepSize"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="TabContainer/Spectrogram/stepSize"]
+layout_mode = 2
+size_flags_horizontal = 8
+text = "stepSize (Default: 64)"
+
+[node name="fftSize" type="HBoxContainer" parent="TabContainer/Spectrogram"]
+layout_mode = 2
+
+[node name="LineEdit" type="LineEdit" parent="TabContainer/Spectrogram/fftSize"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="TabContainer/Spectrogram/fftSize"]
+layout_mode = 2
+size_flags_horizontal = 8
+text = "fftSize (Default: 256)"
+
+[node name="Intensity" type="HBoxContainer" parent="TabContainer/Spectrogram"]
+layout_mode = 2
+
+[node name="LineEdit" type="LineEdit" parent="TabContainer/Spectrogram/Intensity"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="TabContainer/Spectrogram/Intensity"]
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Intensity (Default: 5)"
+
+[node name="maxFreq" type="HBoxContainer" parent="TabContainer/Spectrogram"]
+layout_mode = 2
+
+[node name="LineEdit" type="LineEdit" parent="TabContainer/Spectrogram/maxFreq"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="TabContainer/Spectrogram/maxFreq"]
+layout_mode = 2
+size_flags_horizontal = 8
+text = "maxFreq (Default: 2200)"
+
+[node name="dB" type="HBoxContainer" parent="TabContainer/Spectrogram"]
+layout_mode = 2
+
+[node name="CheckBox" type="CheckBox" parent="TabContainer/Spectrogram/dB"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="TabContainer/Spectrogram/dB"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "dB"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="BottomButtonsHBox" type="HBoxContainer" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -230.0
+offset_top = -360.0
+offset_right = 230.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="OkButton" type="Button" parent="BottomButtonsHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 8
+text = "Ok"
+
+[node name="ApplyButton" type="Button" parent="BottomButtonsHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 8
+text = "Apply"
