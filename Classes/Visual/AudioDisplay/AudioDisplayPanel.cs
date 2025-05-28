@@ -400,21 +400,31 @@ public partial class AudioDisplayPanel : Control
             }
         }
 
+        int childIndexOffset = 0;
         for (int panelIndex = 0; panelIndex < panelSegments.Count; panelIndex++)
         {
-            // Get the child of index panelIndex, if it exists.
-            Node? child = panelIndex < children.Count ? children[panelIndex] : null;
+            Node? existingSegment = null;
 
-            if ((shouldRenderSpectrogram && child is not SpectrogramSegment && child is not null)
-                || (!shouldRenderSpectrogram && child is not WaveformSegment && child is not null))
+            // If a child exists of the correct audio display type, modify it instead of making a new one.
+            while (panelIndex + childIndexOffset < children.Count)
             {
-                throw new Exception($"Child {child} was of type {child?.GetType()} but expected {(shouldRenderSpectrogram ? nameof(SpectrogramSegment) : nameof(WaveformSegment))}");
+                existingSegment = children[panelIndex + childIndexOffset];
+                if ((shouldRenderSpectrogram && existingSegment is not SpectrogramSegment && existingSegment is not null)
+                || (!shouldRenderSpectrogram && existingSegment is not WaveformSegment && existingSegment is not null))
+                {
+                    existingSegment = null;
+                    childIndexOffset++;
+                    continue;
+                }
+
+                childIndexOffset++;
+                break;
             }
 
             float segmentStart = panelSegments[panelIndex][0];
             float segmentEnd = panelSegments[panelIndex][1];
 
-            ModifyOrAddAudioSegment(segmentStart, segmentEnd, shouldRenderSpectrogram, existingSegment: child);
+            ModifyOrAddAudioSegment(segmentStart, segmentEnd, shouldRenderSpectrogram, existingSegment: existingSegment);
         }
     }
 

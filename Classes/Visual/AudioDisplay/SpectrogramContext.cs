@@ -88,8 +88,10 @@ public class SpectrogramContext
     private int SampleToX(int sample)
     {
         int numSamples = GetPcmData().PcmFloats[0].Length;
-        if (sample < 0 || sample >= numSamples)
-            throw new ArgumentOutOfRangeException(nameof(sample), "Sample index out of range.");
+        
+        // out of range samples are allowed
+        //if (sample < 0 || sample >= numSamples)
+        //    throw new ArgumentOutOfRangeException(nameof(sample), "Sample index out of range.");
 
         int cachedWidth = cachedSpectrogramImage?.GetWidth() ?? 0;
 
