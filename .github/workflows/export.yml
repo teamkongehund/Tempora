@@ -3,6 +3,7 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
 jobs:
   # job id, can be anything
   export_game:
