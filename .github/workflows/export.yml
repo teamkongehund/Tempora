@@ -1,9 +1,8 @@
 # Whenever a tag push matching pattern "v*" then run the job
 on: 
-  #push:
-  #  tags:
-  #    - "v*"
-  pull_request: # For testing only. Remove this when you have verified that this works.
+  push:
+    tags:
+      - "v*"
 jobs:
   # job id, can be anything
   export_game:
