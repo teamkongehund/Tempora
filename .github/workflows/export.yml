@@ -1,8 +1,8 @@
 # Whenever a tag push matching pattern "v*" then run the job
 on: 
-  push:
-    tags:
-      - "v*"
+  #push:
+  #  tags:
+  #    - "v*"
   pull_request: # For testing only. Remove this when you have verified that this works.
 jobs:
   # job id, can be anything
