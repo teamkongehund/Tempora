@@ -62,7 +62,7 @@ public partial class Timing
     }
 
     /// <summary>
-    /// Calculates the <see cref="TimingPoint.MeasuresPerSecond"/> of a <see cref="TimingPoint"/> based on adjacent points. Returns null if the value is free to be anything.
+    /// Calculates the <see cref="TimingPoint.MeasuresPerSecond"/> of a <see cref="TimingPoint"/> based on adjacent points. Returns null if the value is free to be anything. 
     /// </summary>
     /// <param name="timingPoint"></param>
     /// <returns></returns>
