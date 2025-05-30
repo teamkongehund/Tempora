@@ -278,13 +278,11 @@ public partial class Timing
             TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
             float? nextPointPosition = nextTimingPoint?.MeasurePosition;
 
-            //float epsilon = 0.00001f;
-            //bool isOnQuarterNote = (timingPoint.MeasurePosition % beatLength < epsilon || (beatLength - timingPoint.MeasurePosition % beatLength) < epsilon);
-
             bool isOnQuarterNote = IsPositionOnDivisor((float)timingPoint.MeasurePosition, timingPoint.TimeSignature, 4);
+            bool isNextPointOnQuarterNote = nextTimingPoint != null ? IsPositionOnDivisor((float)(nextTimingPoint?.MeasurePosition!), nextTimingPoint.TimeSignature, 4) : false;
 
             bool nextPointIsOnOrBeforeNextQuarterNote = (nextTimingPoint != null
-                && nextPointPosition <= beatPosition + beatLength);
+                && (isNextPointOnQuarterNote || nextPointPosition!.Value < beatPosition + beatLength));
             if (isOnQuarterNote || nextPointIsOnOrBeforeNextQuarterNote)
                 continue;
 
