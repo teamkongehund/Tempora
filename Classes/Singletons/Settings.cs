@@ -21,59 +21,79 @@ namespace Tempora.Classes.Utility;
 
 public partial class Settings : Node
 {
-	public static Settings Instance { get => instance; set => instance = value; }
-	public static readonly Dictionary<int, int> GridSliderToDivisorDict = new() {
-		{ 1, 1 },
-		{ 2, 2 },
-		{ 3, 3 },
-		{ 4, 4 },
-		{ 5, 6 },
-		{ 6, 8 },
-		{ 7, 12 },
-		{ 8, 16 }
-	};
-	#region Grid
-	/// <summary>
-	///     Snap timing points to beat grid when moving them.
-	///     Should always be true because osu's timing points are always on-grid.
-	///     Probably best to exclude from any settings menu beacuse of this.
-	/// </summary>
-	public bool SnapToGridEnabled = true; 
-	/// <summary>
-	///     Musical grid divisor - can be thought of as 1/Divisor - i.e. a value of 4 means "display quarter notes"
-	/// </summary>
-	public int GridDivisor
-	{
-		get => divisor;
-		set
-		{
-			if (divisor == value)
-				return;
-			divisor = value;
-			GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.SettingsChanged));
+    private static Settings instance = null!;
+    private static readonly string[] separator = ["\r\n", "\r", "\n"];
+    private int numberOfBlocks = 10;
+    private float measureOverlap;
+    private bool metronomeFollowsGrid;
+    private bool roundBPM;
+    private int divisor = 1;
+    private bool autoScrollWhenAddingTimingPoints = false;
+    private string settingsPath = "user://settings.txt";
+    private string projectFilesDirectory = "";
+    private string oszFilesDirectory = "";
+    private string beatSaberFilesDirectory = "";
+    private float downbeatPositionOffset = 0.125f;
+    private bool seekPlaybackOnTimingPointChanges = true;
+    private bool moveSubsequentTimingPointsWhenChangingTimeSignature = true;
+    private double musicVolumeNormalized = 0.75f;
+    private double metronomeVolumeNormalized = 1f;
+    private double masterVolumeNormalized = 0.25f;
+    private int beatsaberExportFormat = 4;
+
+    public static Settings Instance { get => instance; set => instance = value; }
+    public static readonly Dictionary<int, int> GridSliderToDivisorDict = new() {
+        { 1, 1 },
+        { 2, 2 },
+        { 3, 3 },
+        { 4, 4 },
+        { 5, 6 },
+        { 6, 8 },
+        { 7, 12 },
+        { 8, 16 }
+    };
+    #region Grid
+    /// <summary>
+    ///     Snap timing points to beat grid when moving them.
+    ///     Should always be true because osu's timing points are always on-grid.
+    ///     Probably best to exclude from any settings menu beacuse of this.
+    /// </summary>
+    public bool SnapToGridEnabled = true;
+    /// <summary>
+    ///     Musical grid divisor - can be thought of as 1/Divisor - i.e. a value of 4 means "display quarter notes"
+    /// </summary>
+    public int GridDivisor
+    {
+        get => divisor;
+        set
+        {
+            if (divisor == value)
+                return;
+            divisor = value;
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.SettingsChanged));
             SaveSettings();
         }
-	}
-	#endregion
-	#region Files settings
-	public string ProjectFilesDirectory
-	{
-		get => projectFilesDirectory;
-		set
-		{
-			projectFilesDirectory = value;
-			SaveSettings();
-		}
-	}
-	public string OszFilesDirectory
-	{
-		get => oszFilesDirectory;
-		set
-		{
-			oszFilesDirectory = value;
-			SaveSettings();
-		}
-	}
+    }
+    #endregion
+    #region Files settings
+    public string ProjectFilesDirectory
+    {
+        get => projectFilesDirectory;
+        set
+        {
+            projectFilesDirectory = value;
+            SaveSettings();
+        }
+    }
+    public string OszFilesDirectory
+    {
+        get => oszFilesDirectory;
+        set
+        {
+            oszFilesDirectory = value;
+            SaveSettings();
+        }
+    }
 
     public string BeatSaberFilesDirectory
     {
@@ -84,78 +104,79 @@ public partial class Settings : Node
             SaveSettings();
         }
     }
-	#endregion
-	#region Timeline
-	public readonly int MaxNumberOfBlocks = 30;
-	/// <summary>
-	///     Number of waveform blocks to display
-	/// </summary>
-	public int NumberOfRows
-	{
-		get => numberOfBlocks;
-		set
-		{
-			if (numberOfBlocks == value)
-				return;
-			numberOfBlocks = value;
+    #endregion
+    #region Timeline
+    public readonly int MaxNumberOfBlocks = 30;
+    /// <summary>
+    ///     Number of waveform blocks to display
+    /// </summary>
+    public int NumberOfRows
+    {
+        get => numberOfBlocks;
+        set
+        {
+            if (numberOfBlocks == value)
+                return;
+            numberOfBlocks = value;
             //GD.Print($"NumberOfBlocks changed to {numberOfBlocks}");
             GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.SettingsChanged));
             SaveSettings();
-		}
-	}
-	/// <summary>
-	///     How many measures of overlapping time is added to the beginning and end of each waveform block
-	/// </summary>
-	public float MeasureOverlap
-	{
-		get => measureOverlap;
-		set
-		{
-			if (measureOverlap == value)
-				return;
-			measureOverlap = value;
-			GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.SettingsChanged));
+        }
+    }
+    /// <summary>
+    ///     How many measures of overlapping time is added to the beginning and end of each waveform block
+    /// </summary>
+    public float MeasureOverlap
+    {
+        get => measureOverlap;
+        set
+        {
+            if (measureOverlap == value)
+                return;
+            measureOverlap = value;
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.SettingsChanged));
             SaveSettings();
         }
-	}
-	public float DownbeatPositionOffset
-	{
-		get => downbeatPositionOffset;
-		set
-		{
-			if (downbeatPositionOffset == value)
-				return;
-			downbeatPositionOffset = value;
-			GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.SettingsChanged));
+    }
+    public float DownbeatPositionOffset
+    {
+        get => downbeatPositionOffset;
+        set
+        {
+            if (downbeatPositionOffset == value)
+                return;
+            downbeatPositionOffset = value;
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.SettingsChanged));
             SaveSettings();
         }
-	}
-	#endregion
-	public bool MetronomeFollowsGrid
-	{
-		get => metronomeFollowsGrid;
-		set
-		{
-			if (metronomeFollowsGrid == value)
-				return;
-			metronomeFollowsGrid = value;
-			GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.SettingsChanged));
+    }
+    #endregion
+    public bool MetronomeFollowsGrid
+    {
+        get => metronomeFollowsGrid;
+        set
+        {
+            if (metronomeFollowsGrid == value)
+                return;
+            metronomeFollowsGrid = value;
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.SettingsChanged));
             SaveSettings();
         }
-	}
-	public bool RoundBPM
-	{
-		get => roundBPM;
-		set
-		{
-			if (roundBPM != value)
-			{
-				roundBPM = value;
-				GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.SettingsChanged));
+    }
+    public bool RoundBPM
+    {
+        get => roundBPM;
+        set
+        {
+            if (roundBPM != value)
+            {
+                roundBPM = value;
+                GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.SettingsChanged));
                 SaveSettings();
             }
-		}
-	}
+        }
+    }
+
     public bool SeekPlaybackOnTimingPointChanges
     {
         get => seekPlaybackOnTimingPointChanges;
@@ -228,27 +249,22 @@ public partial class Settings : Node
             SaveSettings();
         }
     }
+    private bool renderAsSpectrogram = true;
+    public int SpectrogramStepSize { get => spectrogramStepSize; set => spectrogramStepSize = Math.Abs(value); }
+    public int SpectrogramFftSize { get => spectrogramFftSize; set => spectrogramFftSize = Math.Abs(value); }
+    public int SpectrogramMaxFreq { get => spectrogramMaxFreq; set => spectrogramMaxFreq = Math.Abs(value); }
+    public int SpectrogramIntensity { get => spectrogramIntensity; set => spectrogramIntensity = Math.Abs(value); }
+    public bool SpectrogramUseDb { get; set; } = true;
+    public bool RenderAsSpectrogram
+    {
+        get => renderAsSpectrogram; set
+        {
+            renderAsSpectrogram = value;
+            SaveSettings();
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.SettingsChanged));
+        }
+    }
 
-    private static Settings instance = null!;
-	private static readonly string[] separator = ["\r\n", "\r", "\n"];
-	private int numberOfBlocks = 10;
-	private float measureOverlap;
-	private bool metronomeFollowsGrid;
-	private bool roundBPM;
-	private int divisor = 1;
-    private bool autoScrollWhenAddingTimingPoints = false;
-	private string settingsPath = "user://settings.txt";
-	private string projectFilesDirectory = "";
-	private string oszFilesDirectory = "";
-    private string beatSaberFilesDirectory = "";
-	private float downbeatPositionOffset = 0.125f;
-    private bool seekPlaybackOnTimingPointChanges = true;
-    private bool moveSubsequentTimingPointsWhenChangingTimeSignature = true;
-    private double musicVolumeNormalized = 0.75f;
-    private double metronomeVolumeNormalized = 1f;
-    private double masterVolumeNormalized = 0.25f;
-    private int beatsaberExportFormat = 4;
-    
     private enum Setting
     {
         ProjectFilesDirectory,
@@ -273,10 +289,16 @@ public partial class Settings : Node
         MusicVolumeNormalized,
         MetronomeVolumeNormalized,
         MasterVolumeNormalized,
-        BeatSaberExportFormat
+        BeatSaberExportFormat,
+        RenderAsSpectrogram,
+        SpectrogramStepSize,
+        SpectrogramFftSize,
+        SpectrogramMaxFreq,
+        SpectrogramIntensity,
+        SpectrogramUseDb
     }
-    private Dictionary<Setting, string> settingStrings = new ()
-    {
+    private Dictionary<Setting, string> settingStrings = new()
+       {
         {Setting.ProjectFilesDirectory, "ProjectFilesDirectory"},
         {Setting.OszFilesDirectory, "OszFilesDirectory"},
         {Setting.BeatSaberFilesDirectory, "BeatSaberFilesDirectory"},
@@ -299,47 +321,57 @@ public partial class Settings : Node
         {Setting.MusicVolumeNormalized, "MusicVolumeNormalized" },
         {Setting.MetronomeVolumeNormalized, "MetronomeVolumeNormalized" },
         {Setting.MasterVolumeNormalized, "MasterVolumeNormalized" },
-        {Setting.BeatSaberExportFormat, "BeatSaberExportFormat" }
-    };
+        {Setting.BeatSaberExportFormat, "BeatSaberExportFormat" },
+        {Setting.RenderAsSpectrogram, "RenderAsSpectrogram" },
+        {Setting.SpectrogramStepSize, "SpectrogramStepSize"},
+        {Setting.SpectrogramFftSize, "SpectrogramFftSize"},
+        {Setting.SpectrogramMaxFreq, "SpectrogramMaxFreq"},
+        {Setting.SpectrogramIntensity, "SpectrogramIntensity"},
+        {Setting.SpectrogramUseDb, "SpectrogramUseDb" }
+       };
+    private int spectrogramIntensity = 5;
+    private int spectrogramMaxFreq = 2200;
+    private int spectrogramFftSize = 256;
+    private int spectrogramStepSize = 64;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
-	{
-		Instance = this;
-		LoadSettings();
+    {
+        Instance = this;
+        LoadSettings();
         ApplyVolumeSettingsToAudioServer();
     }
 
-	public void LoadSettings()
-	{
-		if (string.IsNullOrEmpty(settingsPath))
-			return;
-		string settingsFile;
-		try
-		{
-			settingsFile = FileHandler.LoadText(settingsPath);
-		}
-		catch
-		{
-			GD.Print($"Failed to load {settingsPath}: No settings file saved in user folder.");
-			return;
-		}
-		string[] lines = settingsFile.Split(separator, StringSplitOptions.None);
-		for (int i = 0; i < lines.Length; i++)
-		{
-			string line = lines[i];
-			string[] lineSplit = line.Split(";");
-			if (lineSplit.Length != 2 || lineSplit[1] == "")
-				continue;
+public void LoadSettings()
+    {
+        if (string.IsNullOrEmpty(settingsPath))
+            return;
+        string settingsFile;
+        try
+        {
+            settingsFile = FileHandler.LoadText(settingsPath);
+        }
+        catch
+        {
+            GD.Print($"Failed to load {settingsPath}: No settings file saved in user folder.");
+            return;
+        }
+        string[] lines = settingsFile.Split(separator, StringSplitOptions.None);
+        for (int i = 0; i < lines.Length; i++)
+        {
+            string line = lines[i];
+            string[] lineSplit = line.Split(";");
+            if (lineSplit.Length != 2 || lineSplit[1] == "")
+                continue;
 
-			switch (lineSplit[0])
-			{
-				case var value when value == settingStrings[Setting.ProjectFilesDirectory]:
-					ProjectFilesDirectory = lineSplit[1];
-					break;
+            switch (lineSplit[0])
+            {
+                case var value when value == settingStrings[Setting.ProjectFilesDirectory]:
+                    ProjectFilesDirectory = lineSplit[1];
+                    break;
                 case var value when value == settingStrings[Setting.OszFilesDirectory]:
                     OszFilesDirectory = lineSplit[1];
-					break;
+                    break;
                 case var value when value == settingStrings[Setting.BeatSaberFilesDirectory]:
                     BeatSaberFilesDirectory = lineSplit[1];
                     break;
@@ -422,13 +454,36 @@ public partial class Settings : Node
                     _ = int.TryParse(lineSplit[1], out parsedInt);
                     BeatSaberExportFormat = parsedInt;
                     break;
+                case var value when value == settingStrings[Setting.RenderAsSpectrogram]:
+                    _ = bool.TryParse(lineSplit[1], out parsedBool);
+                    RenderAsSpectrogram = parsedBool;
+                    break;
+                case var value when value == settingStrings[Setting.SpectrogramStepSize]:
+                    _ = int.TryParse(lineSplit[1], out parsedInt);
+                    SpectrogramStepSize = parsedInt;
+                    break;
+                case var value when value == settingStrings[Setting.SpectrogramFftSize]:
+                    _ = int.TryParse(lineSplit[1], out parsedInt);
+                    SpectrogramFftSize = parsedInt;
+                    break;
+                case var value when value == settingStrings[Setting.SpectrogramMaxFreq]:
+                    _ = int.TryParse(lineSplit[1], out parsedInt);
+                    SpectrogramMaxFreq = parsedInt;
+                    break;
+                case var value when value == settingStrings[Setting.SpectrogramIntensity]:
+                    _ = int.TryParse(lineSplit[1], out parsedInt);
+                    SpectrogramIntensity = parsedInt;
+                    break;
+                case var value when value == settingStrings[Setting.SpectrogramUseDb]:
+                    _ = bool.TryParse(lineSplit[1], out parsedBool);
+                    SpectrogramUseDb = parsedBool;
+                    break;
             }
-		}
-	}
-
-	public void SaveSettings()
-	{
-		string settingsFile = "";
+        }
+    }
+public void SaveSettings()
+    {
+        string settingsFile = "";
         settingsFile += GetSettingsFileLine(settingStrings[Setting.ProjectFilesDirectory], ProjectFilesDirectory);
         settingsFile += GetSettingsFileLine(settingStrings[Setting.OszFilesDirectory], OszFilesDirectory);
         settingsFile += GetSettingsFileLine(settingStrings[Setting.BeatSaberFilesDirectory], BeatSaberFilesDirectory);
@@ -452,12 +507,18 @@ public partial class Settings : Node
         settingsFile += GetSettingsFileLine(settingStrings[Setting.MetronomeVolumeNormalized], MetronomeVolumeNormalized.ToString());
         settingsFile += GetSettingsFileLine(settingStrings[Setting.MasterVolumeNormalized], MasterVolumeNormalized.ToString());
         settingsFile += GetSettingsFileLine(settingStrings[Setting.BeatSaberExportFormat], BeatSaberExportFormat.ToString());
+        settingsFile += GetSettingsFileLine(settingStrings[Setting.RenderAsSpectrogram], RenderAsSpectrogram.ToString());
+        settingsFile += GetSettingsFileLine(settingStrings[Setting.SpectrogramStepSize], SpectrogramStepSize.ToString());
+        settingsFile += GetSettingsFileLine(settingStrings[Setting.SpectrogramFftSize], SpectrogramFftSize.ToString());
+        settingsFile += GetSettingsFileLine(settingStrings[Setting.SpectrogramMaxFreq], SpectrogramMaxFreq.ToString());
+        settingsFile += GetSettingsFileLine(settingStrings[Setting.SpectrogramIntensity], SpectrogramIntensity.ToString());
+        settingsFile += GetSettingsFileLine(settingStrings[Setting.SpectrogramUseDb], SpectrogramUseDb.ToString());
         FileHandler.SaveText(settingsPath, settingsFile);
-	}
+    }
 
     private string GetSettingsFileLine(string setting, string value) => setting + ";" + value + "\n";
 
-	public static int DivisorToSliderValue(int divisor) => GridSliderToDivisorDict.FirstOrDefault(x => x.Value == divisor).Key;
+    public static int DivisorToSliderValue(int divisor) => GridSliderToDivisorDict.FirstOrDefault(x => x.Value == divisor).Key;
 
     private void ApplyVolumeSettingsToAudioServer()
     {

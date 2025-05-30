@@ -21,7 +21,7 @@ using System.IO;
 
 // Tempora
 
-namespace Tempora.Classes.Visual;
+namespace Tempora.Classes.Visual.AudioDisplay;
 
 public partial class Main : Control
 {
@@ -33,9 +33,9 @@ public partial class Main : Control
 	[Export]
 	private AudioVisualsContainer audioVisualsContainer = null!;
 	[Export]
-	private Metronome metronome = null!;
-	[Export]
 	private BlockScrollBar blockScrollBar = null!;
+    [Export]
+    private ColorRect backgroundColorRect = null!;
 
 	private ProjectFileManager projectFileManager = null!;
 
@@ -63,6 +63,7 @@ public partial class Main : Control
 		blockScrollBar.UpdateLimits();
 		audioVisualsContainer.UpdateBlocksScroll();
 
+        backgroundColorRect.Color = GlobalConstants.TemporaBlue;
 
 		MementoHandler.Instance.AddTimingMemento();
 	}

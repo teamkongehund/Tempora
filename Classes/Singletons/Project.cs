@@ -15,6 +15,8 @@ using System;
 using System.IO;
 using Godot;
 using Tempora.Classes.Audio;
+using Tempora.Classes.DataHelpers;
+using Tempora.Classes.Visual.AudioDisplay;
 
 namespace Tempora.Classes.Utility;
 
@@ -46,6 +48,7 @@ public partial class Project : Node
 
     public event EventHandler NotificationMessageChanged = null!;
     private string notificationMessage = null!;
+
     public string NotificationMessage
     {
         get => notificationMessage;
@@ -66,10 +69,29 @@ public partial class Project : Node
             if (audioFile == value)
                 return;
             audioFile = value;
+            UpdateSpectrogramContextFromSettings();
             GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.Instance.AudioFileChanged), this, EventArgs.Empty);
         }
     }
 
+    public SpectrogramContext SpectrogramContext { get; set; } = null!;
+
+    public void UpdateSpectrogramContextFromSettings()
+    {
+        int stepSize = Settings.Instance.SpectrogramStepSize;
+        int fftSize = Settings.Instance.SpectrogramFftSize;
+        int maxFreq = Settings.Instance.SpectrogramMaxFreq;
+        bool dB = Settings.Instance.SpectrogramUseDb;
+        int intensity = Settings.Instance.SpectrogramIntensity;
+        SpectrogramContext = new(SpectrogramHelper.GetSpectrogramGenerator(AudioFile, stepSize, fftSize, maxFreq, 16000));
+        SpectrogramContext.DB = dB;
+        SpectrogramContext.Intensity = intensity;
+        SpectrogramContext.UpdateSpectrogram();
+    }
+
     // Called when the node enters the scene tree for the first time.
-    public override void _Ready() => Instance = this;
+    public override void _Ready()
+    {
+        Instance = this;
+    }
 }

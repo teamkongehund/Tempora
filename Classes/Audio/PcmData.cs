@@ -13,6 +13,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using Tempora.Classes.DataHelpers;
 // This script is partially based on https://github.com/leezer3/OpenBVE/blob/84064b7ef4e51def0b26e07226c114c004bcd4d3/source/OpenBveApi/Sound.cs whose license is public domain.
 
@@ -193,4 +194,24 @@ public class PcmData
     /// </summary>
     public int PlaybackOriginSample => startSilenceSamples;
     #endregion
+
+    /// <summary>
+    /// Returns PCM data as a double array for spectrogram processing.
+    /// </summary>
+    public double[] GetPcmAsDoubles(double multiplier = 16_000)
+    {
+        if (pcmFloats[0].Length > 0)
+        {
+            return pcmFloats[0]
+                .Select(x => (double)x * multiplier)
+                .ToArray();
+        }
+        else
+        {
+            return PCMDataConverter.ConvertToDouble(pcmBytes[0])
+                .Select(x => x * multiplier)
+                .ToArray();
+        }
+    }
+
 }
