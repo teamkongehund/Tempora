@@ -40,6 +40,10 @@ public class SpectrogramContext
         SpectrogramGenerator = spectrogramGenerator;
     }
 
+    public int Intensity { get; set; } = 5;
+
+    public bool DB { get; set; } = true;
+
     private bool NeedToUpdateSpectrogram()
     {
         if (cachedSpectrogramImage == null)
@@ -58,11 +62,12 @@ public class SpectrogramContext
         CachedSpectrogramImage = SpectrogramHelper.GenerateGodotImage(
             SpectrogramGenerator,
             SpectrogramHelper.TemporaColormap,
-            intensity: 5,
-            dB: true
+            intensity: Intensity,
+            dB: DB
         );
         // Save the image to a file for debugging purposes
         //CachedSpectrogramImage.SavePng("user://spectrogram.png");
+        GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.Instance.SpectrogramUpdated));
     }
 
     public ImageTexture GetSpectrogramSlice(

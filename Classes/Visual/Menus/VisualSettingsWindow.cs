@@ -35,6 +35,7 @@ public partial class VisualSettingsWindow : Window
     {
         okButton.Pressed += OnOkButtonPressed;
         defaultsButton.Pressed += OnResetButtonPressed;
+        applyButton.Pressed += OnApplyButtonPressed;
 
         CloseRequested += CloseWithoutSaving;
         AboutToPopup += OnAboutToPopup;
@@ -42,7 +43,7 @@ public partial class VisualSettingsWindow : Window
 
     private void LoadValuesFromSettings(Settings settings)
     {
-        stepSizeLineEdit.Text = settings.ExportOffsetMs.ToString();
+        stepSizeLineEdit.Text = settings.SpectrogramStepSize.ToString();
         fftSizeLineEdit.Text = settings.SpectrogramFftSize.ToString();
         maxFreqLineEdit.Text = settings.SpectrogramMaxFreq.ToString();
         intensityLineEdit.Text = settings.SpectrogramIntensity.ToString();
@@ -59,12 +60,20 @@ public partial class VisualSettingsWindow : Window
         SaveSettings(Settings.Instance);
         Hide();
         Settings.Instance.SaveSettings();
-        Project.Instance.NotificationMessage = "Saved export options.";
+        Project.Instance.UpdateSpectrogramContextFromSettings();
+        Project.Instance.NotificationMessage = "Saved visual options.";
     }
 
     private void OnResetButtonPressed()
     {
         ResetToDefaults();
+    }
+
+    private void OnApplyButtonPressed()
+    {
+        SaveSettings(Settings.Instance);
+        Settings.Instance.SaveSettings();
+        Project.Instance.UpdateSpectrogramContextFromSettings();
     }
 
     private void SaveSettings(Settings settings)
@@ -100,6 +109,6 @@ public partial class VisualSettingsWindow : Window
     private void CloseWithoutSaving()
     {
         Hide();
-        Project.Instance.NotificationMessage = "Export options were not saved.";
+        Project.Instance.NotificationMessage = "Visual options were not saved.";
     }
 }

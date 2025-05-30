@@ -249,17 +249,21 @@ public partial class Settings : Node
             SaveSettings();
         }
     }
-    public bool RenderAsSpectrogram = true;
-    public int SpectrogramStepSize { get; set; } = 64;
-    public int SpectrogramFftSize { get; set; } = 256;
-    public int SpectrogramMaxFreq { get; set; } = 2200;
-    public int SpectrogramIntensity { get; set; } = 5;
+    private bool renderAsSpectrogram = true;
+    public int SpectrogramStepSize { get => spectrogramStepSize; set => spectrogramStepSize = Math.Abs(value); }
+    public int SpectrogramFftSize { get => spectrogramFftSize; set => spectrogramFftSize = Math.Abs(value); }
+    public int SpectrogramMaxFreq { get => spectrogramMaxFreq; set => spectrogramMaxFreq = Math.Abs(value); }
+    public int SpectrogramIntensity { get => spectrogramIntensity; set => spectrogramIntensity = Math.Abs(value); }
     public bool SpectrogramUseDb { get; set; } = true;
-
-
-
-
-
+    public bool RenderAsSpectrogram
+    {
+        get => renderAsSpectrogram; set
+        {
+            renderAsSpectrogram = value;
+            SaveSettings();
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.SettingsChanged));
+        }
+    }
 
     private enum Setting
     {
@@ -325,6 +329,10 @@ public partial class Settings : Node
         {Setting.SpectrogramIntensity, "SpectrogramIntensity"},
         {Setting.SpectrogramUseDb, "SpectrogramUseDb" }
        };
+    private int spectrogramIntensity = 5;
+    private int spectrogramMaxFreq = 2200;
+    private int spectrogramFftSize = 256;
+    private int spectrogramStepSize = 64;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()

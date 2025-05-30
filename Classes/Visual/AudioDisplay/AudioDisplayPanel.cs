@@ -129,6 +129,7 @@ public partial class AudioDisplayPanel : Control
         GlobalEvents.Instance.SelectedPositionChanged += OnSelectedPositionChanged;
         GlobalEvents.Instance.AudioVisualsContainerScrolled += OnScrolled;
         GlobalEvents.Instance.AudioFileChanged += OnAudioFileChanged;
+        GlobalEvents.Instance.SpectrogramUpdated += OnSpectrogramUpdated;
 
         MouseEntered += OnMouseEntered;
         MouseExited += OnMouseExited;
@@ -323,6 +324,12 @@ public partial class AudioDisplayPanel : Control
     }
 
     private void OnAudioFileChanged(object? sender, EventArgs e) => UpdateVisuals();
+
+    private void OnSpectrogramUpdated(object? sender, EventArgs e)
+    {   
+        if (Settings.Instance.RenderAsSpectrogram)
+            UpdateVisuals();
+    }
 
     private void OnResized() =>
         //GD.Print("Resized!");
@@ -526,99 +533,6 @@ public partial class AudioDisplayPanel : Control
 
         return panelSegments;
     }
-
-    //public void RenderAudioOld()
-    //{
-    //    foreach (Node? child in audioSegments.GetChildren())
-    //    {
-    //        if (child is WaveformSegment waveform)
-    //            waveform.QueueFree();
-    //        else if (child is Sprite2D sprite)
-    //            sprite.QueueFree();
-    //    }
-
-    //    float margin = Settings.Instance.MeasureOverlap;
-
-    //    float offsetOfFirstSampleInThisPanel = MathF.Max(Timing.Instance.MeasurePositionToOffset(ActualMeasurePositionStartForPanel), 0);
-    //    float offsetOfLastSampleInThisPanel = MathF.Min(Timing.Instance.MeasurePositionToOffset(ActualMeasurePositionEndForPanel), Project.Instance.AudioFile.GetAudioLength());
-
-        
-
-    //    TimingPoint? previousTimingPoint = Timing.Instance.GetOperatingTimingPoint_ByMeasurePosition(ActualMeasurePositionStartForPanel);
-
-    //    // If the real first one exactly coincides with the start, it's ignored, which doesn't matter
-    //    TimingPoint? firstTimingPointInPanel = Timing.Instance.GetNextTimingPoint(previousTimingPoint); 
-    //    firstTimingPointInPanel = firstTimingPointInPanel?.MeasurePosition > ActualMeasurePositionEndForPanel ? null : firstTimingPointInPanel;
-
-    //    // Create first waveform segment
-    //    AddAudioSegment(offsetOfFirstSampleInThisPanel, firstTimingPointInPanel?.Offset ?? offsetOfLastSampleInThisPanel, Settings.Instance.RenderAsSpectrogram);
-
-    //    if (firstTimingPointInPanel == null)
-    //        return;
-
-    //    // Create a waveform segment startin on each timingpoint that is visible in this display panel
-    //    int firstPointIndex = Timing.Instance.TimingPoints.IndexOf(firstTimingPointInPanel);
-    //    for (int i = firstPointIndex; Timing.Instance.TimingPoints[i]?.MeasurePosition < ActualMeasurePositionEndForPanel; i++)
-    //    {
-    //        TimingPoint timingPoint = Timing.Instance.TimingPoints[i];
-
-    //        bool isNextPointOutOfRange = (i + 1 >= Timing.Instance.TimingPoints.Count);
-    //        bool isNextPointOutsideOfPanel = isNextPointOutOfRange
-    //            || (Timing.Instance.TimingPoints[i + 1].MeasurePosition > ActualMeasurePositionEndForPanel);
-
-    //        float waveSegmentStartTime = Timing.Instance.TimingPoints[i].Offset;
-    //        float waveSegmentEndTime = isNextPointOutsideOfPanel ? offsetOfLastSampleInThisPanel : Timing.Instance.TimingPoints[i + 1].Offset;
-
-    //        AddAudioSegment(waveSegmentStartTime, waveSegmentEndTime, Settings.Instance.RenderAsSpectrogram);
-
-    //        if (isNextPointOutOfRange)
-    //            return;
-    //    }
-    //}
-
-    //private void AddAudioSegment(float waveSegmentStartTime, float waveSegmentEndTime, bool renderAsSpectrogram)
-    //{
-    //    float measurePositionStart = Timing.Instance.OffsetToMeasurePosition(waveSegmentStartTime);
-    //    float measurePositionEnd = Timing.Instance.OffsetToMeasurePosition(waveSegmentEndTime);
-
-    //    float margin = Settings.Instance.MeasureOverlap;
-    //    TimingPoint? heldTimingPoint = Context.Instance.HeldTimingPoint;
-
-    //    float panelLengthInMeasures = (1f + (2 * margin));
-    //    float length = Size.X * (measurePositionEnd - measurePositionStart) / panelLengthInMeasures;
-
-    //    float relativePositionStart = (measurePositionStart - ActualMeasurePositionStartForPanel);
-    //    float xPositionFromLeft = Size.X * relativePositionStart / panelLengthInMeasures;
-    //    GD.Print(xPositionFromLeft);
-
-    //    bool canHeldTimingPointBeInSegment = (heldTimingPoint == null)
-    //        || (
-    //            Timing.Instance.CanTimingPointGoHere(heldTimingPoint, measurePositionStart, out var _)
-    //            || Timing.Instance.CanTimingPointGoHere(heldTimingPoint, measurePositionEnd, out var _)
-    //            )
-    //        || (Time.GetTicksMsec() - heldTimingPoint.SystemTimeWhenCreatedMsec) < 30; ;
-
-    //    IAudioSegmentDisplay audioSegment;
-    //    switch (renderAsSpectrogram)
-    //    {
-    //        case false:
-    //            audioSegment = new WaveformSegment(Project.Instance.AudioFile, length, Size.Y, [waveSegmentStartTime, waveSegmentEndTime])
-    //            {
-    //                Position = new Vector2(xPositionFromLeft, Size.Y / 2),
-    //                Color = (canHeldTimingPointBeInSegment ? WaveformSegment.DefaultColor : WaveformSegment.DarkenedColor)
-    //            };
-    //            break;
-    //        case true:
-    //            audioSegment = new SpectrogramSegment(Project.Instance.AudioFile, Project.Instance.SpectrogramContext, length, Size.Y, [waveSegmentStartTime, waveSegmentEndTime])
-    //            {
-    //                Position = new Vector2(length / 2 + xPositionFromLeft, Size.Y / 2),
-    //                Color = (canHeldTimingPointBeInSegment ? SpectrogramSegment.DefaultColor : SpectrogramSegment.DarkenedColor)
-    //            };
-    //            break;
-    //    }
-
-    //    audioSegments.AddChild((Node)audioSegment);
-    //}
 
     /// <summary>
     ///     Instantiate an amount of <see cref="VisualTimingPoint" /> nodes and adds as children.

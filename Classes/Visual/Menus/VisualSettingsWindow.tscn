@@ -1,22 +1,20 @@
-[gd_scene load_steps=2 format=3 uid="uid://wi7ri7bbxla8"]
+[gd_scene load_steps=2 format=3 uid="uid://cs8bpklo1qehp"]
 
-[ext_resource type="Script" uid="uid://dcydeovs4aanr" path="res://Classes/Visual/Menus/ExportWindow.cs" id="1_irav1"]
+[ext_resource type="Script" uid="uid://bmawdtoq15vkb" path="res://Classes/Visual/Menus/VisualSettingsWindow.cs" id="1_irav1"]
 
-[node name="VisualSettingsWindow" type="Window" node_paths=PackedStringArray("exportOffsetEdit", "unsupportedTimeSignatures", "removePointsThatChangeNothing", "addExtraPointsOnDownbeats", "addExtraPointsOnQuarterNotes", "omitBarlines", "preventDoubleBarlines", "beatSaberExportFormat", "okButton", "defaultsButton")]
+[node name="VisualSettingsWindow" type="Window" node_paths=PackedStringArray("stepSizeLineEdit", "fftSizeLineEdit", "maxFreqLineEdit", "intensityLineEdit", "dBCheckbox", "okButton", "defaultsButton", "applyButton")]
 title = "Visual Settings"
 position = Vector2i(0, 36)
-size = Vector2i(460, 380)
+size = Vector2i(460, 270)
 script = ExtResource("1_irav1")
-exportOffsetEdit = NodePath("TabContainer/Spectrogram/Intensity/LineEdit")
-unsupportedTimeSignatures = NodePath("TabContainer/Spectrogram/dB/CheckBox")
-removePointsThatChangeNothing = NodePath("")
-addExtraPointsOnDownbeats = NodePath("")
-addExtraPointsOnQuarterNotes = NodePath("")
-omitBarlines = NodePath("")
-preventDoubleBarlines = NodePath("")
-beatSaberExportFormat = NodePath("")
+stepSizeLineEdit = NodePath("TabContainer/Spectrogram/stepSize/LineEdit")
+fftSizeLineEdit = NodePath("TabContainer/Spectrogram/fftSize/LineEdit")
+maxFreqLineEdit = NodePath("TabContainer/Spectrogram/maxFreq/LineEdit")
+intensityLineEdit = NodePath("TabContainer/Spectrogram/Intensity/LineEdit")
+dBCheckbox = NodePath("TabContainer/Spectrogram/dB/CheckBox")
 okButton = NodePath("BottomButtonsHBox/OkButton")
 defaultsButton = NodePath("TabContainer/Spectrogram/DefaultsButton")
+applyButton = NodePath("BottomButtonsHBox/ApplyButton")
 
 [node name="TabContainer" type="TabContainer" parent="."]
 anchors_preset = 5
@@ -40,6 +38,7 @@ size_flags_vertical = 0
 text = "Reset to Defaults"
 
 [node name="SectionOverall" type="Label" parent="TabContainer/Spectrogram"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 3

@@ -25,6 +25,8 @@ public partial class OptionsMenu : PopupMenu
 	private Control offsetScrollBar = null!;
 	[Export]
 	private Control overlapScrollBar = null!;
+    [Export]
+    private Window visualSettingsWindow = null!;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -46,6 +48,7 @@ public partial class OptionsMenu : PopupMenu
 	int index_MoreSettings = 4;
     int index_PlaybackOnNewPoints = 5;
     int index_Spectrogram = 6;
+    int index_SpectrogramSettings = 7;
 
 	private void OnIndexPressed(long index)
 	{
@@ -78,6 +81,9 @@ public partial class OptionsMenu : PopupMenu
             case var expression when (index == index_Spectrogram):
                 ToggleCheckBox(index_Spectrogram, out newStatus);
                 Settings.Instance.RenderAsSpectrogram = newStatus;
+                break;
+            case var expression when (index == index_SpectrogramSettings):
+                visualSettingsWindow.Popup();
                 break;
         }
 	}

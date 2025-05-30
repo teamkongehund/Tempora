@@ -76,12 +76,17 @@ public partial class Project : Node
 
     public SpectrogramContext SpectrogramContext { get; set; } = null!;
 
-    private void UpdateSpectrogramContextFromSettings()
+    public void UpdateSpectrogramContextFromSettings()
     {
-        int stepSize = 64;
-        int fftSize = 256;
-        int maxFreq = 2200;
+        int stepSize = Settings.Instance.SpectrogramStepSize;
+        int fftSize = Settings.Instance.SpectrogramFftSize;
+        int maxFreq = Settings.Instance.SpectrogramMaxFreq;
+        bool dB = Settings.Instance.SpectrogramUseDb;
+        int intensity = Settings.Instance.SpectrogramIntensity;
         SpectrogramContext = new(SpectrogramHelper.GetSpectrogramGenerator(AudioFile, stepSize, fftSize, maxFreq, 16000));
+        SpectrogramContext.DB = dB;
+        SpectrogramContext.Intensity = intensity;
+        SpectrogramContext.UpdateSpectrogram();
     }
 
     // Called when the node enters the scene tree for the first time.

@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://bk0ofb078cvgm"]
+[gd_scene load_steps=23 format=3 uid="uid://bk0ofb078cvgm"]
 
 [ext_resource type="Script" uid="uid://dusnn5jykij57" path="res://Classes/Visual/Main.cs" id="1_n5xe1"]
 [ext_resource type="AudioStream" uid="uid://2gpllbqn0qef" path="res://Audio/clickedy.mp3" id="2_k0owh"]
@@ -21,6 +21,7 @@
 [ext_resource type="Script" uid="uid://ca5jau2j8ynic" path="res://Classes/Visual/Menus/ClearAllConfirmationDialog.cs" id="19_ktb8l"]
 [ext_resource type="Script" uid="uid://mw86i63feiar" path="res://Classes/Visual/MessageLabel.cs" id="20_c3wmk"]
 [ext_resource type="PackedScene" uid="uid://dsfi6js7yjf8n" path="res://Classes/Visual/Menus/ExportWindow.tscn" id="20_ruqaf"]
+[ext_resource type="PackedScene" uid="uid://cs8bpklo1qehp" path="res://Classes/Visual/Menus/VisualSettingsWindow.tscn" id="22_ww5mi"]
 
 [node name="Main" type="Control" node_paths=PackedStringArray("audioVisualsContainer", "blockScrollBar", "backgroundColorRect")]
 layout_mode = 3
@@ -95,13 +96,13 @@ theme_override_font_sizes/font_size = 16
 text = "Options"
 popupMenu = NodePath("Options")
 
-[node name="Options" type="PopupMenu" parent="VSplitContainer/TopMenuHBox/OptionsButton" node_paths=PackedStringArray("blockAmountScrollBar", "offsetScrollBar", "overlapScrollBar")]
+[node name="Options" type="PopupMenu" parent="VSplitContainer/TopMenuHBox/OptionsButton" node_paths=PackedStringArray("blockAmountScrollBar", "offsetScrollBar", "overlapScrollBar", "visualSettingsWindow")]
 title = "Options"
 size = Vector2i(268, 100)
 theme_override_constants/v_separation = 0
 theme_override_font_sizes/font_size = 16
 theme_override_font_sizes/font_separator_size = 0
-item_count = 7
+item_count = 8
 item_0/text = "Preserve BPM on new time signature"
 item_0/checkable = 1
 item_0/id = 0
@@ -123,10 +124,13 @@ item_5/id = 5
 item_6/text = "Spectrogram View"
 item_6/checkable = 1
 item_6/id = 6
+item_7/text = "Spectrogram Settings..."
+item_7/id = 7
 script = ExtResource("7_1c6ke")
 blockAmountScrollBar = NodePath("../../SettingsHBox/BlockAmountScrollBar")
 offsetScrollBar = NodePath("../../SettingsHBox/OffsetScrollBar")
 overlapScrollBar = NodePath("../../SettingsHBox/OverlapScrollBar")
+visualSettingsWindow = NodePath("../../../../VisualSettingsWindow")
 
 [node name="MenuBar" type="MenuBar" parent="VSplitContainer/TopMenuHBox"]
 layout_mode = 2
@@ -474,6 +478,10 @@ Reveals additional timeline settings
 selection_enabled = true
 
 [node name="ExportWindow" parent="." instance=ExtResource("20_ruqaf")]
+initial_position = 1
+visible = false
+
+[node name="VisualSettingsWindow" parent="." instance=ExtResource("22_ww5mi")]
 initial_position = 1
 visible = false
 
