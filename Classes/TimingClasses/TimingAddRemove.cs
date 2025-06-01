@@ -244,8 +244,11 @@ public partial class Timing
         {
             if (timingPoint?.MeasurePosition == null)
                 break;
-            if (timingPoint.MeasurePosition % 1 == 0)
-                continue; // downbeat point on next is unnecessary
+            bool isOnDownbeat = timingPoint.MeasurePosition % 1 == 0 
+                || AreMeasurePositionsEqual(timingPoint.MeasurePosition, (int)timingPoint.MeasurePosition)
+                || AreMeasurePositionsEqual(timingPoint.MeasurePosition, (int)timingPoint.MeasurePosition + 1);
+            if (isOnDownbeat)
+                continue;
             TimingPoint? nextTimingPoint = GetNextTimingPoint(timingPoint);
             
             bool isNextPointInSameMeasure = nextTimingPoint?.MeasurePosition != null
