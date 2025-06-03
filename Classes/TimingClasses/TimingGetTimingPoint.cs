@@ -51,7 +51,8 @@ public partial class Timing
         if (TimingPoints.Count == 0)
             return null;
 
-        TimingPoint? timingPoint = TimingPoints.FindLast(point => point.MeasurePosition <= measurePosition);
+        float epsilon = 0.001f;
+        TimingPoint? timingPoint = TimingPoints.FindLast(point => point.MeasurePosition - measurePosition < epsilon);
 
         // If there's only TimingPoints AFTER MeasurePositionStart
         timingPoint ??= TimingPoints.Find(point => point.MeasurePosition > measurePosition);
