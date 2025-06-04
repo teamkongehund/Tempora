@@ -219,7 +219,7 @@ public partial class Timing
         float sum = 0;
         float currentMeasurePosition = measurePositionFrom;
         // Go through every measure between them and add up the number of beats
-        for (int measure = (int)measurePositionFrom; measure < (int)(measurePositionTo + 1); measure++)
+        for (int measure = (int)Math.Floor(measurePositionFrom); measure < (int)(measurePositionTo + 1); measure++)
         {
             float distancePerBeat = timing.GetDistancePerBeat(measure);
             float nextPosition = (measurePositionTo < measure + 1) ? measurePositionTo : (measure + 1);
