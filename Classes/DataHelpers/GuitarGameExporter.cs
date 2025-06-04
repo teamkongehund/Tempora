@@ -15,8 +15,7 @@ public class GuitarGameExporter
     private static int ticksPerBeat = 192;
 
     private static string syncTrackSectionUnformatted = @"[SyncTrack]
-{{
-{0}
+{{{0}
 }}";
 
     private static string songSection = @"[Song]
@@ -86,13 +85,13 @@ public class GuitarGameExporter
         float beatLength = timing.GetDistancePerBeat(measurePositionAtOffsetZero);
         positionOfReferenceBeat = timing.GetOperatingBeatPosition(timing.OffsetToMeasurePosition(0)) + beatLength;
 
-        float referenceBeatBeatsFromOffsetZero = Timing.GetBeatsBetweenMeasurePositions(
-            timing,
-            measurePositionAtOffsetZero,
-            positionOfReferenceBeat);
+        //float referenceBeatBeatsFromOffsetZero = Timing.GetBeatsBetweenMeasurePositions(
+        //    timing,
+        //    measurePositionAtOffsetZero,
+        //    positionOfReferenceBeat);
 
         float offsetOfSecondLine = timing.MeasurePositionToOffset(positionOfReferenceBeat);
-        float bpmOfFirstLine = referenceBeatBeatsFromOffsetZero / offsetOfSecondLine * 60f;
+        float bpmOfFirstLine = 1 / offsetOfSecondLine * 60f;
 
         string firstTimeSignatureLine = GetTimeSignatureLine(0, [1, 4]);
         string firstBpmLine = GetBpmLine(0, bpmOfFirstLine);
@@ -131,13 +130,13 @@ public class GuitarGameExporter
         return $"{timeSignature[0]} {denominatorFormatted}";
     }
 
-    private static string GetBpmLine(int ticks, float bpm) => $"  {ticks} = B {FormatBpm(bpm)}\n";
+    private static string GetBpmLine(int ticks, float bpm) => $"\n  {ticks} = B {FormatBpm(bpm)}";
 
     private static string GetTimeSignatureLine(int ticks, int[] timeSignature)
     {
         if (timeSignature.Length != 2)
             throw new Exception("Incorrect time signature array length.");
 
-        return $"  {ticks} = TS {FormatTimeSignature(timeSignature)}\n";
+        return $"\n  {ticks} = TS {FormatTimeSignature(timeSignature)}";
     }
 }
