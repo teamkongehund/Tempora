@@ -60,6 +60,9 @@ public partial class FileMenu : PopupMenu
                 ProjectFileManager.Instance.SaveBeatSaberFileDialogPopup();
                 break;
             case 7:
+                ProjectFileManager.Instance.SaveGuitarGameFileDialogPopup();
+                break;
+            case 8:
                 exportWindow.Popup();
                 break;
         }

@@ -33,6 +33,7 @@ public partial class Settings : Node
     private string projectFilesDirectory = "";
     private string oszFilesDirectory = "";
     private string beatSaberFilesDirectory = "";
+    private string guitarGameFilesDirectory = "";
     private float downbeatPositionOffset = 0.125f;
     private bool seekPlaybackOnTimingPointChanges = true;
     private bool moveSubsequentTimingPointsWhenChangingTimeSignature = true;
@@ -104,6 +105,18 @@ public partial class Settings : Node
             SaveSettings();
         }
     }
+
+    public string GuitarGameFilesDirectory
+    {
+        get => guitarGameFilesDirectory;
+        set
+        {
+            guitarGameFilesDirectory = value;
+            SaveSettings();
+        }
+    }
+
+
     #endregion
     #region Timeline
     public readonly int MaxNumberOfBlocks = 30;
@@ -270,6 +283,7 @@ public partial class Settings : Node
         ProjectFilesDirectory,
         OszFilesDirectory,
         BeatSaberFilesDirectory,
+        GuitarGameFilesDirectory,
         GridDivisor,
         NumberOfRows,
         MeasureOverlap,
@@ -302,6 +316,7 @@ public partial class Settings : Node
         {Setting.ProjectFilesDirectory, "ProjectFilesDirectory"},
         {Setting.OszFilesDirectory, "OszFilesDirectory"},
         {Setting.BeatSaberFilesDirectory, "BeatSaberFilesDirectory"},
+        {Setting.GuitarGameFilesDirectory, "GuitarGameFilesDirectory"},
         {Setting.GridDivisor, "GridDivisor"},
         {Setting.NumberOfRows, "NumberOfRows"},
         {Setting.MeasureOverlap, "MeasureOverlap"},
@@ -374,6 +389,9 @@ public void LoadSettings()
                     break;
                 case var value when value == settingStrings[Setting.BeatSaberFilesDirectory]:
                     BeatSaberFilesDirectory = lineSplit[1];
+                    break;
+                case var value when value == settingStrings[Setting.GuitarGameFilesDirectory]:
+                    GuitarGameFilesDirectory = lineSplit[1];
                     break;
                 case var value when value == settingStrings[Setting.GridDivisor]:
                     _ = int.TryParse(lineSplit[1], out int parsedInt);
@@ -487,6 +505,7 @@ public void SaveSettings()
         settingsFile += GetSettingsFileLine(settingStrings[Setting.ProjectFilesDirectory], ProjectFilesDirectory);
         settingsFile += GetSettingsFileLine(settingStrings[Setting.OszFilesDirectory], OszFilesDirectory);
         settingsFile += GetSettingsFileLine(settingStrings[Setting.BeatSaberFilesDirectory], BeatSaberFilesDirectory);
+        settingsFile += GetSettingsFileLine(settingStrings[Setting.GuitarGameFilesDirectory], GuitarGameFilesDirectory);
         settingsFile += GetSettingsFileLine(settingStrings[Setting.GridDivisor], GridDivisor.ToString());
         settingsFile += GetSettingsFileLine(settingStrings[Setting.NumberOfRows], NumberOfRows.ToString());
         settingsFile += GetSettingsFileLine(settingStrings[Setting.MeasureOverlap], MeasureOverlap.ToString());

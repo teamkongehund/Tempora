@@ -17,6 +17,7 @@ using System.IO;
 using System.Linq;
 using Godot;
 using Tempora.Classes.Audio;
+using Tempora.Classes.DataHelpers;
 using Tempora.Classes.TimingClasses;
 
 namespace Tempora.Classes.Utility;
@@ -75,7 +76,8 @@ public partial class ProjectFileManager : Node
     {
         project,
         osz,
-        beatSaber
+        beatSaber,
+        guitarGame
     }
 
     private SaveConfig latestSaveConfig = SaveConfig.project;
@@ -83,6 +85,7 @@ public partial class ProjectFileManager : Node
     public void SaveOszFileDialogPopup() => SaveFileDialogPopup(SaveConfig.osz);
     public void SaveProjectFileDialogPopup() => SaveFileDialogPopup(SaveConfig.project);
     public void SaveBeatSaberFileDialogPopup() => SaveFileDialogPopup(SaveConfig.beatSaber);
+    public void SaveGuitarGameFileDialogPopup() => SaveFileDialogPopup(SaveConfig.guitarGame);
 
     private void SaveFileDialogPopup(SaveConfig config)
     {
@@ -99,6 +102,10 @@ public partial class ProjectFileManager : Node
             case SaveConfig.beatSaber:
                 SaveFileDialog.CurrentDir = Settings.Instance.BeatSaberFilesDirectory;
                 SaveFileDialog.Title = $"Export Beat Saber (v{Settings.Instance.BeatSaberExportFormat})";
+                break;
+            case SaveConfig.guitarGame:
+                SaveFileDialog.CurrentDir = Settings.Instance.GuitarGameFilesDirectory;
+                SaveFileDialog.Title = $"Export Guitar Game (.chart))";
                 break;
         }
         latestSaveConfig = config;
@@ -122,6 +129,11 @@ public partial class ProjectFileManager : Node
                 BeatSaberExporter.Instance.SaveFilesToPath(selectedPath);
                 dir = Path.GetDirectoryName(selectedPath) ?? "";
                 Settings.Instance.BeatSaberFilesDirectory = dir;
+                break;
+            case SaveConfig.guitarGame:
+                GuitarGameExporter.SaveChartToPath_AndShowInFileExplorer(Timing.Instance, selectedPath);
+                dir = Path.GetDirectoryName(selectedPath) ?? "";
+                Settings.Instance.GuitarGameFilesDirectory = dir;
                 break;
         }
     }

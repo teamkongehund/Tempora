@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Godot;
 using Tempora.Classes.TimingClasses;
 using Tempora.Classes.Utility;
 
@@ -11,126 +14,126 @@ public class GuitarGameExporter
 {
     private static int ticksPerBeat = 192;
 
-    private static string syncTrackSectionUnFormatted = @"[SyncTrack]
-{
+    private static string syncTrackSectionUnformatted = @"[SyncTrack]
+{{
 {0}
-}";
+}}";
 
-    private string? GetSyncTrackSection(Timing timing)
+    private static string songSection = @"[Song]
+{
+  Name = ""Tempora Export""
+  Offset = 0
+  Resolution = 192
+  MusicStream = ""song.ogg""
+}" + "\n";
+
+    public static void SaveChartToPath_AndShowInFileExplorer(Timing timing, string path)
+    {
+        path = Path.ChangeExtension(path, "chart");
+        SaveChartToPath(timing, path);
+        OS.ShellShowInFileManager(path);
+    }
+
+    public static void SaveChartToPath(Timing timing, string path)
+    {
+        if (string.IsNullOrEmpty(path))
+            throw new ArgumentNullException("path");
+
+        path = Path.ChangeExtension(path, "chart");
+        string syncTrackSection = GetSyncTrackSectionNew(timing);
+        string notesChartText = songSection + syncTrackSection;
+
+        FileHandler.SaveText(path, notesChartText);
+    }
+
+    private static string GetSyncTrackSectionNew(Timing timing)
     {
         ArgumentNullException.ThrowIfNull(timing);
 
-        string syncTrackSectionInner = "";
-
         if (timing.TimingPoints.Count == 0)
-            return string.Format(syncTrackSectionUnFormatted, GetBpmLine(0, 120));
+            return string.Format(syncTrackSectionUnformatted, GetTimeSignatureLine(0, [4,4]) + GetBpmLine(0, 120));
 
-        float measurePositionAtSampleZero = timing.OffsetToMeasurePosition(0);
+        string syncTrackSectionInner = "";
+        syncTrackSectionInner += GetFirstSyncTrackLines(timing, out float positionOfReferenceBeat, out int positionOfReferenceDownbeat, out int ticksOfReferenceDownbeat);
 
-        float secondLineBeatsFromSampleZero;
-        int ticksOfSecondLine;
-        float bpmOfFirstLine;
-        float offsetOfSecondLine;
-        string firstTimeSignatureLine;
-        string firstBpmLine;
+        int getTicks(float measurePosition) => GetTicks(measurePosition, timing, ticksOfReferenceDownbeat, positionOfReferenceDownbeat);
 
-        // To get the first SyncTrack line, we need to use the first timing point with an offset that is later than 0, taking floating point error into account
-        // We get the number of beats from offset zero to this timing point. We use the difference in offset in combination with this to get the BPM.
+        float epsilon = 0.001f;
 
-        TimingPoint? timingPointCreatingSecondLine = timing.TimingPoints.Find(
-            point => !Timing.AreMeasurePositionsEqual(measurePositionAtSampleZero, point.MeasurePosition) && point.Offset > 0);
-
-        if (timingPointCreatingSecondLine == null) // Only exist points at negative offset
+        foreach (TimeSignaturePoint point in timing.TimeSignaturePoints)
         {
-            TimingPoint? lastTimingPoint = timing.TimingPoints.LastOrDefault() ?? throw new Exception("No timing points.");
-
-            float quarterNoteLength = timing.GetDistancePerBeat(measurePositionAtSampleZero);
-            float positionOfFirstQuarterNotePlusRemainder = measurePositionAtSampleZero + quarterNoteLength;
-            float remainder = (positionOfFirstQuarterNotePlusRemainder) % quarterNoteLength;
-            float positionOfFirstQuarterNote = positionOfFirstQuarterNotePlusRemainder - remainder;
-
-            secondLineBeatsFromSampleZero = Timing.GetBeatsBetweenMeasurePositions(
-                timing, 
-                measurePositionAtSampleZero, 
-                positionOfFirstQuarterNote);
-            offsetOfSecondLine = timing.MeasurePositionToOffset(positionOfFirstQuarterNote);
-            bpmOfFirstLine = secondLineBeatsFromSampleZero / offsetOfSecondLine * 60f;
-
-            ticksOfSecondLine = (int)(ticksPerBeat * secondLineBeatsFromSampleZero);
-            firstTimeSignatureLine = GetTimeSignatureLine(0, lastTimingPoint.TimeSignature);
-            firstBpmLine = GetBpmLine(0, bpmOfFirstLine);
-            string secondBpmLine = GetBpmLine(ticksOfSecondLine, lastTimingPoint.Bpm);
-
-            syncTrackSectionInner = firstTimeSignatureLine + firstBpmLine + secondBpmLine;
-
-            return string.Format(syncTrackSectionUnFormatted, syncTrackSectionInner);
-        }
-
-        secondLineBeatsFromSampleZero = Timing.GetBeatsBetweenMeasurePositions(
-            timing, 
-            measurePositionAtSampleZero, 
-            timingPointCreatingSecondLine.MeasurePosition!.Value);
-        bpmOfFirstLine = secondLineBeatsFromSampleZero / timingPointCreatingSecondLine.Offset * 60;
-        ticksOfSecondLine = (int)(ticksPerBeat * secondLineBeatsFromSampleZero);
-
-        firstTimeSignatureLine = GetTimeSignatureLine(0, timingPointCreatingSecondLine.TimeSignature);
-        firstBpmLine = GetBpmLine(0, bpmOfFirstLine);
-
-        foreach ( TimingPoint timingPoint in timing.TimingPoints)
-        {
-            if (timingPoint.Offset <= 0 
-                || Timing.AreMeasurePositionsEqual(timingPoint.MeasurePosition, measurePositionAtSampleZero))
+            if (point.Measure <= positionOfReferenceDownbeat)
                 continue;
+
+            syncTrackSectionInner += GetTimeSignatureLine(getTicks(point.Measure), point.TimeSignature);
         }
 
-        return null;
+        foreach (TimingPoint point in timing.TimingPoints)
+        {
+            if (point.MeasurePosition!.Value - positionOfReferenceBeat < epsilon)
+                continue;
+
+            syncTrackSectionInner += GetBpmLine(getTicks(point!.MeasurePosition.Value), point.Bpm);
+        }
+
+        return string.Format(syncTrackSectionUnformatted, syncTrackSectionInner);
     }
 
-    private string GetFirstSyncTrackLines(Timing timing)
+    private static string GetFirstSyncTrackLines(Timing timing, out float positionOfReferenceBeat, out int positionOfReferenceDownbeat, out int ticksOfReferenceDownbeat)
     {
         float measurePositionAtOffsetZero = timing.OffsetToMeasurePosition(0);
 
         float beatLength = timing.GetDistancePerBeat(measurePositionAtOffsetZero);
-        float positionOfNextQuarterNote = timing.GetOperatingBeatPosition(timing.OffsetToMeasurePosition(0)) + beatLength;
+        positionOfReferenceBeat = timing.GetOperatingBeatPosition(timing.OffsetToMeasurePosition(0)) + beatLength;
 
-        float nextQuarterNoteBeatsFromOffsetZero = Timing.GetBeatsBetweenMeasurePositions(
+        float referenceBeatBeatsFromOffsetZero = Timing.GetBeatsBetweenMeasurePositions(
             timing,
             measurePositionAtOffsetZero,
-            positionOfNextQuarterNote);
+            positionOfReferenceBeat);
 
-        float offsetOfSecondLine = timing.MeasurePositionToOffset(positionOfNextQuarterNote);
-        float bpmOfFirstLine = nextQuarterNoteBeatsFromOffsetZero / offsetOfSecondLine * 60f;
+        float offsetOfSecondLine = timing.MeasurePositionToOffset(positionOfReferenceBeat);
+        float bpmOfFirstLine = referenceBeatBeatsFromOffsetZero / offsetOfSecondLine * 60f;
 
         string firstTimeSignatureLine = GetTimeSignatureLine(0, [1, 4]);
         string firstBpmLine = GetBpmLine(0, bpmOfFirstLine);
 
-        int ticksOfSecondLine = (int)(ticksPerBeat * nextQuarterNoteBeatsFromOffsetZero);
-        TimingPoint? operatingTimingPointOfNextQuarterNote = timing.GetOperatingTimingPoint_ByMeasurePosition(positionOfNextQuarterNote);
-        string secondBpmLine = GetBpmLine(ticksOfSecondLine, operatingTimingPointOfNextQuarterNote!.Bpm);
+        int ticksOfSecondLine = (int)(ticksPerBeat * 1);
+        TimingPoint? operatingTimingPointOfReferenceBeat = timing.GetOperatingTimingPoint_ByMeasurePosition(positionOfReferenceBeat);
+        string secondBpmLine = GetBpmLine(ticksOfSecondLine, operatingTimingPointOfReferenceBeat!.Bpm);
 
-        // We want a time signature of the second line such that the numerator in the time signature is the number of beats until the next measure
-        // If the second line is already on a downbeat, 
+        bool isReferenceBeatOnDownbeat = Timing.AreMeasurePositionsEqual(positionOfReferenceBeat, (int)positionOfReferenceBeat)
+            || Timing.AreMeasurePositionsEqual(positionOfReferenceBeat, (int)positionOfReferenceBeat + 1);
 
-        string secondTimeSignatureLine = GetTimeSignatureLine(ticksOfSecondLine, [4, 4]);
+        float epsilon = 0.001f;
+        positionOfReferenceDownbeat = isReferenceBeatOnDownbeat ? (int)(positionOfReferenceBeat + epsilon) : (int)(positionOfReferenceBeat + 1 + epsilon);
+        int beatsFromRerefenceBeatToReferenceDownbeat = isReferenceBeatOnDownbeat 
+            ? 0 
+            : (int)Timing.GetBeatsBetweenMeasurePositions(timing, positionOfReferenceBeat, positionOfReferenceDownbeat);
 
-        return "";
+        string secondTimeSignatureLine = isReferenceBeatOnDownbeat ? "" : GetTimeSignatureLine(ticksOfSecondLine, [beatsFromRerefenceBeatToReferenceDownbeat, 4]);
+
+        ticksOfReferenceDownbeat = (int)(ticksOfSecondLine + beatsFromRerefenceBeatToReferenceDownbeat * ticksPerBeat);
+        string thirdTimeSignatureLine = GetTimeSignatureLine(ticksOfReferenceDownbeat, timing.GetTimeSignature(positionOfReferenceDownbeat));
+
+        return firstTimeSignatureLine + firstBpmLine + secondTimeSignatureLine + secondBpmLine + thirdTimeSignatureLine;
     }
 
-    private int FormatBpm(float bpm) => (int)Math.Round(bpm * 1000);
+    private static int GetTicks(float measurePosition, Timing timing, int ticksOfReferenceDownbeat, int positionOfReferenceDownbeat) 
+        => (int)(ticksOfReferenceDownbeat + Timing.GetBeatsBetweenMeasurePositions(timing, positionOfReferenceDownbeat, measurePosition) * ticksPerBeat);
 
-    private string FormatTimeSignature(int[] timeSignature)
+    private static int FormatBpm(float bpm) => (int)Math.Round(bpm * 1000);
+
+    private static string FormatTimeSignature(int[] timeSignature)
     {
         Timing.CorrectTimeSignature(timeSignature, out timeSignature);
-        int numerator = timeSignature[0];
-        int denominator = timeSignature[1];
-        int denominatorFormatted = (int)Math.Log2(denominator);
+        int denominatorFormatted = (int)Math.Log2(timeSignature[1]);
 
-        return $"{numerator} {denominatorFormatted}";
+        return $"{timeSignature[0]} {denominatorFormatted}";
     }
 
-    private string GetBpmLine(int ticks, float bpm) => $"  {ticks} = B {FormatBpm(bpm)}\n";
+    private static string GetBpmLine(int ticks, float bpm) => $"  {ticks} = B {FormatBpm(bpm)}\n";
 
-    private string GetTimeSignatureLine(int ticks, int[] timeSignature)
+    private static string GetTimeSignatureLine(int ticks, int[] timeSignature)
     {
         if (timeSignature.Length != 2)
             throw new Exception("Incorrect time signature array length.");
