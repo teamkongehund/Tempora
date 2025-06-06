@@ -131,7 +131,10 @@ public partial class ProjectFileManager : Node
                 Settings.Instance.BeatSaberFilesDirectory = dir;
                 break;
             case SaveConfig.guitarGame:
-                GuitarGameExporter.SaveChartToPath_AndShowInFileExplorer(Timing.Instance, selectedPath);
+                GuitarGameExporter.SaveChartToPath_AndShowInFileExplorer(
+                    Timing.Instance, 
+                    selectedPath, 
+                    Project.Instance.AudioFile.AudacityOrigin);
                 dir = Path.GetDirectoryName(selectedPath) ?? "";
                 Settings.Instance.GuitarGameFilesDirectory = dir;
                 break;
