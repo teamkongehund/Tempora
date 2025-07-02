@@ -3,6 +3,8 @@ An application designed to simplify and speed up the process of synchronizing a 
 
 This is achieved via a simple-to-use GUI that lets you manipulate timing points and visualize how the audio aligns with the current timing. The program does not alter the audio file like when you use quantization/warping. The program is mainly designed for rhythm games but may have other use cases such as music production. 
 
+See [this video](https://www.youtube.com/watch?v=4_UN0Rxjv-w) for a presentation of Tempora, including a link to a tutorial in the video description.
+
 ## Supports
 - osu! (.mp3 and .ogg)
 - Beat Saber (.ogg)
