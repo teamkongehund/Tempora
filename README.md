@@ -3,12 +3,14 @@ An application designed to simplify and speed up the process of synchronizing a 
 
 This is achieved via a simple-to-use GUI that lets you manipulate timing points and visualize how the audio aligns with the current timing. The program does not alter the audio file like when you use quantization/warping. The program is mainly designed for rhythm games but may have other use cases such as music production. 
 
-[Community Discord](https://discord.com/invite/A4XnXtz6Nb)
-- Share projects, get help with timing, be notified of new releases
-
 ## Supports
 - osu! (.mp3 and .ogg)
 - Beat Saber (.ogg)
+
+## Community Discord
+The project has an active discord community where you can share projects, get help with timing, be notified of new releases, etc.
+
+[Join Discord server](https://discord.com/invite/A4XnXtz6Nb)
 
 ## Running Debug from source
 - Download Godot (.Net verson): https://godotengine.org/download/windows/
