@@ -60,6 +60,9 @@ public partial class AudioDisplayPanel : Control
 
     private bool mouseIsInside = false;
 
+    /// Accumulated pan gesture delta for converting continuous gestures to discrete steps
+    private float panGestureAccumulator;
+
     private int measurePositionStart;
 
     public int NominalMeasurePosition
@@ -143,6 +146,12 @@ public partial class AudioDisplayPanel : Control
 
     public override void _GuiInput(InputEvent @event)
     {
+        if (@event is InputEventPanGesture panGesture)
+        {
+            HandlePanGesture(panGesture);
+            return;
+        }
+
         if (@event is not InputEventMouse mouseEvent)
         {
             //GD.Print("AudioDisplayPanel._GuiInput(): Input was not a mouse event");
@@ -161,17 +170,17 @@ public partial class AudioDisplayPanel : Control
 
         switch (mouseEvent)
         {
-            case InputEventMouseButton { ButtonIndex: MouseButton.Left, DoubleClick: true } mouseButtonEvent 
+            case InputEventMouseButton { ButtonIndex: MouseButton.Left, DoubleClick: true } mouseButtonEvent
             when Input.IsKeyPressed(Key.Alt):
                 TimingPointSelection.Instance.DeselectAll();
                 break;
 
-            case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } mouseButtonEvent 
+            case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } mouseButtonEvent
             when Input.IsKeyPressed(Key.Alt):
                 TimingPointSelection.Instance.StartSelector(measurePosition);
                 break;
 
-            case InputEventMouseButton { ButtonIndex: MouseButton.Right, Pressed: true } mouseButtonEvent 
+            case InputEventMouseButton { ButtonIndex: MouseButton.Right, Pressed: true } mouseButtonEvent
             when !Input.IsKeyPressed(Key.Alt):
                 var heldTimingPoint = Context.Instance?.HeldTimingPoint;
                 var seekTime = heldTimingPoint != null ? heldTimingPoint.Offset - 0.05f : sampletime;
@@ -179,17 +188,17 @@ public partial class AudioDisplayPanel : Control
                 SpamPlaybackLoopTimer.DelayedStart();
                 break;
 
-            case InputEventMouseButton { ButtonIndex: MouseButton.WheelUp, Pressed: true } mouseButtonEvent 
+            case InputEventMouseButton { ButtonIndex: MouseButton.WheelUp, Pressed: true } mouseButtonEvent
             when Input.IsKeyPressed(Key.Ctrl) && !Input.IsKeyPressed(Key.Alt):
                 TimingPointSelection.Instance.OffsetSelectionOrPoint(nearestTimingPoint, offsetPerWheelScroll);
                 break;
 
-            case InputEventMouseButton { ButtonIndex: MouseButton.WheelDown, Pressed: true } mouseButtonEvent 
+            case InputEventMouseButton { ButtonIndex: MouseButton.WheelDown, Pressed: true } mouseButtonEvent
             when Input.IsKeyPressed(Key.Ctrl) && !Input.IsKeyPressed(Key.Alt):
                 TimingPointSelection.Instance.OffsetSelectionOrPoint(nearestTimingPoint, -offsetPerWheelScroll);
                 break;
 
-            case InputEventMouseButton { ButtonIndex: MouseButton.WheelDown, Pressed: true } mouseButtonEvent 
+            case InputEventMouseButton { ButtonIndex: MouseButton.WheelDown, Pressed: true } mouseButtonEvent
             when Input.IsKeyPressed(Key.Alt):
                 if (nearestTimingPoint == null) break;
                 // Decrease BPM by 1 (snapping to integers) - only for last timing point.
@@ -206,7 +215,7 @@ public partial class AudioDisplayPanel : Control
                 MementoHandler.Instance.AddTimingMemento(nearestTimingPoint);
                 break;
 
-            case InputEventMouseButton { ButtonIndex: MouseButton.WheelUp, Pressed: true } mouseButtonEvent 
+            case InputEventMouseButton { ButtonIndex: MouseButton.WheelUp, Pressed: true } mouseButtonEvent
             when Input.IsKeyPressed(Key.Alt):
                 if (nearestTimingPoint == null) break;
                 // Increase BPM by 1 (snapping to integers) - only for last timing point.
@@ -226,6 +235,54 @@ public partial class AudioDisplayPanel : Control
             default:
                 return;
         }
+        GetViewport().SetInputAsHandled();
+    }
+
+    private void HandlePanGesture(InputEventPanGesture panGesture)
+    {
+        bool ctrl = Input.IsKeyPressed(Key.Ctrl);
+        bool alt = Input.IsKeyPressed(Key.Alt);
+
+        if (!ctrl && !alt)
+        {
+            // Plain scroll — let parent AudioVisualsContainer handle it
+            return;
+        }
+
+        panGestureAccumulator += panGesture.Delta.Y;
+        int steps = (int)panGestureAccumulator;
+        if (steps == 0)
+            return;
+        panGestureAccumulator -= steps;
+
+        TimingPoint? nearestTimingPoint = Timing.Instance.GetNearestTimingPoint(
+            GetMouseMeasurePosition(GetLocalMousePosition()));
+
+        if (ctrl && !alt)
+        {
+            // Ctrl+pan: offset adjustment
+            float offsetPerStep = Input.IsKeyPressed(Key.Shift) ? 0.01f : 0.002f;
+            TimingPointSelection.Instance.OffsetSelectionOrPoint(nearestTimingPoint, -steps * offsetPerStep);
+        }
+        else if (alt)
+        {
+            // Alt+pan: BPM adjustment
+            if (nearestTimingPoint == null)
+                return;
+
+            float bpmDelta;
+            if (Input.IsKeyPressed(Key.Shift) && !ctrl)
+                bpmDelta = 5f;
+            else if (!Input.IsKeyPressed(Key.Shift) && ctrl)
+                bpmDelta = 0.1f;
+            else
+                bpmDelta = 1f;
+
+            nearestTimingPoint.Bpm += steps * bpmDelta;
+            nearestTimingPoint.WasBPMManuallySet = true;
+            MementoHandler.Instance.AddTimingMemento(nearestTimingPoint);
+        }
+
         GetViewport().SetInputAsHandled();
     }
 

@@ -25,6 +25,9 @@ public partial class AudioVisualsContainer : VBoxContainer
 {
     //[Export] public int NumberOfBlocks = 10;
 
+    /// Accumulated pan gesture delta for converting continuous gestures to discrete scroll steps
+    private float panGestureAccumulator;
+
     /// <summary>
     ///     Forward childrens' signals to Main
     /// </summary>
@@ -74,6 +77,28 @@ public partial class AudioVisualsContainer : VBoxContainer
                 NominalMeasurePositionStartForTopBlock -= Math.Min(Input.IsKeyPressed(Key.Shift) ? 5 : 1, distanceToFirst);
                 GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.AudioVisualsContainerScrolled));
             }
+        }
+        else if (@event is InputEventPanGesture panGesture && !Input.IsKeyPressed(Key.Ctrl) && !Input.IsKeyPressed(Key.Alt))
+        {
+            panGestureAccumulator += panGesture.Delta.Y;
+            int steps = (int)panGestureAccumulator;
+            if (steps == 0)
+                return;
+            panGestureAccumulator -= steps;
+
+            int scrollAmount = Input.IsKeyPressed(Key.Shift) ? steps * 5 : steps;
+            if (scrollAmount > 0)
+            {
+                int distanceToLast = LastTopMeasure - NominalMeasurePositionStartForTopBlock;
+                NominalMeasurePositionStartForTopBlock += Math.Min(scrollAmount, distanceToLast);
+            }
+            else
+            {
+                int distanceToFirst = NominalMeasurePositionStartForTopBlock - FirstTopMeasure;
+                NominalMeasurePositionStartForTopBlock -= Math.Min(-scrollAmount, distanceToFirst);
+            }
+            GlobalEvents.Instance.InvokeEvent(nameof(GlobalEvents.AudioVisualsContainerScrolled));
+            GetViewport().SetInputAsHandled();
         }
     }
 

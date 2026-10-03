@@ -16,6 +16,7 @@ using System.IO;
 using Godot;
 using NAudio.Wave;
 using NAudio.Vorbis;
+using NLayer.NAudioSupport;
 using System.Runtime.CompilerServices;
 using System.Linq;
 using Tempora.Classes.Audio;
@@ -71,7 +72,7 @@ public partial class AudioDataHelper
         out int sampleRate, out int numRawBytes, out int startSilenceSamples)
     {
         using var mp3FileMemoryStream = new MemoryStream(mp3File);
-        using var reader = new Mp3FileReader(mp3FileMemoryStream);
+        using var reader = new Mp3FileReaderBase(mp3FileMemoryStream, wf => new Mp3FrameDecompressor(wf));
         DecodeMp3(reader, out shortsMixed_byte, out channels, out sampleRate, out numRawBytes, out startSilenceSamples);
     }
 
@@ -81,11 +82,11 @@ public partial class AudioDataHelper
     public static void DecodeMp3(string mp3Path, out byte[] shortsMixed_byte, out int channels, 
         out int sampleRate, out int numRawBytes, out int startSilenceSamples)
     {
-        using var reader = new Mp3FileReader(mp3Path);
+        using var reader = new Mp3FileReaderBase(mp3Path, wf => new Mp3FrameDecompressor(wf));
         DecodeMp3(reader, out shortsMixed_byte, out channels, out sampleRate, out numRawBytes, out startSilenceSamples);
     }
 
-    public static void DecodeMp3(Mp3FileReader reader, out byte[] shortsMixed_byte, out int channels, 
+    public static void DecodeMp3(Mp3FileReaderBase reader, out byte[] shortsMixed_byte, out int channels,
         out int sampleRate, out int numRawBytes, out int startSilenceSamples)
     {
         sampleRate = reader.Mp3WaveFormat.SampleRate;

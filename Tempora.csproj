@@ -1,4 +1,4 @@
-﻿<Project Sdk="Godot.NET.Sdk/4.4.1">
+﻿<Project Sdk="Godot.NET.Sdk/4.6.1">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
@@ -11,6 +11,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="NLayer.NAudioSupport" Version="1.4.0" />
     <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
     <PackageReference Include="Spectrogram" Version="1.6.1" />
   </ItemGroup>
